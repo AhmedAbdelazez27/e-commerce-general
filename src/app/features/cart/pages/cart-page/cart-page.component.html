@@ -1,0 +1,42 @@
+<div>
+  <h1 class="h2 mb-4">{{ 'CART.TITLE' | translate }}</h1>
+
+  @if (loading()) {
+    <p>{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (!cart()?.Items?.length) {
+    <p class="text-muted mb-3">{{ 'CART.EMPTY' | translate }}</p>
+    <a routerLink="/shop" class="btn btn-primary">{{ 'CART.CONTINUE_SHOPPING' | translate }}</a>
+  } @else {
+    <div class="table-responsive mb-4">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>{{ 'CART.PRODUCT' | translate }}</th>
+            <th>{{ 'CART.QTY' | translate }}</th>
+            <th>{{ 'CART.PRICE' | translate }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of cart()!.Items; track item.ProductId) {
+            <tr>
+              <td>{{ item.ProductName ?? item.ProductId }}</td>
+              <td>{{ item.Quantity }}</td>
+              <td>{{ item.UnitPrice | number: '1.2-2' }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeItem(item.ProductId)">
+                  {{ 'CART.REMOVE' | translate }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="fw-semibold mb-3">
+      {{ 'CART.TOTAL' | translate }}: {{ (cart()!.Total ?? cart()!.SubTotal) | number: '1.2-2' }}
+    </p>
+    <a routerLink="/checkout" class="btn btn-primary me-2">{{ 'CART.CHECKOUT' | translate }}</a>
+    <a routerLink="/shop" class="btn btn-outline-secondary">{{ 'CART.CONTINUE_SHOPPING' | translate }}</a>
+  }
+</div>

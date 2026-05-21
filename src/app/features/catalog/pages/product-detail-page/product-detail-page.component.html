@@ -1,0 +1,23 @@
+<div>
+  <a routerLink="/shop" class="btn btn-link ps-0 mb-3">{{ 'CATALOG.BACK' | translate }}</a>
+
+  @if (loading()) {
+    <p>{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (!product()) {
+    <p class="text-muted">{{ 'CATALOG.NOT_FOUND' | translate }}</p>
+  } @else {
+    <h1 class="h2">{{ displayName() }}</h1>
+    @if (product()!.Sku) {
+      <p class="text-muted">{{ 'CATALOG.SKU' | translate }}: {{ product()!.Sku }}</p>
+    }
+    <p class="fs-4 fw-semibold">{{ product()!.Price | number: '1.2-2' }}</p>
+
+    <div class="mb-3" style="max-width: 8rem">
+      <label class="form-label" for="qty">{{ 'CATALOG.QUANTITY' | translate }}</label>
+      <input id="qty" type="number" class="form-control" min="1" [(ngModel)]="quantity" name="qty" />
+    </div>
+    <button type="button" class="btn btn-primary" (click)="addToCart()">
+      {{ 'CATALOG.ADD_TO_CART' | translate }}
+    </button>
+  }
+</div>

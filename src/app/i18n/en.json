@@ -1,0 +1,84 @@
+{
+  "COMMON": {
+    "LOADING": "Loading…"
+  },
+  "TOAST": {
+    "SUCCESS": "Success",
+    "ERROR": "Error"
+  },
+  "HOME": {
+    "TITLE": "Welcome",
+    "SUBTITLE": "Browse products, add to cart, and checkout when you are ready.",
+    "SHOP_CTA": "Shop now"
+  },
+  "AUTH": {
+    "TITLE": "Sign in",
+    "USERNAME": "Email or username",
+    "USERNAME_PH": "Enter email or username",
+    "PASSWORD": "Password",
+    "PASSWORD_PH": "Enter password",
+    "REMEMBER": "Remember me",
+    "FORGOT": "Forgot password?",
+    "SUBMIT": "Sign in",
+    "LOGIN_SUCCESS": "Signed in successfully.",
+    "LOGIN_FAILED": "Sign in failed. Check your credentials.",
+    "REGISTER": "Create account",
+    "REGISTER_TITLE": "Create account",
+    "REGISTER_PENDING": "Registration will connect to the customer API when it is ready.",
+    "BACK_LOGIN": "Back to sign in"
+  },
+  "LAYOUT": {
+    "BRAND": "Store",
+    "SUPPORT": "Customer support",
+    "LOGOUT": "Sign out",
+    "LANG_SWITCH": "Change language",
+    "LANG_EN": "English",
+    "LANG_AR": "Arabic",
+    "NAV_HOME": "Home",
+    "NAV_SHOP": "Shop",
+    "NAV_CART": "Cart",
+    "NAV_ACCOUNT": "My orders",
+    "NAV_LOGIN": "Sign in",
+    "NAV_MENU_TOGGLE": "Open menu",
+    "ACCOUNT_MENU": "Account menu",
+    "FOOTER_COPYRIGHT": "All rights reserved © E-Commerce Store"
+  },
+  "CATALOG": {
+    "TITLE": "Shop",
+    "EMPTY": "No products found.",
+    "VIEW": "View",
+    "BACK": "Back to shop",
+    "NOT_FOUND": "Product not found.",
+    "SKU": "SKU",
+    "QUANTITY": "Quantity",
+    "ADD_TO_CART": "Add to cart"
+  },
+  "CART": {
+    "TITLE": "Shopping cart",
+    "EMPTY": "Your cart is empty.",
+    "CONTINUE_SHOPPING": "Continue shopping",
+    "PRODUCT": "Product",
+    "QTY": "Qty",
+    "PRICE": "Price",
+    "REMOVE": "Remove",
+    "TOTAL": "Total",
+    "CHECKOUT": "Checkout",
+    "ADDED": "Added to cart"
+  },
+  "CHECKOUT": {
+    "TITLE": "Checkout",
+    "ADDRESS": "Shipping address",
+    "NOTES": "Order notes (optional)",
+    "PLACE_ORDER": "Place order",
+    "SUCCESS": "Order placed successfully.",
+    "FAILED": "Could not place order. Try again."
+  },
+  "ACCOUNT": {
+    "ORDERS_TITLE": "My orders",
+    "NO_ORDERS": "You have no orders yet.",
+    "ORDER_NUMBER": "Order #",
+    "ORDER_DATE": "Date",
+    "STATUS": "Status",
+    "TOTAL": "Total"
+  }
+}

@@ -1,0 +1,24 @@
+// Arabic / RTL theme — extend when Arabic-specific layout is ready.
+// `LanguageService` sets `dir`, `lang`, and `theme-ar` on <html>.
+// Assets: public/assets/ → /assets/ (see angular.json)
+
+html.theme-ar body {
+  font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+}
+
+html[dir='rtl'] {
+  .navbar-nav.ms-auto {
+    margin-inline-start: auto !important;
+    margin-inline-end: 0 !important;
+  }
+
+  .modal-header .btn-close {
+    margin-inline-start: auto;
+    margin-inline-end: calc(-0.5 * var(--bs-modal-header-padding-x, 1rem));
+  }
+
+  .table th,
+  .table td {
+    text-align: start;
+  }
+}

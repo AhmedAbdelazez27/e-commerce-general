@@ -1,0 +1,17 @@
+<div style="max-width: 36rem">
+  <h1 class="h2 mb-4">{{ 'CHECKOUT.TITLE' | translate }}</h1>
+
+  <form (ngSubmit)="placeOrder()">
+    <div class="mb-3">
+      <label class="form-label" for="address">{{ 'CHECKOUT.ADDRESS' | translate }}</label>
+      <textarea id="address" name="address" class="form-control" rows="3" [(ngModel)]="shippingAddress" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="notes">{{ 'CHECKOUT.NOTES' | translate }}</label>
+      <textarea id="notes" name="notes" class="form-control" rows="2" [(ngModel)]="notes"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="submitting">
+      {{ 'CHECKOUT.PLACE_ORDER' | translate }}
+    </button>
+  </form>
+</div>

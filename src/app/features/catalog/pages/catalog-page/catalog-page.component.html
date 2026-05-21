@@ -1,0 +1,28 @@
+<div>
+  <h1 class="h2 mb-4">{{ 'CATALOG.TITLE' | translate }}</h1>
+
+  @if (loading()) {
+    <p>{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (!products().length) {
+    <p class="text-muted">{{ 'CATALOG.EMPTY' | translate }}</p>
+  } @else {
+    <div class="row g-4">
+      @for (product of products(); track product.Id) {
+        <div class="col-sm-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5 card-title">{{ productName(product, lang()) }}</h2>
+              @if (product.CategoryName) {
+                <p class="text-muted small">{{ product.CategoryName }}</p>
+              }
+              <p class="fw-semibold mb-3">{{ product.Price | number: '1.2-2' }}</p>
+              <a [routerLink]="['/shop', product.Id]" class="btn btn-primary mt-auto">
+                {{ 'CATALOG.VIEW' | translate }}
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
