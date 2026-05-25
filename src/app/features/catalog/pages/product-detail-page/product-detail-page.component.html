@@ -135,31 +135,32 @@
           </div>
         </div>
 
-        <div class="product-detail-main__actions">
+        <div class="product-detail-main__actions ">
           <button
             type="button"
-            class="btn btn-primary btn-lg product-detail-main__cart-btn"
+            class="btn btn-primary btn-lg btn-black"
             [disabled]="!p.isAvailable"
             (click)="addToCart()"
           >
             <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
             {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
           </button>
-          <button
+          <!-- <button
             type="button"
             class="btn btn-outline-primary btn-lg"
             [disabled]="!p.isAvailable"
             (click)="buyNow()"
           >
             {{ 'PRODUCT_DETAIL.BUY_NOW' | translate }}
-          </button>
+          </button> -->
           <button
             type="button"
-            class="btn btn-outline-secondary product-detail-main__wishlist"
+            class="btn btn-outline-secondary btn-outline-black"
             [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
             (click)="onWishlist()"
           >
             <i class="fa-regular fa-heart" aria-hidden="true"></i>
+            Add to Wishlist
           </button>
         </div>
       </div>
