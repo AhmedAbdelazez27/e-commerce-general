@@ -26,6 +26,13 @@
             <div class="store-nav__mega" [id]="'mega-' + category.id">
               <div class="ds-container">
                 <div class="store-nav__mega-grid">
+
+                  <div class="category-mega">
+                    <img src="./../../../../public/images/unnamed.png" />
+                    <p class="gold" style="margin-bottom: 8px; font-style: italic;">Category</p>
+                    <h2>Derma Cosma</h2>
+                  </div>
+
                   @for (column of category.megaMenu; track column.id) {
                     <div>
                       <h3 class="store-nav__mega-title">{{ column.titleKey | translate }}</h3>

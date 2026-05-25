@@ -1,6 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+// import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthTokenService } from '../../core/services/auth-token.service';
@@ -12,11 +12,10 @@ import { NavCategory } from '../models/layout.model';
 
 @Component({
   selector: 'app-mobile-nav-drawer',
-  imports: [FormsModule, RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule],
   templateUrl: './mobile-nav-drawer.component.html',
 })
 export class MobileNavDrawerComponent {
-  private readonly router = inject(Router);
   private readonly cart = inject(CartService);
   private readonly auth = inject(AuthTokenService);
   private readonly language = inject(LanguageService);
@@ -29,7 +28,7 @@ export class MobileNavDrawerComponent {
   readonly branding = LAYOUT_CONFIG.branding;
   readonly itemCount = this.cart.itemCount;
 
-  searchQuery = '';
+  // searchQuery = '';
   expandedCategoryId: string | null = null;
 
   close(): void {
@@ -48,12 +47,12 @@ export class MobileNavDrawerComponent {
     return this.language.currentLang();
   }
 
-  submitSearch(event: Event): void {
-    event.preventDefault();
-    const q = this.searchQuery.trim();
-    this.close();
-    void this.router.navigate([this.header.shopRoute], q ? { queryParams: { q } } : undefined);
-  }
+  // submitSearch(event: Event): void {
+  //   event.preventDefault();
+  //   const q = this.searchQuery.trim();
+  //   this.close();
+  //   void this.router.navigate([this.header.shopRoute], q ? { queryParams: { q } } : undefined);
+  // }
 
   toggleCategory(category: NavCategory): void {
     if (!category.megaMenu?.length) {

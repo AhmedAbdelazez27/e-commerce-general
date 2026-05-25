@@ -1,12 +1,19 @@
-<div class="store-shell" [class.store-shell--has-announcement]="hasAnnouncement">
+<div
+  class="store-shell"
+  [class.store-shell--has-announcement]="hasAnnouncement"
+  [class.store-shell--home-viewport]="isHomeViewport()"
+  [class.store-shell--scrolled]="isScrolled()"
+>
   <app-announcement-bar />
 
-  <app-store-header
-    [mobileMenuOpen]="mobileDrawerOpen()"
-    (openMobileMenu)="openMobileDrawer()"
-  />
+  <div class="store-chrome">
+    <app-store-header
+      [mobileMenuOpen]="mobileDrawerOpen()"
+      (openMobileMenu)="openMobileDrawer()"
+    />
 
-  <app-store-nav />
+    <app-store-nav />
+  </div>
 
   <app-mobile-nav-drawer [open]="mobileDrawerOpen()" (closed)="closeMobileDrawer()" />
 

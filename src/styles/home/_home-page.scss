@@ -57,20 +57,129 @@
 
 // — Hero (Lecosma-inspired full-bleed banner) —
 .home-hero {
+  --home-hero-height: 20rem;
+  --home-hero-height-md: 28rem;
   margin-bottom: var(--ds-space-2);
 }
 
-.home-hero__grid {
-  display: grid;
-  gap: var(--ds-space-4);
-  min-height: min(85vh, 36rem);
+.home-hero__slider {
+  position: relative;
+  height: var(--home-hero-height);
+  overflow: hidden;
+  border-radius: var(--ds-radius-lg);
+}
+
+.home-hero__track {
+  position: relative;
+  height: 100%;
+}
+
+.home-hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ds-transition-slow, 0.5s) ease,
+    visibility var(--ds-transition-slow, 0.5s) ease;
+  pointer-events: none;
+
+  &--active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__slide {
+    transition: none;
+  }
+}
+
+.home-hero__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--ds-radius-full, 50%);
+  background: rgb(255 255 255 / 92%);
+  color: var(--ds-color-text);
+  box-shadow: var(--ds-shadow-sm, 0 2px 8px rgb(0 0 0 / 12%));
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition:
+    background var(--ds-transition-fast),
+    color var(--ds-transition-fast);
+
+  &:hover {
+    background: #fff;
+    color: var(--ds-color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.home-hero__nav--prev {
+  inset-inline-start: var(--ds-space-3);
+}
+
+.home-hero__nav--next {
+  inset-inline-end: var(--ds-space-3);
+}
+
+html[dir='rtl'] .home-hero__nav i {
+  transform: scaleX(-1);
+}
+
+.home-hero__dots {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--ds-space-4);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: var(--ds-space-2);
+}
+
+.home-hero__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--ds-radius-full, 50%);
+  background: rgb(255 255 255 / 45%);
+  cursor: pointer;
+  transition:
+    width var(--ds-transition-fast),
+    background var(--ds-transition-fast);
+
+  &--active {
+    width: 1.5rem;
+    border-radius: var(--ds-radius-pill, 999px);
+    background: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ds-color-primary-soft, #ffdea5);
+    outline-offset: 2px;
+  }
 }
 
 .home-hero__banner {
   position: relative;
-  border-radius: var(--ds-radius-lg);
+  height: 100%;
   overflow: hidden;
-  min-height: min(70vh, 28rem);
   background: linear-gradient(
     135deg,
     var(--ds-color-primary) 0%,
@@ -79,10 +188,12 @@
 }
 
 .home-hero__image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 18rem;
   object-fit: cover;
+  object-position: center;
 }
 
 .home-hero__overlay {
@@ -182,43 +293,6 @@ html[dir='rtl'] .home-hero__overlay {
   font-size: var(--ds-font-size-md);
   opacity: 0.92;
   line-height: var(--ds-line-height-relaxed);
-}
-
-.home-hero__promo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--ds-space-6);
-  border-radius: var(--ds-radius-lg);
-  background: var(--ds-color-background-subtle);
-  border: 1px solid var(--ds-color-border);
-}
-
-.home-hero__promo--accent {
-  background: color-mix(in srgb, var(--ds-color-accent) 12%, var(--ds-color-background));
-  border-color: color-mix(in srgb, var(--ds-color-accent) 35%, transparent);
-}
-
-.home-hero__promo-eyebrow {
-  margin: 0 0 var(--ds-space-2);
-  font-size: var(--ds-font-size-xs);
-  font-weight: var(--ds-font-weight-semibold);
-  letter-spacing: var(--ds-letter-spacing-wide);
-  text-transform: uppercase;
-  color: var(--ds-color-accent);
-}
-
-.home-hero__promo-title {
-  margin: 0 0 var(--ds-space-2);
-  font-size: var(--ds-font-size-xl);
-  font-weight: var(--ds-font-weight-semibold);
-}
-
-.home-hero__promo-text {
-  margin: 0 0 var(--ds-space-4);
-  font-size: var(--ds-font-size-sm);
-  color: var(--ds-color-text-secondary);
-  flex: 1;
 }
 
 // — Curated collections (Lecosma "Curated Edit") —
@@ -661,13 +735,8 @@ html[dir='rtl'] {
     color: var(--ds-color-text);
   }
 
-  .home-hero__grid {
-    grid-template-columns: 1.4fr 1fr;
-    min-height: 22rem;
-  }
-
-  .home-hero__banner {
-    min-height: 22rem;
+  .store-shell:not(.store-shell--home-viewport) .home-hero__slider {
+    height: var(--home-hero-height-md);
   }
 
   .home-curated__grid {

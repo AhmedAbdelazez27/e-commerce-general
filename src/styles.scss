@@ -1,1 +1,161 @@
 @use './styles/index.style';
+
+
+
+.ds-container {
+    width: 100%;
+    max-width: unset;
+    margin-inline: auto;
+    padding-inline: unset;
+}
+
+section {
+    padding-left: 32px;
+    padding-right: 32px;
+    max-width: 1320px;
+    margin: auto;
+}
+
+
+@media(min-width:1440px) {
+    section {
+
+        max-width: 1320px;
+        margin: auto;
+    }
+}
+
+.home-hero {
+    margin-bottom: var(--ds-space-2);
+    padding: 0;
+}
+
+.store-nav__list {
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0;
+}
+
+.store-nav__mega {
+    max-width: 1320px;
+    margin: auto;
+    padding: 24px;
+}
+
+.store-header {
+    padding: 16px 24px;
+}
+
+.store-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.store-header__action {
+    font-size: 14px;
+}
+
+.product-card {
+    border-radius: 0 !important;
+    border: 0 !important;
+}
+
+
+.btn.disabled,
+.btn:disabled,
+fieldset:disabled .btn {
+    background-color: #987d42;
+    border-color: #987d42;
+}
+
+.gold {
+    color: #775a19;
+}
+
+.category-mega {
+    padding: 16px;
+    background-color: #ffdea5;
+}
+
+
+.store-nav__mega-grid {
+    display: flex;
+    gap: 64px;
+}
+
+.store-header__lang-group .store-header__lang {
+    border: none;
+    color: #aeaeae;
+}
+
+.store-header__lang-group .store-header__lang button {
+    padding: 0 8px;
+}
+
+.store-header__lang-group .store-header__lang button.is-active {
+    background: transparent;
+    color: var(--ds-color-primary);
+}
+
+.home-categories__card {
+    transition: ease 0.5s !important;
+}
+
+.home-categories__card:hover {
+    background: var(--ds-color-primary);
+
+    .home-categories__icon {
+        color: var(--ds-color-background-subtle);
+    }
+
+    .home-categories__name,
+    .home-categories__count {
+        color: #fff;
+    }
+
+    i {
+        color: var(--ds-color-primary);
+    }
+}
+
+
+.product-card__badge--bestseller {
+    color: #000000 !important;
+    background: #ffdea5 !important;
+}
+
+
+
+@media(min-width:1440px) {
+    .catalog-page {
+
+        max-width: 1320px;
+        margin: auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .catalog-grid:not(.catalog-grid--list) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.catalog-page__sidebar {
+    background: #ffffff;
+    border: 0;
+    border-radius: var(--ds-radius-lg);
+}
+
+.product-card__cart-btn {
+    padding: 12px 24px;
+    border-radius: 0 !important;
+
+}
+
+
+.product-card__wishlist-btn {
+    width: 47px !important;
+    height: 47px !important;
+    border-radius: 0 !important;
+}

@@ -112,16 +112,28 @@
   "HOME": {
     "VIEW_ALL": "View all",
     "HERO": {
+      "CAROUSEL_LABEL": "Featured promotions",
+      "SLIDE_LABEL": "Slide {{current}} of {{total}}",
+      "PREV": "Previous slide",
+      "NEXT": "Next slide",
+      "DOTS_LABEL": "Choose a slide",
+      "GO_TO_SLIDE": "Go to slide {{index}}",
       "IMAGE_ALT": "Luxury beauty products lifestyle",
       "EYEBROW": "Excellence defined",
       "HEADLINE": "Elevate your beauty experience",
       "SUBTITLE": "A destination for luxurious skincare, cosmetics, and beauty innovations tailored for confidence and self-expression.",
       "CTA": "Shop the collection",
       "SECONDARY_CTA": "Discover more",
-      "PROMO_EYEBROW": "Limited offer",
-      "PROMO_TITLE": "10% off your first order",
-      "PROMO_SUBTITLE": "Use code WELCOME at checkout.",
-      "PROMO_CTA": "Shop offers"
+      "SLIDE2_IMAGE_ALT": "Clinical skincare collection",
+      "SLIDE2_EYEBROW": "Clinical care",
+      "SLIDE2_HEADLINE": "Dermatologist-trusted skincare",
+      "SLIDE2_SUBTITLE": "Science-backed formulas for sensitive skin, hydration, and daily protection.",
+      "SLIDE2_CTA": "Shop derma",
+      "SLIDE3_IMAGE_ALT": "Luxury fragrance collection",
+      "SLIDE3_EYEBROW": "Signature scents",
+      "SLIDE3_HEADLINE": "Discover your signature fragrance",
+      "SLIDE3_SUBTITLE": "Iconic perfumes and exclusive launches from the world's finest houses.",
+      "SLIDE3_CTA": "Explore perfume"
     },
     "CURATED": {
       "EYEBROW": "The collections",

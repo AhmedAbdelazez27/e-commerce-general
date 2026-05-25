@@ -1,6 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+// import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthTokenService } from '../../core/services/auth-token.service';
@@ -10,11 +10,10 @@ import { LAYOUT_CONFIG } from '../config/layout.config';
 
 @Component({
   selector: 'app-store-header',
-  imports: [FormsModule, RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule],
   templateUrl: './store-header.component.html',
 })
 export class StoreHeaderComponent {
-  private readonly router = inject(Router);
   private readonly cart = inject(CartService);
   private readonly auth = inject(AuthTokenService);
   private readonly language = inject(LanguageService);
@@ -29,7 +28,7 @@ export class StoreHeaderComponent {
   readonly itemCount = this.cart.itemCount;
   readonly currentLang = () => this.language.currentLang();
 
-  searchQuery = '';
+  // searchQuery = '';
 
   isLoggedIn(): boolean {
     return this.auth.isLoggedIn();
@@ -53,11 +52,11 @@ export class StoreHeaderComponent {
     void this.language.useLanguage(lang);
   }
 
-  submitSearch(event: Event): void {
-    event.preventDefault();
-    const q = this.searchQuery.trim();
-    void this.router.navigate([this.header.shopRoute], q ? { queryParams: { q } } : undefined);
-  }
+  // submitSearch(event: Event): void {
+  //   event.preventDefault();
+  //   const q = this.searchQuery.trim();
+  //   void this.router.navigate([this.header.shopRoute], q ? { queryParams: { q } } : undefined);
+  // }
 
   openMenu(): void {
     this.openMobileMenu.emit();

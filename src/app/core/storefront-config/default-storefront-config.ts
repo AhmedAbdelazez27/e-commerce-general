@@ -4,9 +4,9 @@ export const DEFAULT_STOREFRONT_CONFIG: StorefrontConfig = {
   theme: {
     primaryColor: '#775a19',
     secondaryColor: '#4e5f7c',
-    accentColor: '#8b1d2d',
+    accentColor: '#D24858',
     successColor: '#198754',
-    dangerColor: '#dc3545',
+    dangerColor: '#D24858',
     warningColor: '#ffc107',
     backgroundColor: '#f9f9f7',
     fontFamily: 'Manrope, system-ui, -apple-system, "Segoe UI", sans-serif',

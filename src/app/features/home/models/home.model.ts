@@ -1,6 +1,7 @@
 import { StorefrontProduct } from '../../../shared/models/storefront-product.model';
 
-export interface HomeHeroConfig {
+export interface HomeHeroSlide {
+  id: string;
   imageSrc: string;
   imageAltKey: string;
   eyebrowKey?: string;
@@ -12,16 +13,18 @@ export interface HomeHeroConfig {
   secondaryCtaLabelKey?: string;
   secondaryCtaRoute?: string;
   secondaryCtaQuery?: Record<string, string>;
-  promoCard: {
-    enabled: boolean;
-    eyebrowKey: string;
-    titleKey: string;
-    subtitleKey: string;
-    ctaLabelKey: string;
-    ctaRoute: string;
-    ctaQuery?: Record<string, string>;
-    accentClass?: string;
-  };
+}
+
+export interface HomeHeroConfig {
+  slides: HomeHeroSlide[];
+  autoPlay?: boolean;
+  autoPlayIntervalMs?: number;
+  /** Fill space below announcement + header + nav to complete 100svh (home page). */
+  fillViewport?: boolean;
+  /** Fixed slider height when `fillViewport` is false (e.g. `"20rem"`). */
+  height?: string;
+  /** Slider height from tablet up when `fillViewport` is false. */
+  heightMd?: string;
 }
 
 export interface HomeCategoryShortcut {
