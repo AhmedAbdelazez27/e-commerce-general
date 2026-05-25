@@ -1,0 +1,10 @@
+<div class="catalog-empty">
+  <div class="catalog-empty__icon" aria-hidden="true">
+    <i class="fa-solid fa-box-open"></i>
+  </div>
+  <h2 class="catalog-empty__title">{{ 'CATALOG.EMPTY.TITLE' | translate }}</h2>
+  <p class="catalog-empty__text">{{ 'CATALOG.EMPTY.TEXT' | translate }}</p>
+  <button type="button" class="btn btn-outline-primary" (click)="clearFilters.emit()">
+    {{ 'CATALOG.EMPTY.CLEAR' | translate }}
+  </button>
+</div>

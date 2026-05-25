@@ -37,16 +37,33 @@ export class CatalogApiService {
   getCategories(): Observable<CategoryDto[]> {
     return this.http.get<unknown>(ApiEndpoints.Catalog.categories).pipe(
       map((res) => dataArrayFromEnvelope<CategoryDto>(res)),
-      catchError(() => of([])),
+      catchError(() => of(this.demoCategories())),
     );
   }
 
-  /** Placeholder data until the .NET catalog API is available. */
+  /** Minimal demo data when the .NET API is unreachable. */
   private demoProducts(): ProductListItemDto[] {
     return [
-      { Id: 1, NameEn: 'Wireless Headphones', NameAr: 'سماعات لاسلكية', Price: 299, CategoryName: 'Electronics' },
-      { Id: 2, NameEn: 'Cotton T-Shirt', NameAr: 'تيشيرت قطني', Price: 49, CategoryName: 'Apparel' },
-      { Id: 3, NameEn: 'Stainless Water Bottle', NameAr: 'زجاجة ماء', Price: 35, CategoryName: 'Home' },
+      {
+        Id: 1,
+        NameEn: 'Sample product A',
+        NameAr: 'منتج تجريبي أ',
+        Price: 9.99,
+        CategoryName: 'General',
+      },
+      {
+        Id: 2,
+        NameEn: 'Sample product B',
+        NameAr: 'منتج تجريبي ب',
+        Price: 14.5,
+        CategoryName: 'General',
+      },
+    ];
+  }
+
+  private demoCategories(): CategoryDto[] {
+    return [
+      { Id: 1, NameEn: 'General', NameAr: 'عام' },
     ];
   }
 }

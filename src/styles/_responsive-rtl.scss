@@ -1,0 +1,32 @@
+// Shared responsive helpers and RTL/LTR polish (no visual redesign).
+
+.store-shell {
+  overflow-x: clip;
+}
+
+// Directional icons (chevrons, arrows) flip in RTL
+html[dir='rtl'] {
+  .fa-chevron-right,
+  .fa-arrow-right,
+  .fa-angle-right,
+  .catalog-breadcrumb__sep,
+  .home-section-head__link .fa-arrow-right {
+    transform: scaleX(-1);
+  }
+
+  .store-nav__trigger .fa-chevron-down,
+  .store-drawer__nav-link .fa-chevron-down,
+  .store-drawer__nav-link .fa-chevron-up {
+    transform: none;
+  }
+}
+
+// Shimmer reads correctly in RTL
+html[dir='rtl'] {
+  .product-detail-skeleton__breadcrumb,
+  .product-detail-skeleton__gallery,
+  .product-detail-skeleton__line,
+  .product-detail-skeleton__btn {
+    animation-direction: reverse;
+  }
+}

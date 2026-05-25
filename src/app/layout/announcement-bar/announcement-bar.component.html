@@ -1,0 +1,44 @@
+@if (config.enabled && activeMessage(); as msg) {
+  <div
+    class="store-announcement"
+    role="region"
+    aria-live="polite"
+    [attr.aria-label]="'LAYOUT.ANNOUNCEMENT.REGION' | translate"
+  >
+    <div class="store-announcement__inner">
+      <div class="store-announcement__track">
+        @if (msg.labelKey) {
+          <span class="store-announcement__label">{{ msg.labelKey | translate }}</span>
+        }
+        <span class="store-announcement__message">
+          {{ msg.translationKey | translate: msg.translationParams }}
+        </span>
+        @if (msg.linkLabelKey && msg.linkRoute) {
+          <a
+            class="store-announcement__link"
+            [routerLink]="msg.linkRoute"
+            [queryParams]="msg.linkQueryParams"
+          >
+            {{ msg.linkLabelKey | translate }}
+          </a>
+        }
+      </div>
+
+      @if (config.messages.length > 1) {
+        <div class="store-announcement__dots" role="tablist" [attr.aria-label]="'LAYOUT.ANNOUNCEMENT.DOTS' | translate">
+          @for (item of config.messages; track item.id; let i = $index) {
+            <button
+              type="button"
+              class="store-announcement__dot"
+              [class.is-active]="activeIndex() === i"
+              role="tab"
+              [attr.aria-selected]="activeIndex() === i"
+              [attr.aria-label]="'LAYOUT.ANNOUNCEMENT.SLIDE' | translate: { index: i + 1 }"
+              (click)="goToSlide(i)"
+            ></button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

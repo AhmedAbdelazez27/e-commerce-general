@@ -1,0 +1,72 @@
+<article class="cart-item" [class.cart-item--unavailable]="!item().isAvailable">
+  <a class="cart-item__media" [routerLink]="['/shop', item().productId]">
+    @if (item().imageUrl) {
+      <img [src]="item().imageUrl" [alt]="displayTitle()" loading="lazy" />
+    } @else {
+      <div class="cart-item__placeholder" aria-hidden="true">
+        <i class="fa-solid fa-image"></i>
+      </div>
+    }
+  </a>
+
+  <div class="cart-item__body">
+    @if (displayBrand()) {
+      <p class="cart-item__brand">{{ displayBrand() }}</p>
+    }
+    <h2 class="cart-item__title">
+      <a [routerLink]="['/shop', item().productId]">{{ displayTitle() }}</a>
+    </h2>
+    <p class="cart-item__unit-price">
+      {{ formatPrice(item().unitPrice) }} {{ currencyLabel() }}
+    </p>
+
+    @if (!item().isAvailable) {
+      <p class="cart-item__unavailable-msg">{{ 'CART.ITEM_UNAVAILABLE' | translate }}</p>
+    }
+
+    <div class="cart-item__footer">
+      <div class="cart-item__quantity">
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          (click)="decrement()"
+          [disabled]="!item().isAvailable || item().quantity <= 1"
+          [attr.aria-label]="'CART.QTY_DECREASE' | translate"
+        >
+          −
+        </button>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          [value]="item().quantity"
+          [min]="1"
+          [max]="item().maxQuantity"
+          [disabled]="!item().isAvailable"
+          (input)="onQuantityInput($event)"
+          [attr.aria-label]="'CART.QUANTITY' | translate"
+        />
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          (click)="increment()"
+          [disabled]="!item().isAvailable || item().quantity >= item().maxQuantity"
+          [attr.aria-label]="'CART.QTY_INCREASE' | translate"
+        >
+          +
+        </button>
+      </div>
+
+      <button type="button" class="cart-item__remove btn btn-link btn-sm" (click)="onRemove()">
+        <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+        {{ 'CART.REMOVE' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="cart-item__subtotal">
+    <span class="cart-item__subtotal-label">{{ 'CART.SUBTOTAL' | translate }}</span>
+    <span class="cart-item__subtotal-value">
+      {{ formatPrice(item().lineTotal) }} {{ currencyLabel() }}
+    </span>
+  </div>
+</article>

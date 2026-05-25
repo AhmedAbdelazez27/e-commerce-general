@@ -1,37 +1,20 @@
-<div class="d-flex flex-column min-vh-100">
-  <header class="border-bottom py-2 px-3">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-      <span class="text-muted small">{{ 'LAYOUT.SUPPORT' | translate }}</span>
-      <div class="d-flex flex-wrap align-items-center gap-2">
-        <div class="btn-group btn-group-sm" role="group" [attr.aria-label]="'LAYOUT.LANG_SWITCH' | translate">
-          <button type="button" class="btn btn-outline-secondary" (click)="setLang('en')">
-            {{ 'LAYOUT.LANG_EN' | translate }}
-          </button>
-          <button type="button" class="btn btn-outline-secondary" (click)="setLang('ar')">
-            {{ 'LAYOUT.LANG_AR' | translate }}
-          </button>
-        </div>
-        @if (authToken.isLoggedIn()) {
-          <a routerLink="/account/orders" class="btn btn-sm btn-outline-primary">
-            {{ 'LAYOUT.NAV_ACCOUNT' | translate }}
-          </a>
-          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="logout()">
-            {{ 'LAYOUT.LOGOUT' | translate }}
-          </button>
-        } @else {
-          <a routerLink="/auth/login" class="btn btn-sm btn-primary">{{ 'LAYOUT.NAV_LOGIN' | translate }}</a>
-        }
-      </div>
+<div class="store-shell" [class.store-shell--has-announcement]="hasAnnouncement">
+  <app-announcement-bar />
+
+  <app-store-header
+    [mobileMenuOpen]="mobileDrawerOpen()"
+    (openMobileMenu)="openMobileDrawer()"
+  />
+
+  <app-store-nav />
+
+  <app-mobile-nav-drawer [open]="mobileDrawerOpen()" (closed)="closeMobileDrawer()" />
+
+  <main class="store-shell__main">
+    <div class="ds-container">
+      <router-outlet />
     </div>
-  </header>
-
-  <app-shell-navbar />
-
-  <main class="flex-grow-1 container py-4">
-    <router-outlet />
   </main>
 
-  <footer class="border-top py-3 text-center text-muted small">
-    <p class="mb-0">{{ 'LAYOUT.FOOTER_COPYRIGHT' | translate }}</p>
-  </footer>
+  <app-store-footer />
 </div>

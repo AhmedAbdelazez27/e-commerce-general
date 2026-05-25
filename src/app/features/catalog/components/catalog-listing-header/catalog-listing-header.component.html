@@ -1,0 +1,18 @@
+<header class="catalog-header">
+  <h1 class="catalog-header__title">
+    @if (useTitleKey()) {
+      {{ resolvedTitle() | translate }}
+    } @else {
+      {{ resolvedTitle() }}
+    }
+    @if (searchQuery()) {
+      <span class="catalog-header__search-term">"{{ searchQuery() }}"</span>
+    }
+  </h1>
+  <p class="catalog-header__count">
+    {{ 'CATALOG.PRODUCT_COUNT' | translate: { count: productCount() } }}
+  </p>
+  @if (resolvedDescription(); as desc) {
+    <p class="catalog-header__desc">{{ desc }}</p>
+  }
+</header>

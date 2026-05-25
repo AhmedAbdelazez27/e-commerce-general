@@ -1,48 +1,53 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
-import { AuthTokenService } from '../../core/services/auth-token.service';
-import { AuthProfileService } from '../../core/services/auth-profile.service';
 import { CartService } from '../../core/services/cart.service';
-import { AuthApiService } from '../../features/auth/services/auth-api.service';
-import { AppLang, LanguageService } from '../../core/services/language.service';
-import { ShellNavbarComponent } from './shell-navbar/shell-navbar.component';
+import { LAYOUT_CONFIG } from '../config/layout.config';
+import { AnnouncementBarComponent } from '../announcement-bar/announcement-bar.component';
+import { MobileNavDrawerComponent } from '../mobile-nav-drawer/mobile-nav-drawer.component';
+import { StoreFooterComponent } from '../store-footer/store-footer.component';
+import { StoreHeaderComponent } from '../store-header/store-header.component';
+import { StoreNavComponent } from '../store-nav/store-nav.component';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterOutlet, TranslateModule, ShellNavbarComponent],
+  imports: [
+    RouterOutlet,
+    AnnouncementBarComponent,
+    StoreHeaderComponent,
+    StoreNavComponent,
+    MobileNavDrawerComponent,
+    StoreFooterComponent,
+  ],
   templateUrl: './app-shell.component.html',
 })
 export class AppShellComponent implements OnInit {
-  private readonly auth = inject(AuthTokenService);
-  private readonly authApi = inject(AuthApiService);
-  private readonly authProfile = inject(AuthProfileService);
+  private readonly document = inject(DOCUMENT);
   private readonly cart = inject(CartService);
-  private readonly router = inject(Router);
-  private readonly language = inject(LanguageService);
 
-  protected readonly authToken = this.auth;
+  readonly mobileDrawerOpen = signal(false);
+  readonly hasAnnouncement =
+    LAYOUT_CONFIG.announcement.enabled && LAYOUT_CONFIG.announcement.messages.length > 0;
 
   ngOnInit(): void {
     this.cart.refresh();
   }
 
-  setLang(lang: AppLang): void {
-    void this.language.useLanguage(lang);
+  openMobileDrawer(): void {
+    this.mobileDrawerOpen.set(true);
+    this.document.body.classList.add('store-drawer-open');
   }
 
-  protected logout(): void {
-    this.authApi.logout().subscribe({
-      complete: () => this.finishLogout(),
-      error: () => this.finishLogout(),
-    });
+  closeMobileDrawer(): void {
+    this.mobileDrawerOpen.set(false);
+    this.document.body.classList.remove('store-drawer-open');
   }
 
-  private finishLogout(): void {
-    this.auth.clearSession();
-    this.authProfile.setProfile(null);
-    this.cart.clearGuestCart();
-    void this.router.navigate(['/home']);
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.mobileDrawerOpen()) {
+      this.closeMobileDrawer();
+    }
   }
 }

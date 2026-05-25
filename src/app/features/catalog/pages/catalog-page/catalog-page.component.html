@@ -1,28 +1,83 @@
-<div>
-  <h1 class="h2 mb-4">{{ 'CATALOG.TITLE' | translate }}</h1>
+<div class="catalog-page">
+  <app-catalog-breadcrumb [items]="facade.breadcrumbs()" />
 
-  @if (loading()) {
-    <p>{{ 'COMMON.LOADING' | translate }}</p>
-  } @else if (!products().length) {
-    <p class="text-muted">{{ 'CATALOG.EMPTY' | translate }}</p>
-  } @else {
-    <div class="row g-4">
-      @for (product of products(); track product.Id) {
-        <div class="col-sm-6 col-lg-4">
-          <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h5 card-title">{{ productName(product, lang()) }}</h2>
-              @if (product.CategoryName) {
-                <p class="text-muted small">{{ product.CategoryName }}</p>
-              }
-              <p class="fw-semibold mb-3">{{ product.Price | number: '1.2-2' }}</p>
-              <a [routerLink]="['/shop', product.Id]" class="btn btn-primary mt-auto">
-                {{ 'CATALOG.VIEW' | translate }}
-              </a>
+  <app-catalog-listing-header
+    [titleEn]="facade.activeCategory()?.nameEn"
+    [titleAr]="facade.activeCategory()?.nameAr"
+    [productCount]="facade.productCount()"
+    [category]="facade.activeCategory()"
+    [searchQuery]="facade.searchQuery()"
+  />
+
+  <app-catalog-listing-toolbar
+    [sort]="facade.sort()"
+    [viewMode]="facade.viewMode()"
+    [productCount]="facade.productCount()"
+    (sortChange)="facade.setSort($event)"
+    (viewModeChange)="facade.setViewMode($event)"
+    (openFilters)="openMobileFilters()"
+  />
+
+  <div class="catalog-page__layout">
+    <aside class="catalog-page__sidebar" [attr.aria-label]="'CATALOG.FILTERS' | translate">
+      <app-catalog-filter-panel [live]="true" />
+      <button type="button" class="btn btn-link btn-sm catalog-page__clear" (click)="facade.clearFilters()">
+        {{ 'CATALOG.FILTER.CLEAR' | translate }}
+      </button>
+    </aside>
+
+    <div class="catalog-page__main">
+      @if (cardProducts().length === 0) {
+        <app-catalog-empty-state (clearFilters)="facade.clearFilters()" />
+      } @else {
+        <div
+          class="catalog-grid"
+          [class.catalog-grid--list]="facade.viewMode() === 'list'"
+          role="list"
+        >
+          @for (product of cardProducts(); track product.id) {
+            <div class="catalog-grid__item" role="listitem">
+              <app-product-card
+                [product]="product"
+                [compact]="facade.viewMode() === 'list'"
+                (productClick)="onProductClick($event)"
+                (addToCart)="onAddToCart($event)"
+                (addToWishlist)="onAddToWishlist($event)"
+                (quickView)="onQuickView($event)"
+              />
             </div>
-          </div>
+          }
         </div>
       }
     </div>
+  </div>
+
+  @if (facade.mobileFiltersOpen()) {
+    <div class="catalog-drawer-backdrop" (click)="closeMobileFilters()" aria-hidden="true"></div>
+    <aside
+      class="catalog-drawer store-drawer"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'CATALOG.FILTERS' | translate"
+    >
+      <div class="store-drawer__head">
+        <h2 class="catalog-drawer__title">{{ 'CATALOG.FILTERS' | translate }}</h2>
+        <button type="button" class="store-drawer__close" (click)="closeMobileFilters()">
+          <span class="ds-visually-hidden">{{ 'CATALOG.FILTER.CLOSE' | translate }}</span>
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="store-drawer__body">
+        <app-catalog-filter-panel [live]="false" />
+      </div>
+      <div class="catalog-drawer__footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="facade.clearFilters(); closeMobileFilters()">
+          {{ 'CATALOG.FILTER.CLEAR' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="applyMobileFilters()">
+          {{ 'CATALOG.FILTER.APPLY' | translate }}
+        </button>
+      </div>
+    </aside>
   }
 </div>

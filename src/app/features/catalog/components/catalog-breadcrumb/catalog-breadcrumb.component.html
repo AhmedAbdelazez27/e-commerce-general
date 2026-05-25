@@ -1,0 +1,28 @@
+<nav class="catalog-breadcrumb" [attr.aria-label]="'CATALOG.BREADCRUMB' | translate">
+  <ol class="catalog-breadcrumb__list">
+    @for (item of items(); track $index; let last = $last) {
+      <li class="catalog-breadcrumb__item" [class.is-current]="item.current || last && !item.route">
+        @if (item.route && !item.current) {
+          <a [routerLink]="item.route" [queryParams]="item.queryParams">
+            @if (isTranslationKey(item)) {
+              {{ item.labelKey! | translate }}
+            } @else {
+              {{ label(item) }}
+            }
+          </a>
+        } @else {
+          <span aria-current="page">
+            @if (isTranslationKey(item)) {
+              {{ item.labelKey! | translate }}
+            } @else {
+              {{ label(item) }}
+            }
+          </span>
+        }
+        @if (!$last) {
+          <i class="fa-solid fa-chevron-right catalog-breadcrumb__sep" aria-hidden="true"></i>
+        }
+      </li>
+    }
+  </ol>
+</nav>

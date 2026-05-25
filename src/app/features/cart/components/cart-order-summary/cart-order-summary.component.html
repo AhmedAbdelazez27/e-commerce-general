@@ -1,0 +1,43 @@
+<aside class="cart-summary" [attr.aria-label]="'CART.SUMMARY_REGION' | translate">
+  <h2 class="cart-summary__title">{{ 'CART.SUMMARY_TITLE' | translate }}</h2>
+
+  <dl class="cart-summary__rows">
+    <div class="cart-summary__row">
+      <dt>{{ 'CART.SUMMARY_SUBTOTAL' | translate }}</dt>
+      <dd>{{ formatPrice(summary().subtotal) }} {{ currencyLabel() }}</dd>
+    </div>
+    @if (summary().discount > 0) {
+      <div class="cart-summary__row cart-summary__row--discount">
+        <dt>{{ 'CART.SUMMARY_DISCOUNT' | translate }}</dt>
+        <dd>−{{ formatPrice(summary().discount) }} {{ currencyLabel() }}</dd>
+      </div>
+    }
+    <div class="cart-summary__row">
+      <dt>{{ 'CART.SUMMARY_DELIVERY' | translate }}</dt>
+      <dd>
+        @if (summary().isFreeDelivery) {
+          {{ 'CART.SUMMARY_FREE_DELIVERY' | translate }}
+        } @else {
+          {{ formatPrice(summary().deliveryFee) }} {{ currencyLabel() }}
+        }
+      </dd>
+    </div>
+    <div class="cart-summary__row cart-summary__row--total">
+      <dt>{{ 'CART.SUMMARY_TOTAL' | translate }}</dt>
+      <dd>{{ formatPrice(summary().total) }} {{ currencyLabel() }}</dd>
+    </div>
+  </dl>
+
+  <button
+    type="button"
+    class="btn btn-primary btn-lg w-100 cart-summary__checkout"
+    [disabled]="checkoutDisabled()"
+    (click)="checkout.emit()"
+  >
+    {{ 'CART.CHECKOUT' | translate }}
+  </button>
+
+  <a routerLink="/shop" class="btn btn-link w-100 cart-summary__continue">
+    {{ 'CART.CONTINUE_SHOPPING' | translate }}
+  </a>
+</aside>

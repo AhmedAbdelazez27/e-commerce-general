@@ -1,40 +1,46 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CartService } from '../../../../core/services/cart.service';
-import { AuthTokenService } from '../../../../core/services/auth-token.service';
-import { CartApiService } from '../../services/cart-api.service';
+import { CartCouponComponent } from '../../components/cart-coupon/cart-coupon.component';
+import { CartEmptyStateComponent } from '../../components/cart-empty-state/cart-empty-state.component';
+import { CartItemRowComponent } from '../../components/cart-item-row/cart-item-row.component';
+import { CartOrderSummaryComponent } from '../../components/cart-order-summary/cart-order-summary.component';
+import { CartPageFacade } from '../../services/cart-page.facade';
 
 @Component({
   selector: 'app-cart-page',
-  imports: [DecimalPipe, RouterLink, TranslateModule],
+  imports: [
+    TranslateModule,
+    CartItemRowComponent,
+    CartCouponComponent,
+    CartOrderSummaryComponent,
+    CartEmptyStateComponent,
+  ],
+  providers: [CartPageFacade],
   templateUrl: './cart-page.component.html',
 })
 export class CartPageComponent implements OnInit {
-  private readonly cartService = inject(CartService);
-  private readonly cartApi = inject(CartApiService);
-  private readonly auth = inject(AuthTokenService);
-
-  protected readonly cart = this.cartService.cart;
-  protected readonly loading = this.cartService.loading;
+  private readonly router = inject(Router);
+  readonly facade = inject(CartPageFacade);
 
   ngOnInit(): void {
-    this.cartService.refresh();
+    this.facade.initPage();
   }
 
-  protected removeItem(productId: number): void {
-    if (this.auth.isLoggedIn()) {
-      this.cartApi.removeItem(productId).subscribe(() => this.cartService.refresh());
-      return;
-    }
+  onQuantityChange(event: { productId: number; quantity: number }): void {
+    this.facade.updateQuantity(event.productId, event.quantity);
+  }
 
-    const current = this.cartService.cart();
-    if (!current?.Items) {
-      return;
-    }
-    const items = current.Items.filter((i) => i.ProductId !== productId);
-    this.cartService.setGuestCart({ ...current, Items: items });
+  onRemove(productId: number): void {
+    this.facade.removeItem(productId);
+  }
+
+  onCouponInput(value: string): void {
+    this.facade.couponInput.set(value);
+  }
+
+  checkout(): void {
+    void this.router.navigate(['/checkout']);
   }
 }

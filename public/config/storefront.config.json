@@ -1,0 +1,13 @@
+{
+  "theme": {
+    "primaryColor": "#775a19",
+    "secondaryColor": "#4e5f7c",
+    "accentColor": "#8b1d2d",
+    "successColor": "#198754",
+    "dangerColor": "#dc3545",
+    "warningColor": "#ffc107",
+    "backgroundColor": "#f9f9f7",
+    "fontFamily": "Manrope, system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "borderRadius": "4px"
+  }
+}

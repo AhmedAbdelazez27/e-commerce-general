@@ -1,0 +1,26 @@
+<section class="home-section" aria-labelledby="home-brands-title">
+  <app-section-header
+    [titleKey]="brands().titleKey"
+    [subtitleKey]="brands().subtitleKey"
+    [viewAllRoute]="brands().viewAllRoute"
+  />
+
+  <div class="home-brands" role="list">
+    @for (brand of brands().items; track brand.id) {
+      <a
+        class="home-brands__card"
+        role="listitem"
+        [routerLink]="brand.route"
+        [queryParams]="brand.queryParams"
+        [attr.aria-label]="brand.nameKey | translate"
+      >
+        @if (brand.logoUrl) {
+          <img class="home-brands__logo" [src]="brand.logoUrl" alt="" />
+        } @else {
+          <span class="home-brands__initials" aria-hidden="true">{{ brand.initials }}</span>
+        }
+        <span class="home-brands__name">{{ brand.nameKey | translate }}</span>
+      </a>
+    }
+  </div>
+</section>

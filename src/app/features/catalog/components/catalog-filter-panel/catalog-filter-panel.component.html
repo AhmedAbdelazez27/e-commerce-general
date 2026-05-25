@@ -1,0 +1,119 @@
+<div class="catalog-filters">
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.CATEGORY' | translate }}</legend>
+    <ul class="catalog-filters__list">
+      @for (cat of categories(); track cat.id) {
+        <li>
+          <label class="catalog-filters__check">
+            <input
+              type="checkbox"
+              [checked]="isCategoryChecked(cat.id)"
+              (change)="onCategoryChange(cat.id)"
+            />
+            <span>{{ localizedName(cat) }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+  </fieldset>
+
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.BRAND' | translate }}</legend>
+    <ul class="catalog-filters__list catalog-filters__list--scroll">
+      @for (brand of brands(); track brand.id) {
+        <li>
+          <label class="catalog-filters__check">
+            <input
+              type="checkbox"
+              [checked]="isBrandChecked(brand.id)"
+              (change)="onBrandChange(brand.id)"
+            />
+            <span>{{ localizedName(brand) }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+  </fieldset>
+
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.PRICE' | translate }}</legend>
+    <div class="catalog-filters__price-row">
+      <label>
+        <span class="catalog-filters__label">{{ 'CATALOG.FILTER.MIN' | translate }}</span>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          [min]="priceBounds.min"
+          [max]="priceBounds.max"
+          [value]="filters().minPrice ?? ''"
+          (input)="onMinPriceChange($any($event.target).value)"
+        />
+      </label>
+      <label>
+        <span class="catalog-filters__label">{{ 'CATALOG.FILTER.MAX' | translate }}</span>
+        <input
+          type="number"
+          class="form-control form-control-sm"
+          [min]="priceBounds.min"
+          [max]="priceBounds.max"
+          [value]="filters().maxPrice ?? ''"
+          (input)="onMaxPriceChange($any($event.target).value)"
+        />
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.RATING' | translate }}</legend>
+    <ul class="catalog-filters__list">
+      <li>
+        <label class="catalog-filters__radio">
+          <input
+            type="radio"
+            [attr.name]="'rating-' + (live() ? 'live' : 'draft')"
+            [checked]="filters().minRating === null"
+            (change)="onRatingChange('')"
+          />
+          <span>{{ 'CATALOG.FILTER.RATING_ANY' | translate }}</span>
+        </label>
+      </li>
+      @for (stars of ratingOptions; track stars) {
+        <li>
+          <label class="catalog-filters__radio">
+            <input
+              type="radio"
+              [attr.name]="'rating-' + (live() ? 'live' : 'draft')"
+              [checked]="filters().minRating === stars"
+              (change)="onRatingChange('' + stars)"
+            />
+            <span>{{ 'CATALOG.FILTER.RATING_UP' | translate: { stars } }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+  </fieldset>
+
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.AVAILABILITY' | translate }}</legend>
+    <label class="catalog-filters__check">
+      <input
+        type="checkbox"
+        [checked]="filters().inStockOnly"
+        (change)="onInStockChange($any($event.target).checked)"
+      />
+      <span>{{ 'CATALOG.FILTER.IN_STOCK' | translate }}</span>
+    </label>
+  </fieldset>
+
+  <fieldset class="catalog-filters__group">
+    <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.OFFERS' | translate }}</legend>
+    <label class="catalog-filters__check">
+      <input
+        type="checkbox"
+        [checked]="filters().offersOnly"
+        (change)="onOffersChange($any($event.target).checked)"
+      />
+      <span>{{ 'CATALOG.FILTER.ON_SALE' | translate }}</span>
+    </label>
+  </fieldset>
+</div>

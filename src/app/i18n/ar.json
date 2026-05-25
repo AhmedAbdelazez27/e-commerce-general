@@ -1,84 +1,315 @@
 {
+  "PAGE": {
+    "HOME": "الرئيسية",
+    "SHOP": "المتجر",
+    "PRODUCT_DETAIL": "تفاصيل المنتج",
+    "CART": "سلة التسوق",
+    "CHECKOUT": "إتمام الطلب",
+    "ORDERS": "طلباتي",
+    "BRANDS": "العلامات",
+    "BRAND_DETAIL": "العلامة",
+    "LOGIN": "تسجيل الدخول",
+    "REGISTER": "إنشاء حساب"
+  },
   "COMMON": {
     "LOADING": "جاري التحميل…"
   },
   "TOAST": {
-    "SUCCESS": "نجاح",
+    "SUCCESS": "تم بنجاح",
     "ERROR": "خطأ"
   },
-  "HOME": {
-    "TITLE": "مرحباً",
-    "SUBTITLE": "تصفح المنتجات، أضف إلى السلة، وأكمل الشراء عندما تكون جاهزاً.",
-    "SHOP_CTA": "تسوق الآن"
-  },
-  "AUTH": {
-    "TITLE": "تسجيل الدخول",
-    "USERNAME": "البريد أو اسم المستخدم",
-    "USERNAME_PH": "أدخل البريد أو اسم المستخدم",
-    "PASSWORD": "كلمة المرور",
-    "PASSWORD_PH": "أدخل كلمة المرور",
-    "REMEMBER": "تذكرني",
-    "FORGOT": "نسيت كلمة المرور؟",
-    "SUBMIT": "دخول",
-    "LOGIN_SUCCESS": "تم تسجيل الدخول بنجاح.",
-    "LOGIN_FAILED": "فشل تسجيل الدخول. تحقق من البيانات.",
-    "REGISTER": "إنشاء حساب",
-    "REGISTER_TITLE": "إنشاء حساب",
-    "REGISTER_PENDING": "التسجيل سيتصل بـ API العملاء عند جاهزيته.",
-    "BACK_LOGIN": "العودة لتسجيل الدخول"
-  },
   "LAYOUT": {
-    "BRAND": "المتجر",
-    "SUPPORT": "دعم العملاء",
-    "LOGOUT": "خروج",
-    "LANG_SWITCH": "تغيير اللغة",
-    "LANG_EN": "English",
-    "LANG_AR": "العربية",
-    "NAV_HOME": "الرئيسية",
-    "NAV_SHOP": "المتجر",
-    "NAV_CART": "السلة",
-    "NAV_ACCOUNT": "طلباتي",
-    "NAV_LOGIN": "دخول",
-    "NAV_MENU_TOGGLE": "فتح القائمة",
-    "ACCOUNT_MENU": "قائمة الحساب",
-    "FOOTER_COPYRIGHT": "جميع الحقوق محفوظة © متجر إلكتروني"
+    "LOGO_ALT": "شعار المتجر",
+    "ANNOUNCEMENT": {
+      "REGION": "عروض المتجر",
+      "DOTS": "شرائح العروض",
+      "SLIDE": "الشريحة {{index}}",
+      "DELIVERY_LABEL": "عرض خاص",
+      "DELIVERY_MSG": "توصيل مجاني للطلبات فوق {{amount}} دينار.",
+      "CODE_LABEL": "رمز الجمال",
+      "CODE_MSG": "استخدمي الرمز {{code}} للحصول على خصم {{percent}}%.",
+      "WELCOME_LABEL": "ترحيب",
+      "WELCOME_CODE": "استخدمي الرمز {{code}} للحصول على خصم {{percent}}% على أول طلب.",
+      "SHOP_NOW": "تسوقي الآن",
+      "APPLY_CODE": "استخدمي الرمز",
+      "FREE_DELIVERY_AMMAN": "توصيل مجاني للطلبات فوق {{amount}} داخل عمان",
+      "FREE_DELIVERY_OUTSIDE": "توصيل مجاني للطلبات فوق {{amount}} خارج عمان"
+    },
+    "HEADER": {
+      "OPEN_MENU": "فتح القائمة",
+      "SEARCH": "بحث",
+      "SEARCH_PLACEHOLDER": "ابحث عن منتجات، علامات، فئات…",
+      "LOGIN": "تسجيل الدخول",
+      "ACCOUNT": "حسابي",
+      "WISHLIST": "المفضلة",
+      "CART": "السلة",
+      "LANGUAGE": "اللغة"
+    },
+    "NAV": {
+      "REGION": "تسوق حسب الفئة",
+      "VIEW_ALL": "عرض الكل",
+      "BAZAR": "البازار",
+      "BRANDS": "العلامات",
+      "MAKE_UP": "مكياج",
+      "SKIN_CARE": "العناية بالبشرة",
+      "PERFUME": "عطور",
+      "SUN_CARE": "العناية من الشمس",
+      "BODY_CARE": "العناية بالجسم",
+      "HAIR_CARE": "العناية بالشعر",
+      "HYGIENE": "النظافة",
+      "MOTHER_BABY": "الأم والطفل",
+      "MEGA": {
+        "FACE": "الوجه",
+        "EYES": "العيون",
+        "LIPS": "الشفاه",
+        "FOUNDATION": "كريم الأساس",
+        "CONCEALER": "كونسيلر",
+        "BLUSH": "بلاشر",
+        "MASCARA": "ماسكارا",
+        "EYELINER": "آيلاينر",
+        "EYESHADOW": "ظلال عيون",
+        "LIPSTICK": "أحمر شفاه",
+        "LIP_LINER": "محدد شفاه",
+        "LIP_GLOSS": "ملمع شفاه",
+        "CLEANSERS": "منظفات",
+        "MOISTURIZERS": "مرطبات",
+        "SUN_PROTECTION": "الحماية من الشمس",
+        "GEL_CLEANSER": "جل غسول",
+        "MICELLAR": "ماء ميسيلار",
+        "DAY_CREAM": "كريم نهاري",
+        "NIGHT_CREAM": "كريم ليلي",
+        "SPF_FACE": "واقي وجه",
+        "SPF_BODY": "واقي جسم"
+      }
+    },
+    "MOBILE_MENU": {
+      "TITLE": "القائمة",
+      "CLOSE": "إغلاق القائمة"
+    },
+    "FOOTER": {
+      "COMPANY": "الشركة",
+      "CUSTOMER_SERVICE": "خدمة العملاء",
+      "ABOUT": "من نحن",
+      "BRANDS": "العلامات",
+      "SHOP": "المتجر",
+      "ORDERS": "طلباتي",
+      "CONTACT": "اتصل بنا",
+      "FAQ": "الأسئلة الشائعة",
+      "SOCIAL_INSTAGRAM": "إنستغرام",
+      "SOCIAL_FACEBOOK": "فيسبوك",
+      "SOCIAL_TIKTOK": "تيك توك",
+      "TRUST_COD": "الدفع عند الاستلام",
+      "TRUST_SHIPPING": "شحن مجاني",
+      "TRUST_QUALITY": "أفضل جودة للمنتجات",
+      "TRUST_SUPPORT": "دعم على مدار الساعة",
+      "NEWSLETTER_TITLE": "اشترك في نشرتنا",
+      "NEWSLETTER_SUBTITLE": "احصل على إشعارات الخصومات والوصول الجديد.",
+      "NEWSLETTER_PLACEHOLDER": "بريدك الإلكتروني",
+      "NEWSLETTER_BUTTON": "اشتراك",
+      "COPYRIGHT": "© {{year}} متجر إلكتروني. جميع الحقوق محفوظة."
+    }
+  },
+  "HOME": {
+    "VIEW_ALL": "عرض الكل",
+    "HERO": {
+      "IMAGE_ALT": "أسلوب حياة منتجات الجمال الفاخرة",
+      "EYEBROW": "تعريف التميز",
+      "HEADLINE": "ارتقي بتجربة جمالك",
+      "SUBTITLE": "وجهة فاخرة للعناية بالبشرة ومستحضرات التجميل وابتكارات الجمال المصممة للثقة والتعبير عن الذات.",
+      "CTA": "تسوقي المجموعة",
+      "SECONDARY_CTA": "اكتشفي المزيد",
+      "PROMO_EYEBROW": "عرض محدود",
+      "PROMO_TITLE": "خصم 10% على أول طلب",
+      "PROMO_SUBTITLE": "استخدم الرمز WELCOME عند الدفع.",
+      "PROMO_CTA": "تسوق العروض"
+    },
+    "CURATED": {
+      "EYEBROW": "المجموعات",
+      "TITLE": "اختياراتنا المنتقاة",
+      "COSMETICS_EYEBROW": "ليكوسما",
+      "COSMETICS_TITLE": "مستحضرات التجميل",
+      "COSMETICS_ALT": "مجموعة مستحضرات تجميل فاخرة",
+      "DERMA_EYEBROW": "سريري",
+      "DERMA_TITLE": "ديرما",
+      "DERMA_ALT": "عناية ديرما السريرية",
+      "PERFUME_EYEBROW": "فنية",
+      "PERFUME_TITLE": "عطور",
+      "PERFUME_ALT": "مجموعة عطور فاخرة",
+      "CTA": "استكشفي الألوان",
+      "CTA_DERMA": "عناية علمية",
+      "CTA_PERFUME": "معرض العطور"
+    },
+    "CATEGORIES": {
+      "TITLE": "تسوق حسب الفئة",
+      "SUBTITLE": "تصفح أقسامنا الأكثر شعبية",
+      "PRODUCTS": "منتج"
+    },
+    "MOST_SEARCHED": {
+      "TITLE": "الأكثر بحثاً",
+      "SUBTITLE": "منتجات رائجة يفضلها عملاؤنا الآن"
+    },
+    "BEST_SELLERS": {
+      "TITLE": "الأكثر مبيعاً",
+      "SUBTITLE": "أفضل المنتجات تقييماً"
+    },
+    "NEW_ARRIVALS": {
+      "TITLE": "وصل حديثاً",
+      "SUBTITLE": "إضافات جديدة تستحق التجربة"
+    },
+    "OFFERS": {
+      "TITLE": "عروض خاصة",
+      "SUBTITLE": "وفّر أكثر على الباقات والعروض الموسمية",
+      "WELCOME_TITLE": "خصم الترحيب",
+      "WELCOME_SUBTITLE": "وفّر على أول عملية شراء بالرمز WELCOME.",
+      "WELCOME_DISCOUNT": "خصم {{percent}}%",
+      "BAZAR_TITLE": "عروض البازار",
+      "BAZAR_SUBTITLE": "باقات وقيمة لفترة محدودة.",
+      "DERMA_TITLE": "أساسيات العناية الطبية",
+      "DERMA_SUBTITLE": "عناية بالبشرة من علامات درما رائدة.",
+      "SHOP_NOW": "تسوق الآن",
+      "VIEW_DEALS": "عرض العروض",
+      "EXPLORE": "استكشف"
+    },
+    "BRANDS": {
+      "TITLE": "تسوق حسب العلامة",
+      "SUBTITLE": "علامات تعرفها وتثق بها",
+      "LRP": "لاروش بوزيه",
+      "EUCERIN": "إيوسرين",
+      "CERAVE": "سيراف",
+      "ISDIN": "إيسدين",
+      "GARNIER": "غارنييه",
+      "ESSENCE": "إيسنس",
+      "BABARIA": "باباريا",
+      "AVENE": "أفين"
+    },
+    "TRUST": {
+      "REGION": "لماذا تتسوق معنا",
+      "DELIVERY_TITLE": "توصيل سريع",
+      "DELIVERY_DESC": "شحن سريع للطلبات المؤهلة في المنطقة.",
+      "PAYMENT_TITLE": "دفع آمن",
+      "PAYMENT_DESC": "دفع آمن بخيارات موثوقة.",
+      "RETURNS_TITLE": "إرجاع سهل",
+      "RETURNS_DESC": "إرجاع مريح للمنتجات المؤهلة.",
+      "SUPPORT_TITLE": "دعم العملاء",
+      "SUPPORT_DESC": "مساعدة ودودة عندما تحتاجها."
+    },
+    "PRODUCT": {
+      "CURRENCY": "د.أ",
+      "REVIEWS": "تقييم",
+      "VIEW": "عرض المنتج",
+      "BADGE_OFFER": "عرض",
+      "BADGE_NEW": "جديد",
+      "BADGE_BESTSELLER": "الأكثر مبيعاً"
+    }
+  },
+  "PRODUCT_CARD": {
+    "CURRENCY": "د.أ",
+    "REVIEWS": "تقييمات",
+    "RATING": "تقييم المنتج",
+    "ADD_TO_CART": "أضف إلى السلة",
+    "ADD_WISHLIST": "أضف إلى المفضلة",
+    "QUICK_VIEW": "معاينة سريعة",
+    "SOLD_OUT": "نفدت الكمية",
+    "BADGE_NEW": "جديد",
+    "BADGE_BESTSELLER": "الأكثر مبيعاً"
   },
   "CATALOG": {
-    "TITLE": "المتجر",
-    "EMPTY": "لا توجد منتجات.",
-    "VIEW": "عرض",
-    "BACK": "العودة للمتجر",
-    "NOT_FOUND": "المنتج غير موجود.",
-    "SKU": "رمز المنتج",
-    "QUANTITY": "الكمية",
-    "ADD_TO_CART": "أضف إلى السلة"
+    "BREADCRUMB": "مسار التنقل",
+    "BREADCRUMB_SEARCH": "نتائج البحث",
+    "ALL_PRODUCTS": "جميع المنتجات",
+    "PRODUCT_COUNT": "{{count}} منتج",
+    "FILTERS": "التصفية",
+    "SORT_LABEL": "ترتيب حسب",
+    "VIEW_MODE": "طريقة العرض",
+    "VIEW_GRID": "عرض شبكي",
+    "VIEW_LIST": "عرض قائمة",
+    "SORT": {
+      "featured": "مميز",
+      "price-asc": "السعر: من الأقل للأعلى",
+      "price-desc": "السعر: من الأعلى للأقل",
+      "newest": "الأحدث",
+      "rating": "الأعلى تقييماً",
+      "name": "الاسم أ–ي"
+    },
+    "FILTER": {
+      "CATEGORY": "الفئة",
+      "BRAND": "العلامة",
+      "PRICE": "السعر",
+      "MIN": "الحد الأدنى",
+      "MAX": "الحد الأعلى",
+      "RATING": "التقييم",
+      "RATING_ANY": "أي تقييم",
+      "RATING_UP": "{{stars}} نجوم فأكثر",
+      "AVAILABILITY": "التوفر",
+      "IN_STOCK": "متوفر فقط",
+      "OFFERS": "العروض",
+      "ON_SALE": "التخفيضات فقط",
+      "CLEAR": "مسح الكل",
+      "APPLY": "تطبيق التصفية",
+      "CLOSE": "إغلاق التصفية"
+    },
+    "EMPTY": {
+      "TITLE": "لا توجد منتجات",
+      "TEXT": "جرّب تعديل التصفية أو كلمات البحث.",
+      "CLEAR": "مسح التصفية"
+    }
   },
   "CART": {
     "TITLE": "سلة التسوق",
-    "EMPTY": "سلتك فارغة.",
-    "CONTINUE_SHOPPING": "متابعة التسوق",
-    "PRODUCT": "المنتج",
-    "QTY": "الكمية",
-    "PRICE": "السعر",
+    "ITEMS_COUNT": "{{count}} منتج",
+    "QUANTITY": "الكمية",
+    "QTY_INCREASE": "زيادة الكمية",
+    "QTY_DECREASE": "تقليل الكمية",
     "REMOVE": "إزالة",
-    "TOTAL": "الإجمالي",
-    "CHECKOUT": "إتمام الشراء",
-    "ADDED": "تمت الإضافة إلى السلة"
+    "SUBTOTAL": "المجموع",
+    "ITEM_UNAVAILABLE": "هذا المنتج لم يعد متوفراً",
+    "COUPON": {
+      "REGION": "رمز الخصم",
+      "TITLE": "لديك رمز خصم؟",
+      "PLACEHOLDER": "أدخل رمز الخصم",
+      "APPLY": "تطبيق",
+      "REMOVE": "إزالة",
+      "INVALID": "رمز الخصم غير صالح.",
+      "WELCOME_APPLIED": "تم تطبيق WELCOME — خصم 10% على الطلب.",
+      "SAVE15_APPLIED": "تم تطبيق SAVE15 — خصم 15% على الطلب."
+    },
+    "SUMMARY_REGION": "ملخص الطلب",
+    "SUMMARY_TITLE": "ملخص الطلب",
+    "SUMMARY_SUBTOTAL": "المجموع الفرعي",
+    "SUMMARY_DISCOUNT": "الخصم",
+    "SUMMARY_DELIVERY": "التوصيل",
+    "SUMMARY_FREE_DELIVERY": "مجاني",
+    "SUMMARY_TOTAL": "الإجمالي",
+    "CHECKOUT": "إتمام الطلب",
+    "CONTINUE_SHOPPING": "متابعة التسوق",
+    "EMPTY": {
+      "TITLE": "سلتك فارغة",
+      "TEXT": "يبدو أنك لم تضف أي منتجات بعد. تصفح المتجر واكتشف ما يناسبك.",
+      "CTA": "متابعة التسوق"
+    }
   },
-  "CHECKOUT": {
-    "TITLE": "إتمام الشراء",
-    "ADDRESS": "عنوان الشحن",
-    "NOTES": "ملاحظات الطلب (اختياري)",
-    "PLACE_ORDER": "تأكيد الطلب",
-    "SUCCESS": "تم تأكيد الطلب بنجاح.",
-    "FAILED": "تعذر تأكيد الطلب. حاول مرة أخرى."
-  },
-  "ACCOUNT": {
-    "ORDERS_TITLE": "طلباتي",
-    "NO_ORDERS": "لا توجد طلبات بعد.",
-    "ORDER_NUMBER": "رقم الطلب",
-    "ORDER_DATE": "التاريخ",
-    "STATUS": "الحالة",
-    "TOTAL": "الإجمالي"
+  "PRODUCT_DETAIL": {
+    "LOADING": "جاري تحميل المنتج",
+    "NOT_FOUND_TITLE": "المنتج غير موجود",
+    "NOT_FOUND_TEXT": "ربما تمت إزالة هذا المنتج أو أن الرابط غير صحيح.",
+    "BACK_TO_SHOP": "العودة للمتجر",
+    "INFO_REGION": "معلومات المنتج",
+    "RELATED_TITLE": "منتجات ذات صلة",
+    "IN_STOCK": "متوفر",
+    "LOW_STOCK": "متبقي {{count}} فقط",
+    "SOLD_OUT": "نفدت الكمية",
+    "SKU": "رمز المنتج",
+    "QUANTITY": "الكمية",
+    "QTY_INCREASE": "زيادة الكمية",
+    "QTY_DECREASE": "تقليل الكمية",
+    "ADD_TO_CART": "أضف إلى السلة",
+    "BUY_NOW": "اشتر الآن",
+    "SHIPPING_TITLE": "الشحن",
+    "RETURNS_TITLE": "الإرجاع",
+    "TAB": {
+      "description": "الوصف",
+      "specifications": "المواصفات",
+      "shipping": "الشحن والإرجاع"
+    }
   }
 }

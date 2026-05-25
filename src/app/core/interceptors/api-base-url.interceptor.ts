@@ -12,7 +12,7 @@ export const apiBaseUrlInterceptor: HttpInterceptorFn = (req, next) => {
   if (/^https?:\/\//i.test(url)) {
     return next(req);
   }
-  if (url.startsWith('/assets/') || url.startsWith('assets/')) {
+  if (url.startsWith('/assets/') || url.startsWith('assets/') || url.startsWith('/config/')) {
     return next(req);
   }
   const env = inject(APP_ENVIRONMENT);

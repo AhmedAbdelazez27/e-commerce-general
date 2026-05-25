@@ -1,0 +1,15 @@
+<section class="home-trust" [attr.aria-label]="'HOME.TRUST.REGION' | translate">
+  <ul class="home-trust__list">
+    @for (badge of badges(); track badge.id) {
+      <li class="home-trust__item">
+        <span class="home-trust__icon" aria-hidden="true">
+          <i [class]="badge.iconClass"></i>
+        </span>
+        <div>
+          <h3 class="home-trust__title">{{ badge.labelKey | translate }}</h3>
+          <p class="home-trust__desc">{{ badge.descriptionKey | translate }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</section>

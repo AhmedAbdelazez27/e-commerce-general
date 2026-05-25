@@ -1,0 +1,18 @@
+@if (products().length > 0) {
+  <section class="product-detail-related" aria-labelledby="product-related-title">
+    <h2 id="product-related-title" class="product-detail-related__title">
+      {{ 'PRODUCT_DETAIL.RELATED_TITLE' | translate }}
+    </h2>
+    <div class="product-detail-related__grid">
+      @for (product of products(); track product.id) {
+        <app-product-card
+          [product]="product"
+          (productClick)="productClick.emit($event)"
+          (addToCart)="addToCart.emit($event)"
+          (addToWishlist)="addToWishlist.emit($event)"
+          (quickView)="quickView.emit($event)"
+        />
+      }
+    </div>
+  </section>
+}

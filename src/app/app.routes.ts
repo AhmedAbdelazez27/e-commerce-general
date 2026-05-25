@@ -13,6 +13,10 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', loadChildren: () => import('./features/home/home.routes').then((m) => m.homeRoutes) },
       {
+        path: 'brands',
+        loadChildren: () => import('./features/brands/brands.routes').then((m) => m.brandsRoutes),
+      },
+      {
         path: 'shop',
         loadChildren: () => import('./features/catalog/catalog.routes').then((m) => m.catalogRoutes),
       },

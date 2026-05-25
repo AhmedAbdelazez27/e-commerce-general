@@ -1,0 +1,55 @@
+<nav class="store-nav store-nav--desktop" [attr.aria-label]="'LAYOUT.NAV.REGION' | translate">
+  <div class="ds-container store-nav__inner">
+    <ul class="store-nav__list">
+      @for (category of categories; track category.id) {
+        <li
+          class="store-nav__item"
+          [class.store-nav__item--mega]="hasMegaMenu(category)"
+          [class.is-open]="isMegaOpen(category.id)"
+          (mouseenter)="hasMegaMenu(category) ? openMega(category.id) : null"
+          (mouseleave)="hasMegaMenu(category) ? closeMega() : null"
+        >
+          <a
+            class="store-nav__trigger"
+            [routerLink]="category.route"
+            [queryParams]="category.queryParams"
+            [attr.aria-expanded]="hasMegaMenu(category) ? isMegaOpen(category.id) : null"
+            [attr.aria-haspopup]="hasMegaMenu(category) ? 'true' : null"
+          >
+            {{ category.labelKey | translate }}
+            @if (hasMegaMenu(category)) {
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            }
+          </a>
+
+          @if (hasMegaMenu(category)) {
+            <div class="store-nav__mega" [id]="'mega-' + category.id">
+              <div class="ds-container">
+                <div class="store-nav__mega-grid">
+                  @for (column of category.megaMenu; track column.id) {
+                    <div>
+                      <h3 class="store-nav__mega-title">{{ column.titleKey | translate }}</h3>
+                      <ul class="store-nav__mega-links">
+                        @for (link of column.links; track link.id) {
+                          <li>
+                            <a
+                              class="store-nav__mega-link"
+                              [routerLink]="link.route"
+                              [queryParams]="link.queryParams"
+                            >
+                              {{ link.labelKey | translate }}
+                            </a>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

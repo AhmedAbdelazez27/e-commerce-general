@@ -1,4 +1,16 @@
 {
+  "PAGE": {
+    "HOME": "Home",
+    "SHOP": "Shop",
+    "PRODUCT_DETAIL": "Product details",
+    "CART": "Cart",
+    "CHECKOUT": "Checkout",
+    "ORDERS": "My orders",
+    "BRANDS": "Brands",
+    "BRAND_DETAIL": "Brand",
+    "LOGIN": "Sign in",
+    "REGISTER": "Register"
+  },
   "COMMON": {
     "LOADING": "Loading…"
   },
@@ -6,79 +18,298 @@
     "SUCCESS": "Success",
     "ERROR": "Error"
   },
-  "HOME": {
-    "TITLE": "Welcome",
-    "SUBTITLE": "Browse products, add to cart, and checkout when you are ready.",
-    "SHOP_CTA": "Shop now"
-  },
-  "AUTH": {
-    "TITLE": "Sign in",
-    "USERNAME": "Email or username",
-    "USERNAME_PH": "Enter email or username",
-    "PASSWORD": "Password",
-    "PASSWORD_PH": "Enter password",
-    "REMEMBER": "Remember me",
-    "FORGOT": "Forgot password?",
-    "SUBMIT": "Sign in",
-    "LOGIN_SUCCESS": "Signed in successfully.",
-    "LOGIN_FAILED": "Sign in failed. Check your credentials.",
-    "REGISTER": "Create account",
-    "REGISTER_TITLE": "Create account",
-    "REGISTER_PENDING": "Registration will connect to the customer API when it is ready.",
-    "BACK_LOGIN": "Back to sign in"
-  },
   "LAYOUT": {
-    "BRAND": "Store",
-    "SUPPORT": "Customer support",
-    "LOGOUT": "Sign out",
-    "LANG_SWITCH": "Change language",
-    "LANG_EN": "English",
-    "LANG_AR": "Arabic",
-    "NAV_HOME": "Home",
-    "NAV_SHOP": "Shop",
-    "NAV_CART": "Cart",
-    "NAV_ACCOUNT": "My orders",
-    "NAV_LOGIN": "Sign in",
-    "NAV_MENU_TOGGLE": "Open menu",
-    "ACCOUNT_MENU": "Account menu",
-    "FOOTER_COPYRIGHT": "All rights reserved © E-Commerce Store"
+    "LOGO_ALT": "Store logo",
+    "ANNOUNCEMENT": {
+      "REGION": "Store promotions",
+      "DOTS": "Promotion slides",
+      "SLIDE": "Slide {{index}}",
+      "DELIVERY_LABEL": "Private offer",
+      "DELIVERY_MSG": "Free delivery on orders over JD {{amount}}.",
+      "CODE_LABEL": "Beauty code",
+      "CODE_MSG": "Use code {{code}} for {{percent}}% off.",
+      "WELCOME_LABEL": "Welcome",
+      "WELCOME_CODE": "Use code {{code}} to get {{percent}}% off your first order.",
+      "SHOP_NOW": "Shop now",
+      "APPLY_CODE": "Apply code",
+      "FREE_DELIVERY_AMMAN": "Free delivery for orders over {{amount}} inside Amman",
+      "FREE_DELIVERY_OUTSIDE": "Free delivery for orders over {{amount}} outside Amman"
+    },
+    "HEADER": {
+      "OPEN_MENU": "Open menu",
+      "SEARCH": "Search",
+      "SEARCH_PLACEHOLDER": "Search products, brands, categories…",
+      "LOGIN": "Sign in",
+      "ACCOUNT": "My account",
+      "WISHLIST": "Wishlist",
+      "CART": "Cart",
+      "LANGUAGE": "Language"
+    },
+    "NAV": {
+      "REGION": "Shop by category",
+      "VIEW_ALL": "View all",
+      "BAZAR": "Bazar",
+      "BRANDS": "Brands",
+      "MAKE_UP": "Make Up",
+      "SKIN_CARE": "Skin Care",
+      "PERFUME": "Perfume",
+      "SUN_CARE": "Sun care",
+      "BODY_CARE": "Body Care",
+      "HAIR_CARE": "Hair Care",
+      "HYGIENE": "Hygiene",
+      "MOTHER_BABY": "Mother & Baby",
+      "MEGA": {
+        "FACE": "Face",
+        "EYES": "Eyes",
+        "LIPS": "Lips",
+        "FOUNDATION": "Foundation",
+        "CONCEALER": "Concealer",
+        "BLUSH": "Blush",
+        "MASCARA": "Mascara",
+        "EYELINER": "Eyeliner",
+        "EYESHADOW": "Eyeshadow",
+        "LIPSTICK": "Lipstick",
+        "LIP_LINER": "Lip liner",
+        "LIP_GLOSS": "Lip gloss",
+        "CLEANSERS": "Cleansers",
+        "MOISTURIZERS": "Moisturizers",
+        "SUN_PROTECTION": "Sun protection",
+        "GEL_CLEANSER": "Gel cleanser",
+        "MICELLAR": "Micellar water",
+        "DAY_CREAM": "Day cream",
+        "NIGHT_CREAM": "Night cream",
+        "SPF_FACE": "Face SPF",
+        "SPF_BODY": "Body SPF"
+      }
+    },
+    "MOBILE_MENU": {
+      "TITLE": "Menu",
+      "CLOSE": "Close menu"
+    },
+    "FOOTER": {
+      "COMPANY": "Company",
+      "CUSTOMER_SERVICE": "Customer service",
+      "ABOUT": "About us",
+      "BRANDS": "Brands",
+      "SHOP": "Shop",
+      "ORDERS": "My orders",
+      "CONTACT": "Contact us",
+      "FAQ": "FAQ",
+      "SOCIAL_INSTAGRAM": "Instagram",
+      "SOCIAL_FACEBOOK": "Facebook",
+      "SOCIAL_TIKTOK": "TikTok",
+      "TRUST_COD": "Cash on delivery",
+      "TRUST_SHIPPING": "Free shipping",
+      "TRUST_QUALITY": "Best product quality",
+      "TRUST_SUPPORT": "Support 24/7",
+      "NEWSLETTER_TITLE": "Subscribe to our newsletter",
+      "NEWSLETTER_SUBTITLE": "Get updates about discounts and new arrivals.",
+      "NEWSLETTER_PLACEHOLDER": "Your email address",
+      "NEWSLETTER_BUTTON": "Sign up",
+      "COPYRIGHT": "© {{year}} E-Commerce Store. All rights reserved."
+    }
+  },
+  "HOME": {
+    "VIEW_ALL": "View all",
+    "HERO": {
+      "IMAGE_ALT": "Luxury beauty products lifestyle",
+      "EYEBROW": "Excellence defined",
+      "HEADLINE": "Elevate your beauty experience",
+      "SUBTITLE": "A destination for luxurious skincare, cosmetics, and beauty innovations tailored for confidence and self-expression.",
+      "CTA": "Shop the collection",
+      "SECONDARY_CTA": "Discover more",
+      "PROMO_EYEBROW": "Limited offer",
+      "PROMO_TITLE": "10% off your first order",
+      "PROMO_SUBTITLE": "Use code WELCOME at checkout.",
+      "PROMO_CTA": "Shop offers"
+    },
+    "CURATED": {
+      "EYEBROW": "The collections",
+      "TITLE": "The curated edit",
+      "COSMETICS_EYEBROW": "Lecosma",
+      "COSMETICS_TITLE": "Cosmetics",
+      "COSMETICS_ALT": "Premium cosmetics collection",
+      "DERMA_EYEBROW": "Clinical",
+      "DERMA_TITLE": "Derma",
+      "DERMA_ALT": "Clinical derma skincare",
+      "PERFUME_EYEBROW": "Artistry",
+      "PERFUME_TITLE": "Perfume",
+      "PERFUME_ALT": "Luxury fragrance collection",
+      "CTA": "Explore palette",
+      "CTA_DERMA": "Scientific care",
+      "CTA_PERFUME": "The scent gallery"
+    },
+    "CATEGORIES": {
+      "TITLE": "Shop by category",
+      "SUBTITLE": "Browse our most popular departments",
+      "PRODUCTS": "products"
+    },
+    "MOST_SEARCHED": {
+      "TITLE": "Most searched",
+      "SUBTITLE": "Trending picks customers love right now"
+    },
+    "BEST_SELLERS": {
+      "TITLE": "Best sellers",
+      "SUBTITLE": "Top-rated products flying off the shelves"
+    },
+    "NEW_ARRIVALS": {
+      "TITLE": "New arrivals",
+      "SUBTITLE": "Fresh additions to explore today"
+    },
+    "OFFERS": {
+      "TITLE": "Special offers",
+      "SUBTITLE": "Save more on bundles and seasonal deals",
+      "WELCOME_TITLE": "Welcome discount",
+      "WELCOME_SUBTITLE": "First-time shoppers save with code WELCOME.",
+      "WELCOME_DISCOUNT": "{{percent}}% off",
+      "BAZAR_TITLE": "Bazar deals",
+      "BAZAR_SUBTITLE": "Limited-time bundles and value sets.",
+      "DERMA_TITLE": "Derma essentials",
+      "DERMA_SUBTITLE": "Clinical skincare from leading derma brands.",
+      "SHOP_NOW": "Shop now",
+      "VIEW_DEALS": "View deals",
+      "EXPLORE": "Explore"
+    },
+    "BRANDS": {
+      "TITLE": "Shop by brand",
+      "SUBTITLE": "Explore houses you know and trust",
+      "LRP": "La Roche-Posay",
+      "EUCERIN": "Eucerin",
+      "CERAVE": "CeraVe",
+      "ISDIN": "Isdin",
+      "GARNIER": "Garnier",
+      "ESSENCE": "Essence",
+      "BABARIA": "Babaria",
+      "AVENE": "Avene"
+    },
+    "TRUST": {
+      "REGION": "Why shop with us",
+      "DELIVERY_TITLE": "Fast delivery",
+      "DELIVERY_DESC": "Quick shipping on eligible orders across the region.",
+      "PAYMENT_TITLE": "Secure payment",
+      "PAYMENT_DESC": "Safe checkout with trusted payment options.",
+      "RETURNS_TITLE": "Easy returns",
+      "RETURNS_DESC": "Hassle-free returns on qualifying products.",
+      "SUPPORT_TITLE": "Customer support",
+      "SUPPORT_DESC": "Friendly help when you need it, every day."
+    },
+    "PRODUCT": {
+      "CURRENCY": "JD",
+      "REVIEWS": "reviews",
+      "VIEW": "View product",
+      "BADGE_OFFER": "Offer",
+      "BADGE_NEW": "New",
+      "BADGE_BESTSELLER": "Best seller"
+    }
+  },
+  "PRODUCT_CARD": {
+    "CURRENCY": "JD",
+    "REVIEWS": "reviews",
+    "RATING": "Product rating",
+    "ADD_TO_CART": "Add to cart",
+    "ADD_WISHLIST": "Add to wishlist",
+    "QUICK_VIEW": "Quick view",
+    "SOLD_OUT": "Sold out",
+    "BADGE_NEW": "New",
+    "BADGE_BESTSELLER": "Best seller"
   },
   "CATALOG": {
-    "TITLE": "Shop",
-    "EMPTY": "No products found.",
-    "VIEW": "View",
-    "BACK": "Back to shop",
-    "NOT_FOUND": "Product not found.",
-    "SKU": "SKU",
-    "QUANTITY": "Quantity",
-    "ADD_TO_CART": "Add to cart"
+    "BREADCRUMB": "Breadcrumb",
+    "BREADCRUMB_SEARCH": "Search results",
+    "ALL_PRODUCTS": "All products",
+    "PRODUCT_COUNT": "{{count}} products",
+    "FILTERS": "Filters",
+    "SORT_LABEL": "Sort by",
+    "VIEW_MODE": "View mode",
+    "VIEW_GRID": "Grid view",
+    "VIEW_LIST": "List view",
+    "SORT": {
+      "featured": "Featured",
+      "price-asc": "Price: low to high",
+      "price-desc": "Price: high to low",
+      "newest": "Newest",
+      "rating": "Top rated",
+      "name": "Name A–Z"
+    },
+    "FILTER": {
+      "CATEGORY": "Category",
+      "BRAND": "Brand",
+      "PRICE": "Price",
+      "MIN": "Min",
+      "MAX": "Max",
+      "RATING": "Rating",
+      "RATING_ANY": "Any rating",
+      "RATING_UP": "{{stars}} stars & up",
+      "AVAILABILITY": "Availability",
+      "IN_STOCK": "In stock only",
+      "OFFERS": "Offers",
+      "ON_SALE": "On sale only",
+      "CLEAR": "Clear all",
+      "APPLY": "Apply filters",
+      "CLOSE": "Close filters"
+    },
+    "EMPTY": {
+      "TITLE": "No products found",
+      "TEXT": "Try adjusting your filters or search terms.",
+      "CLEAR": "Clear filters"
+    }
   },
   "CART": {
     "TITLE": "Shopping cart",
-    "EMPTY": "Your cart is empty.",
-    "CONTINUE_SHOPPING": "Continue shopping",
-    "PRODUCT": "Product",
-    "QTY": "Qty",
-    "PRICE": "Price",
+    "ITEMS_COUNT": "{{count}} items",
+    "QUANTITY": "Quantity",
+    "QTY_INCREASE": "Increase quantity",
+    "QTY_DECREASE": "Decrease quantity",
     "REMOVE": "Remove",
-    "TOTAL": "Total",
-    "CHECKOUT": "Checkout",
-    "ADDED": "Added to cart"
+    "SUBTOTAL": "Subtotal",
+    "ITEM_UNAVAILABLE": "This item is no longer available",
+    "COUPON": {
+      "REGION": "Coupon code",
+      "TITLE": "Have a coupon?",
+      "PLACEHOLDER": "Enter coupon code",
+      "APPLY": "Apply",
+      "REMOVE": "Remove",
+      "INVALID": "This coupon code is not valid.",
+      "WELCOME_APPLIED": "WELCOME applied — 10% off your order.",
+      "SAVE15_APPLIED": "SAVE15 applied — 15% off your order."
+    },
+    "SUMMARY_REGION": "Order summary",
+    "SUMMARY_TITLE": "Order summary",
+    "SUMMARY_SUBTOTAL": "Subtotal",
+    "SUMMARY_DISCOUNT": "Discount",
+    "SUMMARY_DELIVERY": "Delivery",
+    "SUMMARY_FREE_DELIVERY": "Free",
+    "SUMMARY_TOTAL": "Total",
+    "CHECKOUT": "Proceed to checkout",
+    "CONTINUE_SHOPPING": "Continue shopping",
+    "EMPTY": {
+      "TITLE": "Your cart is empty",
+      "TEXT": "Looks like you have not added anything yet. Explore the shop and find something you love.",
+      "CTA": "Continue shopping"
+    }
   },
-  "CHECKOUT": {
-    "TITLE": "Checkout",
-    "ADDRESS": "Shipping address",
-    "NOTES": "Order notes (optional)",
-    "PLACE_ORDER": "Place order",
-    "SUCCESS": "Order placed successfully.",
-    "FAILED": "Could not place order. Try again."
-  },
-  "ACCOUNT": {
-    "ORDERS_TITLE": "My orders",
-    "NO_ORDERS": "You have no orders yet.",
-    "ORDER_NUMBER": "Order #",
-    "ORDER_DATE": "Date",
-    "STATUS": "Status",
-    "TOTAL": "Total"
+  "PRODUCT_DETAIL": {
+    "LOADING": "Loading product",
+    "NOT_FOUND_TITLE": "Product not found",
+    "NOT_FOUND_TEXT": "This product may have been removed or the link is incorrect.",
+    "BACK_TO_SHOP": "Back to shop",
+    "INFO_REGION": "Product information",
+    "RELATED_TITLE": "Related products",
+    "IN_STOCK": "In stock",
+    "LOW_STOCK": "Only {{count}} left",
+    "SOLD_OUT": "Sold out",
+    "SKU": "SKU",
+    "QUANTITY": "Quantity",
+    "QTY_INCREASE": "Increase quantity",
+    "QTY_DECREASE": "Decrease quantity",
+    "ADD_TO_CART": "Add to cart",
+    "BUY_NOW": "Buy now",
+    "SHIPPING_TITLE": "Shipping",
+    "RETURNS_TITLE": "Returns",
+    "TAB": {
+      "description": "Description",
+      "specifications": "Specifications",
+      "shipping": "Shipping & returns"
+    }
   }
 }

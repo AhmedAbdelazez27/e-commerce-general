@@ -1,0 +1,123 @@
+<article
+  class="product-card"
+  [class.product-card--compact]="compact()"
+  [class.product-card--sold-out]="!isAvailable()"
+>
+  <div class="product-card__media">
+    <button type="button" class="product-card__media-btn" (click)="onProductClick()">
+      @if (product().image) {
+        <img [src]="product().image" [alt]="displayTitle()" loading="lazy" />
+      } @else {
+        <div class="product-card__placeholder" aria-hidden="true">
+          <i class="fa-solid fa-image"></i>
+        </div>
+      }
+    </button>
+
+    <div class="product-card__badges">
+      @if (discountPercent(); as pct) {
+        <span class="product-card__badge product-card__badge--sale">-{{ pct }}%</span>
+      }
+      @if (product().isNew) {
+        <span class="product-card__badge product-card__badge--new">{{ 'PRODUCT_CARD.BADGE_NEW' | translate }}</span>
+      }
+      @if (product().isBestSeller) {
+        <span class="product-card__badge product-card__badge--bestseller">
+          {{ 'PRODUCT_CARD.BADGE_BESTSELLER' | translate }}
+        </span>
+      }
+    </div>
+
+    @if (!isAvailable()) {
+      <div class="product-card__sold-out" aria-hidden="true">
+        <span>{{ 'PRODUCT_CARD.SOLD_OUT' | translate }}</span>
+      </div>
+    }
+
+    <div class="product-card__overlay-actions">
+      <button
+        type="button"
+        class="product-card__icon-btn"
+        [attr.aria-label]="'PRODUCT_CARD.QUICK_VIEW' | translate"
+        (click)="onQuickView($event)"
+      >
+        <i class="fa-regular fa-eye" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="product-card__icon-btn"
+        [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
+        (click)="onAddToWishlist($event)"
+      >
+        <i class="fa-regular fa-heart" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="product-card__body">
+    @if (product().brand) {
+      <p class="product-card__brand">{{ product().brand }}</p>
+    }
+
+    <h3 class="product-card__title">
+      <button type="button" class="product-card__title-btn" (click)="onProductClick()">
+        {{ displayTitle() }}
+      </button>
+    </h3>
+
+    @if (showRating()) {
+      <div class="product-card__rating">
+        <span class="product-card__stars" [attr.aria-label]="'PRODUCT_CARD.RATING' | translate">
+          @for (filled of starSlots(); track $index) {
+            <i class="fa-solid fa-star" [class.is-filled]="filled" aria-hidden="true"></i>
+          }
+        </span>
+        @if (product().rating != null) {
+          <span class="product-card__rating-value">{{ product().rating | number: '1.1-1' }}</span>
+        }
+        @if (product().reviewsCount != null) {
+          <span class="product-card__reviews">
+            ({{ product().reviewsCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
+          </span>
+        }
+      </div>
+    }
+
+    <div class="product-card__prices">
+      <span class="product-card__price" [class.product-card__price--sale]="hasDiscount()">
+        {{ formatPrice(product().price) }} {{ currencyLabel() }}
+      </span>
+      @if (product().oldPrice; as oldPrice) {
+        @if (oldPrice > product().price) {
+          <span class="product-card__compare">
+            {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
+          </span>
+        }
+      }
+    </div>
+
+    <div class="product-card__actions">
+      <button
+        type="button"
+        class="product-card__wishlist-btn"
+        [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
+        (click)="onAddToWishlist($event)"
+      >
+        <i class="fa-regular fa-heart" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="product-card__cart-btn btn btn-primary btn-sm"
+        [disabled]="!isAvailable()"
+        (click)="onAddToCart($event)"
+      >
+        @if (isAvailable()) {
+          <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+          {{ 'PRODUCT_CARD.ADD_TO_CART' | translate }}
+        } @else {
+          {{ 'PRODUCT_CARD.SOLD_OUT' | translate }}
+        }
+      </button>
+    </div>
+  </div>
+</article>

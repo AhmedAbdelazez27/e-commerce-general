@@ -1,0 +1,34 @@
+<div class="product-gallery">
+  <div class="product-gallery__main">
+    @if (activeImage().url) {
+      <img [src]="activeImage().url" [alt]="mainAlt()" />
+    } @else {
+      <div class="product-gallery__placeholder" aria-hidden="true">
+        <i class="fa-solid fa-image"></i>
+      </div>
+    }
+  </div>
+
+  @if (images().length > 1) {
+    <ul class="product-gallery__thumbs" role="list">
+      @for (image of images(); track image.id; let i = $index) {
+        <li role="listitem">
+          <button
+            type="button"
+            class="product-gallery__thumb"
+            [class.is-active]="selectedIndex() === i"
+            (click)="selectImage(i)"
+            [attr.aria-label]="image.altEn"
+            [attr.aria-current]="selectedIndex() === i"
+          >
+            @if (image.url) {
+              <img [src]="image.url" alt="" />
+            } @else {
+              <span class="product-gallery__thumb-placeholder" aria-hidden="true"></span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

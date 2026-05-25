@@ -1,0 +1,105 @@
+// Maps Bootstrap 5 utilities to design-system tokens (keeps existing btn/form overrides).
+
+:root {
+  --bs-body-font-family: var(--ds-font-family);
+  --bs-body-color: var(--ds-color-text);
+  --bs-body-bg: var(--ds-color-background);
+  --bs-border-color: var(--ds-color-border);
+  --bs-link-color: var(--ds-color-text-link);
+  --bs-link-hover-color: var(--ds-color-text-link-hover);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--ds-color-primary);
+  --bs-btn-border-color: var(--ds-color-primary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ds-color-primary) 85%, #000);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--ds-color-primary) 85%, #000);
+  --bs-btn-active-bg: color-mix(in srgb, var(--ds-color-primary) 75%, #000);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--ds-color-primary) 75%, #000);
+  border-radius: var(--ds-radius-md);
+  font-weight: var(--ds-font-weight-medium);
+  transition:
+    background-color var(--ds-transition-fast),
+    border-color var(--ds-transition-fast),
+    color var(--ds-transition-fast);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--ds-color-primary);
+  --bs-btn-border-color: var(--ds-color-primary);
+  --bs-btn-hover-bg: var(--ds-color-primary);
+  --bs-btn-hover-border-color: var(--ds-color-primary);
+  --bs-btn-hover-color: var(--ds-color-text-on-primary);
+  border-radius: var(--ds-radius-md);
+}
+
+.btn-accent,
+.btn-danger.btn-sale {
+  --bs-btn-bg: var(--ds-color-accent);
+  --bs-btn-border-color: var(--ds-color-accent);
+  --bs-btn-color: var(--ds-color-text-on-accent);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ds-color-accent) 88%, #000);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--ds-color-accent) 88%, #000);
+}
+
+.text-primary {
+  color: var(--ds-color-primary) !important;
+}
+
+.text-secondary {
+  color: var(--ds-color-text-secondary) !important;
+}
+
+.text-muted {
+  color: var(--ds-color-text-muted) !important;
+}
+
+.text-accent {
+  color: var(--ds-color-accent) !important;
+}
+
+a {
+  color: var(--ds-color-text-link);
+}
+
+.form-control,
+.form-select {
+  border-color: var(--ds-color-border);
+  border-radius: var(--ds-radius-md);
+  transition:
+    border-color var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ds-color-border-focus);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--ds-color-primary) 18%, transparent);
+}
+
+.badge.bg-primary {
+  background-color: var(--ds-color-primary) !important;
+}
+
+.badge.bg-accent {
+  background-color: var(--ds-color-accent) !important;
+}
+
+.border-primary {
+  border-color: var(--ds-color-primary) !important;
+}
+
+.card {
+  border-color: var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-card);
+  transition: box-shadow var(--ds-transition-base);
+
+  &:hover {
+    box-shadow: var(--ds-shadow-card-hover);
+  }
+}
+
+.container {
+  max-width: var(--ds-container-max);
+}

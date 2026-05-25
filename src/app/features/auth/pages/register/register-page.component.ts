@@ -1,16 +1,25 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { AppLang, LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-register-page',
-  imports: [RouterLink, TranslateModule],
+  imports: [TranslateModule],
   template: `
-    <div class="container py-5 text-center" style="max-width: 28rem">
-      <h1 class="h3 mb-3">{{ 'AUTH.REGISTER_TITLE' | translate }}</h1>
-      <p class="text-muted mb-4">{{ 'AUTH.REGISTER_PENDING' | translate }}</p>
-      <a routerLink="/auth/login" class="btn btn-primary">{{ 'AUTH.BACK_LOGIN' | translate }}</a>
+    <div class="container py-5" style="max-width: 28rem">
+      <div class="d-flex justify-content-end gap-2 mb-3">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('en')">EN</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('ar')">ع</button>
+      </div>
+      <h1 class="h2">{{ 'PAGE.REGISTER' | translate }}</h1>
     </div>
   `,
 })
-export class RegisterPageComponent {}
+export class RegisterPageComponent {
+  private readonly language = inject(LanguageService);
+
+  setLang(lang: AppLang): void {
+    void this.language.useLanguage(lang);
+  }
+}

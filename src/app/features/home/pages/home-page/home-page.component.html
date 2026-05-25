@@ -1,5 +1,26 @@
-<div>
-  <h1 class="h2 mb-3">{{ 'HOME.TITLE' | translate }}</h1>
-  <p class="text-muted mb-4">{{ 'HOME.SUBTITLE' | translate }}</p>
-  <a routerLink="/shop" class="btn btn-primary">{{ 'HOME.SHOP_CTA' | translate }}</a>
+<div class="home-page">
+  <app-home-hero [config]="config.hero" />
+
+  @if (config.curatedCollections; as curated) {
+    <app-home-curated-collections
+      [sectionEyebrowKey]="curated.sectionEyebrowKey"
+      [sectionTitleKey]="curated.sectionTitleKey"
+      [items]="curated.items"
+    />
+  }
+
+  <app-home-category-shortcuts [categories]="config.categoryShortcuts" />
+
+  @for (section of config.productSections; track section.id) {
+    <app-home-product-section
+      [section]="section"
+      [products]="productsForSection(section.id)"
+    />
+  }
+
+  <app-home-offers [offers]="config.offers" />
+
+  <app-home-brands [brands]="config.brands" />
+
+  <app-home-trust-badges [badges]="config.trustBadges" />
 </div>

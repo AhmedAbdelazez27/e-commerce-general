@@ -1,0 +1,36 @@
+<section class="cart-coupon" [attr.aria-label]="'CART.COUPON.REGION' | translate">
+  <h2 class="cart-coupon__title">{{ 'CART.COUPON.TITLE' | translate }}</h2>
+  <div class="cart-coupon__form">
+    <input
+      type="text"
+      class="form-control"
+      [ngModel]="couponInput()"
+      (ngModelChange)="couponInputChange.emit($event)"
+      [placeholder]="'CART.COUPON.PLACEHOLDER' | translate"
+      [disabled]="couponState().status === 'applied'"
+      autocomplete="off"
+    />
+    @if (couponState().status === 'applied') {
+      <button type="button" class="btn btn-outline-secondary" (click)="remove.emit()">
+        {{ 'CART.COUPON.REMOVE' | translate }}
+      </button>
+    } @else {
+      <button type="button" class="btn btn-primary" (click)="apply.emit()">
+        {{ 'CART.COUPON.APPLY' | translate }}
+      </button>
+    }
+  </div>
+
+  @if (couponState().status === 'applied' && couponState().messageKey) {
+    <p class="cart-coupon__msg cart-coupon__msg--success">
+      <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+      {{ couponState().messageKey! | translate }}
+    </p>
+  }
+  @if (couponState().status === 'invalid') {
+    <p class="cart-coupon__msg cart-coupon__msg--error">
+      <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+      {{ couponState().messageKey! | translate }}
+    </p>
+  }
+</section>

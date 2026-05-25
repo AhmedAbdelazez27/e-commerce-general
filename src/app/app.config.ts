@@ -16,6 +16,10 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LanguageService } from './core/services/language.service';
+import {
+  initStorefrontConfigFactory,
+  StorefrontConfigService,
+} from './core/storefront-config/storefront-config.service';
 import { APP_ENVIRONMENT } from './core/tokens/app-environment.token';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
@@ -41,6 +45,12 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideToastr({ timeOut: 4000, positionClass: 'toast-top-end', preventDuplicates: true }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initStorefrontConfigFactory,
+      deps: [StorefrontConfigService],
+      multi: true,
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: initLangFactory,

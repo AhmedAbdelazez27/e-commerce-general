@@ -1,2 +1,9 @@
+@use './design-system';
+@use './responsive-rtl';
+@use './layout/store-layout';
+@use './home/home-page';
+@use './catalog/catalog-listing';
+@use './catalog/product-detail';
+@use './cart/cart-page';
 @use './en.style' as en;
 @use './ar.style' as ar;

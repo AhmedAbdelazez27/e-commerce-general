@@ -1,0 +1,33 @@
+<section class="home-section" aria-labelledby="home-offers-title">
+  <app-section-header
+    titleKey="HOME.OFFERS.TITLE"
+    subtitleKey="HOME.OFFERS.SUBTITLE"
+    viewAllRoute="/shop"
+    [viewAllQuery]="{ sort: 'offers' }"
+  />
+
+  <div class="home-offers">
+    @for (offer of offers(); track offer.id) {
+      <article class="home-offers__card home-offers__card--{{ offer.theme }}">
+        @if (offer.discountPercent) {
+          <span class="home-offers__discount">
+            @if (offer.discountLabelKey) {
+              {{ offer.discountLabelKey | translate: { percent: offer.discountPercent } }}
+            } @else {
+              -{{ offer.discountPercent }}%
+            }
+          </span>
+        }
+        <h3 class="home-offers__title">{{ offer.titleKey | translate }}</h3>
+        <p class="home-offers__text">{{ offer.subtitleKey | translate }}</p>
+        <a
+          class="home-offers__cta"
+          [routerLink]="offer.route"
+          [queryParams]="offer.queryParams"
+        >
+          {{ offer.ctaLabelKey | translate }}
+        </a>
+      </article>
+    }
+  </div>
+</section>

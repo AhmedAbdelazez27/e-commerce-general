@@ -1,0 +1,49 @@
+<div class="catalog-toolbar">
+  <button type="button" class="catalog-toolbar__filter-btn" (click)="openFilters.emit()">
+    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+    {{ 'CATALOG.FILTERS' | translate }}
+  </button>
+
+  <p class="catalog-toolbar__count catalog-toolbar__count--mobile">
+    {{ 'CATALOG.PRODUCT_COUNT' | translate: { count: productCount() } }}
+  </p>
+
+  <div class="catalog-toolbar__controls">
+    <label class="catalog-toolbar__sort">
+      <span class="ds-visually-hidden">{{ 'CATALOG.SORT_LABEL' | translate }}</span>
+      <select
+        class="form-select form-select-sm"
+        [value]="sort()"
+        (change)="onSortChange($event)"
+        [attr.aria-label]="'CATALOG.SORT_LABEL' | translate"
+      >
+        @for (option of sortOptions; track option) {
+          <option [value]="option">{{ 'CATALOG.SORT.' + option | translate }}</option>
+        }
+      </select>
+    </label>
+
+    <div class="catalog-toolbar__view btn-group btn-group-sm" role="group" [attr.aria-label]="'CATALOG.VIEW_MODE' | translate">
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="viewMode() === 'grid'"
+        [class.btn-outline-secondary]="viewMode() !== 'grid'"
+        (click)="setViewMode('grid')"
+      >
+        <i class="fa-solid fa-grip" aria-hidden="true"></i>
+        <span class="ds-visually-hidden">{{ 'CATALOG.VIEW_GRID' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="viewMode() === 'list'"
+        [class.btn-outline-secondary]="viewMode() !== 'list'"
+        (click)="setViewMode('list')"
+      >
+        <i class="fa-solid fa-list" aria-hidden="true"></i>
+        <span class="ds-visually-hidden">{{ 'CATALOG.VIEW_LIST' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</div>

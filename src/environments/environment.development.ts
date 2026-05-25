@@ -6,5 +6,5 @@ export const environment: AppEnvironment = {
   name: 'develop',
   apiBaseUrl: 'http://localhost:58104',
   appName: 'E-Commerce Store',
-  defaultLang: 'en',
+  defaultLang: 'ar',
 };

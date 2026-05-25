@@ -1,42 +1,58 @@
-<div>
-  <h1 class="h2 mb-4">{{ 'CART.TITLE' | translate }}</h1>
+<div class="cart-page">
+  <header class="cart-page__header">
+    <h1 class="cart-page__title">{{ 'CART.TITLE' | translate }}</h1>
+    @if (!facade.isEmpty()) {
+      <p class="cart-page__count">
+        {{ 'CART.ITEMS_COUNT' | translate: { count: facade.orderSummary().itemCount } }}
+      </p>
+    }
+  </header>
 
-  @if (loading()) {
-    <p>{{ 'COMMON.LOADING' | translate }}</p>
-  } @else if (!cart()?.Items?.length) {
-    <p class="text-muted mb-3">{{ 'CART.EMPTY' | translate }}</p>
-    <a routerLink="/shop" class="btn btn-primary">{{ 'CART.CONTINUE_SHOPPING' | translate }}</a>
+  @if (facade.isLoading()) {
+    <p class="cart-page__loading">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (facade.isEmpty()) {
+    <app-cart-empty-state />
   } @else {
-    <div class="table-responsive mb-4">
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th>{{ 'CART.PRODUCT' | translate }}</th>
-            <th>{{ 'CART.QTY' | translate }}</th>
-            <th>{{ 'CART.PRICE' | translate }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of cart()!.Items; track item.ProductId) {
-            <tr>
-              <td>{{ item.ProductName ?? item.ProductId }}</td>
-              <td>{{ item.Quantity }}</td>
-              <td>{{ item.UnitPrice | number: '1.2-2' }}</td>
-              <td>
-                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeItem(item.ProductId)">
-                  {{ 'CART.REMOVE' | translate }}
-                </button>
-              </td>
-            </tr>
+    <div class="cart-page__layout">
+      <div class="cart-page__items">
+        <ul class="cart-page__list">
+          @for (item of facade.lineItems(); track item.productId) {
+            <li>
+              <app-cart-item-row
+                [item]="item"
+                [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
+                (quantityChange)="onQuantityChange($event)"
+                (remove)="onRemove($event)"
+              />
+            </li>
           }
-        </tbody>
-      </table>
+        </ul>
+
+        <app-cart-coupon
+          [couponInput]="facade.couponInput()"
+          [couponState]="facade.couponState()"
+          (couponInputChange)="onCouponInput($event)"
+          (apply)="facade.applyCoupon()"
+          (remove)="facade.removeCoupon()"
+        />
+      </div>
+
+      <div class="cart-page__aside">
+        <app-cart-order-summary
+          [summary]="facade.orderSummary()"
+          [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
+          [checkoutDisabled]="facade.orderSummary().itemCount === 0"
+          (checkout)="checkout()"
+        />
+      </div>
     </div>
-    <p class="fw-semibold mb-3">
-      {{ 'CART.TOTAL' | translate }}: {{ (cart()!.Total ?? cart()!.SubTotal) | number: '1.2-2' }}
-    </p>
-    <a routerLink="/checkout" class="btn btn-primary me-2">{{ 'CART.CHECKOUT' | translate }}</a>
-    <a routerLink="/shop" class="btn btn-outline-secondary">{{ 'CART.CONTINUE_SHOPPING' | translate }}</a>
+
+    <div class="cart-page__mobile-checkout">
+      <app-cart-order-summary
+        [summary]="facade.orderSummary()"
+        [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
+        (checkout)="checkout()"
+      />
+    </div>
   }
 </div>

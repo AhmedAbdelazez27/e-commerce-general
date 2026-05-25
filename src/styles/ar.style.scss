@@ -1,9 +1,7 @@
-// Arabic / RTL theme — extend when Arabic-specific layout is ready.
-// `LanguageService` sets `dir`, `lang`, and `theme-ar` on <html>.
-// Assets: public/assets/ → /assets/ (see angular.json)
+// Arabic / RTL theme — `LanguageService` sets `dir`, `lang`, and `theme-ar` on <html>.
 
 html.theme-ar body {
-  font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+  font-family: var(--ds-font-family, 'Segoe UI', Tahoma, system-ui, sans-serif);
 }
 
 html[dir='rtl'] {
@@ -20,5 +18,26 @@ html[dir='rtl'] {
   .table th,
   .table td {
     text-align: start;
+  }
+
+  .form-check {
+    padding-inline-start: 1.5em;
+    padding-inline-end: 0;
+  }
+
+  .form-check .form-check-input {
+    float: inline-start;
+    margin-inline-start: -1.5em;
+    margin-inline-end: 0;
+  }
+
+  .btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  .btn-group > .btn:nth-child(n + 2) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
   }
 }

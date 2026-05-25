@@ -1,0 +1,75 @@
+<section class="product-detail-info" [attr.aria-label]="'PRODUCT_DETAIL.INFO_REGION' | translate">
+  <div class="product-detail-info__tabs" role="tablist">
+    @for (tab of tabs; track tab) {
+      <button
+        type="button"
+        class="product-detail-info__tab"
+        role="tab"
+        [class.is-active]="isActive(tab)"
+        [attr.aria-selected]="isActive(tab)"
+        (click)="setTab(tab)"
+      >
+        {{ 'PRODUCT_DETAIL.TAB.' + tab | translate }}
+      </button>
+    }
+  </div>
+
+  <div class="product-detail-info__panels">
+    @if (isActive('description')) {
+      <div class="product-detail-info__panel" role="tabpanel">
+        <p class="product-detail-info__text">{{ description() }}</p>
+      </div>
+    }
+
+    @if (isActive('specifications')) {
+      <div class="product-detail-info__panel" role="tabpanel">
+        <table class="product-detail-info__table">
+          <tbody>
+            @for (spec of product().specifications; track spec.labelEn) {
+              <tr>
+                <th scope="row">{{ specLabel(spec) }}</th>
+                <td>{{ specValue(spec) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (isActive('shipping')) {
+      <div class="product-detail-info__panel" role="tabpanel">
+        <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.SHIPPING_TITLE' | translate }}</h3>
+        <p class="product-detail-info__text">{{ shippingText() }}</p>
+        <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.RETURNS_TITLE' | translate }}</h3>
+        <p class="product-detail-info__text">{{ returnsText() }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="product-detail-info__accordion">
+    <details class="product-detail-info__details" open>
+      <summary>{{ 'PRODUCT_DETAIL.TAB.description' | translate }}</summary>
+      <p class="product-detail-info__text">{{ description() }}</p>
+    </details>
+    <details class="product-detail-info__details">
+      <summary>{{ 'PRODUCT_DETAIL.TAB.specifications' | translate }}</summary>
+      <table class="product-detail-info__table">
+        <tbody>
+          @for (spec of product().specifications; track spec.labelEn) {
+            <tr>
+              <th scope="row">{{ specLabel(spec) }}</th>
+              <td>{{ specValue(spec) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </details>
+    <details class="product-detail-info__details">
+      <summary>{{ 'PRODUCT_DETAIL.TAB.shipping' | translate }}</summary>
+      <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.SHIPPING_TITLE' | translate }}</h3>
+      <p class="product-detail-info__text">{{ shippingText() }}</p>
+      <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.RETURNS_TITLE' | translate }}</h3>
+      <p class="product-detail-info__text">{{ returnsText() }}</p>
+    </details>
+  </div>
+</section>

@@ -5,6 +5,10 @@ export interface ProductListItemDto {
   Price: number;
   ImageUrl?: string;
   CategoryName?: string;
+  BrandName?: string;
+  CompareAtPrice?: number;
+  ReviewCount?: number;
+  DiscountPercent?: number;
 }
 
 export interface ProductDetailDto extends ProductListItemDto {

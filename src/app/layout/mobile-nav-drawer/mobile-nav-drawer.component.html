@@ -1,0 +1,109 @@
+@if (open()) {
+  <div class="store-drawer-backdrop" (click)="onBackdropClick()" aria-hidden="true"></div>
+
+  <aside
+    id="store-mobile-drawer"
+    class="store-drawer"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'LAYOUT.MOBILE_MENU.TITLE' | translate"
+  >
+    <div class="store-drawer__head">
+      <a class="store-header__logo" [routerLink]="branding.homeRoute" (click)="close()">
+        <img [src]="branding.logoSrc" [alt]="branding.logoAltKey | translate" width="120" height="32" />
+      </a>
+      <button type="button" class="store-drawer__close" (click)="close()">
+        <span class="ds-visually-hidden">{{ 'LAYOUT.MOBILE_MENU.CLOSE' | translate }}</span>
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="store-drawer__body">
+      <form class="store-drawer__search" (submit)="submitSearch($event)" role="search">
+        <div class="store-header__search-wrap">
+          <input
+            type="search"
+            class="store-header__search-input"
+            name="q"
+            [(ngModel)]="searchQuery"
+            [placeholder]="header.searchPlaceholderKey | translate"
+            autocomplete="off"
+          />
+          <button type="submit" class="store-header__search-btn" [attr.aria-label]="'LAYOUT.HEADER.SEARCH' | translate">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+
+      <div class="store-header__lang mb-3 d-flex" role="group">
+        <button type="button" [class.is-active]="currentLang() === 'ar'" (click)="setLang('ar')">ع</button>
+        <button type="button" [class.is-active]="currentLang() === 'en'" (click)="setLang('en')">EN</button>
+      </div>
+
+      <a class="store-drawer__nav-link" [routerLink]="header.cartRoute" (click)="close()">
+        <span>{{ 'LAYOUT.HEADER.CART' | translate }}</span>
+        @if (itemCount() > 0) {
+          <span class="store-header__cart-badge">{{ itemCount() > 99 ? '99+' : itemCount() }}</span>
+        }
+      </a>
+
+      <a class="store-drawer__nav-link" [routerLink]="header.wishlistRoute" (click)="close()">
+        {{ 'LAYOUT.HEADER.WISHLIST' | translate }}
+      </a>
+
+      <a class="store-drawer__nav-link" [routerLink]="accountRoute()" (click)="close()">
+        {{ accountLabelKey() | translate }}
+      </a>
+
+      <p class="small text-muted mb-2 mt-4">{{ 'LAYOUT.NAV.REGION' | translate }}</p>
+
+      @for (category of categories; track category.id) {
+        @if (hasMegaMenu(category)) {
+          <button type="button" class="store-drawer__nav-link" (click)="toggleCategory(category)">
+            <span>{{ category.labelKey | translate }}</span>
+            <i
+              class="fa-solid"
+              [class.fa-chevron-down]="!isCategoryExpanded(category.id)"
+              [class.fa-chevron-up]="isCategoryExpanded(category.id)"
+              aria-hidden="true"
+            ></i>
+          </button>
+          @if (isCategoryExpanded(category.id)) {
+            <div class="store-drawer__sub">
+              <a
+                class="store-drawer__sub-link fw-semibold"
+                [routerLink]="category.route"
+                [queryParams]="category.queryParams"
+                (click)="close()"
+              >
+                {{ 'LAYOUT.NAV.VIEW_ALL' | translate }} {{ category.labelKey | translate }}
+              </a>
+              @for (column of category.megaMenu; track column.id) {
+                <p class="small text-muted mb-1 mt-2">{{ column.titleKey | translate }}</p>
+                @for (link of column.links; track link.id) {
+                  <a
+                    class="store-drawer__sub-link"
+                    [routerLink]="link.route"
+                    [queryParams]="link.queryParams"
+                    (click)="close()"
+                  >
+                    {{ link.labelKey | translate }}
+                  </a>
+                }
+              }
+            </div>
+          }
+        } @else {
+          <a
+            class="store-drawer__nav-link"
+            [routerLink]="category.route"
+            [queryParams]="category.queryParams"
+            (click)="close()"
+          >
+            {{ category.labelKey | translate }}
+          </a>
+        }
+      }
+    </div>
+  </aside>
+}

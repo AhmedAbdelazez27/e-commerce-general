@@ -1,0 +1,59 @@
+<section class="home-hero home-bleed" aria-labelledby="home-hero-title">
+  <div class="home-hero__grid">
+    <div class="home-hero__banner">
+      <img
+        class="home-hero__image"
+        [src]="config().imageSrc"
+        [alt]="config().imageAltKey | translate"
+        width="1400"
+        height="560"
+        fetchpriority="high"
+      />
+      <div class="home-hero__overlay">
+        <div class="home-hero__content">
+          @if (config().eyebrowKey) {
+            <span class="home-hero__eyebrow">{{ config().eyebrowKey | translate }}</span>
+          }
+          <h1 id="home-hero-title" class="home-hero__headline">
+            {{ config().headlineKey | translate }}
+          </h1>
+          <p class="home-hero__subtitle">{{ config().subtitleKey | translate }}</p>
+          <div class="home-hero__actions">
+            <a
+              class="btn btn-primary btn-lg home-hero__cta"
+              [routerLink]="config().ctaRoute"
+              [queryParams]="config().ctaQuery"
+            >
+              {{ config().ctaLabelKey | translate }}
+            </a>
+            @if (config().secondaryCtaLabelKey && config().secondaryCtaRoute) {
+              <a
+                class="home-hero__secondary-cta"
+                [routerLink]="config().secondaryCtaRoute"
+                [queryParams]="config().secondaryCtaQuery"
+              >
+                {{ config().secondaryCtaLabelKey | translate }}
+                <span class="home-hero__secondary-line" aria-hidden="true"></span>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (config().promoCard.enabled) {
+      <aside class="home-hero__promo" [class]="config().promoCard.accentClass">
+        <p class="home-hero__promo-eyebrow">{{ config().promoCard.eyebrowKey | translate }}</p>
+        <h2 class="home-hero__promo-title">{{ config().promoCard.titleKey | translate }}</h2>
+        <p class="home-hero__promo-text">{{ config().promoCard.subtitleKey | translate }}</p>
+        <a
+          class="btn btn-outline-light btn-sm"
+          [routerLink]="config().promoCard.ctaRoute"
+          [queryParams]="config().promoCard.ctaQuery"
+        >
+          {{ config().promoCard.ctaLabelKey | translate }}
+        </a>
+      </aside>
+    }
+  </div>
+</section>

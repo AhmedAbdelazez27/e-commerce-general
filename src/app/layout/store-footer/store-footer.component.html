@@ -1,0 +1,72 @@
+<footer class="store-footer">
+  <div class="ds-container">
+    <div class="store-footer__trust">
+      @for (item of config.trustItems; track item.id) {
+        <div class="store-footer__trust-item">
+          <i [class]="item.iconClass" aria-hidden="true"></i>
+          <span>{{ item.labelKey | translate }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="store-footer__grid">
+      <div>
+        <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.COMPANY' | translate }}</h2>
+        <ul class="store-footer__links">
+          @for (link of config.companyLinks; track link.id) {
+            <li>
+              <a class="store-footer__link" [routerLink]="link.route">{{ link.labelKey | translate }}</a>
+            </li>
+          }
+        </ul>
+        <div class="store-footer__social">
+          @for (social of config.socialLinks; track social.id) {
+            <a
+              class="store-footer__social-link"
+              [href]="social.href"
+              [attr.aria-label]="social.labelKey | translate"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i [class]="social.iconClass" aria-hidden="true"></i>
+            </a>
+          }
+        </div>
+      </div>
+
+      <div>
+        <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CUSTOMER_SERVICE' | translate }}</h2>
+        <ul class="store-footer__links">
+          @for (link of config.customerServiceLinks; track link.id) {
+            <li>
+              <a class="store-footer__link" [routerLink]="link.route">{{ link.labelKey | translate }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      @if (config.newsletter.enabled) {
+        <div>
+          <h2 class="store-footer__heading">{{ config.newsletter.titleKey | translate }}</h2>
+          <p class="store-footer__newsletter-text">{{ config.newsletter.subtitleKey | translate }}</p>
+          <form class="store-footer__newsletter-form" (submit)="onNewsletterSubmit($event)" novalidate>
+            <input
+              type="email"
+              class="store-footer__newsletter-input"
+              name="email"
+              [placeholder]="config.newsletter.placeholderKey | translate"
+              autocomplete="email"
+            />
+            <button type="submit" class="store-footer__newsletter-btn">
+              {{ config.newsletter.buttonKey | translate }}
+            </button>
+          </form>
+        </div>
+      }
+    </div>
+
+    <div class="store-footer__bottom">
+      {{ 'LAYOUT.FOOTER.COPYRIGHT' | translate: { year } }}
+    </div>
+  </div>
+</footer>
