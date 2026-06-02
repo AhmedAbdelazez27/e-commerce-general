@@ -9,6 +9,11 @@ export const accountRoutes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'orders' },
       {
+        path: 'profile',
+        loadComponent: () =>
+          import('./pages/profile-page/profile-page.component').then((m) => m.ProfilePageComponent),
+      },
+      {
         path: 'orders',
         loadComponent: () =>
           import('./pages/orders-page/orders-page.component').then((m) => m.OrdersPageComponent),

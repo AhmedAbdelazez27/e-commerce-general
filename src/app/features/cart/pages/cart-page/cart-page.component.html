@@ -20,6 +20,7 @@
             <li>
               <app-cart-item-row
                 [item]="item"
+                [disabled]="facade.isLoading()"
                 [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
                 (quantityChange)="onQuantityChange($event)"
                 (remove)="onRemove($event)"
@@ -41,7 +42,7 @@
         <app-cart-order-summary
           [summary]="facade.orderSummary()"
           [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
-          [checkoutDisabled]="facade.orderSummary().itemCount === 0"
+          [checkoutDisabled]="!facade.canCheckout()"
           (checkout)="checkout()"
         />
       </div>
@@ -51,6 +52,7 @@
       <app-cart-order-summary
         [summary]="facade.orderSummary()"
         [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
+        [checkoutDisabled]="!facade.canCheckout()"
         (checkout)="checkout()"
       />
     </div>

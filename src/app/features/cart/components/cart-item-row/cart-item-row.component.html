@@ -30,7 +30,7 @@
           type="button"
           class="btn btn-outline-secondary btn-sm"
           (click)="decrement()"
-          [disabled]="!item().isAvailable || item().quantity <= 1"
+          [disabled]="disabled() || !item().isAvailable || item().quantity <= 1"
           [attr.aria-label]="'CART.QTY_DECREASE' | translate"
         >
           −
@@ -41,7 +41,7 @@
           [value]="item().quantity"
           [min]="1"
           [max]="item().maxQuantity"
-          [disabled]="!item().isAvailable"
+          [disabled]="disabled() || !item().isAvailable"
           (input)="onQuantityInput($event)"
           [attr.aria-label]="'CART.QUANTITY' | translate"
         />
@@ -49,14 +49,19 @@
           type="button"
           class="btn btn-outline-secondary btn-sm"
           (click)="increment()"
-          [disabled]="!item().isAvailable || item().quantity >= item().maxQuantity"
+          [disabled]="disabled() || !item().isAvailable || item().quantity >= item().maxQuantity"
           [attr.aria-label]="'CART.QTY_INCREASE' | translate"
         >
           +
         </button>
       </div>
 
-      <button type="button" class="cart-item__remove btn btn-link btn-sm" (click)="onRemove()">
+      <button
+        type="button"
+        class="cart-item__remove btn btn-link btn-sm"
+        [disabled]="disabled()"
+        (click)="onRemove()"
+      >
         <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
         {{ 'CART.REMOVE' | translate }}
       </button>

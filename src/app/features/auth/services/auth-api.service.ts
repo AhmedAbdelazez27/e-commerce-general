@@ -4,26 +4,38 @@ import { Observable } from 'rxjs';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { SKIP_AUTH } from '../../../core/http/http-context.tokens';
-import { ApiResponse, LoginDataDto, LoginRequest, UserProfile } from '../models/login.models';
+import { TokenAuthRequest } from '../models/login.models';
+import { RegisterECommerceCustomerRequest, RegisterFormValue } from '../models/register.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
   private readonly http = inject(HttpClient);
 
-  private authUrl(path: string): string {
-    return `${ApiEndpoints.Auth.base}${path}`;
+  authenticate(credentials: TokenAuthRequest): Observable<unknown> {
+    return this.postAnonymous(ApiEndpoints.Auth.authenticate, credentials);
   }
 
-  login(credentials: LoginRequest): Observable<ApiResponse<LoginDataDto>> {
-    return this.postAnonymous<ApiResponse<LoginDataDto>>(this.authUrl(ApiEndpoints.Auth.login), credentials);
+  register(form: RegisterFormValue, sessionId: string | null): Observable<unknown> {
+    const email = form.email.trim().toLowerCase();
+    const body: RegisterECommerceCustomerRequest = {
+      fullName: form.fullName.trim(),
+      email,
+      mobile: form.mobile.trim(),
+      password: form.password,
+      sessionId: sessionId?.trim() ? sessionId.trim() : null,
+    };
+    return this.postAnonymous<unknown>(ApiEndpoints.Auth.registerECommerceCustomer, body);
   }
 
-  getMyProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(ApiEndpoints.Account.profile);
+  getECommerceCustomerProfile(): Observable<unknown> {
+    return this.http.get<unknown>(ApiEndpoints.Auth.getECommerceCustomerProfile);
   }
 
-  logout(): Observable<unknown> {
-    return this.http.post(this.authUrl(ApiEndpoints.Auth.logout), {});
+  mergeGuestCart(customerId: string, sessionId: string): Observable<unknown> {
+    return this.http.post<unknown>(ApiEndpoints.EcCart.mergeGuestCart, {
+      customerId: Number(customerId),
+      sessionId,
+    });
   }
 
   private postAnonymous<T>(url: string, body: unknown): Observable<T> {

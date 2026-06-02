@@ -6,6 +6,7 @@ import { SectionHeaderComponent } from '../../../../shared/components/section-he
 import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { StorefrontProduct } from '../../../../shared/models/storefront-product.model';
 import { mapStorefrontProductToCardData } from '../../../../shared/utils/product-card.util';
+import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { HomeProductSectionConfig } from '../../models/home.model';
 
 @Component({
@@ -15,6 +16,7 @@ import { HomeProductSectionConfig } from '../../models/home.model';
 })
 export class HomeProductSectionComponent {
   private readonly router = inject(Router);
+  private readonly cartActions = inject(CartActionsService);
 
   readonly section = input.required<HomeProductSectionConfig>();
   readonly products = input.required<StorefrontProduct[]>();
@@ -27,8 +29,8 @@ export class HomeProductSectionComponent {
     void this.router.navigate(['/shop', product.id]);
   }
 
-  onAddToCart(_product: ProductCardData): void {
-    // Wire to CartService when add-to-cart API is ready
+  onAddToCart(product: ProductCardData): void {
+    this.cartActions.addProductCard(product);
   }
 
   onAddToWishlist(_product: ProductCardData): void {

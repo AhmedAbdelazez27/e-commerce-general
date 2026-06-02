@@ -57,12 +57,18 @@
         {{ accountLabelKey() | translate }}
       </a>
 
+      @if (isLoggedIn()) {
+        <button type="button" class="store-drawer__nav-link" (click)="logout()">
+          {{ 'LAYOUT.HEADER.LOGOUT' | translate }}
+        </button>
+      }
+
       <p class="small text-muted mb-2 mt-4">{{ 'LAYOUT.NAV.REGION' | translate }}</p>
 
-      @for (category of categories; track category.id) {
+      @for (category of categories(); track category.id) {
         @if (hasMegaMenu(category)) {
           <button type="button" class="store-drawer__nav-link" (click)="toggleCategory(category)">
-            <span>{{ category.labelKey | translate }}</span>
+            <span>{{ label(category) }}</span>
             <i
               class="fa-solid"
               [class.fa-chevron-down]="!isCategoryExpanded(category.id)"
@@ -78,10 +84,10 @@
                 [queryParams]="category.queryParams"
                 (click)="close()"
               >
-                {{ 'LAYOUT.NAV.VIEW_ALL' | translate }} {{ category.labelKey | translate }}
+                {{ 'LAYOUT.NAV.VIEW_ALL' | translate }} {{ label(category) }}
               </a>
               @for (column of category.megaMenu; track column.id) {
-                <p class="small text-muted mb-1 mt-2">{{ column.titleKey | translate }}</p>
+                <p class="small text-muted mb-1 mt-2">{{ columnTitle(column) }}</p>
                 @for (link of column.links; track link.id) {
                   <a
                     class="store-drawer__sub-link"
@@ -89,7 +95,7 @@
                     [queryParams]="link.queryParams"
                     (click)="close()"
                   >
-                    {{ link.labelKey | translate }}
+                    {{ label(link) }}
                   </a>
                 }
               }
@@ -102,7 +108,7 @@
             [queryParams]="category.queryParams"
             (click)="close()"
           >
-            {{ category.labelKey | translate }}
+            {{ label(category) }}
           </a>
         }
       }

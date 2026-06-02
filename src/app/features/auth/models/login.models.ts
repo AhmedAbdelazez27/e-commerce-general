@@ -1,6 +1,9 @@
-export interface LoginRequest {
-  userName: string;
+export interface TokenAuthRequest {
+  userNameOrEmailAddress: string;
   password: string;
+  tenantId?: number;
+  hostManager?: boolean;
+  rememberClient?: boolean;
 }
 
 export interface LoginDataDto {

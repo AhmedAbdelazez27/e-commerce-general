@@ -1,8 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
 import { CartService } from '../../../core/services/cart.service';
-import { CART_CONFIG } from '../config/cart.config';
-import { createDemoCart } from '../data/cart-demo.seed';
 import { CartCouponState, CartLineItemView, CartOrderSummaryView } from '../models/cart-view.model';
 import { enrichCartItems } from '../utils/cart-enrichment.util';
 import { buildOrderSummary, findCoupon } from '../utils/cart-summary.util';
@@ -10,6 +10,8 @@ import { buildOrderSummary, findCoupon } from '../utils/cart-summary.util';
 @Injectable()
 export class CartPageFacade {
   private readonly cartService = inject(CartService);
+  private readonly toastr = inject(ToastrService);
+  private readonly translate = inject(TranslateService);
 
   readonly couponInput = signal('');
   readonly couponState = signal<CartCouponState>({ status: 'idle', code: '' });
@@ -24,6 +26,14 @@ export class CartPageFacade {
 
   readonly isEmpty = computed(() => this.lineItems().length === 0);
   readonly isLoading = computed(() => this.cartService.loading());
+
+  readonly hasUnavailableItems = computed(() =>
+    this.lineItems().some((item) => !item.isAvailable),
+  );
+
+  readonly canCheckout = computed(
+    () => !this.isEmpty() && !this.hasUnavailableItems() && !this.isLoading(),
+  );
 
   readonly appliedDiscountPercent = computed(() => {
     const state = this.couponState();
@@ -41,12 +51,6 @@ export class CartPageFacade {
 
   initPage(): void {
     this.cartService.refresh();
-    if (CART_CONFIG.seedDemoWhenEmpty) {
-      const cart = this.cartService.cart();
-      if (!cart?.Items?.length) {
-        this.cartService.setGuestCart(createDemoCart());
-      }
-    }
   }
 
   updateQuantity(productId: number, quantity: number): void {
@@ -83,5 +87,17 @@ export class CartPageFacade {
   removeCoupon(): void {
     this.couponInput.set('');
     this.couponState.set({ status: 'idle', code: '' });
+  }
+
+  tryCheckout(): boolean {
+    if (this.isEmpty()) {
+      this.toastr.warning(this.translate.instant('CART.CHECKOUT_EMPTY'));
+      return false;
+    }
+    if (this.hasUnavailableItems()) {
+      this.toastr.warning(this.translate.instant('CART.CHECKOUT_UNAVAILABLE'));
+      return false;
+    }
+    return true;
   }
 }

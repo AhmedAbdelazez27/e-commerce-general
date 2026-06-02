@@ -1,0 +1,49 @@
+<div class="container py-4" style="max-width: 48rem">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h2 mb-0">{{ 'PAGE.PROFILE' | translate }}</h1>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="reload()">
+      {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (!profile()) {
+    <div class="alert alert-warning mb-0">
+      {{ 'PROFILE.LOAD_FAILED' | translate }}
+    </div>
+  } @else {
+    <div class="card">
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.FULL_NAME' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.fullName }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.EMAIL' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.email }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.MOBILE' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.mobile }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.CUSTOMER_CODE' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.customerCode }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.GROUP' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ groupName() }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.VIP' | translate }}</dt>
+          <dd class="col-7 col-md-8">
+            {{ profile()!.isVIP ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}
+          </dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.POINTS' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.loyaltyPoints }}</dd>
+
+          <dt class="col-5 col-md-4 text-muted">{{ 'PROFILE.TOTAL_SPENT' | translate }}</dt>
+          <dd class="col-7 col-md-8">{{ profile()!.totalSpent }}</dd>
+        </dl>
+      </div>
+    </div>
+  }
+</div>
+

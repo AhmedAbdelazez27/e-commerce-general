@@ -4,6 +4,7 @@ import { LoginDataDto } from '../../features/auth/models/login.models';
 import { AppLang } from './language.service';
 
 const TOKEN_KEY = 'token';
+const CUSTOMER_ID_KEY = 'customerId';
 
 @Injectable({ providedIn: 'root' })
 export class AuthTokenService {
@@ -20,7 +21,7 @@ export class AuthTokenService {
   }
 
   getCustomerId(): string | null {
-    return this.getUserId();
+    return localStorage.getItem(CUSTOMER_ID_KEY) ?? sessionStorage.getItem(CUSTOMER_ID_KEY);
   }
 
   getEmail(): string | null {
@@ -43,6 +44,16 @@ export class AuthTokenService {
     storage.setItem('email', data.Email);
   }
 
+  saveCustomerId(customerId: string | null, remember = true): void {
+    const storage = remember ? localStorage : sessionStorage;
+    if (customerId && customerId.trim()) {
+      storage.setItem(CUSTOMER_ID_KEY, customerId);
+    } else {
+      localStorage.removeItem(CUSTOMER_ID_KEY);
+      sessionStorage.removeItem(CUSTOMER_ID_KEY);
+    }
+  }
+
   saveAccessToken(token: string, remember = true): void {
     const storage = remember ? localStorage : sessionStorage;
     storage.setItem(TOKEN_KEY, token);
@@ -51,6 +62,7 @@ export class AuthTokenService {
   clearSession(): void {
     const keys = [
       TOKEN_KEY,
+      CUSTOMER_ID_KEY,
       'refreshToken',
       'userId',
       'tokenValidTo',

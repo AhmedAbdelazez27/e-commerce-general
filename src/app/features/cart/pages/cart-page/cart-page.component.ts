@@ -41,6 +41,9 @@ export class CartPageComponent implements OnInit {
   }
 
   checkout(): void {
+    if (!this.facade.tryCheckout()) {
+      return;
+    }
     void this.router.navigate(['/checkout']);
   }
 }

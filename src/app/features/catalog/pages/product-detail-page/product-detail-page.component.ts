@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
@@ -41,6 +42,7 @@ export class ProductDetailPageComponent implements OnInit {
   private readonly productDetailService = inject(ProductDetailService);
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
+  private readonly cartActions = inject(CartActionsService);
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
@@ -114,11 +116,25 @@ export class ProductDetailPageComponent implements OnInit {
   }
 
   addToCart(): void {
-    void this.router.navigate(['/cart']);
+    const p = this.product();
+    if (!p) {
+      return;
+    }
+    this.cartActions.addProductDetail(p, this.quantity());
   }
 
   buyNow(): void {
-    void this.router.navigate(['/checkout']);
+    const p = this.product();
+    if (!p) {
+      return;
+    }
+    this.cartActions.addProductDetailThen(p, this.quantity(), () => {
+      void this.router.navigate(['/checkout']);
+    });
+  }
+
+  onRelatedAddToCart(item: ProductCardData): void {
+    this.cartActions.addProductCard(item);
   }
 
   onWishlist(): void {

@@ -16,6 +16,7 @@ export class CartItemRowComponent {
 
   readonly item = input.required<CartLineItemView>();
   readonly currencyLabel = input.required<string>();
+  readonly disabled = input(false);
 
   readonly quantityChange = output<{ productId: number; quantity: number }>();
   readonly remove = output<number>();

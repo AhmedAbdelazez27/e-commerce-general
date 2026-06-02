@@ -16,6 +16,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LanguageService } from './core/services/language.service';
+import { TenantService } from './core/services/tenant.service';
 import {
   initStorefrontConfigFactory,
   StorefrontConfigService,
@@ -26,6 +27,10 @@ import { environment } from '../environments/environment';
 
 function initLangFactory(lang: LanguageService) {
   return () => lang.initFromStorage();
+}
+
+function initTenantFactory(tenants: TenantService) {
+  return () => tenants.initFromHost();
 }
 
 export const appConfig: ApplicationConfig = {
@@ -55,6 +60,12 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initLangFactory,
       deps: [LanguageService],
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initTenantFactory,
+      deps: [TenantService],
       multi: true,
     },
   ],

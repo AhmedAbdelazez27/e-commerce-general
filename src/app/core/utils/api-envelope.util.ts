@@ -20,3 +20,25 @@ export function dataArrayFromEnvelope<T>(res: unknown): T[] {
   const payload = dataFromEnvelope<T[]>(res);
   return Array.isArray(payload) ? payload : [];
 }
+
+/** ABP-style envelope: `{ result, success, __abp }`. */
+export function resultFromAbpEnvelope<T>(res: unknown): T | null {
+  if (res == null || typeof res !== 'object') {
+    return null;
+  }
+  const envelope = res as JsonRecord;
+  const payload =
+    envelope['result'] ??
+    envelope['Result'] ??
+    envelope['Data'] ??
+    envelope['data'];
+  if (payload == null) {
+    return null;
+  }
+  return payload as T;
+}
+
+export function resultArrayFromAbpEnvelope<T>(res: unknown): T[] {
+  const payload = resultFromAbpEnvelope<T[]>(res);
+  return Array.isArray(payload) ? payload : [];
+}

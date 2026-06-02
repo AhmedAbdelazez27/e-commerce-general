@@ -44,7 +44,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     wishlistRoute: '/shop',
     cartRoute: '/cart',
     loginRoute: '/auth/login',
-    accountRoute: '/account/orders',
+    accountRoute: '/account/profile',
   },
   footer: {
     companyLinks: [

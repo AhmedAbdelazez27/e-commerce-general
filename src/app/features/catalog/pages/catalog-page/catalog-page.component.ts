@@ -11,6 +11,7 @@ import { CatalogEmptyStateComponent } from '../../components/catalog-empty-state
 import { CatalogFilterPanelComponent } from '../../components/catalog-filter-panel/catalog-filter-panel.component';
 import { CatalogListingHeaderComponent } from '../../components/catalog-listing-header/catalog-listing-header.component';
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
+import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { CatalogListingFacade } from '../../services/catalog-listing.facade';
 import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper';
 
@@ -31,6 +32,7 @@ import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper'
 export class CatalogPageComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
+  private readonly cartActions = inject(CartActionsService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   readonly facade = inject(CatalogListingFacade);
@@ -73,8 +75,8 @@ export class CatalogPageComponent implements OnInit {
     void this.router.navigate(['/shop', product.id]);
   }
 
-  onAddToCart(_product: ProductCardData): void {
-    // Wire to CartService when ready
+  onAddToCart(product: ProductCardData): void {
+    this.cartActions.addProductCard(product);
   }
 
   onAddToWishlist(_product: ProductCardData): void {

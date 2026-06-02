@@ -33,6 +33,11 @@ export class LanguageService {
     return lang === 'ar' ? 'ar' : 'en';
   }
 
+  /** Culture code for EcPublicCatalog `lang` query param. */
+  apiCulture(): string {
+    return this.currentLang() === 'ar' ? 'ar-EG' : 'en-US';
+  }
+
   private applyDom(lang: AppLang): void {
     const dir: 'rtl' | 'ltr' = lang === 'ar' ? 'rtl' : 'ltr';
     const root = document.documentElement;

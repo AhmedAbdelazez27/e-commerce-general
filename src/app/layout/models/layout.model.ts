@@ -58,22 +58,28 @@ export interface StoreLayoutConfig {
   };
 }
 
-export interface NavMegaLink {
+export interface NavLabelFields {
+  labelKey?: string;
+  labelEn?: string;
+  labelAr?: string;
+}
+
+export interface NavMegaLink extends NavLabelFields {
   id: string;
-  labelKey: string;
   route: string | string[];
   queryParams?: Record<string, string>;
 }
 
 export interface NavMegaColumn {
   id: string;
-  titleKey: string;
+  titleKey?: string;
+  titleEn?: string;
+  titleAr?: string;
   links: NavMegaLink[];
 }
 
-export interface NavCategory {
+export interface NavCategory extends NavLabelFields {
   id: string;
-  labelKey: string;
   route: string | string[];
   queryParams?: Record<string, string>;
   megaMenu?: NavMegaColumn[];

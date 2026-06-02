@@ -1,45 +1,56 @@
 <div class="container py-5" style="max-width: 28rem">
- 
   <div class="d-flex justify-content-between align-items-center mb-3">
-     <h1 class="h2 mb-0">{{ 'PAGE.LOGIN' | translate }}</h1>
-     <div class="d-flex justify-content-end gap-2 ">
-    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('en')">EN</button>
-    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('ar')" style="padding-top: 0;">ع</button>
-  </div>
- 
-  </div>
-
-  <div class="login-box shadow">
-    <div class="mb-4">
-  <label for="exampleFormControlInput1" class="form-label">Email address</label>
-  <input type="email" class="form-control form-login" id="exampleFormControlInput1" placeholder="Enter Email">
-</div>
-<div class="mb-4">
-  <label for="exampleFormControlInput1" class="form-label">Password</label>
-  <input type="password" class="form-control form-login" id="exampleFormControlInput1" placeholder="Enter Password">
-</div>
-
-<button class="btn btn-login mb-4">
-  Login
-</button>
-
-<div class="d-flex justify-content-between mb-4">
-<div class="">
-  <a href="#">Forgot Password?</a>
-</div>
-<div class="form-check">
-  <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-  <label class="form-check-label" for="checkDefault">
-    Remember me
-  </label>
-</div>
-</div>
-
-<div class="text-center">
-  <a href="#"> Create New Account</a>
-</div>
-
+    <h1 class="h2 mb-0">{{ 'PAGE.LOGIN' | translate }}</h1>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('en')">EN</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="setLang('ar')">ع</button>
+    </div>
   </div>
 
-</div>
+  <form class="login-box shadow p-4" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label class="form-label" for="login-email">{{ 'AUTH.EMAIL' | translate }}</label>
+      <input
+        id="login-email"
+        type="email"
+        class="form-control"
+        formControlName="userNameOrEmailAddress"
+        autocomplete="username"
+      />
+      @if (form.controls.userNameOrEmailAddress.touched && form.controls.userNameOrEmailAddress.invalid) {
+        <div class="form-text text-danger">{{ 'AUTH.EMAIL_REQUIRED' | translate }}</div>
+      }
+    </div>
 
+    <div class="mb-3">
+      <label class="form-label" for="login-password">{{ 'AUTH.PASSWORD' | translate }}</label>
+      <input
+        id="login-password"
+        type="password"
+        class="form-control"
+        formControlName="password"
+        autocomplete="current-password"
+      />
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
+      }
+    </div>
+
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="rememberMe" formControlName="rememberMe" />
+      <label class="form-check-label" for="rememberMe">{{ 'AUTH.REMEMBER_ME' | translate }}</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading()">
+      @if (loading()) {
+        {{ 'COMMON.LOADING' | translate }}
+      } @else {
+        {{ 'PAGE.LOGIN' | translate }}
+      }
+    </button>
+
+    <p class="text-center mb-0">
+      <a routerLink="/auth/register">{{ 'AUTH.CREATE_ACCOUNT' | translate }}</a>
+    </p>
+  </form>
+</div>

@@ -1,14 +1,15 @@
 import { Component, inject, input, output } from '@angular/core';
 // import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
-import { NAVIGATION_CATEGORIES } from '../config/navigation.config';
-import { NavCategory } from '../models/layout.model';
+import { NavCategory, NavMegaColumn, NavLabelFields } from '../models/layout.model';
+import { NavigationService } from '../services/navigation.service';
+import { navColumnTitle, navItemLabel } from '../utils/nav-label.util';
 
 @Component({
   selector: 'app-mobile-nav-drawer',
@@ -19,11 +20,14 @@ export class MobileNavDrawerComponent {
   private readonly cart = inject(CartService);
   private readonly auth = inject(AuthTokenService);
   private readonly language = inject(LanguageService);
+  private readonly navigation = inject(NavigationService);
+  private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
 
   readonly open = input(false);
   readonly closed = output<void>();
 
-  readonly categories = NAVIGATION_CATEGORIES;
+  readonly categories = this.navigation.categories;
   readonly header = LAYOUT_CONFIG.header;
   readonly branding = LAYOUT_CONFIG.branding;
   readonly itemCount = this.cart.itemCount;
@@ -45,6 +49,16 @@ export class MobileNavDrawerComponent {
 
   currentLang(): AppLang {
     return this.language.currentLang();
+  }
+
+  label(item: NavLabelFields): string {
+    return navItemLabel(item, this.language.currentLang(), (key) => this.translate.instant(key));
+  }
+
+  columnTitle(column: NavMegaColumn): string {
+    return navColumnTitle(column, this.language.currentLang(), (key) =>
+      this.translate.instant(key),
+    );
   }
 
   // submitSearch(event: Event): void {
@@ -76,5 +90,16 @@ export class MobileNavDrawerComponent {
 
   accountLabelKey(): string {
     return this.auth.isLoggedIn() ? 'LAYOUT.HEADER.ACCOUNT' : 'LAYOUT.HEADER.LOGIN';
+  }
+
+  isLoggedIn(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
+  logout(): void {
+    this.auth.clearSession();
+    this.cart.refresh();
+    this.close();
+    void this.router.navigateByUrl('/home');
   }
 }
