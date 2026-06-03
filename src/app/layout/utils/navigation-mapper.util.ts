@@ -9,7 +9,7 @@ function categoryLink(node: PublicCategoryDto): NavMegaLink {
     labelEn: node.nameEn,
     labelAr: node.nameAr,
     route: SHOP_ROUTE,
-    queryParams: { category: node.slug },
+    queryParams: { category: node.slug, categoryId: String(node.id) },
   };
 }
 
@@ -35,7 +35,7 @@ function mapCategoryNode(node: PublicCategoryDto): NavCategory {
     labelEn: node.nameEn,
     labelAr: node.nameAr,
     route: SHOP_ROUTE,
-    queryParams: { category: node.slug },
+    queryParams: { category: node.slug, categoryId: String(node.id) },
     megaMenu,
   };
 }

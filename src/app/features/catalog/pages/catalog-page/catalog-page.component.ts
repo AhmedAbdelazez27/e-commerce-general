@@ -42,9 +42,9 @@ export class CatalogPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    this.facade.initFromRoute();
+    this.facade.bootstrap();
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.facade.initFromRoute();
+      this.facade.handleRouteQueryChange();
     });
   }
 

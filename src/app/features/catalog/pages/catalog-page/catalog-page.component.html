@@ -27,7 +27,9 @@
     </aside>
 
     <div class="catalog-page__main">
-      @if (cardProducts().length === 0) {
+      @if (facade.loading() && cardProducts().length === 0) {
+        <p class="catalog-page__loading">{{ 'CATALOG.LOADING' | translate }}</p>
+      } @else if (cardProducts().length === 0) {
         <app-catalog-empty-state (clearFilters)="facade.clearFilters()" />
       } @else {
         <div

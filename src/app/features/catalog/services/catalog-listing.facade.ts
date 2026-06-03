@@ -1,31 +1,59 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
-import {
-  CATALOG_LISTING_BRANDS,
-  CATALOG_LISTING_CATEGORIES,
-  CATALOG_LISTING_PRODUCTS,
-  CATALOG_PRICE_BOUNDS,
-} from '../data/catalog-listing.mock';
+import { LanguageService } from '../../../core/services/language.service';
+import { PublicCategoryDto } from '../../../layout/models/catalog-public.model';
+import { EcPublicCatalogApiService } from '../../../layout/services/ec-public-catalog-api.service';
 import {
   CatalogBreadcrumbItem,
   CatalogCategoryOption,
   CatalogListingFilters,
   CatalogSortOption,
+  CatalogSpecificationGroup,
   CatalogViewMode,
   DEFAULT_CATALOG_FILTERS,
 } from '../models/catalog-listing.model';
-import { filterCatalogProducts, sortCatalogProducts } from '../utils/catalog-listing-filter.util';
+import { CatalogListingApiService } from './catalog-listing-api.service';
+import {
+  buildCategoryLookup,
+  categoryNodeForId,
+  categorySlugForId,
+  resolveCategoryFromQueryParams,
+} from '../utils/catalog-category-index.util';
+import {
+  CATALOG_PAGE_SIZE,
+  buildGetProductFiltersParams,
+  buildSearchProductsRequest,
+  mapFilterBrandsToOptions,
+  mapFilterCategoriesToOptions,
+  mapFilterSpecificationsToGroups,
+  mapSearchProductsToListingProducts,
+} from '../utils/catalog-listing-api.mapper';
 
 @Injectable()
 export class CatalogListingFacade {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly listingApi = inject(CatalogListingApiService);
+  private readonly catalogApi = inject(EcPublicCatalogApiService);
+  private readonly language = inject(LanguageService);
+  private readonly translate = inject(TranslateService);
 
-  private readonly allProducts = signal(CATALOG_LISTING_PRODUCTS);
-  readonly categories = signal(CATALOG_LISTING_CATEGORIES);
-  readonly brands = signal(CATALOG_LISTING_BRANDS);
-  readonly priceBounds = CATALOG_PRICE_BOUNDS;
+  private readonly categoryLookup = signal<Map<string, PublicCategoryDto>>(new Map());
+  private readonly products = signal<ReturnType<typeof mapSearchProductsToListingProducts>>([]);
+  private readonly totalCount = signal(0);
+  private readonly skipCount = signal(0);
+  private navigatingFromFacade = false;
+
+  readonly categories = signal<CatalogCategoryOption[]>([]);
+  readonly brands = signal<ReturnType<typeof mapFilterBrandsToOptions>>([]);
+  readonly specifications = signal<CatalogSpecificationGroup[]>([]);
+  readonly priceBounds = signal({ min: 0, max: 0 });
+  readonly loading = signal(false);
+  readonly initialized = signal(false);
 
   readonly filters = signal<CatalogListingFilters>({ ...DEFAULT_CATALOG_FILTERS });
   readonly draftFilters = signal<CatalogListingFilters>({ ...DEFAULT_CATALOG_FILTERS });
@@ -36,20 +64,30 @@ export class CatalogListingFacade {
 
   readonly activeCategoryId = signal<string | null>(null);
 
-  readonly filteredProducts = computed(() => {
-    const filtered = filterCatalogProducts(
-      this.allProducts(),
-      this.filters(),
-      this.searchQuery(),
-    );
-    return sortCatalogProducts(filtered, this.sort());
-  });
-
-  readonly productCount = computed(() => this.filteredProducts().length);
+  readonly filteredProducts = computed(() => this.products());
+  readonly productCount = computed(() => this.totalCount());
 
   readonly activeCategory = computed(() => {
     const id = this.activeCategoryId();
-    return id ? this.categories().find((c) => c.id === id) ?? null : null;
+    if (!id) {
+      return null;
+    }
+    const fromFilters = this.categories().find((c) => c.id === id);
+    if (fromFilters) {
+      return fromFilters;
+    }
+    const node = categoryNodeForId(id, this.categoryLookup());
+    if (!node) {
+      return null;
+    }
+    return {
+      id: String(node.id),
+      slug: node.slug,
+      nameEn: node.nameEn,
+      nameAr: node.nameAr,
+      descriptionEn: node.description ?? undefined,
+      descriptionAr: node.description ?? undefined,
+    } satisfies CatalogCategoryOption;
   });
 
   readonly breadcrumbs = computed((): CatalogBreadcrumbItem[] => {
@@ -78,63 +116,139 @@ export class CatalogListingFacade {
     return items;
   });
 
+  constructor() {
+    this.translate.onLangChange.subscribe(() => this.reloadCatalog());
+  }
+
+  handleRouteQueryChange(): void {
+    if (this.navigatingFromFacade || !this.initialized()) {
+      return;
+    }
+    this.initFromRoute();
+    this.reloadCatalog();
+  }
+
   initFromRoute(): void {
-    const params = this.route.snapshot.queryParamMap;
-    const category = params.get('category');
-    const brand = params.get('brand');
+    const params = this.readRouteQueryParams();
+    const brands = params.getAll('brand');
     const q = params.get('q') ?? '';
     const sort = params.get('sort') as CatalogSortOption | null;
 
+    const resolvedCategoryId = resolveCategoryFromQueryParams(params, this.categoryLookup());
+
     const filters: CatalogListingFilters = {
       ...DEFAULT_CATALOG_FILTERS,
-      categoryIds: category ? [category] : [],
-      brandIds: brand ? [brand] : [],
+      categoryIds: resolvedCategoryId ? [resolvedCategoryId] : [],
+      brandIds: brands,
     };
 
-    this.activeCategoryId.set(category);
+    this.activeCategoryId.set(resolvedCategoryId);
     this.searchQuery.set(q);
     this.filters.set(filters);
     this.draftFilters.set({ ...filters });
+    this.skipCount.set(0);
     if (sort && this.isValidSort(sort)) {
       this.sort.set(sort);
     }
   }
 
+  bootstrap(): void {
+    const lang = this.language.apiCulture();
+    this.loading.set(true);
+
+    this.catalogApi
+      .getCategoriesTree(lang)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe((tree) => {
+        this.categoryLookup.set(buildCategoryLookup(tree));
+        this.initFromRoute();
+        this.initialized.set(true);
+        this.reloadCatalog();
+      });
+  }
+
+  reloadCatalog(): void {
+    if (!this.initialized()) {
+      return;
+    }
+
+    const lang = this.language.apiCulture();
+    const filters = this.filters();
+    const filterParams = buildGetProductFiltersParams(filters, this.searchQuery(), lang);
+    const searchBody = buildSearchProductsRequest(
+      filters,
+      this.searchQuery(),
+      lang,
+      this.sort(),
+      this.skipCount(),
+      CATALOG_PAGE_SIZE,
+    );
+
+    this.loading.set(true);
+    forkJoin({
+      facets: this.listingApi.getProductFilters(filterParams),
+      listing: this.listingApi.searchProducts(searchBody),
+    })
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe(({ facets, listing }) => {
+        this.categories.set(mapFilterCategoriesToOptions(facets.categories));
+        this.brands.set(mapFilterBrandsToOptions(facets.brands));
+        this.specifications.set(mapFilterSpecificationsToGroups(facets.specifications));
+        this.priceBounds.set({
+          min: facets.priceRange.minPrice,
+          max: facets.priceRange.maxPrice,
+        });
+        this.products.set(
+          mapSearchProductsToListingProducts(listing.items, this.language.currentLang()),
+        );
+        this.totalCount.set(listing.totalCount);
+      });
+  }
+
   syncQueryParams(): void {
     const filters = this.filters();
-    const queryParams: Record<string, string> = {};
-    if (filters.categoryIds.length === 1) {
-      queryParams['category'] = filters.categoryIds[0];
-    }
-    if (filters.brandIds.length === 1) {
-      queryParams['brand'] = filters.brandIds[0];
-    }
+    const lookup = this.categoryLookup();
     const q = this.searchQuery().trim();
-    if (q) {
-      queryParams['q'] = q;
+
+    let category: string | null = null;
+    if (filters.categoryIds.length === 1) {
+      category = categorySlugForId(filters.categoryIds[0], lookup) ?? filters.categoryIds[0];
     }
-    if (this.sort() !== 'featured') {
-      queryParams['sort'] = this.sort();
-    }
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+
+    this.navigatingFromFacade = true;
+    void this.router
+      .navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          category,
+          categoryId: filters.categoryIds.length === 1 ? filters.categoryIds[0] : null,
+          brand: filters.brandIds.length > 0 ? filters.brandIds : null,
+          q: q || null,
+          sort: this.sort() !== 'featured' ? this.sort() : null,
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      })
+      .finally(() => {
+        this.navigatingFromFacade = false;
+      });
     this.activeCategoryId.set(filters.categoryIds.length === 1 ? filters.categoryIds[0] : null);
   }
 
   patchFilters(patch: Partial<CatalogListingFilters>, options?: { syncUrl?: boolean }): void {
+    this.skipCount.set(0);
     this.filters.update((current) => ({ ...current, ...patch }));
     if (options?.syncUrl !== false) {
       this.syncQueryParams();
     }
+    this.reloadCatalog();
   }
 
   setSort(value: CatalogSortOption): void {
+    this.skipCount.set(0);
     this.sort.set(value);
     this.syncQueryParams();
+    this.reloadCatalog();
   }
 
   setViewMode(mode: CatalogViewMode): void {
@@ -146,11 +260,18 @@ export class CatalogListingFacade {
     this.draftFilters.set({ ...DEFAULT_CATALOG_FILTERS });
     this.activeCategoryId.set(null);
     this.searchQuery.set('');
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {},
-      replaceUrl: true,
-    });
+    this.skipCount.set(0);
+    this.navigatingFromFacade = true;
+    void this.router
+      .navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true,
+      })
+      .finally(() => {
+        this.navigatingFromFacade = false;
+      });
+    this.reloadCatalog();
   }
 
   openMobileFilters(): void {
@@ -163,8 +284,10 @@ export class CatalogListingFacade {
   }
 
   applyDraftFilters(): void {
+    this.skipCount.set(0);
     this.filters.set({ ...this.draftFilters() });
     this.syncQueryParams();
+    this.reloadCatalog();
     this.closeMobileFilters();
   }
 
@@ -206,12 +329,67 @@ export class CatalogListingFacade {
     this.patchFilters({ brandIds });
   }
 
-  /** Replace mock catalog with API results. */
-  setProductsFromApi(products: typeof CATALOG_LISTING_PRODUCTS): void {
-    this.allProducts.set(products);
+  toggleDraftSpecification(specificationId: number, value: string): void {
+    this.draftFilters.update((current) => ({
+      ...current,
+      specificationSelections: toggleSpecificationSelection(
+        current.specificationSelections,
+        specificationId,
+        value,
+      ),
+    }));
+  }
+
+  toggleFilterSpecification(specificationId: number, value: string): void {
+    const current = this.filters();
+    this.patchFilters({
+      specificationSelections: toggleSpecificationSelection(
+        current.specificationSelections,
+        specificationId,
+        value,
+      ),
+    });
+  }
+
+  isSpecificationChecked(
+    specificationId: number,
+    value: string,
+    source: CatalogListingFilters,
+  ): boolean {
+    const selection = source.specificationSelections.find(
+      (item) => item.specificationId === specificationId,
+    );
+    return selection?.values.includes(value) ?? false;
+  }
+
+  private readRouteQueryParams() {
+    return this.router.routerState.snapshot.root.queryParamMap;
   }
 
   private isValidSort(value: string): value is CatalogSortOption {
     return ['featured', 'price-asc', 'price-desc', 'newest', 'rating', 'name'].includes(value);
   }
+}
+
+function toggleSpecificationSelection(
+  selections: CatalogListingFilters['specificationSelections'],
+  specificationId: number,
+  value: string,
+): CatalogListingFilters['specificationSelections'] {
+  const next = selections.map((item) => ({
+    specificationId: item.specificationId,
+    values: [...item.values],
+  }));
+  const index = next.findIndex((item) => item.specificationId === specificationId);
+
+  if (index === -1) {
+    return [...next, { specificationId, values: [value] }];
+  }
+
+  const values = next[index].values;
+  next[index].values = values.includes(value)
+    ? values.filter((entry) => entry !== value)
+    : [...values, value];
+
+  return next.filter((item) => item.values.length > 0);
 }

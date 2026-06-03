@@ -14,6 +14,8 @@ export class ApiEndpoints {
   static readonly EcPublicCatalog = {
     categoriesTree: '/api/services/app/EcPublicCatalog/GetCategoriesTree',
     brands: '/api/services/app/EcPublicCatalog/GetBrands',
+    productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
+    searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
   };
 
   static readonly EcCart = {

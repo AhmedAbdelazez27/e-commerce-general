@@ -19,6 +19,7 @@ export class CatalogFilterPanelComponent {
 
   readonly categories = this.facade.categories;
   readonly brands = this.facade.brands;
+  readonly specifications = this.facade.specifications;
   readonly priceBounds = this.facade.priceBounds;
 
   readonly ratingOptions = [4, 3, 2, 1] as const;
@@ -76,6 +77,18 @@ export class CatalogFilterPanelComponent {
 
   onOffersChange(checked: boolean): void {
     this.patch({ offersOnly: checked });
+  }
+
+  isSpecificationChecked(specificationId: number, value: string): boolean {
+    return this.facade.isSpecificationChecked(specificationId, value, this.filters());
+  }
+
+  onSpecificationChange(specificationId: number, value: string): void {
+    if (this.live()) {
+      this.facade.toggleFilterSpecification(specificationId, value);
+    } else {
+      this.facade.toggleDraftSpecification(specificationId, value);
+    }
   }
 
   private patch(partial: Partial<CatalogListingFilters>): void {

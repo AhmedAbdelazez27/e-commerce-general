@@ -1,4 +1,4 @@
-<div class="container py-5" style="max-width: 28rem">
+<div class="container " style="max-width: 55rem">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h2 mb-0">{{ 'PAGE.REGISTER' | translate }}</h1>
     <div class="d-flex gap-2">
@@ -7,63 +7,77 @@
     </div>
   </div>
 
-  <form class="shadow p-4" [formGroup]="form" (ngSubmit)="submit()">
-    <div class="mb-3">
-      <label class="form-label" for="reg-fullName">{{ 'AUTH.FULL_NAME' | translate }}</label>
-      <input id="reg-fullName" type="text" class="form-control" formControlName="fullName" autocomplete="name" />
+  <form class="login-box shadow p-4" [formGroup]="form" (ngSubmit)="submit()"
+    style="border-radius: 15px; overflow: hidden;">
+    <div class="row mb-4">
+       <h3>Personal Information</h3>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-fullName">{{ 'AUTH.FULL_NAME' | translate }}</label>
+          <input id="reg-fullName" type="text" class="form-control" formControlName="fullName" autocomplete="name" />
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-email">{{ 'AUTH.EMAIL' | translate }}</label>
+          <input id="reg-email" type="email" class="form-control" formControlName="email" autocomplete="email" />
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-mobile">{{ 'AUTH.MOBILE' | translate }}</label>
+          <input id="reg-mobile" type="tel" class="form-control" formControlName="mobile" autocomplete="tel" />
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-birth">{{ 'AUTH.BIRTH_DATE' | translate }}</label>
+          <input id="reg-birth" type="date" class="form-control" formControlName="birthDate" />
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-gender">{{ 'AUTH.GENDER' | translate }}</label>
+          <select id="reg-gender" class="form-select" formControlName="gender">
+            <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
+            <option value="male">{{ 'AUTH.GENDER_MALE' | translate }}</option>
+            <option value="female">{{ 'AUTH.GENDER_FEMALE' | translate }}</option>
+          </select>
+        </div>
+      </div>
+     
+      
     </div>
 
-    <div class="mb-3">
-      <label class="form-label" for="reg-email">{{ 'AUTH.EMAIL' | translate }}</label>
-      <input id="reg-email" type="email" class="form-control" formControlName="email" autocomplete="email" />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="reg-mobile">{{ 'AUTH.MOBILE' | translate }}</label>
-      <input id="reg-mobile" type="tel" class="form-control" formControlName="mobile" autocomplete="tel" />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="reg-password">{{ 'AUTH.PASSWORD' | translate }}</label>
-      <input id="reg-password" type="password" class="form-control" formControlName="password" autocomplete="new-password" />
-      @if (form.controls.password.touched && form.controls.password.invalid) {
-        <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
-      }
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="reg-confirm">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
-      <input
-        id="reg-confirm"
-        type="password"
-        class="form-control"
-        formControlName="confirmPassword"
-        autocomplete="new-password"
-      />
-      @if (form.touched && form.errors?.['mismatch']) {
-        <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MISMATCH' | translate }}</div>
-      }
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="reg-birth">{{ 'AUTH.BIRTH_DATE' | translate }}</label>
-      <input id="reg-birth" type="date" class="form-control" formControlName="birthDate" />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label" for="reg-gender">{{ 'AUTH.GENDER' | translate }}</label>
-      <select id="reg-gender" class="form-select" formControlName="gender">
-        <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
-        <option value="male">{{ 'AUTH.GENDER_MALE' | translate }}</option>
-        <option value="female">{{ 'AUTH.GENDER_FEMALE' | translate }}</option>
-      </select>
+    <div class="row mb-4">
+      <h3>Password</h3>
+       <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-password">{{ 'AUTH.PASSWORD' | translate }}</label>
+          <input id="reg-password" type="password" class="form-control" formControlName="password"
+            autocomplete="new-password" />
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+          <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
+          }
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="mb-3">
+          <label class="form-label" for="reg-confirm">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
+          <input id="reg-confirm" type="password" class="form-control" formControlName="confirmPassword"
+            autocomplete="new-password" />
+          @if (form.touched && form.errors?.['mismatch']) {
+          <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MISMATCH' | translate }}</div>
+          }
+        </div>
+      </div>
     </div>
 
     <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading()">
       @if (loading()) {
-        {{ 'COMMON.LOADING' | translate }}
+      {{ 'COMMON.LOADING' | translate }}
       } @else {
-        {{ 'PAGE.REGISTER' | translate }}
+      {{ 'PAGE.REGISTER' | translate }}
       }
     </button>
 

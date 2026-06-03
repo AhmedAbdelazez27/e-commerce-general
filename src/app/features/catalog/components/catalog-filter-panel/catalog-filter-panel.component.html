@@ -10,7 +10,7 @@
               [checked]="isCategoryChecked(cat.id)"
               (change)="onCategoryChange(cat.id)"
             />
-            <span>{{ localizedName(cat) }}</span>
+            <span>{{ localizedName(cat) }}@if (cat.count != null) { ({{ cat.count }}) }</span>
           </label>
         </li>
       }
@@ -28,12 +28,32 @@
               [checked]="isBrandChecked(brand.id)"
               (change)="onBrandChange(brand.id)"
             />
-            <span>{{ localizedName(brand) }}</span>
+            <span>{{ localizedName(brand) }}@if (brand.count != null) { ({{ brand.count }}) }</span>
           </label>
         </li>
       }
     </ul>
   </fieldset>
+
+  @for (spec of specifications(); track spec.id) {
+    <fieldset class="catalog-filters__group">
+      <legend class="catalog-filters__legend">{{ localizedName(spec) }}</legend>
+      <ul class="catalog-filters__list">
+        @for (option of spec.options; track option.value) {
+          <li>
+            <label class="catalog-filters__check">
+              <input
+                type="checkbox"
+                [checked]="isSpecificationChecked(spec.id, option.value)"
+                (change)="onSpecificationChange(spec.id, option.value)"
+              />
+              <span>{{ option.displayValue }}@if (option.count != null) { ({{ option.count }}) }</span>
+            </label>
+          </li>
+        }
+      </ul>
+    </fieldset>
+  }
 
   <fieldset class="catalog-filters__group">
     <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.PRICE' | translate }}</legend>
@@ -43,8 +63,8 @@
         <input
           type="number"
           class="form-control form-control-sm"
-          [min]="priceBounds.min"
-          [max]="priceBounds.max"
+          [min]="priceBounds().min"
+          [max]="priceBounds().max"
           [value]="filters().minPrice ?? ''"
           (input)="onMinPriceChange($any($event.target).value)"
         />
@@ -54,8 +74,8 @@
         <input
           type="number"
           class="form-control form-control-sm"
-          [min]="priceBounds.min"
-          [max]="priceBounds.max"
+          [min]="priceBounds().min"
+          [max]="priceBounds().max"
           [value]="filters().maxPrice ?? ''"
           (input)="onMaxPriceChange($any($event.target).value)"
         />

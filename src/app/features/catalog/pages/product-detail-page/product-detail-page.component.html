@@ -1,5 +1,6 @@
-<div class="product-detail-page">
-  @if (loadState() === 'loading') {
+<div class="container">
+  <div class="product-detail-page">
+    @if (loadState() === 'loading') {
     <div class="product-detail-skeleton" aria-busy="true" [attr.aria-label]="'PRODUCT_DETAIL.LOADING' | translate">
       <div class="product-detail-skeleton__breadcrumb"></div>
       <div class="product-detail-skeleton__main">
@@ -13,7 +14,7 @@
         </div>
       </div>
     </div>
-  } @else if (loadState() === 'not-found') {
+    } @else if (loadState() === 'not-found') {
     <div class="product-detail-not-found">
       <div class="product-detail-not-found__icon" aria-hidden="true">
         <i class="fa-solid fa-box-open"></i>
@@ -22,17 +23,17 @@
       <p class="product-detail-not-found__text">{{ 'PRODUCT_DETAIL.NOT_FOUND_TEXT' | translate }}</p>
       <a routerLink="/shop" class="btn btn-primary">{{ 'PRODUCT_DETAIL.BACK_TO_SHOP' | translate }}</a>
     </div>
-  } @else if (product(); as p) {
-    <app-catalog-breadcrumb [items]="breadcrumbs()" />
+    } @else if (product(); as p) {
+    <div class="px-4">
+      <app-catalog-breadcrumb [items]="breadcrumbs()" />
+    </div>
 
-    <section class="product-detail-main" [class.product-detail-main--sold-out]="!p.isAvailable">
+
+    <section class="product-detail-main" [class.product-detail-main--sold-out]="!p.isAvailable"
+      style="width: 100% !important;">
       <div class="product-detail-main__gallery">
-        <app-product-gallery
-          [images]="p.images"
-          [selectedIndex]="selectedImageIndex()"
-          (selectedIndexChange)="selectedImageIndex.set($event)"
-          [mainAlt]="displayName()"
-        />
+        <app-product-gallery [images]="p.images" [selectedIndex]="selectedImageIndex()"
+          (selectedIndexChange)="selectedImageIndex.set($event)" [mainAlt]="displayName()" />
       </div>
 
       <div class="product-detail-main__buy">
@@ -43,24 +44,21 @@
         <h1 class="product-detail-main__title">{{ displayName() }}</h1>
 
         @if (p.rating != null || p.reviewCount != null) {
-          <div class="product-detail-main__rating">
-            <span class="product-detail-main__stars" aria-hidden="true">
-              @for (i of [0, 1, 2, 3, 4]; track i) {
-                <i
-                  class="fa-solid fa-star"
-                  [class.is-filled]="(p.rating ?? 0) >= i + 0.75"
-                ></i>
-              }
-            </span>
-            @if (p.rating != null) {
-              <span class="product-detail-main__rating-value">{{ p.rating | number: '1.1-1' }}</span>
+        <div class="product-detail-main__rating">
+          <span class="product-detail-main__stars" aria-hidden="true">
+            @for (i of [0, 1, 2, 3, 4]; track i) {
+            <i class="fa-solid fa-star" [class.is-filled]="(p.rating ?? 0) >= i + 0.75"></i>
             }
-            @if (p.reviewCount != null) {
-              <span class="product-detail-main__reviews">
-                ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
-              </span>
-            }
-          </div>
+          </span>
+          @if (p.rating != null) {
+          <span class="product-detail-main__rating-value">{{ p.rating | number: '1.1-1' }}</span>
+          }
+          @if (p.reviewCount != null) {
+          <span class="product-detail-main__reviews">
+            ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
+          </span>
+          }
+        </div>
         }
 
         <div class="product-detail-main__prices">
@@ -68,33 +66,29 @@
             {{ formatPrice(p.price) }} {{ currencyLabel() }}
           </span>
           @if (p.compareAtPrice; as oldPrice) {
-            @if (oldPrice > p.price) {
-              <span class="product-detail-main__compare">
-                {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
-              </span>
-            }
+          @if (oldPrice > p.price) {
+          <span class="product-detail-main__compare">
+            {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
+          </span>
+          }
           }
           @if (discountPercent(); as pct) {
-            <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
+          <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
           }
         </div>
 
-        <p
-          class="product-detail-main__availability"
-          [class.product-detail-main__availability--out]="!p.isAvailable"
-        >
+        <p class="product-detail-main__availability" [class.product-detail-main__availability--out]="!p.isAvailable">
           @if (p.isAvailable) {
-            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-            {{ 'PRODUCT_DETAIL.IN_STOCK' | translate }}
-            @if (p.stockQuantity <= 5) {
-              <span class="product-detail-main__stock-low">
-                — {{ 'PRODUCT_DETAIL.LOW_STOCK' | translate: { count: p.stockQuantity } }}
-              </span>
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          {{ 'PRODUCT_DETAIL.IN_STOCK' | translate }}
+          @if (p.stockQuantity <= 5) { <span class="product-detail-main__stock-low">
+            — {{ 'PRODUCT_DETAIL.LOW_STOCK' | translate: { count: p.stockQuantity } }}
+            </span>
             }
-          } @else {
+            } @else {
             <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
             {{ 'PRODUCT_DETAIL.SOLD_OUT' | translate }}
-          }
+            }
         </p>
 
         <div class="product-detail-main__sku">
@@ -104,44 +98,25 @@
         <div class="product-detail-main__quantity">
           <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.QUANTITY' | translate }}</span>
           <div class="product-detail-main__quantity-control">
-            <button
-              type="button"
-              class="btn btn-outline-secondary btn-sm"
-              (click)="decrementQuantity()"
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="decrementQuantity()"
               [disabled]="!p.isAvailable || quantity() <= 1"
-              [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate"
-            >
+              [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate">
               −
             </button>
-            <input
-              type="number"
-              class="form-control form-control-sm"
-              [value]="quantity()"
-              [min]="1"
-              [max]="maxQuantity()"
-              [disabled]="!p.isAvailable"
-              (input)="onQuantityInput($event)"
-              [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate"
-            />
-            <button
-              type="button"
-              class="btn btn-outline-secondary btn-sm"
-              (click)="incrementQuantity()"
+            <input type="number" class="form-control form-control-sm" [value]="quantity()" [min]="1"
+              [max]="maxQuantity()" [disabled]="!p.isAvailable" (input)="onQuantityInput($event)"
+              [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate" />
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="incrementQuantity()"
               [disabled]="!p.isAvailable || quantity() >= maxQuantity()"
-              [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate"
-            >
+              [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate">
               +
             </button>
           </div>
         </div>
 
         <div class="product-detail-main__actions ">
-          <button
-            type="button"
-            class="btn btn-primary btn-lg btn-black"
-            [disabled]="!p.isAvailable"
-            (click)="addToCart()"
-          >
+          <button type="button" class="btn btn-primary btn-lg btn-black" [disabled]="!p.isAvailable"
+            (click)="addToCart()">
             <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
             {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
           </button>
@@ -153,12 +128,8 @@
           >
             {{ 'PRODUCT_DETAIL.BUY_NOW' | translate }}
           </button> -->
-          <button
-            type="button"
-            class="btn btn-outline-secondary btn-outline-black"
-            [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
-            (click)="onWishlist()"
-          >
+          <button type="button" class="btn btn-outline-secondary btn-outline-black"
+            [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate" (click)="onWishlist()">
             <i class="fa-regular fa-heart" aria-hidden="true"></i>
             Add to Wishlist
           </button>
@@ -168,12 +139,8 @@
 
     <app-product-detail-info [product]="p" />
 
-    <app-product-detail-related
-      [products]="relatedProducts()"
-      (productClick)="onRelatedClick($event)"
-      (addToCart)="onRelatedAddToCart($event)"
-      (addToWishlist)="onWishlist()"
-      (quickView)="onRelatedClick($event)"
-    />
-  }
+    <app-product-detail-related [products]="relatedProducts()" (productClick)="onRelatedClick($event)"
+      (addToCart)="onRelatedAddToCart($event)" (addToWishlist)="onWishlist()" (quickView)="onRelatedClick($event)" />
+    }
+  </div>
 </div>

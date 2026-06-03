@@ -269,6 +269,7 @@
     "BREADCRUMB_SEARCH": "نتائج البحث",
     "ALL_PRODUCTS": "جميع المنتجات",
     "PRODUCT_COUNT": "{{count}} منتج",
+    "LOADING": "جاري تحميل المنتجات…",
     "FILTERS": "التصفية",
     "SORT_LABEL": "ترتيب حسب",
     "VIEW_MODE": "طريقة العرض",

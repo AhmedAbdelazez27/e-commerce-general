@@ -269,6 +269,7 @@
     "BREADCRUMB_SEARCH": "Search results",
     "ALL_PRODUCTS": "All products",
     "PRODUCT_COUNT": "{{count}} products",
+    "LOADING": "Loading products…",
     "FILTERS": "Filters",
     "SORT_LABEL": "Sort by",
     "VIEW_MODE": "View mode",
