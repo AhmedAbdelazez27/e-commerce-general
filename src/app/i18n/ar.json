@@ -356,6 +356,7 @@
     "LOW_STOCK": "متبقي {{count}} فقط",
     "SOLD_OUT": "نفدت الكمية",
     "SKU": "رمز المنتج",
+    "VARIANT": "النسخة",
     "QUANTITY": "الكمية",
     "QTY_INCREASE": "زيادة الكمية",
     "QTY_DECREASE": "تقليل الكمية",

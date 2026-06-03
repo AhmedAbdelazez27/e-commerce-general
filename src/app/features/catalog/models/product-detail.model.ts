@@ -14,14 +14,26 @@ export interface ProductDetailSpec {
 
 export type ProductDetailInfoTab = 'description' | 'specifications' | 'shipping';
 
+export interface ProductDetailVariant {
+  id: number;
+  productId: number;
+  name: string;
+  sku: string;
+  price: number;
+  compareAtPrice?: number;
+  isAvailable: boolean;
+}
+
 export interface ProductDetail {
   id: number;
+  slug?: string;
   nameEn: string;
   nameAr: string;
   brandId: string;
   brandNameEn: string;
   brandNameAr: string;
   categoryId: string;
+  categorySlug?: string;
   categoryNameEn: string;
   categoryNameAr: string;
   price: number;
@@ -42,6 +54,20 @@ export interface ProductDetail {
   returnsInfoAr: string;
   isNew?: boolean;
   isBestSeller?: boolean;
+  hasVariants?: boolean;
+  selectedVariantId?: number | null;
+  productVariantId?: number | null;
 }
 
 export type ProductDetailLoadState = 'idle' | 'loading' | 'loaded' | 'not-found';
+
+export interface ProductDetailVariantContext {
+  images: ProductDetailImage[];
+  specifications: ProductDetailSpec[];
+  price: number;
+  compareAtPrice?: number;
+  discountPercent?: number;
+  sku: string;
+  isAvailable: boolean;
+  productVariantId: number | null;
+}

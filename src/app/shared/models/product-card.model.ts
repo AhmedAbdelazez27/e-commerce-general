@@ -1,6 +1,7 @@
 /** Data contract for `app-product-card`. */
 export interface ProductCardData {
   id: number;
+  slug?: string;
   title: string;
   /** Optional Arabic title; used when `LanguageService` is `ar`. */
   titleAr?: string;

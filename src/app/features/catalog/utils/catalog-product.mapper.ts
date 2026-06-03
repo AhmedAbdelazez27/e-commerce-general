@@ -8,6 +8,7 @@ export function mapCatalogProductToCardData(product: CatalogListingProduct): Pro
 
   return {
     id: product.id,
+    slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: product.brandNameEn,

@@ -29,6 +29,11 @@ export function productDetailDiscountPercent(product: ProductDetail): number | n
 }
 
 export function buildProductDetailBreadcrumbs(product: ProductDetail): CatalogBreadcrumbItem[] {
+  const categoryQuery: Record<string, string> = { categoryId: product.categoryId };
+  if (product.categorySlug) {
+    categoryQuery['category'] = product.categorySlug;
+  }
+
   return [
     { labelKey: 'PAGE.HOME', route: '/home' },
     { labelKey: 'PAGE.SHOP', route: '/shop' },
@@ -36,7 +41,7 @@ export function buildProductDetailBreadcrumbs(product: ProductDetail): CatalogBr
       labelEn: product.categoryNameEn,
       labelAr: product.categoryNameAr,
       route: '/shop',
-      queryParams: { category: product.categoryId },
+      queryParams: categoryQuery,
     },
     {
       labelEn: product.nameEn,

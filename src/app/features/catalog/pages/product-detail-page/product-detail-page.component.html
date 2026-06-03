@@ -95,6 +95,27 @@
           {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
         </div>
 
+        @if (variants().length > 1) {
+          <div class="product-detail-main__variants">
+            <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.VARIANT' | translate }}</span>
+            <div class="product-detail-main__variant-list" role="listbox">
+              @for (variant of variants(); track variant.id) {
+                <button
+                  type="button"
+                  class="btn btn-sm"
+                  role="option"
+                  [class.btn-primary]="p.selectedVariantId === variant.id"
+                  [class.btn-outline-secondary]="p.selectedVariantId !== variant.id"
+                  [disabled]="!variant.isAvailable"
+                  (click)="onVariantSelect(variant.id)"
+                >
+                  {{ variant.name }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         <div class="product-detail-main__quantity">
           <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.QUANTITY' | translate }}</span>
           <div class="product-detail-main__quantity-control">

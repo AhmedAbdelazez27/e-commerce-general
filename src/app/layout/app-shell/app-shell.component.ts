@@ -58,14 +58,18 @@ export class AppShellComponent implements OnInit {
   private metricsObserver: ResizeObserver | null = null;
 
   constructor() {
+    effect(() => {
+      if (this.isHomeViewport()) {
+        this.bindHomeHeroHeight();
+      } else {
+        this.clearHomeHeroHeight();
+      }
+    });
+
     afterNextRender(() => {
-      effect(() => {
-        if (this.isHomeViewport()) {
-          this.bindHomeHeroHeight();
-        } else {
-          this.clearHomeHeroHeight();
-        }
-      });
+      if (this.isHomeViewport()) {
+        this.bindHomeHeroHeight();
+      }
     });
 
     this.destroyRef.onDestroy(() => {

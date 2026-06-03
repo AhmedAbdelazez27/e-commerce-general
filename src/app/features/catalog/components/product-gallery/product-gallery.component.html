@@ -1,7 +1,13 @@
 <div class="product-gallery">
   <div class="product-gallery__main">
-    @if (activeImage().url) {
-      <img [src]="activeImage().url" [alt]="mainAlt()" />
+    @if (activeImage(); as image) {
+      @if (image.url) {
+        <img [src]="image.url" [alt]="mainAlt()" />
+      } @else {
+        <div class="product-gallery__placeholder" aria-hidden="true">
+          <i class="fa-solid fa-image"></i>
+        </div>
+      }
     } @else {
       <div class="product-gallery__placeholder" aria-hidden="true">
         <i class="fa-solid fa-image"></i>

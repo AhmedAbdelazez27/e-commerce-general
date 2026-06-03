@@ -1,0 +1,128 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { ApiEndpoints } from '../../../core/constants/api-endpoints';
+import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import {
+  GetProductDetailsParams,
+  PublicFinalPriceDto,
+  PublicProductDetailsDto,
+  PublicProductImageDto,
+  PublicProductSpecificationDto,
+  PublicProductVariantDto,
+  PublicRelatedProductDto,
+} from '../models/catalog-public-product.model';
+
+@Injectable({ providedIn: 'root' })
+export class ProductDetailApiService {
+  private readonly http = inject(HttpClient);
+
+  getProductDetails(params: GetProductDetailsParams): Observable<PublicProductDetailsDto | null> {
+    let httpParams = new HttpParams();
+    if (params.lang) {
+      httpParams = httpParams.set('Lang', params.lang);
+    }
+    if (params.productId != null && params.productId > 0) {
+      httpParams = httpParams.set('ProductId', String(params.productId));
+    }
+    if (params.slug?.trim()) {
+      httpParams = httpParams.set('Slug', params.slug.trim());
+    }
+
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productDetails, { params: httpParams })
+      .pipe(
+        map((res) => resultFromAbpEnvelope<PublicProductDetailsDto>(res)),
+        catchError(() => of(null)),
+      );
+  }
+
+  getProductVariants(productId: number, lang: string): Observable<PublicProductVariantDto[]> {
+    const params = new HttpParams().set('productId', String(productId)).set('lang', lang);
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productVariants, { params })
+      .pipe(
+        map((res) => resultArrayFromAbpEnvelope<PublicProductVariantDto>(res)),
+        catchError(() => of([])),
+      );
+  }
+
+  getProductImages(productId: number): Observable<PublicProductImageDto[]> {
+    const params = new HttpParams().set('productId', String(productId));
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productImages, { params })
+      .pipe(
+        map((res) => resultArrayFromAbpEnvelope<PublicProductImageDto>(res)),
+        catchError(() => of([])),
+      );
+  }
+
+  getVariantImages(productVariantId: number): Observable<PublicProductImageDto[]> {
+    const params = new HttpParams().set('productVariantId', String(productVariantId));
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.variantImages, { params })
+      .pipe(
+        map((res) => resultArrayFromAbpEnvelope<PublicProductImageDto>(res)),
+        catchError(() => of([])),
+      );
+  }
+
+  getProductSpecifications(
+    productId: number,
+    lang: string,
+    productVariantId?: number | null,
+  ): Observable<PublicProductSpecificationDto[]> {
+    let params = new HttpParams().set('productId', String(productId)).set('lang', lang);
+    if (productVariantId != null && productVariantId > 0) {
+      params = params.set('productVariantId', String(productVariantId));
+    }
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productSpecifications, { params })
+      .pipe(
+        map((res) => resultArrayFromAbpEnvelope<PublicProductSpecificationDto>(res)),
+        catchError(() => of([])),
+      );
+  }
+
+  getRelatedProducts(
+    productId: number,
+    lang: string,
+    maxResultCount = 8,
+  ): Observable<PublicRelatedProductDto[]> {
+    const params = new HttpParams()
+      .set('productId', String(productId))
+      .set('lang', lang)
+      .set('maxResultCount', String(maxResultCount > 0 ? maxResultCount : 8));
+
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.relatedProducts, { params })
+      .pipe(
+        map((res) => resultArrayFromAbpEnvelope<PublicRelatedProductDto>(res)),
+        catchError(() => of([])),
+      );
+  }
+
+  getFinalPrice(
+    productVariantId: number,
+    lang: string,
+    quantity = 1,
+    couponCode?: string,
+  ): Observable<PublicFinalPriceDto | null> {
+    let params = new HttpParams()
+      .set('ProductVariantId', String(productVariantId))
+      .set('Quantity', String(quantity))
+      .set('Lang', lang);
+    if (couponCode?.trim()) {
+      params = params.set('CouponCode', couponCode.trim());
+    }
+
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.finalPrice, { params })
+      .pipe(
+        map((res) => resultFromAbpEnvelope<PublicFinalPriceDto>(res)),
+        catchError(() => of(null)),
+      );
+  }
+}

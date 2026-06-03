@@ -356,6 +356,7 @@
     "LOW_STOCK": "Only {{count}} left",
     "SOLD_OUT": "Sold out",
     "SKU": "SKU",
+    "VARIANT": "Variant",
     "QUANTITY": "Quantity",
     "QTY_INCREASE": "Increase quantity",
     "QTY_DECREASE": "Decrease quantity",

@@ -12,8 +12,11 @@ import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/
 import { ProductDetailInfoComponent } from '../../components/product-detail-info/product-detail-info.component';
 import { ProductDetailRelatedComponent } from '../../components/product-detail-related/product-detail-related.component';
 import { ProductGalleryComponent } from '../../components/product-gallery/product-gallery.component';
-import { ProductDetail, ProductDetailLoadState } from '../../models/product-detail.model';
+import { ProductDetail, ProductDetailLoadState, ProductDetailVariant } from '../../models/product-detail.model';
+import { ProductDetailLoadRef } from '../../models/catalog-public-product.model';
 import { ProductDetailService } from '../../services/product-detail.service';
+import { navigateToProductDetail } from '../../utils/catalog-navigation.util';
+import { parseProductRouteParam } from '../../utils/product-detail-api.mapper';
 import {
   buildProductDetailBreadcrumbs,
   localizedBrandName,
@@ -46,9 +49,12 @@ export class ProductDetailPageComponent implements OnInit {
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
+  readonly variants = signal<ProductDetailVariant[]>([]);
   readonly relatedProducts = signal<ProductCardData[]>([]);
   readonly quantity = signal(1);
   readonly selectedImageIndex = signal(0);
+
+  private currentRef = signal<ProductDetailLoadRef>({});
 
   readonly breadcrumbs = computed(() => {
     const p = this.product();
@@ -72,13 +78,21 @@ export class ProductDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const id = Number(params.get('id'));
-      if (!Number.isFinite(id) || id <= 0) {
+      const ref = parseProductRouteParam(params.get('id'));
+      if (!ref.productId && !ref.slug) {
         this.loadState.set('not-found');
         this.product.set(null);
         return;
       }
-      this.loadProduct(id);
+      this.currentRef.set(ref);
+      this.loadProduct(ref);
+    });
+
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const ref = this.currentRef();
+      if (ref.productId || ref.slug) {
+        this.loadProduct(ref);
+      }
     });
   }
 
@@ -94,7 +108,7 @@ export class ProductDetailPageComponent implements OnInit {
 
   brandQueryParams(): Record<string, string> | undefined {
     const p = this.product();
-    return p ? { brand: p.brandId } : undefined;
+    return p?.brandId ? { brand: p.brandId } : undefined;
   }
 
   formatPrice(value: number): string {
@@ -103,16 +117,34 @@ export class ProductDetailPageComponent implements OnInit {
 
   decrementQuantity(): void {
     this.quantity.update((q) => Math.max(1, q - 1));
+    this.refreshDisplayedPrice();
   }
 
   incrementQuantity(): void {
     this.quantity.update((q) => Math.min(this.maxQuantity(), q + 1));
+    this.refreshDisplayedPrice();
   }
 
   onQuantityInput(event: Event): void {
     const raw = Number((event.target as HTMLInputElement).value);
     const next = Number.isFinite(raw) ? Math.floor(raw) : 1;
     this.quantity.set(Math.min(this.maxQuantity(), Math.max(1, next)));
+    this.refreshDisplayedPrice();
+  }
+
+  onVariantSelect(variantId: number): void {
+    const product = this.product();
+    const variant = this.variants().find((entry) => entry.id === variantId);
+    if (!product || !variant || product.selectedVariantId === variantId) {
+      return;
+    }
+
+    this.productDetailService
+      .selectVariant(product, variant, this.quantity())
+      .subscribe((updated) => {
+        this.product.set(updated);
+        this.selectedImageIndex.set(0);
+      });
   }
 
   addToCart(): void {
@@ -142,27 +174,30 @@ export class ProductDetailPageComponent implements OnInit {
   }
 
   onRelatedClick(item: ProductCardData): void {
-    void this.router.navigate(['/shop', item.id]);
+    navigateToProductDetail(this.router, item);
   }
 
-  private loadProduct(id: number): void {
+  private loadProduct(ref: ProductDetailLoadRef): void {
     this.loadState.set('loading');
     this.product.set(null);
+    this.variants.set([]);
     this.quantity.set(1);
     this.selectedImageIndex.set(0);
 
     this.productDetailService
-      .load(id)
+      .load(ref)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ product, related }) => {
+        next: ({ product, variants, related }) => {
           if (!product) {
             this.loadState.set('not-found');
             this.product.set(null);
+            this.variants.set([]);
             this.relatedProducts.set(mapRelatedToCardData(related));
             return;
           }
           this.product.set(product);
+          this.variants.set(variants);
           this.relatedProducts.set(mapRelatedToCardData(related));
           this.loadState.set('loaded');
         },
@@ -170,5 +205,16 @@ export class ProductDetailPageComponent implements OnInit {
           this.loadState.set('not-found');
         },
       });
+  }
+
+  private refreshDisplayedPrice(): void {
+    const product = this.product();
+    if (!product?.productVariantId) {
+      return;
+    }
+
+    this.productDetailService
+      .refreshPrice(product, this.quantity())
+      .subscribe((updated) => this.product.set(updated));
   }
 }

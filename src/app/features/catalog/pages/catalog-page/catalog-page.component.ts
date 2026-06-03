@@ -13,6 +13,7 @@ import { CatalogListingHeaderComponent } from '../../components/catalog-listing-
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { CatalogListingFacade } from '../../services/catalog-listing.facade';
+import { navigateToProductDetail } from '../../utils/catalog-navigation.util';
 import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper';
 
 @Component({
@@ -72,7 +73,7 @@ export class CatalogPageComponent implements OnInit {
   }
 
   onProductClick(product: ProductCardData): void {
-    void this.router.navigate(['/shop', product.id]);
+    navigateToProductDetail(this.router, product);
   }
 
   onAddToCart(product: ProductCardData): void {
@@ -83,7 +84,7 @@ export class CatalogPageComponent implements OnInit {
     // Wire to wishlist when ready
   }
 
-  onQuickView(_product: ProductCardData): void {
-    // Wire to quick-view modal when ready
+  onQuickView(product: ProductCardData): void {
+    navigateToProductDetail(this.router, product);
   }
 }

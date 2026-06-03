@@ -7,6 +7,7 @@ import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { StorefrontProduct } from '../../../../shared/models/storefront-product.model';
 import { mapStorefrontProductToCardData } from '../../../../shared/utils/product-card.util';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { navigateToProductDetail } from '../../../catalog/utils/catalog-navigation.util';
 import { HomeProductSectionConfig } from '../../models/home.model';
 
 @Component({
@@ -26,7 +27,7 @@ export class HomeProductSectionComponent {
   );
 
   onProductClick(product: ProductCardData): void {
-    void this.router.navigate(['/shop', product.id]);
+    navigateToProductDetail(this.router, product);
   }
 
   onAddToCart(product: ProductCardData): void {
@@ -37,7 +38,7 @@ export class HomeProductSectionComponent {
     // Wire to wishlist when available
   }
 
-  onQuickView(_product: ProductCardData): void {
-    // Wire to quick-view modal when available
+  onQuickView(product: ProductCardData): void {
+    navigateToProductDetail(this.router, product);
   }
 }

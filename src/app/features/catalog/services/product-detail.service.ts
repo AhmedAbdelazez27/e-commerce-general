@@ -1,94 +1,209 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
-import { catchError, delay } from 'rxjs/operators';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { CatalogApiService } from './catalog-api.service';
-import {
-  buildProductDetailFromListing,
-  getMockProductDetail,
-  getMockRelatedProducts,
-} from '../data/product-detail.mock';
-import { ProductDetail } from '../models/product-detail.model';
+import { LanguageService } from '../../../core/services/language.service';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
-import { CATALOG_LISTING_PRODUCTS } from '../data/catalog-listing.mock';
-import { ProductDetailDto } from '../models/product.model';
+import { ProductDetailLoadRef } from '../models/catalog-public-product.model';
+import { ProductDetail, ProductDetailVariant, ProductDetailVariantContext } from '../models/product-detail.model';
+import { ProductDetailApiService } from './product-detail-api.service';
+import {
+  applyFinalPriceToProduct,
+  applyVariantSelectionToProduct,
+  mapProductImages,
+  mapProductSpecifications,
+  mapProductVariants,
+  mapPublicProductDetailsToProductDetail,
+  mapRelatedProductsToListingProducts,
+  pickDefaultVariant,
+  resolveProductVariantId,
+} from '../utils/product-detail-api.mapper';
 
 export interface ProductDetailResult {
   product: ProductDetail | null;
+  variants: ProductDetailVariant[];
   related: CatalogListingProduct[];
 }
 
+const EMPTY_RESULT: ProductDetailResult = { product: null, variants: [], related: [] };
+
 @Injectable({ providedIn: 'root' })
 export class ProductDetailService {
-  private readonly catalogApi = inject(CatalogApiService);
+  private readonly api = inject(ProductDetailApiService);
+  private readonly language = inject(LanguageService);
 
-  /** Simulated latency for loading skeleton; set to 0 when using live API only. */
-  private readonly mockDelayMs = 280;
+  load(ref: ProductDetailLoadRef): Observable<ProductDetailResult> {
+    const lang = this.language.apiCulture();
 
-  load(id: number): Observable<ProductDetailResult> {
-    const mock = getMockProductDetail(id);
-    const related = getMockRelatedProducts(id);
+    return this.api.getProductDetails({ ...ref, lang }).pipe(
+      switchMap((details) => {
+        if (!details) {
+          return of(EMPTY_RESULT);
+        }
 
-    if (mock) {
-      return of({ product: mock, related }).pipe(delay(this.mockDelayMs));
-    }
+        const productId = details.id || details.productId || 0;
+        if (productId <= 0) {
+          return of(EMPTY_RESULT);
+        }
 
-    return this.catalogApi.getProductById(id).pipe(
-      map((dto) => this.mapApiResult(dto, id)),
-      catchError(() => of({ product: null, related: getMockRelatedProducts(id) })),
-      delay(this.mockDelayMs),
+        const nameEn = details.nameEn?.trim() || details.name;
+        const nameAr = details.nameAr?.trim() || details.name;
+
+        return forkJoin({
+          variants: this.api.getProductVariants(productId, lang),
+          images: this.api.getProductImages(productId),
+          specifications: this.api.getProductSpecifications(productId, lang),
+          related: this.api.getRelatedProducts(productId, lang),
+        }).pipe(
+          switchMap(({ variants, images, specifications, related }) => {
+            const variantList = mapProductVariants(variants);
+            const defaultVariant = pickDefaultVariant(variantList, details);
+            const productVariantId = resolveProductVariantId(defaultVariant, details);
+            const productImages = mapProductImages(images, nameEn, nameAr);
+
+            return this.buildVariantContext(
+              productId,
+              productVariantId,
+              defaultVariant,
+              productImages,
+              lang,
+              1,
+            ).pipe(
+              map((context) => {
+                let product = mapPublicProductDetailsToProductDetail(details, {
+                  images: context.images.length ? context.images : productImages,
+                  specifications:
+                    context.specifications.length > 0
+                      ? context.specifications
+                      : mapProductSpecifications(specifications),
+                });
+
+                product = applyVariantSelectionToProduct(product, defaultVariant, context);
+                product.hasVariants = variantList.length > 1;
+
+                return {
+                  product,
+                  variants: variantList,
+                  related: mapRelatedProductsToListingProducts(
+                    related,
+                    this.language.currentLang(),
+                  ),
+                };
+              }),
+            );
+          }),
+        );
+      }),
+      catchError(() => of(EMPTY_RESULT)),
     );
   }
 
-  /** Swap mock catalog with API-sourced listing + detail enrichment. */
-  setMockCatalogProducts(products: CatalogListingProduct[]): void {
-    products.forEach((p) => {
-      // Rebuild detail map when API products are injected (extend as needed).
-      void buildProductDetailFromListing(p);
-    });
+  selectVariant(
+    product: ProductDetail,
+    variant: ProductDetailVariant,
+    quantity: number,
+  ): Observable<ProductDetail> {
+    const lang = this.language.apiCulture();
+
+    return this.buildVariantContext(
+      product.id,
+      variant.id,
+      variant,
+      product.images,
+      lang,
+      quantity,
+      true,
+    ).pipe(
+      switchMap((context) =>
+        this.api.getProductSpecifications(product.id, lang, variant.id).pipe(
+          map((specifications) => {
+            const next = applyVariantSelectionToProduct(product, variant, {
+              ...context,
+              specifications: mapProductSpecifications(specifications),
+            });
+            return next;
+          }),
+        ),
+      ),
+    );
   }
 
-  private mapApiResult(dto: ProductDetailDto | null, id: number): ProductDetailResult {
-    if (!dto) {
-      return { product: null, related: getMockRelatedProducts(id) };
+  refreshPrice(product: ProductDetail, quantity: number): Observable<ProductDetail> {
+    const variantId = product.productVariantId;
+    if (variantId == null || variantId <= 0) {
+      return of(product);
     }
 
-    const listing = CATALOG_LISTING_PRODUCTS.find((p) => p.id === dto.Id);
-    if (listing) {
-      return {
-        product: buildProductDetailFromListing(listing),
-        related: getMockRelatedProducts(id),
-      };
-    }
+    return this.api.getFinalPrice(variantId, this.language.apiCulture(), quantity).pipe(
+      map((finalPrice) => (finalPrice ? applyFinalPriceToProduct(product, finalPrice) : product)),
+      catchError(() => of(product)),
+    );
+  }
 
-    const synthetic: CatalogListingProduct = {
-      id: dto.Id,
-      nameEn: dto.NameEn,
-      nameAr: dto.NameAr,
-      price: dto.Price,
-      compareAtPrice: dto.CompareAtPrice,
-      categoryId: 'general',
-      categoryNameEn: dto.CategoryName ?? 'General',
-      categoryNameAr: dto.CategoryName ?? 'عام',
-      brandId: 'general',
-      brandNameEn: dto.BrandName ?? 'Brand',
-      brandNameAr: dto.BrandName ?? 'علامة',
-      reviewCount: dto.ReviewCount,
-      discountPercent: dto.DiscountPercent,
-      imageUrl: dto.ImageUrl,
-      isAvailable: (dto.StockQuantity ?? 1) > 0,
-      createdAt: new Date().toISOString(),
-    };
+  private buildVariantContext(
+    productId: number,
+    productVariantId: number | null,
+    variant: ProductDetailVariant | null,
+    fallbackImages: ProductDetail['images'],
+    lang: string,
+    quantity: number,
+    preferVariantImages = false,
+  ): Observable<ProductDetailVariantContext> {
+    const images$ =
+      productVariantId != null && preferVariantImages
+        ? this.api.getVariantImages(productVariantId).pipe(
+            switchMap((variantImages) =>
+              variantImages.length > 0
+                ? of(variantImages)
+                : this.api.getProductImages(productId),
+            ),
+          )
+        : of([]);
 
-    return {
-      product: {
-        ...buildProductDetailFromListing(synthetic),
-        descriptionEn: dto.DescriptionEn ?? synthetic.nameEn,
-        descriptionAr: dto.DescriptionAr ?? synthetic.nameAr,
-        stockQuantity: dto.StockQuantity ?? 1,
-        sku: dto.Sku ?? `SKU-${dto.Id}`,
-      },
-      related: getMockRelatedProducts(id),
-    };
+    const specs$ =
+      productVariantId != null
+        ? this.api.getProductSpecifications(productId, lang, productVariantId)
+        : of([]);
+
+    const price$ =
+      productVariantId != null
+        ? this.api.getFinalPrice(productVariantId, lang, quantity)
+        : of(null);
+
+    return forkJoin({
+      images: images$,
+      specifications: specs$,
+      finalPrice: price$,
+    }).pipe(
+      map(({ images, specifications, finalPrice }) => {
+        const nameEn = fallbackImages[0]?.altEn ?? '';
+        const nameAr = fallbackImages[0]?.altAr ?? '';
+        const mappedImages =
+          images.length > 0 ? mapProductImages(images, nameEn, nameAr) : fallbackImages;
+
+        const price =
+          finalPrice?.finalPrice ??
+          variant?.price ??
+          (productVariantId != null ? 0 : 0);
+        const compareAtPrice =
+          finalPrice && finalPrice.basePrice > finalPrice.finalPrice
+            ? finalPrice.basePrice
+            : variant?.compareAtPrice;
+
+        return {
+          images: mappedImages,
+          specifications: mapProductSpecifications(specifications),
+          price,
+          compareAtPrice,
+          discountPercent:
+            compareAtPrice != null && price > 0
+              ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+              : undefined,
+          sku: variant?.sku ?? '',
+          isAvailable: variant?.isAvailable ?? true,
+          productVariantId,
+        };
+      }),
+    );
   }
 }

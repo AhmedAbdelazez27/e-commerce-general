@@ -16,6 +16,13 @@ export class ApiEndpoints {
     brands: '/api/services/app/EcPublicCatalog/GetBrands',
     productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
     searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
+    productDetails: '/api/services/app/EcPublicCatalog/GetProductDetails',
+    productVariants: '/api/services/app/EcPublicCatalog/GetProductVariants',
+    productImages: '/api/services/app/EcPublicCatalog/GetProductImages',
+    variantImages: '/api/services/app/EcPublicCatalog/GetVariantImages',
+    productSpecifications: '/api/services/app/EcPublicCatalog/GetProductSpecifications',
+    relatedProducts: '/api/services/app/EcPublicCatalog/GetRelatedProducts',
+    finalPrice: '/api/services/app/EcPublicCatalog/GetFinalPrice',
   };
 
   static readonly EcCart = {
