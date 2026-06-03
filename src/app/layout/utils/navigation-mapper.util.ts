@@ -1,7 +1,6 @@
 import { PublicBrandDto, PublicCategoryDto } from '../models/catalog-public.model';
+import { SHOP_ROUTE, categoryShopQueryParams } from '../../shared/utils/category-shop-link.util';
 import { NavCategory, NavMegaColumn, NavMegaLink } from '../models/layout.model';
-
-const SHOP_ROUTE = '/shop';
 
 function categoryLink(node: PublicCategoryDto): NavMegaLink {
   return {
@@ -9,7 +8,7 @@ function categoryLink(node: PublicCategoryDto): NavMegaLink {
     labelEn: node.nameEn,
     labelAr: node.nameAr,
     route: SHOP_ROUTE,
-    queryParams: { category: node.slug, categoryId: String(node.id) },
+    queryParams: categoryShopQueryParams(node),
   };
 }
 
@@ -35,7 +34,7 @@ function mapCategoryNode(node: PublicCategoryDto): NavCategory {
     labelEn: node.nameEn,
     labelAr: node.nameAr,
     route: SHOP_ROUTE,
-    queryParams: { category: node.slug, categoryId: String(node.id) },
+    queryParams: categoryShopQueryParams(node),
     megaMenu,
   };
 }

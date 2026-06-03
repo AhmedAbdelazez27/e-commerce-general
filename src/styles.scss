@@ -100,27 +100,6 @@ fieldset:disabled .btn {
     color: var(--ds-color-primary);
 }
 
-.home-categories__card {
-    transition: ease 0.5s !important;
-    border-radius: 10px;
-}
-
-.home-categories__card:hover {
-    background: var(--ds-color-primary);
-
-    .home-categories__icon {
-        color: var(--ds-color-background-subtle);
-    }
-
-    .home-categories__name,
-    .home-categories__count {
-        color: #fff;
-    }
-
-    i {
-        color: var(--ds-color-primary);
-    }
-}
 
 
 .product-card__badge--bestseller {

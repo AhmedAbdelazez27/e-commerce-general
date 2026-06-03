@@ -17,10 +17,19 @@ export const routes: Routes = [
         loadChildren: () => import('./features/brands/brands.routes').then((m) => m.brandsRoutes),
       },
       {
+        path: 'categories',
+        loadChildren: () =>
+          import('./features/categories/categories.routes').then((m) => m.categoriesRoutes),
+      },
+      {
         path: 'shop',
         loadChildren: () => import('./features/catalog/catalog.routes').then((m) => m.catalogRoutes),
       },
       { path: 'cart', loadChildren: () => import('./features/cart/cart.routes').then((m) => m.cartRoutes) },
+      {
+        path: 'wishlist',
+        loadChildren: () => import('./features/wishlist/wishlist.routes').then((m) => m.wishlistRoutes),
+      },
       {
         path: 'checkout',
         loadChildren: () => import('./features/checkout/checkout.routes').then((m) => m.checkoutRoutes),

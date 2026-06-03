@@ -7,6 +7,7 @@ import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { StorefrontProduct } from '../../../../shared/models/storefront-product.model';
 import { mapStorefrontProductToCardData } from '../../../../shared/utils/product-card.util';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { navigateToProductDetail } from '../../../catalog/utils/catalog-navigation.util';
 import { HomeProductSectionConfig } from '../../models/home.model';
 
@@ -18,6 +19,7 @@ import { HomeProductSectionConfig } from '../../models/home.model';
 export class HomeProductSectionComponent {
   private readonly router = inject(Router);
   private readonly cartActions = inject(CartActionsService);
+  private readonly wishlistActions = inject(WishlistActionsService);
 
   readonly section = input.required<HomeProductSectionConfig>();
   readonly products = input.required<StorefrontProduct[]>();
@@ -34,8 +36,8 @@ export class HomeProductSectionComponent {
     this.cartActions.addProductCard(product);
   }
 
-  onAddToWishlist(_product: ProductCardData): void {
-    // Wire to wishlist when available
+  onAddToWishlist(product: ProductCardData): void {
+    this.wishlistActions.toggle(product);
   }
 
   onQuickView(product: ProductCardData): void {

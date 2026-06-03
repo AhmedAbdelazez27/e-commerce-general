@@ -15,6 +15,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 
 import { CartService } from '../../core/services/cart.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
 import { AnnouncementBarComponent } from '../announcement-bar/announcement-bar.component';
 import { MobileNavDrawerComponent } from '../mobile-nav-drawer/mobile-nav-drawer.component';
@@ -37,6 +38,7 @@ import { StoreNavComponent } from '../store-nav/store-nav.component';
 export class AppShellComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly cart = inject(CartService);
+  private readonly wishlist = inject(WishlistService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
@@ -81,6 +83,7 @@ export class AppShellComponent implements OnInit {
 
   ngOnInit(): void {
     this.cart.refresh();
+    this.wishlist.refresh();
     this.syncScrollState();
   }
 

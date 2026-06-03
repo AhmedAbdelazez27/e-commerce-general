@@ -7,6 +7,8 @@
     "CHECKOUT": "Checkout",
     "ORDERS": "My orders",
     "PROFILE": "Profile",
+    "CATEGORIES": "All categories",
+    "WISHLIST": "Wishlist",
     "BRANDS": "Brands",
     "BRAND_DETAIL": "Brand",
     "LOGIN": "Sign in",
@@ -40,6 +42,12 @@
     "YES": "Yes",
     "NO": "No",
     "LOADING": "Loading…"
+  },
+  "CATEGORIES": {
+    "LOAD_FAILED": "Could not load categories. Please try again.",
+    "SUBCATEGORIES": "Subcategories",
+    "PAGE_SUBTITLE": "Browse all categories",
+    "SHOP_NOW": "Shop"
   },
   "PROFILE": {
     "LOAD_FAILED": "Could not load your profile. Please try again.",
@@ -193,7 +201,8 @@
     "CATEGORIES": {
       "TITLE": "Shop by category",
       "SUBTITLE": "Browse our most popular departments",
-      "PRODUCTS": "products"
+      "PRODUCTS": "products",
+      "FEATURED": "Featured"
     },
     "MOST_SEARCHED": {
       "TITLE": "Most searched",
@@ -304,6 +313,18 @@
       "TITLE": "No products found",
       "TEXT": "Try adjusting your filters or search terms.",
       "CLEAR": "Clear filters"
+    }
+  },
+  "WISHLIST": {
+    "TITLE": "Wishlist",
+    "SUBTITLE": "Save products you love and come back anytime.",
+    "ITEMS_COUNT": "{{count}} items",
+    "ADDED_SUCCESS": "{{name}} was added to your wishlist",
+    "REMOVED_SUCCESS": "{{name}} was removed from your wishlist",
+    "EMPTY": {
+      "TITLE": "Your wishlist is empty",
+      "TEXT": "Tap the heart on any product to save it here.",
+      "CTA": "Browse shop"
     }
   },
   "CART": {

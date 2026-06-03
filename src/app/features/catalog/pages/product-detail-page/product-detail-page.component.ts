@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
@@ -21,6 +22,7 @@ import {
   buildProductDetailBreadcrumbs,
   localizedBrandName,
   localizedProductName,
+  mapProductDetailToCardData,
   mapRelatedToCardData,
   productDetailDiscountPercent,
 } from '../../utils/product-detail.util';
@@ -46,6 +48,7 @@ export class ProductDetailPageComponent implements OnInit {
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly cartActions = inject(CartActionsService);
+  private readonly wishlistActions = inject(WishlistActionsService);
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
@@ -170,7 +173,15 @@ export class ProductDetailPageComponent implements OnInit {
   }
 
   onWishlist(): void {
-    // Wire to wishlist service when available
+    const p = this.product();
+    if (!p) {
+      return;
+    }
+    this.wishlistActions.toggle(mapProductDetailToCardData(p));
+  }
+
+  onRelatedWishlist(product: ProductCardData): void {
+    this.wishlistActions.toggle(product);
   }
 
   onRelatedClick(item: ProductCardData): void {

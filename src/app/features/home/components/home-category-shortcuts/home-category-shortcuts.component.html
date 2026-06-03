@@ -1,34 +1,30 @@
-<section class="home-section" aria-labelledby="home-categories-title">
-  <app-section-header
-    titleKey="HOME.CATEGORIES.TITLE"
-    subtitleKey="HOME.CATEGORIES.SUBTITLE"
-    viewAllRoute="/shop"
-  />
+@if (loading() || hasCategories()) {
+  <section class="home-section" aria-labelledby="home-categories-title">
+    <app-section-header
+      titleKey="HOME.CATEGORIES.TITLE"
+      subtitleKey="HOME.CATEGORIES.SUBTITLE"
+      viewAllRoute="/categories"
+    />
 
-  <ul class="home-categories">
-    @for (cat of categories(); track cat.id) {
-      <li>
-        <a
-          class="home-categories__card"
-          [routerLink]="cat.route"
-          [queryParams]="cat.queryParams"
-        >
-          <span class="home-categories__icon" aria-hidden="true">
-            @if (cat.imageUrl) {
-              <img [src]="cat.imageUrl" alt="" />
-            } @else {
-              <i [class]="cat.iconClass"></i>
-            }
-          </span>
-          <span class="home-categories__name">{{ cat.labelKey | translate }}</span>
-          @if (cat.productCount != null) {
-            <span class="home-categories__count">
-              {{ cat.productCount | number }}
-              {{ 'HOME.CATEGORIES.PRODUCTS' | translate }}
-            </span>
-          }
-        </a>
-      </li>
+    @if (loading()) {
+      <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+    } @else {
+      <ul class="home-categories">
+        @for (cat of categories(); track cat.id) {
+          <li>
+            <app-category-tile
+              [imageUrl]="cat.imageUrl"
+              [name]="categoryName(cat)"
+              [description]="categoryDescription(cat)"
+              [count]="cat.productCount"
+              [isFeatured]="cat.isFeatured"
+              [route]="cat.route"
+              [queryParams]="cat.queryParams"
+              variant="default"
+            />
+          </li>
+        }
+      </ul>
     }
-  </ul>
-</section>
+  </section>
+}

@@ -1,0 +1,30 @@
+<div class="container py-4 wishlist-page">
+  <app-catalog-breadcrumb [items]="breadcrumbs" />
+
+  <header class="wishlist-page__head mb-4">
+    <h1 class="h2 mb-1">{{ 'WISHLIST.TITLE' | translate }}</h1>
+    @if (!isEmpty()) {
+      <p class="text-muted mb-0">
+        {{ 'WISHLIST.ITEMS_COUNT' | translate: { count: itemCount() } }}
+      </p>
+    } @else {
+      <p class="text-muted mb-0">{{ 'WISHLIST.SUBTITLE' | translate }}</p>
+    }
+  </header>
+
+  @if (isEmpty()) {
+    <app-wishlist-empty-state />
+  } @else {
+    <div class="wishlist-page__grid">
+      @for (product of items(); track product.id) {
+        <app-product-card
+          [product]="product"
+          (productClick)="onProductClick($event)"
+          (addToCart)="onAddToCart($event)"
+          (addToWishlist)="onAddToWishlist($event)"
+          (quickView)="onQuickView($event)"
+        />
+      }
+    </div>
+  }
+</div>

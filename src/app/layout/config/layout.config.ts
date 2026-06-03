@@ -41,7 +41,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
   header: {
     searchPlaceholderKey: 'LAYOUT.SEARCH_PLACEHOLDER',
     shopRoute: '/shop',
-    wishlistRoute: '/shop',
+    wishlistRoute: '/wishlist',
     cartRoute: '/cart',
     loginRoute: '/auth/login',
     accountRoute: '/account/profile',

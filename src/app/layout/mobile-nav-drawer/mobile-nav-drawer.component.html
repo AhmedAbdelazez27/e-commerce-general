@@ -50,7 +50,10 @@
       </a>
 
       <a class="store-drawer__nav-link" [routerLink]="header.wishlistRoute" (click)="close()">
-        {{ 'LAYOUT.HEADER.WISHLIST' | translate }}
+        <span>{{ 'LAYOUT.HEADER.WISHLIST' | translate }}</span>
+        @if (wishlistCount() > 0) {
+          <span class="store-header__cart-badge">{{ wishlistCount() > 99 ? '99+' : wishlistCount() }}</span>
+        }
       </a>
 
       <a class="store-drawer__nav-link" [routerLink]="accountRoute()" (click)="close()">

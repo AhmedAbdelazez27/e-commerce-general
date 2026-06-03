@@ -55,6 +55,25 @@ export function mapRelatedToCardData(related: CatalogListingProduct[]): ProductC
   return related.map((p) => mapCatalogProductToCardData(p));
 }
 
+export function mapProductDetailToCardData(product: ProductDetail): ProductCardData {
+  const discount = productDetailDiscountPercent(product);
+
+  return {
+    id: product.id,
+    slug: product.slug,
+    title: product.nameEn,
+    titleAr: product.nameAr,
+    brand: product.brandNameEn,
+    image: product.images[0]?.url,
+    price: product.price,
+    oldPrice: product.compareAtPrice,
+    discountPercentage: discount ?? undefined,
+    rating: product.rating,
+    reviewsCount: product.reviewCount,
+    isAvailable: product.isAvailable,
+  };
+}
+
 export function listingProductHasOffer(product: CatalogListingProduct): boolean {
   return productHasOffer(product);
 }

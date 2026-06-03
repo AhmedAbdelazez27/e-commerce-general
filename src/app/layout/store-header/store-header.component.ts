@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
 
@@ -15,6 +16,7 @@ import { LAYOUT_CONFIG } from '../config/layout.config';
 })
 export class StoreHeaderComponent {
   private readonly cart = inject(CartService);
+  private readonly wishlist = inject(WishlistService);
   private readonly auth = inject(AuthTokenService);
   private readonly language = inject(LanguageService);
   private readonly router = inject(Router);
@@ -27,6 +29,7 @@ export class StoreHeaderComponent {
   readonly header = LAYOUT_CONFIG.header;
 
   readonly itemCount = this.cart.itemCount;
+  readonly wishlistCount = this.wishlist.itemCount;
   readonly currentLang = () => this.language.currentLang();
 
   // searchQuery = '';

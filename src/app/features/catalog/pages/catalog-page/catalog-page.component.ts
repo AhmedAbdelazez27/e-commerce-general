@@ -12,6 +12,7 @@ import { CatalogFilterPanelComponent } from '../../components/catalog-filter-pan
 import { CatalogListingHeaderComponent } from '../../components/catalog-listing-header/catalog-listing-header.component';
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { CatalogListingFacade } from '../../services/catalog-listing.facade';
 import { navigateToProductDetail } from '../../utils/catalog-navigation.util';
 import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper';
@@ -34,6 +35,7 @@ export class CatalogPageComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly cartActions = inject(CartActionsService);
+  private readonly wishlistActions = inject(WishlistActionsService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   readonly facade = inject(CatalogListingFacade);
@@ -80,8 +82,8 @@ export class CatalogPageComponent implements OnInit {
     this.cartActions.addProductCard(product);
   }
 
-  onAddToWishlist(_product: ProductCardData): void {
-    // Wire to wishlist when ready
+  onAddToWishlist(product: ProductCardData): void {
+    this.wishlistActions.toggle(product);
   }
 
   onQuickView(product: ProductCardData): void {

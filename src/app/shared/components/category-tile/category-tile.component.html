@@ -1,0 +1,32 @@
+<a
+  class="category-tile"
+  [class.category-tile--compact]="variant() === 'compact'"
+  [class.category-tile--hero]="variant() === 'hero'"
+  [routerLink]="route()"
+  [queryParams]="queryParams()"
+>
+  <span
+    class="category-tile__media"
+    [class.category-tile__media--placeholder]="isPlaceholder()"
+  >
+    <img [src]="displayImage()" [alt]="name()" loading="lazy" decoding="async" />
+    @if (isPlaceholder()) {
+      <i class="fa-solid fa-layer-group category-tile__placeholder-icon" aria-hidden="true"></i>
+    }
+    <span class="category-tile__overlay">
+      @if (isFeatured()) {
+        <span class="category-tile__badge">{{ 'HOME.CATEGORIES.FEATURED' | translate }}</span>
+      }
+      <span class="category-tile__name">{{ name() }}</span>
+      @if (description()) {
+        <span class="category-tile__desc">{{ description() }}</span>
+      }
+      <span class="category-tile__meta">
+        <span class="category-tile__count">
+          {{ count() | number }} {{ 'HOME.CATEGORIES.PRODUCTS' | translate }}
+        </span>
+        <span class="category-tile__cta">{{ 'CATEGORIES.SHOP_NOW' | translate }}</span>
+      </span>
+    </span>
+  </span>
+</a>

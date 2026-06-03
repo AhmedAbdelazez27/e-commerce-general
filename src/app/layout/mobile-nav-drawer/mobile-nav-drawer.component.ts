@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
 import { NavCategory, NavMegaColumn, NavLabelFields } from '../models/layout.model';
@@ -18,6 +19,7 @@ import { navColumnTitle, navItemLabel } from '../utils/nav-label.util';
 })
 export class MobileNavDrawerComponent {
   private readonly cart = inject(CartService);
+  private readonly wishlist = inject(WishlistService);
   private readonly auth = inject(AuthTokenService);
   private readonly language = inject(LanguageService);
   private readonly navigation = inject(NavigationService);
@@ -31,6 +33,7 @@ export class MobileNavDrawerComponent {
   readonly header = LAYOUT_CONFIG.header;
   readonly branding = LAYOUT_CONFIG.branding;
   readonly itemCount = this.cart.itemCount;
+  readonly wishlistCount = this.wishlist.itemCount;
 
   // searchQuery = '';
   expandedCategoryId: string | null = null;

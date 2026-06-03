@@ -161,7 +161,7 @@
     <app-product-detail-info [product]="p" />
 
     <app-product-detail-related [products]="relatedProducts()" (productClick)="onRelatedClick($event)"
-      (addToCart)="onRelatedAddToCart($event)" (addToWishlist)="onWishlist()" (quickView)="onRelatedClick($event)" />
+      (addToCart)="onRelatedAddToCart($event)" (addToWishlist)="onRelatedWishlist($event)" (quickView)="onRelatedClick($event)" />
     }
   </div>
 </div>

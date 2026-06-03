@@ -29,12 +29,18 @@ export interface HomeHeroConfig {
 
 export interface HomeCategoryShortcut {
   id: string;
-  labelKey: string;
+  labelKey?: string;
+  nameEn?: string;
+  nameAr?: string;
+  description?: string;
+  descriptionEn?: string;
+  descriptionAr?: string;
   route: string | string[];
   queryParams?: Record<string, string>;
-  iconClass: string;
-  productCount?: number;
-  imageUrl?: string;
+  iconClass?: string;
+  productCount: number;
+  imageUrl: string | null;
+  isFeatured: boolean;
 }
 
 export interface HomeProductSectionConfig {
@@ -93,7 +99,6 @@ export interface HomePageConfig {
     sectionTitleKey: string;
     items: HomeCuratedCollection[];
   };
-  categoryShortcuts: HomeCategoryShortcut[];
   productSections: HomeProductSectionConfig[];
   offers: HomeOfferCard[];
   brands: {
