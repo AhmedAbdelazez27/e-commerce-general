@@ -644,3 +644,12 @@ app-register-page {
     color: #ffdea5;
     border: 1px solid #ffdea5;
 }
+
+.category-tile{
+        border-radius: 10px;
+            transition: ease 0.3s !important;
+}
+
+.category-tile__media{
+    aspect-ratio: 1 / 1;
+}
