@@ -60,6 +60,7 @@ export function mapProductDetailToCardData(product: ProductDetail): ProductCardD
 
   return {
     id: product.id,
+    productVariantId: product.productVariantId ?? undefined,
     slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,

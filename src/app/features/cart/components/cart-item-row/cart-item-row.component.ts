@@ -18,7 +18,7 @@ export class CartItemRowComponent {
   readonly currencyLabel = input.required<string>();
   readonly disabled = input(false);
 
-  readonly quantityChange = output<{ productId: number; quantity: number }>();
+  readonly quantityChange = output<{ cartDetailId: number; quantity: number }>();
   readonly remove = output<number>();
 
   displayTitle(): string {
@@ -37,12 +37,12 @@ export class CartItemRowComponent {
 
   decrement(): void {
     const i = this.item();
-    this.quantityChange.emit({ productId: i.productId, quantity: i.quantity - 1 });
+    this.quantityChange.emit({ cartDetailId: i.cartDetailId, quantity: i.quantity - 1 });
   }
 
   increment(): void {
     const i = this.item();
-    this.quantityChange.emit({ productId: i.productId, quantity: i.quantity + 1 });
+    this.quantityChange.emit({ cartDetailId: i.cartDetailId, quantity: i.quantity + 1 });
   }
 
   onQuantityInput(event: Event): void {
@@ -50,12 +50,12 @@ export class CartItemRowComponent {
     const qty = Number.isFinite(raw) ? Math.floor(raw) : 1;
     const i = this.item();
     this.quantityChange.emit({
-      productId: i.productId,
+      cartDetailId: i.cartDetailId,
       quantity: Math.min(i.maxQuantity, Math.max(1, qty)),
     });
   }
 
   onRemove(): void {
-    this.remove.emit(this.item().productId);
+    this.remove.emit(this.item().cartDetailId);
   }
 }

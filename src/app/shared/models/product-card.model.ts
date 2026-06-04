@@ -1,6 +1,8 @@
 /** Data contract for `app-product-card`. */
 export interface ProductCardData {
   id: number;
+  /** Default variant for `EcCart/AddToCart`. */
+  productVariantId?: number;
   slug?: string;
   title: string;
   /** Optional Arabic title; used when `LanguageService` is `ar`. */

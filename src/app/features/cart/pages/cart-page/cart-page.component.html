@@ -1,6 +1,13 @@
 <div class="cart-page">
   <header class="cart-page__header">
-    <h1 class="cart-page__title">{{ 'CART.TITLE' | translate }}</h1>
+    <div class="cart-page__header-row">
+      <h1 class="cart-page__title">{{ 'CART.TITLE' | translate }}</h1>
+      @if (!facade.isEmpty()) {
+        <button type="button" class="btn btn-link btn-sm cart-page__clear" (click)="facade.clearCart()">
+          {{ 'CART.CLEAR' | translate }}
+        </button>
+      }
+    </div>
     @if (!facade.isEmpty()) {
       <p class="cart-page__count">
         {{ 'CART.ITEMS_COUNT' | translate: { count: facade.orderSummary().itemCount } }}
@@ -16,7 +23,7 @@
     <div class="cart-page__layout">
       <div class="cart-page__items">
         <ul class="cart-page__list">
-          @for (item of facade.lineItems(); track item.productId) {
+          @for (item of facade.lineItems(); track item.cartDetailId) {
             <li>
               <app-cart-item-row
                 [item]="item"

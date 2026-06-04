@@ -164,7 +164,7 @@ export class ProductDetailPageComponent implements OnInit {
       return;
     }
     this.cartActions.addProductDetailThen(p, this.quantity(), () => {
-      void this.router.navigate(['/checkout']);
+      void this.router.navigate(['/checkout/payment']);
     });
   }
 

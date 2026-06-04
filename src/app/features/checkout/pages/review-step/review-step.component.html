@@ -1,0 +1,37 @@
+<section class="checkout-step">
+  <h2 class="checkout-step__title">{{ 'CHECKOUT.STEP_REVIEW' | translate }}</h2>
+
+  <div class="checkout-review-meta">
+    <div class="checkout-review-meta__block">
+      <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</h3>
+      <p>{{ paymentLabelKey() | translate }}</p>
+    </div>
+    <div class="checkout-review-meta__block">
+      <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_ADDRESS' | translate }}</h3>
+      <p>{{ addressText() }}</p>
+    </div>
+    <div class="checkout-review-meta__block">
+      <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
+      <p>{{ shippingLabelKey() | translate }}</p>
+    </div>
+  </div>
+
+  <div class="checkout-review-layout">
+    <app-checkout-order-summary
+      [lineItems]="lineItems()"
+      [totals]="totals()"
+      [currencyLabel]="'PRODUCT_CARD.CURRENCY' | translate"
+    />
+  </div>
+
+  <div class="checkout-step__actions">
+    <a routerLink="/checkout/address" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK' | translate }}</a>
+    <button type="button" class="btn btn-primary btn-lg" [disabled]="placing() || lineItems().length === 0" (click)="placeOrder()">
+      @if (placing()) {
+        {{ 'COMMON.LOADING' | translate }}
+      } @else {
+        {{ 'CHECKOUT.CONFIRM_ORDER' | translate }}
+      }
+    </button>
+  </div>
+</section>

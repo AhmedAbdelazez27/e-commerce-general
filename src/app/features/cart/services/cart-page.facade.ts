@@ -50,15 +50,27 @@ export class CartPageFacade {
   });
 
   initPage(): void {
-    this.cartService.refresh();
+    const coupon =
+      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    this.cartService.refresh(coupon);
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    this.cartService.updateQuantity(productId, quantity);
+  updateQuantity(cartDetailId: number, quantity: number): void {
+    const coupon =
+      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    this.cartService.updateQuantity(cartDetailId, quantity, coupon);
   }
 
-  removeItem(productId: number): void {
-    this.cartService.removeItem(productId);
+  removeItem(cartDetailId: number): void {
+    const coupon =
+      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    this.cartService.removeItem(cartDetailId, coupon);
+  }
+
+  clearCart(): void {
+    const coupon =
+      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    this.cartService.clearCart(coupon).subscribe();
   }
 
   applyCoupon(): void {
@@ -82,11 +94,13 @@ export class CartPageFacade {
       appliedCode: coupon.code,
       messageKey: coupon.labelKey,
     });
+    this.cartService.refresh(coupon.code);
   }
 
   removeCoupon(): void {
     this.couponInput.set('');
     this.couponState.set({ status: 'idle', code: '' });
+    this.cartService.refresh(null);
   }
 
   tryCheckout(): boolean {

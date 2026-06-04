@@ -1,0 +1,17 @@
+<nav class="checkout-stepper" aria-label="Checkout progress">
+  <ol class="checkout-stepper__list">
+    @for (step of steps; track step.id; let i = $index) {
+      <li
+        class="checkout-stepper__item"
+        [class.checkout-stepper__item--active]="isActive(step)"
+        [class.checkout-stepper__item--complete]="isComplete(step)"
+      >
+        <span class="checkout-stepper__index">{{ i + 1 }}</span>
+        <span class="checkout-stepper__label">{{ step.labelKey | translate }}</span>
+      </li>
+      @if (i < steps.length - 1) {
+        <li class="checkout-stepper__divider" aria-hidden="true"></li>
+      }
+    }
+  </ol>
+</nav>

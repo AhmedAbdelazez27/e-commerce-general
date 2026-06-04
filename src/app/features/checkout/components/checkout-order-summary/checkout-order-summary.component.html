@@ -1,0 +1,46 @@
+<div class="checkout-review-items">
+  <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.ORDER_ITEMS' | translate }}</h3>
+  <ul class="checkout-review-items__list">
+    @for (item of lineItems(); track item.cartDetailId) {
+      <li class="checkout-review-items__row">
+        <div class="checkout-review-items__info">
+          <span class="checkout-review-items__name">{{ lineTitle(item) }}</span>
+          <span class="checkout-review-items__meta">× {{ item.quantity }}</span>
+        </div>
+        <span class="checkout-review-items__price">
+          {{ formatPrice(item.lineTotal) }} {{ currencyLabel() }}
+        </span>
+      </li>
+    }
+  </ul>
+</div>
+
+<aside class="cart-summary checkout-review-summary" [attr.aria-label]="'CHECKOUT.SUMMARY' | translate">
+  <h3 class="cart-summary__title">{{ 'CHECKOUT.SUMMARY' | translate }}</h3>
+  <dl class="cart-summary__rows">
+    <div class="cart-summary__row">
+      <dt>{{ 'CART.SUMMARY_SUBTOTAL' | translate }}</dt>
+      <dd>{{ formatPrice(totals().subtotal) }} {{ currencyLabel() }}</dd>
+    </div>
+    @if (totals().discount > 0) {
+      <div class="cart-summary__row cart-summary__row--discount">
+        <dt>{{ 'CART.SUMMARY_DISCOUNT' | translate }}</dt>
+        <dd>−{{ formatPrice(totals().discount) }} {{ currencyLabel() }}</dd>
+      </div>
+    }
+    <div class="cart-summary__row">
+      <dt>{{ 'CART.SUMMARY_DELIVERY' | translate }}</dt>
+      <dd>
+        @if (totals().shippingAmount === 0) {
+          {{ 'CART.SUMMARY_FREE_DELIVERY' | translate }}
+        } @else {
+          {{ formatPrice(totals().shippingAmount) }} {{ currencyLabel() }}
+        }
+      </dd>
+    </div>
+    <div class="cart-summary__row cart-summary__row--total">
+      <dt>{{ 'CART.SUMMARY_TOTAL' | translate }}</dt>
+      <dd>{{ formatPrice(totals().total) }} {{ currencyLabel() }}</dd>
+    </div>
+  </dl>
+</aside>

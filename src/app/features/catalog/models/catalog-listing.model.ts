@@ -60,6 +60,7 @@ export interface CatalogBrandOption {
 
 export interface CatalogListingProduct {
   id: number;
+  productVariantId?: number;
   slug?: string;
   nameEn: string;
   nameAr: string;

@@ -1,0 +1,24 @@
+<section class="checkout-step checkout-success">
+  <h2 class="checkout-step__title">{{ 'CHECKOUT.SUCCESS_TITLE' | translate }}</h2>
+  <p class="checkout-success__message">{{ 'CHECKOUT.SUCCESS_MESSAGE' | translate }}</p>
+
+  @if (order(); as o) {
+    <dl class="checkout-success__details">
+      <div class="checkout-success__row">
+        <dt>{{ 'CHECKOUT.ORDER_NUMBER' | translate }}</dt>
+        <dd>{{ o.orderNumber }}</dd>
+      </div>
+      @if (o.finalAmount != null) {
+        <div class="checkout-success__row">
+          <dt>{{ 'CHECKOUT.ORDER_TOTAL' | translate }}</dt>
+          <dd>{{ formatPrice(o.finalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+        </div>
+      }
+    </dl>
+  }
+
+  <div class="checkout-step__actions checkout-success__actions">
+    <a routerLink="/shop" class="btn btn-primary">{{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}</a>
+    <a routerLink="/account/orders" class="btn btn-outline-secondary">{{ 'CHECKOUT.VIEW_ORDERS' | translate }}</a>
+  </div>
+</section>

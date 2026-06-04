@@ -20,8 +20,14 @@ export class CartActionsService {
       return;
     }
 
+    const variantId = product.productVariantId;
+    if (variantId == null || variantId < 1) {
+      this.toastr.warning(this.translate.instant('CART.VARIANT_REQUIRED'));
+      return;
+    }
+
     const name = resolveProductCardTitle(product, this.language.currentLang());
-    this.cart.addItem(product.id, quantity, product.price, name).subscribe((ok) => {
+    this.cart.addItem(variantId, quantity).subscribe((ok) => {
       if (ok) {
         this.showAddedSuccess(name);
       } else {
@@ -36,11 +42,17 @@ export class CartActionsService {
       return;
     }
 
+    const variantId = product.productVariantId;
+    if (variantId == null || variantId < 1) {
+      this.toastr.warning(this.translate.instant('CART.VARIANT_REQUIRED'));
+      return;
+    }
+
     const qty = Math.min(Math.max(1, quantity), product.stockQuantity);
     const name =
       this.language.currentLang() === 'ar' ? product.nameAr : product.nameEn;
 
-    this.cart.addItem(product.id, qty, product.price, name).subscribe((ok) => {
+    this.cart.addItem(variantId, qty).subscribe((ok) => {
       if (ok) {
         this.showAddedSuccess(name);
       } else {
@@ -55,12 +67,19 @@ export class CartActionsService {
       return;
     }
 
+    const variantId = product.productVariantId;
+    if (variantId == null || variantId < 1) {
+      this.toastr.warning(this.translate.instant('CART.VARIANT_REQUIRED'));
+      return;
+    }
+
     const qty = Math.min(Math.max(1, quantity), product.stockQuantity);
     const name =
       this.language.currentLang() === 'ar' ? product.nameAr : product.nameEn;
 
-    this.cart.addItem(product.id, qty, product.price, name).subscribe((ok) => {
+    this.cart.addItem(variantId, qty).subscribe((ok) => {
       if (ok) {
+        this.showAddedSuccess(name);
         onSuccess();
       } else {
         this.toastr.error(this.translate.instant('CART.ADDED_ERROR'));

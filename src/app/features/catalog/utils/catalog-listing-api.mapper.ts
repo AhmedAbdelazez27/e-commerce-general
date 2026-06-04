@@ -195,6 +195,7 @@ export function mapSearchProductToListingProduct(
 
   return {
     id: item.productId ?? item.id,
+    productVariantId: item.price?.productVariantId,
     slug: item.slug,
     nameEn,
     nameAr,

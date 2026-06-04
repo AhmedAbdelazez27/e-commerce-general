@@ -28,12 +28,12 @@ export class CartPageComponent implements OnInit {
     this.facade.initPage();
   }
 
-  onQuantityChange(event: { productId: number; quantity: number }): void {
-    this.facade.updateQuantity(event.productId, event.quantity);
+  onQuantityChange(event: { cartDetailId: number; quantity: number }): void {
+    this.facade.updateQuantity(event.cartDetailId, event.quantity);
   }
 
-  onRemove(productId: number): void {
-    this.facade.removeItem(productId);
+  onRemove(cartDetailId: number): void {
+    this.facade.removeItem(cartDetailId);
   }
 
   onCouponInput(value: string): void {
@@ -44,6 +44,6 @@ export class CartPageComponent implements OnInit {
     if (!this.facade.tryCheckout()) {
       return;
     }
-    void this.router.navigate(['/checkout']);
+    void this.router.navigate(['/checkout/payment']);
   }
 }

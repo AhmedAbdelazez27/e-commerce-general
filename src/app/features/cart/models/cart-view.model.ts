@@ -7,7 +7,9 @@ export interface CartCouponDefinition {
 }
 
 export interface CartLineItemView {
+  cartDetailId: number;
   productId: number;
+  productVariantId?: number;
   titleEn: string;
   titleAr: string;
   brandEn: string;

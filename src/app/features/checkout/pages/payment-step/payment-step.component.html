@@ -1,0 +1,38 @@
+<section class="checkout-step">
+  <h2 class="checkout-step__title">{{ 'CHECKOUT.STEP_PAYMENT' | translate }}</h2>
+  <p class="checkout-step__hint">{{ 'CHECKOUT.PAYMENT_HINT' | translate }}</p>
+
+  @if (showPaymentError()) {
+    <div class="alert alert-warning checkout-step__alert" role="alert">
+      {{ 'CHECKOUT.PAYMENT_REQUIRED' | translate }}
+    </div>
+  }
+
+  <div class="checkout-options" [class.checkout-options--invalid]="showPaymentError()">
+    @for (option of paymentOptions; track option.id) {
+      <label class="checkout-option-card" [class.checkout-option-card--selected]="selectedId() === option.id">
+        <input
+          type="radio"
+          name="paymentMethod"
+          class="checkout-option-card__input"
+          [value]="option.id"
+          [checked]="selectedId() === option.id"
+          (change)="selectPayment(option.id)"
+        />
+        <span class="checkout-option-card__body">
+          <span class="checkout-option-card__title">{{ option.labelKey | translate }}</span>
+          @if (option.descriptionKey) {
+            <span class="checkout-option-card__desc">{{ option.descriptionKey | translate }}</span>
+          }
+        </span>
+      </label>
+    }
+  </div>
+
+  <div class="checkout-step__actions">
+    <a routerLink="/cart" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK_TO_CART' | translate }}</a>
+    <button type="button" class="btn btn-primary" (click)="continue()">
+      {{ 'CHECKOUT.CONTINUE' | translate }}
+    </button>
+  </div>
+</section>

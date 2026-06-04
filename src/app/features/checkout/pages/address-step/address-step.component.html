@@ -1,0 +1,198 @@
+<section class="checkout-step">
+  <h2 class="checkout-step__title">{{ 'CHECKOUT.STEP_ADDRESS' | translate }}</h2>
+
+  @if (loading()) {
+    <p class="checkout-step__hint">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else {
+    <div class="checkout-address-mode">
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="mode() === 'saved'"
+        [class.btn-outline-secondary]="mode() !== 'saved'"
+        [disabled]="addresses().length === 0"
+        (click)="setMode(true)"
+      >
+        {{ 'CHECKOUT.SAVED_ADDRESSES' | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="mode() === 'new'"
+        [class.btn-outline-secondary]="mode() !== 'new'"
+        (click)="setMode(false)"
+      >
+        {{ 'CHECKOUT.NEW_ADDRESS' | translate }}
+      </button>
+    </div>
+
+    @if (mode() === 'saved') {
+      @if (showAddressError()) {
+        <div class="alert alert-warning checkout-step__alert" role="alert">
+          {{ 'CHECKOUT.ADDRESS_REQUIRED' | translate }}
+        </div>
+      }
+      <div class="checkout-address-list" [class.checkout-options--invalid]="showAddressError()">
+        @for (addr of addresses(); track addr.id) {
+          <label
+            class="checkout-option-card checkout-address-card"
+            [class.checkout-option-card--selected]="selectedAddressId() === addr.id"
+          >
+            <input
+              type="radio"
+              name="savedAddress"
+              class="checkout-option-card__input"
+              [value]="addr.id"
+              [checked]="selectedAddressId() === addr.id"
+              (change)="selectSaved(addr.id)"
+            />
+            <span class="checkout-option-card__body">
+              <span class="checkout-option-card__title">{{ formatAddress(addr) }}</span>
+              @if (addr.isDefault) {
+                <span class="checkout-address-card__badge">{{ 'CHECKOUT.DEFAULT_ADDRESS' | translate }}</span>
+              }
+            </span>
+          </label>
+        }
+        @if (addresses().length === 0) {
+          <p class="checkout-step__hint">{{ 'CHECKOUT.NO_SAVED_ADDRESSES' | translate }}</p>
+        }
+      </div>
+    } @else {
+      <form class="checkout-address-form" [formGroup]="addressForm" novalidate>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-city">{{ 'CHECKOUT.FIELD_CITY' | translate }}</label>
+            <input
+              id="checkout-city"
+              type="text"
+              class="form-control"
+              formControlName="city"
+              [class.is-invalid]="fieldError('city')"
+              autocomplete="address-level2"
+            />
+            @if (fieldError('city'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-area">{{ 'CHECKOUT.FIELD_AREA' | translate }}</label>
+            <input
+              id="checkout-area"
+              type="text"
+              class="form-control"
+              formControlName="area"
+              [class.is-invalid]="fieldError('area')"
+              autocomplete="address-level3"
+            />
+            @if (fieldError('area'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-street">{{ 'CHECKOUT.FIELD_STREET' | translate }}</label>
+            <input
+              id="checkout-street"
+              type="text"
+              class="form-control"
+              formControlName="street"
+              [class.is-invalid]="fieldError('street')"
+              autocomplete="street-address"
+            />
+            @if (fieldError('street'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-building">{{ 'CHECKOUT.FIELD_BUILDING' | translate }}</label>
+            <input
+              id="checkout-building"
+              type="text"
+              class="form-control"
+              formControlName="building"
+              [class.is-invalid]="fieldError('building')"
+            />
+            @if (fieldError('building'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-lat">{{ 'CHECKOUT.FIELD_LATITUDE' | translate }}</label>
+            <input
+              id="checkout-lat"
+              type="text"
+              inputmode="decimal"
+              class="form-control"
+              formControlName="latitude"
+              [class.is-invalid]="fieldError('latitude')"
+            />
+            @if (fieldError('latitude'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="checkout-lng">{{ 'CHECKOUT.FIELD_LONGITUDE' | translate }}</label>
+            <input
+              id="checkout-lng"
+              type="text"
+              inputmode="decimal"
+              class="form-control"
+              formControlName="longitude"
+              [class.is-invalid]="fieldError('longitude')"
+            />
+            @if (fieldError('longitude'); as err) {
+              <div class="invalid-feedback d-block">{{ err | translate }}</div>
+            }
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input id="checkout-default" type="checkbox" class="form-check-input" formControlName="isDefault" />
+              <label class="form-check-label" for="checkout-default">{{ 'CHECKOUT.SET_DEFAULT' | translate }}</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    }
+
+    <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
+    @if (showShippingError()) {
+      <div class="alert alert-warning checkout-step__alert" role="alert">
+        {{ 'CHECKOUT.SHIPPING_REQUIRED' | translate }}
+      </div>
+    }
+    <div class="checkout-options" [class.checkout-options--invalid]="showShippingError()">
+      @for (option of shippingOptions; track option.id) {
+        <label
+          class="checkout-option-card"
+          [class.checkout-option-card--selected]="selectedShippingId() === option.id"
+        >
+          <input
+            type="radio"
+            name="shippingMethod"
+            class="checkout-option-card__input"
+            [value]="option.id"
+            [checked]="selectedShippingId() === option.id"
+            (change)="selectShipping(option.id)"
+          />
+          <span class="checkout-option-card__body">
+            <span class="checkout-option-card__title">{{ option.labelKey | translate }}</span>
+            <span class="checkout-option-card__desc">
+              @if (option.amount === 0) {
+                {{ 'CART.SUMMARY_FREE_DELIVERY' | translate }}
+              } @else {
+                +{{ option.amount }}
+              }
+            </span>
+          </span>
+        </label>
+      }
+    </div>
+  }
+
+  <div class="checkout-step__actions">
+    <a routerLink="/checkout/payment" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK' | translate }}</a>
+    <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="continue()">
+      {{ 'CHECKOUT.CONTINUE' | translate }}
+    </button>
+  </div>
+</section>

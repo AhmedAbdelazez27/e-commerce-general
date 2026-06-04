@@ -27,6 +27,11 @@ export class ApiEndpoints {
 
   static readonly EcCart = {
     mergeGuestCart: '/api/services/app/EcCart/MergeGuestCart',
+    addToCart: '/api/services/app/EcCart/AddToCart',
+    getCart: '/api/services/app/EcCart/GetCart',
+    updateCart: '/api/services/app/EcCart/UpdateCart',
+    removeCartItem: '/api/services/app/EcCart/RemoveCartItem',
+    clearCart: '/api/services/app/EcCart/ClearCart',
   };
 
   static readonly Cart = {
@@ -36,6 +41,18 @@ export class ApiEndpoints {
     remove: '/Cart/RemoveItem',
   };
 
+  static readonly EcCheckout = {
+    placeOrder: '/api/services/app/EcCheckout/PlaceOrder',
+  };
+
+  static readonly EcCustomerAddresses = {
+    getAll: '/api/services/app/EcCustomerAddresses/GetAll',
+    create: '/api/services/app/EcCustomerAddresses/Create',
+    update: '/api/services/app/EcCustomerAddresses/Update',
+    getSingle: '/api/services/app/EcCustomerAddresses/GetSingle',
+  };
+
+  /** @deprecated Use EcCheckout.placeOrder */
   static readonly Checkout = {
     placeOrder: '/Orders/PlaceOrder',
   };
