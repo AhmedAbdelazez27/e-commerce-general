@@ -568,12 +568,13 @@ app-register-page {
     .form-control,
     .form-select,
     .btn-primary {
-        border-radius: 10px;
-        padding: 12px;
+        border-radius: 10px !important;
+        padding: 12px !important;
         font-size: 14px;
     }
 }
 
+ 
 
 .login-img {
     object-fit: cover;
@@ -639,17 +640,129 @@ app-register-page {
     border: 1px solid #ffdea5;
 }
 
-.btn-apply-coupon:hover{
+.btn-apply-coupon:hover {
     background-color: #2f3130;
     color: #ffdea5;
     border: 1px solid #ffdea5;
 }
 
-.category-tile{
-        border-radius: 10px;
-            transition: ease 0.3s !important;
+.category-tile {
+    border-radius: 10px;
+    transition: ease 0.3s !important;
 }
 
-.category-tile__media{
+.category-tile__media {
     aspect-ratio: 1 / 1;
+}
+
+
+.checkout-option-card {
+    border-radius: 10px;
+}
+
+.checkout-page {
+    box-shadow: var(--ds-shadow-card-hover);
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 24px;
+}
+
+.checkout-step {
+    margin-bottom: 0 !important;
+}
+
+
+app-checkout-order-summary {
+    .cart-summary {
+        margin-top: 24px !important;
+        width: 100%;
+        max-width: unset;
+        box-shadow: none;
+        border: 1px solid #ebebeb;
+        background-color: #f9f9f7;
+    }
+}
+
+.checkout-address-form{
+    .form-control{
+            padding: 12px;
+    border-radius: 10px;
+    }
+}
+
+app-profile-page{
+
+    .btn-primary, .btn-outline-secondary {
+        border-radius: 7px !important;
+        padding: 12px 24px !important;
+        font-size: 14px;
+    }
+
+    .card{
+            border-radius: 10px;
+    background-color: #fff;
+    border: none;
+     box-shadow: var(--ds-shadow-card-hover);
+
+     .card-body{
+        padding: 16px 24px;
+     }
+
+       .form-control{
+            padding: 12px;
+    border-radius: 10px;
+    }
+
+
+    }
+}
+
+
+.nav-link.active{
+        background-color: #775a19 !important;
+}
+
+.btn-edit{
+    padding: 0;
+}
+
+.no-address{
+        display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+    font-size: 18px;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    border-radius: 10px;
+    background-color: #f9f9f7;
+}
+
+
+.add-address{
+           padding: 16px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ebebeb;
+}
+
+.address{
+      padding: 16px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ebebeb;
+    font-size: 14px;
+}
+
+.bold{
+    font-weight: 700;
+}
+
+.order-container{
+      padding: 16px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ebebeb;
+    font-size: 14px;
 }

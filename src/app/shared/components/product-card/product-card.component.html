@@ -51,6 +51,15 @@
       >
         <i class="fa-regular fa-heart" aria-hidden="true"></i>
       </button>
+
+        <button
+        type="button"
+        class="product-card__icon-btn"
+        [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
+        (click)="onAddToWishlist($event)"
+      >
+        <i class="fa-regular fa-times-circle" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
