@@ -57,6 +57,13 @@
           }
         </li>
       }
+      @for (link of visibleUtilityLinks(); track link.id) {
+        <li class="store-nav__item">
+          <a class="store-nav__trigger" [routerLink]="link.route" [queryParams]="link.queryParams">
+            {{ link.labelKey | translate }}
+          </a>
+        </li>
+      }
     </ul>
   </div>
 </nav>

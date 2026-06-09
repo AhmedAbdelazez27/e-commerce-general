@@ -17,15 +17,15 @@
   <ul class="nav nav-pills mb-3" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button"
-        role="tab" aria-controls="home-tab-pane" aria-selected="true">Account Information</button>
+        role="tab" aria-controls="home-tab-pane" aria-selected="true">{{ 'PROFILE.ACCOUNT_INFORMATION' | translate }}</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button"
-        role="tab" aria-controls="profile-tab-pane" aria-selected="false">Shipping Address</button>
+        role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{ 'PROFILE.SHIPPING_ADDRESS' | translate }}</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button"
-        role="tab" aria-controls="contact-tab-pane" aria-selected="false">Order History</button>
+        role="tab" aria-controls="contact-tab-pane" aria-selected="false">{{ 'PROFILE.ORDER_HISTORY' | translate }}</button>
     </li>
 
   </ul>
@@ -34,79 +34,156 @@
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Account Information</h4>
-            <button class="btn btn-edit">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M7 7H6C5.46957 7 4.96086 7.21071 4.58579 7.58579C4.21071 7.96086 4 8.46957 4 9V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H15C15.5304 20 16.0391 19.7893 16.4142 19.4142C16.7893 19.0391 17 18.5304 17 18V17M16 5L19 8M20.385 6.585C20.7788 6.19115 21.0001 5.65698 21.0001 5.1C21.0001 4.54302 20.7788 4.00885 20.385 3.615C19.9912 3.22115 19.457 2.99989 18.9 2.99989C18.343 2.99989 17.8088 3.22115 17.415 3.615L9 12V15H12L20.385 6.585Z"
-                  stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </button>
+            <h4 class="mb-0">{{ 'PROFILE.ACCOUNT_INFORMATION' | translate }}</h4>
+            @if (profileUiMode() === 'view') {
+              <button type="button" class="btn btn-edit" (click)="startProfileEdit()" [attr.aria-label]="'COMMON.EDIT' | translate">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M7 7H6C5.46957 7 4.96086 7.21071 4.58579 7.58579C4.21071 7.96086 4 8.46957 4 9V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H15C15.5304 20 16.0391 19.7893 16.4142 19.4142C16.7893 19.0391 17 18.5304 17 18V17M16 5L19 8M20.385 6.585C20.7788 6.19115 21.0001 5.65698 21.0001 5.1C21.0001 4.54302 20.7788 4.00885 20.385 3.615C19.9912 3.22115 19.457 2.99989 18.9 2.99989C18.343 2.99989 17.8088 3.22115 17.415 3.615L9 12V15H12L20.385 6.585Z"
+                    stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            }
           </div>
-          <dl class="row mb-0">
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.FULL_NAME' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.fullName }}</dd>
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.EMAIL' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.email }}</dd>
+          @if (profileUiMode() === 'edit') {
+            <form class="profile-info profile-info--edit" [formGroup]="profileForm" novalidate>
+              <h5 class="profile-info__title">{{ 'PROFILE.PERSONAL_INFO' | translate }}</h5>
+              <div class="row g-3">
+                <div class="col-lg-6">
+                  <label class="profile-info__label" for="profile-fullName">{{ 'PROFILE.FULL_NAME' | translate }}</label>
+                  <input
+                    id="profile-fullName"
+                    type="text"
+                    class="form-control"
+                    formControlName="fullName"
+                    [class.is-invalid]="profileFieldError('fullName')"
+                  />
+                  @if (profileFieldError('fullName'); as err) {
+                    <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                  }
+                </div>
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.MOBILE' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.mobile }}</dd>
+                <div class="col-lg-6">
+                  <label class="profile-info__label" for="profile-email">{{ 'PROFILE.EMAIL' | translate }}</label>
+                  <input
+                    id="profile-email"
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    [class.is-invalid]="profileFieldError('email')"
+                    autocomplete="email"
+                  />
+                  @if (profileFieldError('email'); as err) {
+                    <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                  }
+                </div>
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.CUSTOMER_CODE' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.customerCode }}</dd>
+                <div class="col-lg-6">
+                  <label class="profile-info__label" for="profile-mobile">{{ 'PROFILE.MOBILE' | translate }}</label>
+                  <input
+                    id="profile-mobile"
+                    type="tel"
+                    class="form-control"
+                    formControlName="mobile"
+                    [class.is-invalid]="profileFieldError('mobile')"
+                    autocomplete="tel"
+                  />
+                  @if (profileFieldError('mobile'); as err) {
+                    <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                  }
+                </div>
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.GROUP' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ groupName() }}</dd>
+                <div class="col-lg-6">
+                  <label class="profile-info__label" for="profile-birthDate">{{ 'PROFILE.BIRTH_DATE' | translate }}</label>
+                  <input id="profile-birthDate" type="date" class="form-control" formControlName="birthDate" />
+                </div>
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.VIP' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">
-              {{ profile()!.isVIP ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}
-            </dd>
+                <div class="col-lg-6">
+                  <label class="profile-info__label" for="profile-gender">{{ 'PROFILE.GENDER' | translate }}</label>
+                  <select id="profile-gender" class="form-select" formControlName="genderLkpId">
+                    <option [value]="0">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
+                    @for (option of genderOptions; track option.id) {
+                      <option [value]="option.id">{{ option.labelKey | translate }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+              <div class="d-flex gap-2 justify-content-end mt-4">
+                <button type="button" class="btn btn-outline-secondary" (click)="cancelProfileEdit()">
+                  {{ 'COMMON.CANCEL' | translate }}
+                </button>
+                <button type="button" class="btn btn-primary" (click)="saveProfile()" [disabled]="profileSaving()">
+                  {{ 'COMMON.SAVE' | translate }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="profile-info">
+              <h5 class="profile-info__title">{{ 'PROFILE.PERSONAL_INFO' | translate }}</h5>
+              <div class="row">
+                <div class="col-lg-6 mb-3">
+                  <span class="profile-info__label">{{ 'PROFILE.FULL_NAME' | translate }}</span>
+                  <p class="profile-info__value mb-0">{{ profile()!.fullName }}</p>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <span class="profile-info__label">{{ 'PROFILE.EMAIL' | translate }}</span>
+                  <p class="profile-info__value mb-0">{{ profile()!.email }}</p>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <span class="profile-info__label">{{ 'PROFILE.MOBILE' | translate }}</span>
+                  <p class="profile-info__value mb-0">{{ profile()!.mobile }}</p>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <span class="profile-info__label">{{ 'PROFILE.BIRTH_DATE' | translate }}</span>
+                  <p class="profile-info__value mb-0">
+                    {{ formattedBirthDate() || ('COMMON.NOT_SET' | translate) }}
+                  </p>
+                </div>
+                <div class="col-lg-6 mb-3">
+                  <span class="profile-info__label">{{ 'PROFILE.GENDER' | translate }}</span>
+                  <p class="profile-info__value mb-0">
+                    @if (genderLabelKey(); as key) {
+                      {{ key | translate }}
+                    } @else if (profile()!.gender) {
+                      {{ profile()!.gender }}
+                    } @else {
+                      {{ 'COMMON.NOT_SET' | translate }}
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          }
 
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.POINTS' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.loyaltyPoints }}</dd>
-
-            <dt class=" col-md-4 text-muted">{{ 'PROFILE.TOTAL_SPENT' | translate }}</dt>
-            <dd class="  col-md-8 mb-3">{{ profile()!.totalSpent }}</dd>
-          </dl>
-          <dl class="row mb-0">
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.FULL_NAME' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.EMAIL' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.MOBILE' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.CUSTOMER_CODE' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.GROUP' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">{{ 'PROFILE.VIP' | translate }}</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">Password</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-
-            <dt class=" col-md-4 text-muted align-content-center mb-md-3">Confirm Password</dt>
-            <dd class="  col-md-8 mb-3"><input type="email" class="form-control" id="exampleFormControlInput1"
-                placeholder="placeholder"></dd>
-          </dl>
-          <div class="d-flex gap-2 justify-content-end">
-            <button class="btn btn-outline-secondary">Cancel</button>
-            <button class="btn btn-primary">Save</button>
+          <div class="profile-info profile-info--stats mt-3">
+            <h5 class="profile-info__title">{{ 'PROFILE.ACCOUNT_DETAILS' | translate }}</h5>
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <span class="profile-info__label">{{ 'PROFILE.CUSTOMER_CODE' | translate }}</span>
+                <p class="profile-info__value mb-0">{{ profile()!.customerCode }}</p>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <span class="profile-info__label">{{ 'PROFILE.GROUP' | translate }}</span>
+                <p class="profile-info__value mb-0">{{ groupName() || ('COMMON.NOT_SET' | translate) }}</p>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <span class="profile-info__label">{{ 'PROFILE.VIP' | translate }}</span>
+                <p class="mb-0">
+                  <span class="profile-info__badge" [class.profile-info__badge--vip]="profile()!.isVIP">
+                    {{ profile()!.isVIP ? ('PROFILE.VIP_MEMBER' | translate) : ('PROFILE.STANDARD_MEMBER' | translate) }}
+                  </span>
+                </p>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <span class="profile-info__label">{{ 'PROFILE.POINTS' | translate }}</span>
+                <p class="profile-info__value profile-info__value--highlight mb-0">{{ profile()!.loyaltyPoints }}</p>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <span class="profile-info__label">{{ 'PROFILE.TOTAL_SPENT' | translate }}</span>
+                <p class="profile-info__value profile-info__value--highlight mb-0">{{ profile()!.totalSpent }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -115,294 +192,169 @@
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Shipping Address</h4>
-            <button class="btn btn-edit">
+            <h4 class="mb-0">{{ 'PROFILE.SHIPPING_ADDRESS' | translate }}</h4>
+            @if (addressUiMode() === 'list') {
+              <button type="button" class="btn btn-edit" (click)="startAdd()" [attr.aria-label]="'CHECKOUT.NEW_ADDRESS' | translate">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5V19M5 12H19" stroke="#354052" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </button>
+            }
+          </div>
+
+          @if (addressesLoading()) {
+            <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+          } @else if (addressUiMode() === 'add' || addressUiMode() === 'edit') {
+            <div class="add-address mt-3">
+              <form [formGroup]="addressForm" novalidate>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-building" class="form-label">{{ 'CHECKOUT.FIELD_BUILDING' | translate }}</label>
+                      <input
+                        id="profile-building"
+                        type="text"
+                        class="form-control"
+                        formControlName="building"
+                        [class.is-invalid]="fieldError('building')"
+                      />
+                      @if (fieldError('building'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-street" class="form-label">{{ 'CHECKOUT.FIELD_STREET' | translate }}</label>
+                      <input
+                        id="profile-street"
+                        type="text"
+                        class="form-control"
+                        formControlName="street"
+                        [class.is-invalid]="fieldError('street')"
+                        autocomplete="street-address"
+                      />
+                      @if (fieldError('street'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-area" class="form-label">{{ 'CHECKOUT.FIELD_AREA' | translate }}</label>
+                      <input
+                        id="profile-area"
+                        type="text"
+                        class="form-control"
+                        formControlName="area"
+                        [class.is-invalid]="fieldError('area')"
+                      />
+                      @if (fieldError('area'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-city" class="form-label">{{ 'CHECKOUT.FIELD_CITY' | translate }}</label>
+                      <input
+                        id="profile-city"
+                        type="text"
+                        class="form-control"
+                        formControlName="city"
+                        [class.is-invalid]="fieldError('city')"
+                        autocomplete="address-level2"
+                      />
+                      @if (fieldError('city'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="form-check mb-3">
+                      <input id="profile-default" type="checkbox" class="form-check-input" formControlName="isDefault" />
+                      <label class="form-check-label" for="profile-default">{{ 'CHECKOUT.SET_DEFAULT' | translate }}</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-end">
+                  <button type="button" class="btn btn-outline-secondary" (click)="cancelAddressForm()">
+                    {{ 'COMMON.CANCEL' | translate }}
+                  </button>
+                  <button type="button" class="btn btn-primary" (click)="saveAddress()" [disabled]="addressSaving()">
+                    {{ 'COMMON.SAVE' | translate }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          } @else if (addresses().length === 0) {
+            <div class="no-address">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5V19M5 12H19" stroke="#354052" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
+                <path
+                  d="M9.44198 9.43182C9.09004 10.0053 8.94112 10.6805 9.01914 11.3488C9.09717 12.0171 9.39761 12.6398 9.87219 13.1168C10.3468 13.5939 10.9679 13.8975 11.6359 13.9789C12.3038 14.0603 12.9797 13.9148 13.555 13.5658M15 10.9998C15 10.2042 14.6839 9.44111 14.1213 8.8785C13.5587 8.31589 12.7956 7.99982 12 7.99982M17.152 17.1618L13.414 20.8998C13.039 21.2745 12.5306 21.4849 12.0005 21.4849C11.4704 21.4849 10.962 21.2745 10.587 20.8998L6.343 16.6568C4.92886 15.2427 4.09564 13.3502 4.00753 11.3523C3.91942 9.35439 4.58282 7.39591 5.867 5.86282M8.047 4.04282C9.57052 3.17792 11.3358 2.83683 13.0718 3.07189C14.8079 3.30695 16.4189 4.10517 17.6575 5.34407C18.8962 6.58296 19.6941 8.19408 19.9289 9.93019C20.1636 11.6663 19.8222 13.4315 18.957 14.9548M3 2.99982L21 20.9998"
+                  stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-            </button>
-          </div>
-          <div class="no-address">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M9.44198 9.43182C9.09004 10.0053 8.94112 10.6805 9.01914 11.3488C9.09717 12.0171 9.39761 12.6398 9.87219 13.1168C10.3468 13.5939 10.9679 13.8975 11.6359 13.9789C12.3038 14.0603 12.9797 13.9148 13.555 13.5658M15 10.9998C15 10.2042 14.6839 9.44111 14.1213 8.8785C13.5587 8.31589 12.7956 7.99982 12 7.99982M17.152 17.1618L13.414 20.8998C13.039 21.2745 12.5306 21.4849 12.0005 21.4849C11.4704 21.4849 10.962 21.2745 10.587 20.8998L6.343 16.6568C4.92886 15.2427 4.09564 13.3502 4.00753 11.3523C3.91942 9.35439 4.58282 7.39591 5.867 5.86282M8.047 4.04282C9.57052 3.17792 11.3358 2.83683 13.0718 3.07189C14.8079 3.30695 16.4189 4.10517 17.6575 5.34407C18.8962 6.58296 19.6941 8.19408 19.9289 9.93019C20.1636 11.6663 19.8222 13.4315 18.957 14.9548M3 2.99982L21 20.9998"
-                stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            No Address Added
-          </div>
-          <div class="add-address mt-3">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">Building Number</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">Street</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">Area</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">City</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">PO Box</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label">Zip code</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                </div>
-              </div>
-
-              <div class="col-lg-12">
-                <div class="mb-3">
-                  <label for="exampleFormControlTextarea1" class="form-label">Address Description</label>
-                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                </div>
-              </div>
-
+              {{ 'PROFILE.NO_ADDRESS' | translate }}
             </div>
-            <div class="d-flex gap-2 justify-content-end"><button
-                class="btn btn-outline-secondary">Cancel</button><button class="btn btn-primary">Save</button></div>
-          </div>
+          } @else {
+            @for (addr of addresses(); track addr.id; let i = $index) {
+              <div class="address mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <h4 class="mb-0 gold">{{ 'CHECKOUT.SAVED_ADDRESSES' | translate }} {{ i + 1 }}</h4>
+                    @if (addr.isDefault) {
+                      <span class="badge text-bg-secondary">{{ 'CHECKOUT.DEFAULT_ADDRESS' | translate }}</span>
+                    }
+                  </div>
+                  <div class="d-flex gap-2 align-items-center">
+                    <button type="button" class="btn btn-edit" (click)="startEdit(addr)" [attr.aria-label]="'COMMON.EDIT' | translate">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M7 7H6C5.46957 7 4.96086 7.21071 4.58579 7.58579C4.21071 7.96086 4 8.46957 4 9V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H15C15.5304 20 16.0391 19.7893 16.4142 19.4142C16.7893 19.0391 17 18.5304 17 18V17M16 5L19 8M20.385 6.585C20.7788 6.19115 21.0001 5.65698 21.0001 5.1C21.0001 4.54302 20.7788 4.00885 20.385 3.615C19.9912 3.22115 19.457 2.99989 18.9 2.99989C18.343 2.99989 17.8088 3.22115 17.415 3.615L9 12V15H12L20.385 6.585Z"
+                          stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                    <button type="button" class="btn btn-edit" (click)="deleteAddress(addr.id)" [attr.aria-label]="'COMMON.DELETE' | translate">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
+                          stroke="#d24858" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
 
-          <div class="address mt-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4 class="mb-0 gold">Address 1</h4>
-              <div class="d-flex gap-2 align-items-center">
-                <button class="btn btn-edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M7 7H6C5.46957 7 4.96086 7.21071 4.58579 7.58579C4.21071 7.96086 4 8.46957 4 9V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H15C15.5304 20 16.0391 19.7893 16.4142 19.4142C16.7893 19.0391 17 18.5304 17 18V17M16 5L19 8M20.385 6.585C20.7788 6.19115 21.0001 5.65698 21.0001 5.1C21.0001 4.54302 20.7788 4.00885 20.385 3.615C19.9912 3.22115 19.457 2.99989 18.9 2.99989C18.343 2.99989 17.8088 3.22115 17.415 3.615L9 12V15H12L20.385 6.585Z"
-                      stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
-                <button class="btn btn-edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
-                      stroke="#d24858" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
+                <div class="row">
+                  <div class="col-lg-6 mb-3">
+                    <label>{{ 'CHECKOUT.FIELD_BUILDING' | translate }}</label>
+                    <p class="mb-0 bold">{{ addr.building }}</p>
+                  </div>
+                  <div class="col-lg-6 mb-3">
+                    <label>{{ 'CHECKOUT.FIELD_STREET' | translate }}</label>
+                    <p class="mb-0 bold">{{ addr.street }}</p>
+                  </div>
+                  <div class="col-lg-6 mb-3">
+                    <label>{{ 'CHECKOUT.FIELD_AREA' | translate }}</label>
+                    <p class="mb-0 bold">{{ addr.area }}</p>
+                  </div>
+                  <div class="col-lg-6 mb-3">
+                    <label>{{ 'CHECKOUT.FIELD_CITY' | translate }}</label>
+                    <p class="mb-0 bold">{{ addr.city }}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div class="row">
-              <div class="col-lg-6 mb-3">
-                <label>Building Number</label>
-                <p class="mb-0 bold">55</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>Street </label>
-                <p class="mb-0 bold">Altayaran</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>Area </label>
-                <p class="mb-0 bold">Nasr City</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>City </label>
-                <p class="mb-0 bold">Cairo</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>PO Box </label>
-                <p class="mb-0 bold">258</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>code </label>
-                <p class="mb-0 bold">789654</p>
-              </div>
-              <div class="col-lg-12">
-                <label>Address Description </label>
-                <p class="mb-0 bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                  Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset</p>
-              </div>
-            </div>
-
-
-
-
-          </div>
-
-          <div class="address mt-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4 class="mb-0 gold">Address 2</h4>
-              <div class="d-flex gap-2 align-items-center">
-                <button class="btn btn-edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M7 7H6C5.46957 7 4.96086 7.21071 4.58579 7.58579C4.21071 7.96086 4 8.46957 4 9V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20H15C15.5304 20 16.0391 19.7893 16.4142 19.4142C16.7893 19.0391 17 18.5304 17 18V17M16 5L19 8M20.385 6.585C20.7788 6.19115 21.0001 5.65698 21.0001 5.1C21.0001 4.54302 20.7788 4.00885 20.385 3.615C19.9912 3.22115 19.457 2.99989 18.9 2.99989C18.343 2.99989 17.8088 3.22115 17.415 3.615L9 12V15H12L20.385 6.585Z"
-                      stroke="#354052" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
-                <button class="btn btn-edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
-                      stroke="#d24858" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-lg-6 mb-3">
-                <label>Building Number</label>
-                <p class="mb-0 bold">55</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>Street </label>
-                <p class="mb-0 bold">Altayaran</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>Area </label>
-                <p class="mb-0 bold">Nasr City</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>City </label>
-                <p class="mb-0 bold">Cairo</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>PO Box </label>
-                <p class="mb-0 bold">258</p>
-              </div>
-              <div class="col-lg-6 mb-3">
-                <label>code </label>
-                <p class="mb-0 bold">789654</p>
-              </div>
-              <div class="col-lg-12">
-                <label>Address Description </label>
-                <p class="mb-0 bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                  Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset</p>
-              </div>
-            </div>
-
-
-
-
-          </div>
-
-
-
+            }
+          }
         </div>
       </div>
     </div>
     <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
       <div class="card">
         <div class="card-body">
-          <h4 class="mb-0">Order History</h4>
-          <div class="order-container mt-3">
-            <p>Date: 12/04/2026</p>
-            <div class="checkout-review-meta">
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Payment method</h3>
-                <p>Cash on delivery</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Delivery address</h3>
-                <p>23A/00 Haag Prairie Apt. 690, 85 hafez ramadan, 55 · nasr city, nasr city</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Shipping method</h3>
-                <p>Standard delivery</p>
-              </div>
-            </div>
-            <div class="checkout-review-items">
-              <h3 class="checkout-step__subtitle">Items</h3>
-              <ul class="checkout-review-items__list">
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">I Phone
-                      17</span><span class="checkout-review-items__meta">× 2</span></div><span
-                    class="checkout-review-items__price"> 9450 JD </span>
-                </li>
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">Shoes</span><span
-                      class="checkout-review-items__meta">× 1</span></div><span class="checkout-review-items__price">
-                    1050 JD </span>
-                </li><!--container-->
-              </ul>
-            </div>
-          </div>
-          <div class="order-container mt-3">
-            <p>Date: 12/04/2026</p>
-            <div class="checkout-review-meta">
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Payment method</h3>
-                <p>Cash on delivery</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Delivery address</h3>
-                <p>23A/00 Haag Prairie Apt. 690, 85 hafez ramadan, 55 · nasr city, nasr city</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Shipping method</h3>
-                <p>Standard delivery</p>
-              </div>
-            </div>
-            <div class="checkout-review-items">
-              <h3 class="checkout-step__subtitle">Items</h3>
-              <ul class="checkout-review-items__list">
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">I Phone
-                      17</span><span class="checkout-review-items__meta">× 2</span></div><span
-                    class="checkout-review-items__price"> 9450 JD </span>
-                </li>
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">Shoes</span><span
-                      class="checkout-review-items__meta">× 1</span></div><span class="checkout-review-items__price">
-                    1050 JD </span>
-                </li><!--container-->
-              </ul>
-            </div>
-          </div>
-          <div class="order-container mt-3">
-            <p>Date: 12/04/2026</p>
-            <div class="checkout-review-meta">
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Payment method</h3>
-                <p>Cash on delivery</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Delivery address</h3>
-                <p>23A/00 Haag Prairie Apt. 690, 85 hafez ramadan, 55 · nasr city, nasr city</p>
-              </div>
-              <div class="checkout-review-meta__block">
-                <h3 class="checkout-step__subtitle">Shipping method</h3>
-                <p>Standard delivery</p>
-              </div>
-            </div>
-            <div class="checkout-review-items">
-              <h3 class="checkout-step__subtitle">Items</h3>
-              <ul class="checkout-review-items__list">
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">I Phone
-                      17</span><span class="checkout-review-items__meta">× 2</span></div><span
-                    class="checkout-review-items__price"> 9450 JD </span>
-                </li>
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info"><span class="checkout-review-items__name">Shoes</span><span
-                      class="checkout-review-items__meta">× 1</span></div><span class="checkout-review-items__price">
-                    1050 JD </span>
-                </li><!--container-->
-              </ul>
-            </div>
-          </div>
+          <h4 class="mb-2">{{ 'PROFILE.ORDER_HISTORY' | translate }}</h4>
+          <p class="text-muted mb-3">{{ 'ORDERS.SUBTITLE' | translate }}</p>
+          <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.TITLE' | translate }}</a>
         </div>
       </div>
     </div>

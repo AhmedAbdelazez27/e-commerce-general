@@ -15,6 +15,8 @@ export interface LayoutLink {
   route: string | string[];
   queryParams?: Record<string, string>;
   external?: boolean;
+  /** Shown only when the customer is signed in. */
+  requiresAuth?: boolean;
 }
 
 export interface SocialLink {
@@ -42,7 +44,9 @@ export interface StoreLayoutConfig {
     cartRoute: string;
     loginRoute: string;
     accountRoute: string;
+    ordersRoute: string;
   };
+  utilityNavLinks: LayoutLink[];
   footer: {
     companyLinks: LayoutLink[];
     customerServiceLinks: LayoutLink[];

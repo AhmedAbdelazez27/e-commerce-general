@@ -13,6 +13,7 @@ export class ApiEndpoints {
 
   static readonly EcPublicCatalog = {
     categoriesTree: '/api/services/app/EcPublicCatalog/GetCategoriesTree',
+    homeSliders: '/api/services/app/EcPublicCatalog/GetHomeSliders',
     brands: '/api/services/app/EcPublicCatalog/GetBrands',
     productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
     searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
@@ -45,10 +46,22 @@ export class ApiEndpoints {
     placeOrder: '/api/services/app/EcCheckout/PlaceOrder',
   };
 
+  static readonly EcCustomerProfile = {
+    getMyProfile: '/api/services/app/EcCustomerProfile/GetMyProfile',
+    updateProfile: '/api/services/app/EcCustomerProfile/UpdateProfile',
+  };
+
+  static readonly EcOrders = {
+    getCustomerOrders: '/api/services/app/EcOrders/GetCustomerOrders',
+    getOrderDetails: '/api/services/app/EcOrders/GetOrderDetails',
+    getAll: '/api/services/app/EcOrders/GetAll',
+  };
+
   static readonly EcCustomerAddresses = {
     getAll: '/api/services/app/EcCustomerAddresses/GetAll',
     create: '/api/services/app/EcCustomerAddresses/Create',
     update: '/api/services/app/EcCustomerAddresses/Update',
+    delete: '/api/services/app/EcCustomerAddresses/Delete',
     getSingle: '/api/services/app/EcCustomerAddresses/GetSingle',
   };
 
@@ -64,5 +77,5 @@ export class ApiEndpoints {
   };
 
   /** Default route after successful customer login. */
-  static readonly postLoginUrl = '/account/orders';
+  static readonly postLoginUrl = '/account/profile';
 }

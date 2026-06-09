@@ -16,9 +16,23 @@ export interface CustomerProfileDto {
   fullName: string;
   email: string;
   mobile: string;
+  birthDate?: string | null;
+  gender?: string | null;
+  genderLkpId?: number | null;
+  defaultAddressId?: number | null;
   loyaltyPoints: number;
   totalSpent: number;
   isVIP: boolean;
   customerGroup?: CustomerGroupDto | null;
+}
+
+export interface UpdateProfileInput {
+  customerId: number;
+  userId: number;
+  fullName: string;
+  email: string;
+  mobile: string;
+  birthDate: string | null;
+  genderLkpId: number;
 }
 

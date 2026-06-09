@@ -15,6 +15,27 @@ export interface PublicCategoryDto {
   children: PublicCategoryDto[];
 }
 
+/** EcPublicCatalog home hero slider (ABP `result` item). */
+export interface PublicHomeSliderDto {
+  id: number;
+  title: string;
+  titleAr: string;
+  titleEn: string;
+  subtitle: string;
+  subtitleAr: string;
+  subtitleEn: string;
+  imageUrl: string | null;
+  mobileImageUrl: string | null;
+  buttonText: string;
+  buttonTextAr: string;
+  buttonTextEn: string;
+  targetType: string;
+  targetId: number;
+  targetSlug: string | null;
+  linkUrl: string | null;
+  sortOrder: number;
+}
+
 /** EcPublicCatalog brand (ABP `result` item). */
 export interface PublicBrandDto {
   id: number;

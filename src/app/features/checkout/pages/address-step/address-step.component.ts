@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CHECKOUT_CONFIG } from '../../config/checkout.config';
@@ -43,6 +44,7 @@ export class AddressStepComponent implements OnInit {
   readonly showAddressError = signal(false);
   readonly showShippingError = signal(false);
   readonly showFormErrors = signal(false);
+  readonly savingAddress = signal(false);
 
   readonly addressForm = this.fb.nonNullable.group({
     city: ['', checkoutAddressValidators.city],
@@ -148,19 +150,57 @@ export class AddressStepComponent implements OnInit {
         return;
       }
       this.checkoutState.selectSavedAddress(this.selectedAddressId()!);
-    } else {
-      markAddressFormTouched(this.addressForm);
-      this.syncFormToState();
-      if (this.addressForm.invalid) {
-        this.showFormErrors.set(true);
-        const result = this.checkoutState.validateAddressStep();
-        this.toastr.warning(
-          this.translate.instant(result.errorKey ?? 'CHECKOUT.ADDRESS_FORM_INVALID'),
-        );
-        return;
-      }
+      this.finishAddressStep();
+      return;
     }
 
+    markAddressFormTouched(this.addressForm);
+    if (this.addressForm.invalid) {
+      this.showFormErrors.set(true);
+      this.toastr.warning(this.translate.instant('CHECKOUT.ADDRESS_FORM_INVALID'));
+      return;
+    }
+
+    const customerId = this.resolveCustomerId();
+    if (customerId <= 0) {
+      this.toastr.error(this.translate.instant('CHECKOUT.CUSTOMER_REQUIRED'));
+      return;
+    }
+
+    const raw = this.addressForm.getRawValue();
+    this.savingAddress.set(true);
+    this.addressApi
+      .createAddress({
+        customerId,
+        countryId: CHECKOUT_CONFIG.defaultCountryId,
+        city: raw.city.trim(),
+        area: raw.area.trim(),
+        street: raw.street.trim(),
+        building: raw.building.trim(),
+        latitude: this.parseOptionalCoordinate(raw.latitude),
+        longitude: this.parseOptionalCoordinate(raw.longitude),
+        isDefault: raw.isDefault,
+      })
+      .pipe(finalize(() => this.savingAddress.set(false)))
+      .subscribe({
+        next: (created) => {
+          if (!created?.id) {
+            this.toastr.error(this.translate.instant('PROFILE.ADDRESS_SAVE_FAILED'));
+            return;
+          }
+          this.addresses.update((items) => [...items, created]);
+          this.mode.set('saved');
+          this.selectSaved(created.id);
+          this.toastr.success(this.translate.instant('PROFILE.ADDRESS_CREATED'));
+          this.finishAddressStep();
+        },
+        error: () => {
+          this.toastr.error(this.translate.instant('PROFILE.ADDRESS_SAVE_FAILED'));
+        },
+      });
+  }
+
+  private finishAddressStep(): void {
     const result = this.checkoutState.validateAddressStep();
     if (!result.valid) {
       if (result.errorKey === 'CHECKOUT.ADDRESS_REQUIRED') {

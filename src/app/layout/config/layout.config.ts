@@ -45,7 +45,16 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     cartRoute: '/cart',
     loginRoute: '/auth/login',
     accountRoute: '/account/profile',
+    ordersRoute: '/account/orders',
   },
+  utilityNavLinks: [
+    {
+      id: 'orders',
+      labelKey: 'LAYOUT.NAV.ORDERS',
+      route: '/account/orders',
+      requiresAuth: true,
+    },
+  ],
   footer: {
     companyLinks: [
       { id: 'about', labelKey: 'LAYOUT.FOOTER.ABOUT', route: '/home' },

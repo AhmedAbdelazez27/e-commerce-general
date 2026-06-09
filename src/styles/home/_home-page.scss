@@ -67,6 +67,10 @@
   height: var(--home-hero-height);
   overflow: hidden;
   border-radius: var(--ds-radius-lg);
+
+  &--multi .home-hero__content {
+    padding-bottom: var(--ds-space-6);
+  }
 }
 
 .home-hero__track {
@@ -229,6 +233,8 @@ html[dir='rtl'] .home-hero__overlay {
 }
 
 .home-hero__content {
+  display: flex;
+  flex-direction: column;
   max-width: 32rem;
   color: #fff;
 }
@@ -253,6 +259,7 @@ html[dir='rtl'] .home-hero__overlay {
 
 .home-hero__actions {
   display: flex;
+  flex-shrink: 0;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--ds-space-4);
@@ -289,10 +296,21 @@ html[dir='rtl'] .home-hero__overlay {
 }
 
 .home-hero__subtitle {
-  margin: 0 0 var(--ds-space-6);
-  font-size: var(--ds-font-size-md);
+  margin: 0 0 var(--ds-space-4);
+  font-size: var(--ds-font-size-sm);
   opacity: 0.92;
   line-height: var(--ds-line-height-relaxed);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 768px) {
+    margin-bottom: var(--ds-space-5);
+    font-size: var(--ds-font-size-md);
+    -webkit-line-clamp: 3;
+  }
 }
 
 // — Curated collections (Lecosma "Curated Edit") —

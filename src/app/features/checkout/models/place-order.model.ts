@@ -13,11 +13,18 @@ export interface EcPlaceOrderRequest {
 
 export interface EcOrderDetailDto {
   id?: number;
+  productVariantId?: number;
   productName?: string;
+  productNameSnapshot?: string;
   variantSku?: string;
+  variantSkuSnapshot?: string;
+  specificationSummary?: string;
   quantity?: number;
   unitPrice?: number;
+  discount?: number;
+  tax?: number;
   lineTotal?: number;
+  total?: number;
   totalPrice?: number;
 }
 

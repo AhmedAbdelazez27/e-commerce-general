@@ -191,8 +191,12 @@
 
   <div class="checkout-step__actions">
     <a routerLink="/checkout/payment" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK' | translate }}</a>
-    <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="continue()">
-      {{ 'CHECKOUT.CONTINUE' | translate }}
+    <button type="button" class="btn btn-primary" [disabled]="loading() || savingAddress()" (click)="continue()">
+      @if (savingAddress()) {
+        {{ 'COMMON.LOADING' | translate }}
+      } @else {
+        {{ 'CHECKOUT.CONTINUE' | translate }}
+      }
     </button>
   </div>
 </section>

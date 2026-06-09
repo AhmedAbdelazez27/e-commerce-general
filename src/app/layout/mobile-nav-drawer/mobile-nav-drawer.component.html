@@ -60,6 +60,12 @@
         {{ accountLabelKey() | translate }}
       </a>
 
+      @for (link of visibleUtilityLinks(); track link.id) {
+        <a class="store-drawer__nav-link" [routerLink]="link.route" [queryParams]="link.queryParams" (click)="close()">
+          {{ link.labelKey | translate }}
+        </a>
+      }
+
       @if (isLoggedIn()) {
         <button type="button" class="store-drawer__nav-link" (click)="logout()">
           {{ 'LAYOUT.HEADER.LOGOUT' | translate }}

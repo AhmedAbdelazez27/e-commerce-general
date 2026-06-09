@@ -40,4 +40,12 @@ export class CustomerAddressApiService {
       map((res) => normalizeAddress(resultFromAbpEnvelope(res))),
     );
   }
+
+  deleteAddress(id: number): Observable<void> {
+    const params = new HttpParams().set('Id', String(id));
+
+    return this.http.delete<unknown>(ApiEndpoints.EcCustomerAddresses.delete, { params }).pipe(
+      map(() => undefined),
+    );
+  }
 }

@@ -3,11 +3,19 @@ import { StorefrontProduct } from '../../../shared/models/storefront-product.mod
 export interface HomeHeroSlide {
   id: string;
   imageSrc: string;
-  imageAltKey: string;
+  /** i18n key — used when `imageAlt` is not set. */
+  imageAltKey?: string;
+  imageAlt?: string;
   eyebrowKey?: string;
-  headlineKey: string;
-  subtitleKey: string;
-  ctaLabelKey: string;
+  /** i18n key — used when `headline` is not set. */
+  headlineKey?: string;
+  headline?: string;
+  /** i18n key — used when `subtitle` is not set. */
+  subtitleKey?: string;
+  subtitle?: string;
+  /** i18n key — used when `ctaLabel` is not set. */
+  ctaLabelKey?: string;
+  ctaLabel?: string;
   ctaRoute: string;
   ctaQuery?: Record<string, string>;
   secondaryCtaLabelKey?: string;
@@ -16,7 +24,8 @@ export interface HomeHeroSlide {
 }
 
 export interface HomeHeroConfig {
-  slides: HomeHeroSlide[];
+  /** Fallback slides when the API returns none or fails. */
+  slides?: HomeHeroSlide[];
   autoPlay?: boolean;
   autoPlayIntervalMs?: number;
   /** Fill space below announcement + header + nav to complete 100svh (home page). */

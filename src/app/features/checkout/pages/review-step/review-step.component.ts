@@ -61,10 +61,6 @@ export class ReviewStepComponent implements OnInit {
   });
 
   readonly addressText = computed(() => {
-    if (this.checkoutState.useNewAddress()) {
-      const addr = this.checkoutState.newAddress();
-      return addr ? formatAddressLines(addr).join(' · ') : '';
-    }
     const id = this.checkoutState.selectedAddressId();
     const found = this.savedAddresses().find((a) => a.id === id);
     return found ? formatAddressLines(found).join(' · ') : '';

@@ -24,7 +24,7 @@
               <img
                 class="home-hero__image"
                 [src]="slide.imageSrc"
-                [alt]="slide.imageAltKey | translate"
+                [alt]="imageAlt(slide)"
                 width="1400"
                 height="560"
                 [attr.fetchpriority]="i === 0 ? 'high' : null"
@@ -32,19 +32,21 @@
               />
               <div class="home-hero__overlay">
                 <div class="home-hero__content">
-                  @if (slide.eyebrowKey) {
-                    <span class="home-hero__eyebrow">{{ slide.eyebrowKey | translate }}</span>
+                  @if (eyebrow(slide)) {
+                    <span class="home-hero__eyebrow">{{ eyebrow(slide) }}</span>
                   }
                   @if (i === 0) {
                     <h1 class="home-hero__headline">
-                      {{ slide.headlineKey | translate }}
+                      {{ headline(slide) }}
                     </h1>
                   } @else {
                     <h2 class="home-hero__headline">
-                      {{ slide.headlineKey | translate }}
+                      {{ headline(slide) }}
                     </h2>
                   }
-                  <p class="home-hero__subtitle">{{ slide.subtitleKey | translate }}</p>
+                  @if (subtitle(slide)) {
+                    <p class="home-hero__subtitle">{{ subtitle(slide) }}</p>
+                  }
                   <div class="home-hero__actions">
                     <a
                       class="btn btn-primary btn-lg home-hero__cta"
@@ -52,7 +54,7 @@
                       [queryParams]="slide.ctaQuery"
                       [attr.tabindex]="activeIndex() === i ? null : -1"
                     >
-                      {{ slide.ctaLabelKey | translate }}
+                      {{ ctaLabel(slide) }}
                     </a>
                     @if (slide.secondaryCtaLabelKey && slide.secondaryCtaRoute) {
                       <a
@@ -61,7 +63,7 @@
                         [queryParams]="slide.secondaryCtaQuery"
                         [attr.tabindex]="activeIndex() === i ? null : -1"
                       >
-                        {{ slide.secondaryCtaLabelKey | translate }}
+                        {{ secondaryCtaLabel(slide) }}
                         <span class="home-hero__secondary-line" aria-hidden="true"></span>
                       </a>
                     }

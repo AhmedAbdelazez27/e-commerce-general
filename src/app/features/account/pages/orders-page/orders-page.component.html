@@ -1,8 +1,134 @@
-<div class="container py-4" style="max-width: 48rem">
+<div class="container py-4 orders-page" style="max-width: 48rem">
   <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h2 mb-0">{{ 'PAGE.ORDERS' | translate }}</h1>
-    <a class="btn btn-outline-secondary btn-sm" routerLink="/account/profile">
-      {{ 'PAGE.PROFILE' | translate }}
-    </a>
+    <div>
+      <h1 class="h2 mb-1">{{ 'ORDERS.TITLE' | translate }}</h1>
+      <p class="text-muted mb-0">{{ 'ORDERS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="reload()">
+        {{ 'COMMON.REFRESH' | translate }}
+      </button>
+      <a class="btn btn-outline-secondary btn-sm" routerLink="/account/profile">
+        {{ 'PAGE.PROFILE' | translate }}
+      </a>
+    </div>
   </div>
+
+  <div class="orders-page__filters mb-3">
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="filter() === 'active'"
+      [class.btn-outline-secondary]="filter() !== 'active'"
+      (click)="setFilter('active')"
+    >
+      {{ 'ORDERS.ACTIVE' | translate }}
+      @if (!loading()) {
+        <span class="orders-page__count">({{ activeOrders().length }})</span>
+      }
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="filter() === 'all'"
+      [class.btn-outline-secondary]="filter() !== 'all'"
+      (click)="setFilter('all')"
+    >
+      {{ 'ORDERS.ALL' | translate }}
+      @if (!loading()) {
+        <span class="orders-page__count">({{ orders().length }})</span>
+      }
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (filteredOrders().length === 0) {
+    <div class="orders-page__empty">
+      <p class="mb-3">
+        {{ filter() === 'active' ? ('ORDERS.EMPTY_ACTIVE' | translate) : ('ORDERS.EMPTY_ALL' | translate) }}
+      </p>
+      <a routerLink="/shop" class="btn btn-primary">{{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}</a>
+    </div>
+  } @else {
+    @for (order of filteredOrders(); track order.id) {
+      <article class="order-container mt-3">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+          <div>
+            <h4 class="mb-1 gold">{{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ order.orderNumber }}</h4>
+            <div class="orders-page__status-row">
+              @if (order.orderStatus) {
+                <span class="orders-page__status-chip">
+                  {{ 'ORDERS.STATUS_ORDER' | translate }}:
+                  @if (statusLabelKey(order.orderStatus); as key) {
+                    {{ key | translate }}
+                  } @else {
+                    {{ order.orderStatus }}
+                  }
+                </span>
+              }
+              @if (order.paymentStatus) {
+                <span class="orders-page__status-chip">
+                  {{ 'ORDERS.STATUS_PAYMENT' | translate }}:
+                  @if (statusLabelKey(order.paymentStatus); as key) {
+                    {{ key | translate }}
+                  } @else {
+                    {{ order.paymentStatus }}
+                  }
+                </span>
+              }
+              @if (order.shippingStatus) {
+                <span class="orders-page__status-chip">
+                  {{ 'ORDERS.STATUS_SHIPPING' | translate }}:
+                  @if (statusLabelKey(order.shippingStatus); as key) {
+                    {{ key | translate }}
+                  } @else {
+                    {{ order.shippingStatus }}
+                  }
+                </span>
+              }
+            </div>
+          </div>
+          <div class="orders-page__total text-end">
+            <span class="orders-page__total-label">{{ 'ORDERS.TOTAL' | translate }}</span>
+            <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</strong>
+          </div>
+        </div>
+
+        <div class="orders-page__tracker" aria-label="Order tracking">
+          @for (step of trackingSteps(order); track step.id) {
+            <div
+              class="orders-page__tracker-step"
+              [class.orders-page__tracker-step--done]="step.done"
+              [class.orders-page__tracker-step--current]="step.current"
+            >
+              <span class="orders-page__tracker-dot"></span>
+              <span class="orders-page__tracker-label">{{ step.labelKey | translate }}</span>
+            </div>
+          }
+        </div>
+
+        @if (order.items?.length) {
+          <div class="checkout-review-items mt-3">
+            <h3 class="checkout-step__subtitle">{{ 'ORDERS.ITEMS' | translate }}</h3>
+            <ul class="checkout-review-items__list">
+              @for (item of order.items; track $index) {
+                <li class="checkout-review-items__row">
+                  <div class="checkout-review-items__info">
+                    <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+                    @if (item.quantity) {
+                      <span class="checkout-review-items__meta">× {{ item.quantity }}</span>
+                    }
+                  </div>
+                  <span class="checkout-review-items__price">
+                    {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                  </span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </article>
+    }
+  }
 </div>

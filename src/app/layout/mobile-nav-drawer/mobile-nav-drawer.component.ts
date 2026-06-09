@@ -8,7 +8,7 @@ import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
-import { NavCategory, NavMegaColumn, NavLabelFields } from '../models/layout.model';
+import { LayoutLink, NavCategory, NavMegaColumn, NavLabelFields } from '../models/layout.model';
 import { NavigationService } from '../services/navigation.service';
 import { navColumnTitle, navItemLabel } from '../utils/nav-label.util';
 
@@ -32,6 +32,7 @@ export class MobileNavDrawerComponent {
   readonly categories = this.navigation.categories;
   readonly header = LAYOUT_CONFIG.header;
   readonly branding = LAYOUT_CONFIG.branding;
+  readonly utilityNavLinks = LAYOUT_CONFIG.utilityNavLinks;
   readonly itemCount = this.cart.itemCount;
   readonly wishlistCount = this.wishlist.itemCount;
 
@@ -97,6 +98,10 @@ export class MobileNavDrawerComponent {
 
   isLoggedIn(): boolean {
     return this.auth.isLoggedIn();
+  }
+
+  visibleUtilityLinks(): LayoutLink[] {
+    return this.utilityNavLinks.filter((link) => !link.requiresAuth || this.auth.isLoggedIn());
   }
 
   logout(): void {

@@ -7,7 +7,7 @@ export const accountRoutes: Routes = [
     path: '',
     canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'orders' },
+      { path: '', pathMatch: 'full', redirectTo: 'profile' },
       {
         path: 'profile',
         loadComponent: () =>

@@ -3,11 +3,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { CHECKOUT_CONFIG } from '../config/checkout.config';
 import type { CustomerAddressInput } from '../models/customer-address.model';
 import type { EcPlaceOrderRequest } from '../models/place-order.model';
-import {
-  isAllowedPaymentMethod,
-  isAllowedShippingMethod,
-  validateNewAddressInput,
-} from '../utils/checkout-validation.util';
+import { isAllowedPaymentMethod, isAllowedShippingMethod } from '../utils/checkout-validation.util';
 
 export interface CheckoutValidationResult {
   valid: boolean;
@@ -41,9 +37,6 @@ export class CheckoutStateService {
   readonly hasAddress = computed(() => {
     if (!this.hasShipping()) {
       return false;
-    }
-    if (this.useNewAddressSignal()) {
-      return validateNewAddressInput(this.newAddressSignal()) === null;
     }
     const id = this.selectedAddressIdSignal();
     return id != null && id > 0;
@@ -107,13 +100,6 @@ export class CheckoutStateService {
     if (!this.hasShipping()) {
       return { valid: false, errorKey: 'CHECKOUT.SHIPPING_REQUIRED' };
     }
-    if (this.useNewAddressSignal()) {
-      const addressError = validateNewAddressInput(this.newAddressSignal());
-      if (addressError) {
-        return { valid: false, errorKey: addressError };
-      }
-      return { valid: true, errorKey: null };
-    }
     const id = this.selectedAddressIdSignal();
     if (id == null || id < 1) {
       return { valid: false, errorKey: 'CHECKOUT.ADDRESS_REQUIRED' };
@@ -137,13 +123,11 @@ export class CheckoutStateService {
   }
 
   toPlaceOrderRequest(customerId: number): EcPlaceOrderRequest {
-    const useNew = this.useNewAddressSignal();
-    const newAddress = useNew ? this.newAddressSignal() : null;
     return {
       customerId,
       sessionId: '',
-      addressId: useNew ? 0 : (this.selectedAddressIdSignal() ?? 0),
-      newAddress: useNew && newAddress ? { ...newAddress, customerId } : null,
+      addressId: this.selectedAddressIdSignal() ?? 0,
+      newAddress: null,
       shippingMethod: this.shippingMethodSignal(),
       shippingAmount: this.shippingAmountSignal(),
       paymentMethod: this.paymentMethodSignal() ?? '',

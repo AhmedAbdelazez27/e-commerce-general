@@ -75,11 +75,26 @@ function normalizeOrderItems(raw: unknown): EcOrderDto['items'] {
     }
     const o = line as JsonRecord;
     return {
-      productName: readString(o, 'productName', 'ProductName'),
-      variantSku: readString(o, 'variantSku', 'VariantSku'),
+      id: readNumber(o, 'id', 'Id'),
+      productVariantId: readNumber(o, 'productVariantId', 'ProductVariantId'),
+      productName:
+        readString(o, 'productName', 'ProductName') ??
+        readString(o, 'productNameSnapshot', 'ProductNameSnapshot'),
+      productNameSnapshot: readString(o, 'productNameSnapshot', 'ProductNameSnapshot'),
+      variantSku:
+        readString(o, 'variantSku', 'VariantSku') ??
+        readString(o, 'variantSkuSnapshot', 'VariantSkuSnapshot'),
+      variantSkuSnapshot: readString(o, 'variantSkuSnapshot', 'VariantSkuSnapshot'),
+      specificationSummary: readString(o, 'specificationSummary', 'SpecificationSummary'),
       quantity: readNumber(o, 'quantity', 'Quantity'),
       unitPrice: readNumber(o, 'unitPrice', 'UnitPrice'),
-      lineTotal: readNumber(o, 'lineTotal', 'LineTotal') ?? readNumber(o, 'totalPrice', 'TotalPrice'),
+      discount: readNumber(o, 'discount', 'Discount'),
+      tax: readNumber(o, 'tax', 'Tax'),
+      lineTotal:
+        readNumber(o, 'lineTotal', 'LineTotal') ??
+        readNumber(o, 'total', 'Total') ??
+        readNumber(o, 'totalPrice', 'TotalPrice'),
+      total: readNumber(o, 'total', 'Total'),
     };
   });
 }
