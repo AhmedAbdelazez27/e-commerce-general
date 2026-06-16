@@ -18,6 +18,9 @@ export function normalizeCartDto(raw: unknown): CartDto {
     readNumber(o, 'TotalAmount', 'totalAmount');
 
   return {
+    CartId:
+      readNumber(o, 'CartId', 'cartId', 'Id', 'id') ??
+      readNumber(o, 'CartHeaderId', 'cartHeaderId'),
     Items: items,
     SubTotal: readNumber(o, 'SubTotal', 'subTotal') ?? total,
     Total: total,

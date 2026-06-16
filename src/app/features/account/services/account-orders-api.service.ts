@@ -5,8 +5,8 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
-import type { EcOrderDto } from '../../checkout/models/place-order.model';
-import { normalizeOrder } from '../../checkout/utils/checkout-api.mapper';
+import type { EcOrderDto, EcOrderStatusHistoryDto } from '../../checkout/models/place-order.model';
+import { normalizeOrder, normalizeOrderStatusHistory } from '../../checkout/utils/checkout-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class AccountOrdersApiService {
@@ -28,6 +28,33 @@ export class AccountOrdersApiService {
       map((res) => normalizeOrder(resultFromAbpEnvelope(res))),
       catchError(() => of(null)),
     );
+  }
+
+  getOrderStatusHistory(orderId: number): Observable<EcOrderStatusHistoryDto[]> {
+    const params = new HttpParams().set('orderId', String(orderId));
+
+    return this.http.get<unknown>(ApiEndpoints.EcOrders.getOrderStatusHistory, { params }).pipe(
+      map((res) => this.normalizeStatusHistoryResponse(res)),
+      catchError(() => of([])),
+    );
+  }
+
+  private normalizeStatusHistoryResponse(res: unknown): EcOrderStatusHistoryDto[] {
+    const direct = resultArrayFromAbpEnvelope<unknown>(res);
+    if (direct.length > 0) {
+      return normalizeOrderStatusHistory(direct);
+    }
+
+    const payload = resultFromAbpEnvelope<unknown>(res);
+    if (payload && typeof payload === 'object') {
+      const items = (payload as { items?: unknown; Items?: unknown }).items ??
+        (payload as { items?: unknown; Items?: unknown }).Items;
+      if (Array.isArray(items)) {
+        return normalizeOrderStatusHistory(items);
+      }
+    }
+
+    return [];
   }
 
   private normalizeOrdersResponse(res: unknown): EcOrderDto[] {

@@ -3,7 +3,9 @@
 @use './layout/store-layout';
 @use './home/home-page';
 @use './shared/category-tile';
+@use './shared/toastr';
 @use './categories/categories-page';
+@use './brands/brands-page';
 @use './catalog/catalog-listing';
 @use './catalog/product-detail';
 @use './cart/cart-page';

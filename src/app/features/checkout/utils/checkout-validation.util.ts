@@ -39,11 +39,14 @@ export function optionalCoordinateValidator(min: number, max: number): Validator
   };
 }
 
-export function isAllowedPaymentMethod(method: string | null | undefined): boolean {
+export function isAllowedPaymentMethod(
+  method: string | null | undefined,
+  allowedIds: readonly string[],
+): boolean {
   if (!method?.trim()) {
     return false;
   }
-  return CHECKOUT_CONFIG.paymentMethods.some((m) => m.id === method);
+  return allowedIds.includes(method);
 }
 
 export function isAllowedShippingMethod(method: string | null | undefined): boolean {

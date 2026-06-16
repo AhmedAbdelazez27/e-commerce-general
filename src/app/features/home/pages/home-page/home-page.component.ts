@@ -34,8 +34,6 @@ export class HomePageComponent {
         return this.data.mostSearched;
       case 'best-sellers':
         return this.data.bestSellers;
-      case 'new-arrivals':
-        return this.data.newArrivals;
       default:
         return [];
     }

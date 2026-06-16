@@ -54,6 +54,13 @@
     "PAGE_SUBTITLE": "تصفح كل الفئات",
     "SHOP_NOW": "تسوق"
   },
+  "BRANDS": {
+    "LOAD_FAILED": "تعذر تحميل العلامات. حاول مرة أخرى.",
+    "PAGE_SUBTITLE": "تصفح كل العلامات التجارية",
+    "PRODUCTS": "منتج",
+    "SHOP_NOW": "تسوق",
+    "FEATURED": "مميز"
+  },
   "PROFILE": {
     "LOAD_FAILED": "تعذر تحميل بيانات الحساب. حاول مرة أخرى.",
     "ACCOUNT_INFORMATION": "معلومات الحساب",
@@ -107,7 +114,22 @@
     "STATUS_SHIPPED": "تم الشحن",
     "STATUS_DELIVERED": "تم التسليم",
     "STATUS_CANCELLED": "ملغي",
-    "STATUS_REFUNDED": "مسترد"
+    "STATUS_REFUNDED": "مسترد",
+    "VIEW_DETAILS": "عرض التفاصيل",
+    "DETAILS_TITLE": "تفاصيل الطلب",
+    "BACK_TO_ORDERS": "العودة للطلبات",
+    "NOT_FOUND": "تعذر العثور على الطلب أو تحميله.",
+    "ADDRESS": "عنوان التوصيل",
+    "SHIPPING_METHOD_DETAIL": "طريقة الشحن",
+    "SUMMARY": "ملخص الطلب",
+    "SUBTOTAL": "المجموع الفرعي",
+    "DISCOUNT": "الخصم",
+    "TAX": "الضريبة",
+    "SHIPPING": "الشحن",
+    "SKU": "رمز المنتج",
+    "STATUS_HISTORY": "سجل الحالات",
+    "STATUS_HISTORY_EMPTY": "لا توجد تحديثات للحالة بعد.",
+    "CHANGED_BY": "تم التحديث بواسطة"
   },
   "TOAST": {
     "SUCCESS": "تم بنجاح",
@@ -267,6 +289,9 @@
       "TITLE": "وصل حديثاً",
       "SUBTITLE": "إضافات جديدة تستحق التجربة"
     },
+    "PRODUCTS": {
+      "EMPTY": "لا توجد منتجات للعرض حالياً."
+    },
     "OFFERS": {
       "TITLE": "عروض خاصة",
       "SUBTITLE": "وفّر أكثر على الباقات والعروض الموسمية",
@@ -284,6 +309,7 @@
     "BRANDS": {
       "TITLE": "تسوق حسب العلامة",
       "SUBTITLE": "علامات تعرفها وتثق بها",
+      "EMPTY": "لا توجد علامات للعرض حالياً.",
       "LRP": "لاروش بوزيه",
       "EUCERIN": "إيوسرين",
       "CERAVE": "سيراف",
@@ -372,6 +398,7 @@
     "ITEMS_COUNT": "{{count}} منتج",
     "ADDED_SUCCESS": "تمت إضافة {{name}} إلى المفضلة",
     "REMOVED_SUCCESS": "تمت إزالة {{name}} من المفضلة",
+    "VIEW_WISHLIST": "عرض المفضلة",
     "EMPTY": {
       "TITLE": "المفضلة فارغة",
       "TEXT": "اضغط على أيقونة القلب على أي منتج لحفظه هنا.",
@@ -389,6 +416,7 @@
     "SUBTOTAL": "المجموع",
     "ITEM_UNAVAILABLE": "هذا المنتج لم يعد متوفراً",
     "ADDED_SUCCESS": "تمت إضافة {{name}} إلى السلة",
+    "VIEW_CART": "عرض السلة",
     "ADDED_ERROR": "تعذرت إضافة المنتج إلى السلة. حاول مرة أخرى.",
     "ADD_UNAVAILABLE": "هذا المنتج غير متوفر حالياً",
     "VARIANT_REQUIRED": "اختر خيار المنتج قبل الإضافة إلى السلة",
@@ -425,6 +453,7 @@
     "STEP_ADDRESS": "العنوان والشحن",
     "STEP_REVIEW": "مراجعة الطلب",
     "PAYMENT_HINT": "اختر طريقة الدفع المناسبة.",
+    "PAYMENT_LOAD_FAILED": "تعذر تحميل طرق الدفع. حاول مرة أخرى.",
     "PAYMENT_COD": "الدفع عند الاستلام",
     "PAYMENT_COD_DESC": "ادفع عند وصول الطلب.",
     "PAYMENT_TRANSFER": "تحويل بنكي يدوي",
@@ -464,6 +493,7 @@
     "CONFIRM_ORDER": "تأكيد الطلب",
     "PLACE_ORDER_FAILED": "تعذر إتمام الطلب. حاول مرة أخرى.",
     "CUSTOMER_REQUIRED": "يرجى تسجيل الدخول مرة أخرى لإتمام الطلب.",
+    "CART_REQUIRED": "تعذر العثور على السلة. حدّث السلة وحاول مرة أخرى.",
     "SUCCESS_TITLE": "تم تقديم الطلب",
     "SUCCESS_MESSAGE": "شكراً لك. استلمنا طلبك.",
     "ORDER_NUMBER": "رقم الطلب",

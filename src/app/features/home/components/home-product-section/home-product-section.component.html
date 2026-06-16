@@ -6,10 +6,27 @@
     [viewAllQuery]="section().viewAllQuery"
   />
 
-  @if (section().layout === 'scroll') {
-    <div class="home-product-rail" role="list">
-      @for (product of cardProducts(); track product.id) {
-        <div class="home-product-rail__item" role="listitem">
+  @if (usesApi() && loading()) {
+    <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (usesApi() && !hasProducts()) {
+    <p class="text-muted mb-0">{{ 'HOME.PRODUCTS.EMPTY' | translate }}</p>
+  } @else if (section().layout === 'scroll') {
+      <div class="home-product-rail" role="list">
+        @for (product of cardProducts(); track product.id) {
+          <div class="home-product-rail__item" role="listitem">
+            <app-product-card
+              [product]="product"
+              (productClick)="onProductClick($event)"
+              (addToCart)="onAddToCart($event)"
+              (addToWishlist)="onAddToWishlist($event)"
+              (quickView)="onQuickView($event)"
+            />
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="home-product-grid">
+        @for (product of cardProducts(); track product.id) {
           <app-product-card
             [product]="product"
             (productClick)="onProductClick($event)"
@@ -17,20 +34,7 @@
             (addToWishlist)="onAddToWishlist($event)"
             (quickView)="onQuickView($event)"
           />
-        </div>
-      }
-    </div>
-  } @else {
-    <div class="home-product-grid">
-      @for (product of cardProducts(); track product.id) {
-        <app-product-card
-          [product]="product"
-          (productClick)="onProductClick($event)"
-          (addToCart)="onAddToCart($event)"
-          (addToWishlist)="onAddToWishlist($event)"
-          (quickView)="onQuickView($event)"
-        />
-      }
-    </div>
-  }
+        }
+      </div>
+    }
 </section>

@@ -52,6 +52,12 @@ export interface HomeCategoryShortcut {
   isFeatured: boolean;
 }
 
+export interface HomeProductSectionSearchFilter {
+  isNewArrival?: boolean;
+  isBestSeller?: boolean;
+  isFeatured?: boolean;
+}
+
 export interface HomeProductSectionConfig {
   id: string;
   titleKey: string;
@@ -59,18 +65,33 @@ export interface HomeProductSectionConfig {
   viewAllRoute: string | string[];
   viewAllQuery?: Record<string, string>;
   layout: 'grid' | 'scroll';
+  /** When set, products are loaded via EcPublicCatalog SearchProducts. */
+  searchFilter?: HomeProductSectionSearchFilter;
+  maxItems?: number;
 }
 
 /** Large image tiles — inspired by Lecosma "Curated Edit". */
 export interface HomeCuratedCollection {
   id: string;
-  eyebrowKey: string;
-  titleKey: string;
-  hoverCtaKey: string;
+  eyebrowKey?: string;
+  eyebrow?: string;
+  titleKey?: string;
+  title?: string;
+  hoverCtaKey?: string;
+  hoverCta?: string;
   imageUrl: string;
-  imageAltKey: string;
+  imageAltKey?: string;
+  imageAlt?: string;
   route: string | string[];
   queryParams?: Record<string, string>;
+}
+
+export interface HomeCuratedCollectionsConfig {
+  sectionEyebrowKey: string;
+  sectionTitleKey: string;
+  items?: HomeCuratedCollection[];
+  searchFilter?: HomeProductSectionSearchFilter;
+  maxItems?: number;
 }
 
 export interface HomeOfferCard {
@@ -87,11 +108,22 @@ export interface HomeOfferCard {
 
 export interface HomeBrandCard {
   id: string;
-  nameKey: string;
+  nameKey?: string;
+  name?: string;
+  nameAr?: string;
+  nameEn?: string;
   route: string | string[];
   queryParams?: Record<string, string>;
   logoUrl?: string;
   initials: string;
+}
+
+export interface HomeBrandsConfig {
+  titleKey: string;
+  subtitleKey: string;
+  viewAllRoute: string | string[];
+  items?: HomeBrandCard[];
+  maxItems?: number;
 }
 
 export interface HomeTrustBadge {
@@ -103,19 +135,10 @@ export interface HomeTrustBadge {
 
 export interface HomePageConfig {
   hero: HomeHeroConfig;
-  curatedCollections?: {
-    sectionEyebrowKey: string;
-    sectionTitleKey: string;
-    items: HomeCuratedCollection[];
-  };
+  curatedCollections?: HomeCuratedCollectionsConfig;
   productSections: HomeProductSectionConfig[];
   offers: HomeOfferCard[];
-  brands: {
-    titleKey: string;
-    subtitleKey: string;
-    viewAllRoute: string | string[];
-    items: HomeBrandCard[];
-  };
+  brands: HomeBrandsConfig;
   trustBadges: HomeTrustBadge[];
 }
 

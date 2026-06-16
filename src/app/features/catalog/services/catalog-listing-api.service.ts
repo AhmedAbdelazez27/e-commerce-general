@@ -25,6 +25,25 @@ const EMPTY_SEARCH: SearchProductsResult = {
   items: [],
 };
 
+function normalizeSearchProductsResult(res: unknown): SearchProductsResult {
+  const fromEnvelope = resultFromAbpEnvelope<SearchProductsResult>(res);
+  if (fromEnvelope && Array.isArray(fromEnvelope.items)) {
+    return fromEnvelope;
+  }
+
+  if (res != null && typeof res === 'object') {
+    const direct = res as SearchProductsResult;
+    if (Array.isArray(direct.items)) {
+      return {
+        totalCount: direct.totalCount ?? direct.items.length,
+        items: direct.items,
+      };
+    }
+  }
+
+  return EMPTY_SEARCH;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CatalogListingApiService {
   private readonly http = inject(HttpClient);
@@ -44,7 +63,7 @@ export class CatalogListingApiService {
     return this.http
       .post<unknown>(ApiEndpoints.EcPublicCatalog.searchProducts, body)
       .pipe(
-        map((res) => resultFromAbpEnvelope<SearchProductsResult>(res) ?? EMPTY_SEARCH),
+        map((res) => normalizeSearchProductsResult(res)),
         catchError(() => of(EMPTY_SEARCH)),
       );
   }

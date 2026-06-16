@@ -1,30 +1,40 @@
-<section class="home-section home-curated" aria-labelledby="home-curated-title">
-  <header class="home-curated__head">
-    <span class="home-curated__eyebrow">{{ sectionEyebrowKey() | translate }}</span>
-    <h2 id="home-curated-title" class="home-curated__title">{{ sectionTitleKey() | translate }}</h2>
-    <div class="home-curated__rule" aria-hidden="true"></div>
-  </header>
+@if (loading() || hasItems() || !usesApi()) {
+  <section class="home-section home-curated" aria-labelledby="home-curated-title">
+    <header class="home-curated__head">
+      <span class="home-curated__eyebrow">{{ config().sectionEyebrowKey | translate }}</span>
+      <h2 id="home-curated-title" class="home-curated__title">{{ config().sectionTitleKey | translate }}</h2>
+      <div class="home-curated__rule" aria-hidden="true"></div>
+    </header>
 
-  <div class="home-curated__grid">
-    @for (item of items(); track item.id) {
-      <a
-        class="home-curated__card"
-        [routerLink]="item.route"
-        [queryParams]="item.queryParams"
-      >
-        <img
-          class="home-curated__image"
-          [src]="item.imageUrl"
-          [alt]="item.imageAltKey | translate"
-          loading="lazy"
-          decoding="async"
-        />
-        <div class="home-curated__overlay">
-          <span class="home-curated__card-eyebrow">{{ item.eyebrowKey | translate }}</span>
-          <h3 class="home-curated__card-title">{{ item.titleKey | translate }}</h3>
-          <span class="home-curated__card-cta">{{ item.hoverCtaKey | translate }}</span>
-        </div>
-      </a>
+    @if (usesApi() && loading()) {
+      <p class="text-muted mb-0 text-center">{{ 'COMMON.LOADING' | translate }}</p>
+    } @else if (usesApi() && !hasItems()) {
+      <p class="text-muted mb-0 text-center">{{ 'HOME.PRODUCTS.EMPTY' | translate }}</p>
+    } @else {
+      <div class="home-curated__grid">
+        @for (item of displayItems(); track item.id) {
+          <a
+            class="home-curated__card"
+            [routerLink]="item.route"
+            [queryParams]="item.queryParams"
+          >
+            <img
+              class="home-curated__image"
+              [src]="item.imageUrl"
+              [alt]="imageAlt(item)"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="home-curated__overlay">
+              @if (eyebrow(item)) {
+                <span class="home-curated__card-eyebrow">{{ eyebrow(item) }}</span>
+              }
+              <h3 class="home-curated__card-title">{{ title(item) }}</h3>
+              <span class="home-curated__card-cta">{{ hoverCta(item) }}</span>
+            </div>
+          </a>
+        }
+      </div>
     }
-  </div>
-</section>
+  </section>
+}

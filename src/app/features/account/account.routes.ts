@@ -18,6 +18,13 @@ export const accountRoutes: Routes = [
         loadComponent: () =>
           import('./pages/orders-page/orders-page.component').then((m) => m.OrdersPageComponent),
       },
+      {
+        path: 'orders/:orderId',
+        loadComponent: () =>
+          import('./pages/order-detail-page/order-detail-page.component').then(
+            (m) => m.OrderDetailPageComponent,
+          ),
+      },
     ],
   },
 ];

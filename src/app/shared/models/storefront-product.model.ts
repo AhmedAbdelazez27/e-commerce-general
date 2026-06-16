@@ -4,6 +4,8 @@
  */
 export interface StorefrontProduct {
   id: number;
+  productVariantId?: number;
+  slug?: string;
   nameEn: string;
   nameAr: string;
   price: number;

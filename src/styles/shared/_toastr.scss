@@ -1,0 +1,75 @@
+#toast-container {
+  z-index: var(--ds-z-toast);
+
+  &.toast-top-end,
+  &.toast-top-start {
+    top: calc(var(--store-header-offset, 5.5rem) + 0.75rem);
+  }
+}
+
+#toast-container .ngx-toastr.app-toast {
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 0.9rem 1rem 0.85rem;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-lg);
+  background-image: none;
+  opacity: 1;
+  border: 1px solid rgb(0 0 0 / 8%);
+}
+
+#toast-container .app-toast__message {
+  font-size: var(--ds-font-size-sm);
+  line-height: var(--ds-line-height-relaxed);
+  word-break: break-word;
+}
+
+#toast-container .app-toast__title {
+  margin-top: 0.35rem;
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: var(--ds-letter-spacing-wide);
+  text-transform: uppercase;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.95;
+}
+
+#toast-container .toast-success.app-toast {
+  background-color: color-mix(in srgb, var(--ds-color-success, #198754) 12%, #fff);
+  color: var(--ds-color-text);
+  border-color: color-mix(in srgb, var(--ds-color-success, #198754) 35%, transparent);
+}
+
+#toast-container .toast-error.app-toast {
+  background-color: color-mix(in srgb, var(--ds-color-danger, #dc3545) 10%, #fff);
+  color: var(--ds-color-text);
+  border-color: color-mix(in srgb, var(--ds-color-danger, #dc3545) 30%, transparent);
+}
+
+#toast-container .toast-warning.app-toast {
+  background-color: color-mix(in srgb, var(--ds-color-warning, #ffc107) 18%, #fff);
+  color: var(--ds-color-text);
+  border-color: color-mix(in srgb, var(--ds-color-warning, #ffc107) 40%, transparent);
+}
+
+#toast-container .toast-info.app-toast {
+  background-color: color-mix(in srgb, var(--ds-color-primary) 10%, #fff);
+  color: var(--ds-color-text);
+  border-color: color-mix(in srgb, var(--ds-color-primary) 28%, transparent);
+}
+
+#toast-container .toast-close-button {
+  top: 0.2rem;
+  inset-inline-end: 0.35rem;
+  font-weight: 700;
+  opacity: 0.55;
+  text-shadow: none;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+#toast-container .toast-progress {
+  opacity: 0.35;
+}

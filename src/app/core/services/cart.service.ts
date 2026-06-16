@@ -174,6 +174,22 @@ export class CartService {
       });
   }
 
+  /** Cart identifiers required by `EcOrders/PlaceOrder`. */
+  getPlaceOrderContext(): {
+    cartId: number;
+    customerId: number;
+    sessionId: string;
+    couponCode: string | null;
+  } {
+    const context = this.buildEcCartContext();
+    return {
+      cartId: this.cartSignal()?.CartId ?? 0,
+      customerId: context.customerId,
+      sessionId: context.sessionId?.trim() ?? '',
+      couponCode: context.couponCode,
+    };
+  }
+
   clearCart(couponCode?: string | null): Observable<boolean> {
     const context = this.buildEcCartContext(couponCode);
     if (!context.sessionId && context.customerId <= 0) {

@@ -1,5 +1,5 @@
 import type { CustomerAddressDto, PagedAddressesResult } from '../models/customer-address.model';
-import type { EcOrderDto } from '../models/place-order.model';
+import type { EcOrderDto, EcOrderStatusHistoryDto } from '../models/place-order.model';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -53,16 +53,71 @@ export function normalizeOrder(raw: unknown): EcOrderDto | null {
     id,
     orderNumber,
     customerId: readNumber(o, 'customerId', 'CustomerId'),
+    customerName: readString(o, 'customerName', 'CustomerName'),
+    addressId: readNumber(o, 'addressId', 'AddressId'),
+    addressText: readString(o, 'addressText', 'AddressText'),
     orderStatus: readString(o, 'orderStatus', 'OrderStatus'),
+    orderStatusLkpId: readNumber(o, 'orderStatusLkpId', 'OrderStatusLkpId'),
+    orderStatusNameAr: readString(o, 'orderStatusNameAr', 'OrderStatusNameAr'),
+    orderStatusNameEn: readString(o, 'orderStatusNameEn', 'OrderStatusNameEn'),
     paymentStatus: readString(o, 'paymentStatus', 'PaymentStatus'),
+    paymentStatusLkpId: readNumber(o, 'paymentStatusLkpId', 'PaymentStatusLkpId'),
+    paymentStatusNameAr: readString(o, 'paymentStatusNameAr', 'PaymentStatusNameAr'),
+    paymentStatusNameEn: readString(o, 'paymentStatusNameEn', 'PaymentStatusNameEn'),
     shippingStatus: readString(o, 'shippingStatus', 'ShippingStatus'),
+    shippingStatusLkpId: readNumber(o, 'shippingStatusLkpId', 'ShippingStatusLkpId'),
+    shippingStatusNameAr: readString(o, 'shippingStatusNameAr', 'ShippingStatusNameAr'),
+    shippingStatusNameEn: readString(o, 'shippingStatusNameEn', 'ShippingStatusNameEn'),
+    shippingMethod: readString(o, 'shippingMethod', 'ShippingMethod'),
+    paymentMethod: readString(o, 'paymentMethod', 'PaymentMethod'),
+    paymentMethodLkpId: readNumber(o, 'paymentMethodLkpId', 'PaymentMethodLkpId'),
+    paymentMethodNameAr: readString(o, 'paymentMethodNameAr', 'PaymentMethodNameAr'),
+    paymentMethodNameEn: readString(o, 'paymentMethodNameEn', 'PaymentMethodNameEn'),
     totalAmount: readNumber(o, 'totalAmount', 'TotalAmount'),
     discountAmount: readNumber(o, 'discountAmount', 'DiscountAmount'),
     taxAmount: readNumber(o, 'taxAmount', 'TaxAmount'),
     shippingAmount: readNumber(o, 'shippingAmount', 'ShippingAmount'),
     finalAmount: readNumber(o, 'finalAmount', 'FinalAmount'),
     items: normalizeOrderItems(o['items'] ?? o['Items']),
+    statusHistory: normalizeOrderStatusHistory(o['statusHistory'] ?? o['StatusHistory']),
   };
+}
+
+export function normalizeOrderStatusHistory(raw: unknown): EcOrderStatusHistoryDto[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  const items: EcOrderStatusHistoryDto[] = [];
+
+  for (const entry of raw) {
+    if (entry == null || typeof entry !== 'object') {
+      continue;
+    }
+
+    const o = entry as JsonRecord;
+    items.push({
+      id: readNumber(o, 'id', 'Id'),
+      orderId: readNumber(o, 'orderId', 'OrderId'),
+      statusCategory: readString(o, 'statusCategory', 'StatusCategory'),
+      orderStatusLkpId: readNumber(o, 'orderStatusLkpId', 'OrderStatusLkpId'),
+      orderStatusNameAr: readString(o, 'orderStatusNameAr', 'OrderStatusNameAr'),
+      orderStatusNameEn: readString(o, 'orderStatusNameEn', 'OrderStatusNameEn'),
+      paymentStatusLkpId: readNumber(o, 'paymentStatusLkpId', 'PaymentStatusLkpId'),
+      paymentStatusNameAr: readString(o, 'paymentStatusNameAr', 'PaymentStatusNameAr'),
+      paymentStatusNameEn: readString(o, 'paymentStatusNameEn', 'PaymentStatusNameEn'),
+      shipmentStatusLkpId: readNumber(o, 'shipmentStatusLkpId', 'ShipmentStatusLkpId'),
+      shipmentStatusNameAr: readString(o, 'shipmentStatusNameAr', 'ShipmentStatusNameAr'),
+      shipmentStatusNameEn: readString(o, 'shipmentStatusNameEn', 'ShipmentStatusNameEn'),
+      notesAr: readString(o, 'notesAr', 'NotesAr'),
+      notesEn: readString(o, 'notesEn', 'NotesEn'),
+      changedByUserId: readNumber(o, 'changedByUserId', 'ChangedByUserId'),
+      changedByUserName: readString(o, 'changedByUserName', 'ChangedByUserName'),
+      statusDate: readString(o, 'statusDate', 'StatusDate'),
+    });
+  }
+
+  return items;
 }
 
 function normalizeOrderItems(raw: unknown): EcOrderDto['items'] {
@@ -76,6 +131,7 @@ function normalizeOrderItems(raw: unknown): EcOrderDto['items'] {
     const o = line as JsonRecord;
     return {
       id: readNumber(o, 'id', 'Id'),
+      productId: readNumber(o, 'productId', 'ProductId'),
       productVariantId: readNumber(o, 'productVariantId', 'ProductVariantId'),
       productName:
         readString(o, 'productName', 'ProductName') ??

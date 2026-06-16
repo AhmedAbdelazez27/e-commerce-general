@@ -103,7 +103,7 @@ export interface PublicSearchProductPriceDto {
 
 export interface PublicSearchProductDto {
   id: number;
-  productId: number;
+  productId?: number;
   slug: string;
   sku: string;
   name: string;
@@ -111,8 +111,12 @@ export interface PublicSearchProductDto {
   nameEn?: string;
   categoryId: number;
   categoryName: string;
+  categoryNameAr?: string;
+  categoryNameEn?: string;
   brandId?: number | null;
   brandName?: string | null;
+  brandNameAr?: string | null;
+  brandNameEn?: string | null;
   mainImageUrl?: string | null;
   isFeatured: boolean;
   isNewArrival: boolean;
@@ -122,7 +126,8 @@ export interface PublicSearchProductDto {
   finalPrice: number;
   discountPercent?: number | null;
   hasVariants: boolean;
-  availabilityStatus: string;
+  availabilityStatus?: string;
+  availableStatus?: string;
 }
 
 export interface SearchProductsResult {

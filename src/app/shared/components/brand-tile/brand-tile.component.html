@@ -1,0 +1,32 @@
+<a
+  class="brand-tile"
+  [routerLink]="route()"
+  [queryParams]="queryParams()"
+  [attr.aria-label]="name()"
+>
+  <div class="brand-tile__body">
+    @if (isFeatured()) {
+      <span class="brand-tile__badge">{{ 'BRANDS.FEATURED' | translate }}</span>
+    }
+
+    <div class="brand-tile__mark" [class.brand-tile__mark--initials]="!hasLogo()">
+      @if (hasLogo()) {
+        <img class="brand-tile__logo" [src]="logoUrl()" alt="" loading="lazy" decoding="async" />
+      } @else {
+        <span class="brand-tile__initials" aria-hidden="true">{{ initials() }}</span>
+      }
+    </div>
+
+    <h2 class="brand-tile__name">{{ name() }}</h2>
+
+    @if (description()) {
+      <p class="brand-tile__desc">{{ description() }}</p>
+    }
+
+    <p class="brand-tile__meta">
+      {{ count() | number }} {{ 'BRANDS.PRODUCTS' | translate }}
+    </p>
+
+    <span class="brand-tile__cta">{{ 'BRANDS.SHOP_NOW' | translate }}</span>
+  </div>
+</a>

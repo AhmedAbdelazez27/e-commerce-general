@@ -49,7 +49,13 @@ export const appConfig: ApplicationConfig = {
         loader: { provide: TranslateLoader, useClass: BundledJsonTranslateLoader },
       }),
     ),
-    provideToastr({ timeOut: 4000, positionClass: 'toast-top-end', preventDuplicates: true }),
+    provideToastr({
+      timeOut: 5000,
+      closeButton: true,
+      progressBar: true,
+      preventDuplicates: true,
+      newestOnTop: true,
+    }),
     {
       provide: APP_INITIALIZER,
       useFactory: initStorefrontConfigFactory,

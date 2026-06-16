@@ -1,8 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
-
 import { CartService } from '../../../core/services/cart.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { CartCouponState, CartLineItemView, CartOrderSummaryView } from '../models/cart-view.model';
 import { enrichCartItems } from '../utils/cart-enrichment.util';
 import { buildOrderSummary, findCoupon } from '../utils/cart-summary.util';
@@ -10,7 +9,7 @@ import { buildOrderSummary, findCoupon } from '../utils/cart-summary.util';
 @Injectable()
 export class CartPageFacade {
   private readonly cartService = inject(CartService);
-  private readonly toastr = inject(ToastrService);
+  private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
 
   readonly couponInput = signal('');
@@ -105,11 +104,11 @@ export class CartPageFacade {
 
   tryCheckout(): boolean {
     if (this.isEmpty()) {
-      this.toastr.warning(this.translate.instant('CART.CHECKOUT_EMPTY'));
+      this.toast.warning(this.translate.instant('CART.CHECKOUT_EMPTY'));
       return false;
     }
     if (this.hasUnavailableItems()) {
-      this.toastr.warning(this.translate.instant('CART.CHECKOUT_UNAVAILABLE'));
+      this.toast.warning(this.translate.instant('CART.CHECKOUT_UNAVAILABLE'));
       return false;
     }
     return true;

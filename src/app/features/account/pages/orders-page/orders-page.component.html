@@ -77,6 +77,12 @@
                   }
                 </span>
               }
+              @if (order.paymentMethodLkpId || order.paymentMethod || order.paymentMethodNameAr || order.paymentMethodNameEn) {
+                <span class="orders-page__status-chip">
+                  {{ 'CHECKOUT.PAYMENT_METHOD' | translate }}:
+                  {{ paymentMethodLabel(order) }}
+                </span>
+              }
               @if (order.shippingStatus) {
                 <span class="orders-page__status-chip">
                   {{ 'ORDERS.STATUS_SHIPPING' | translate }}:
@@ -128,6 +134,12 @@
             </ul>
           </div>
         }
+
+        <div class="mt-3">
+          <a class="btn btn-outline-primary btn-sm" [routerLink]="['/account/orders', order.id]">
+            {{ 'ORDERS.VIEW_DETAILS' | translate }}
+          </a>
+        </div>
       </article>
     }
   }

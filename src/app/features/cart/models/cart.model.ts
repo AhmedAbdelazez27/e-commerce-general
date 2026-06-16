@@ -30,6 +30,7 @@ export interface EcUpdateCartRequest extends EcCartContextRequest {
 }
 
 export interface CartDto {
+  CartId?: number;
   Items: CartItemDto[];
   SubTotal?: number;
   Total?: number;

@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
@@ -11,6 +11,7 @@ import {
   isActiveOrder,
   lineItemName,
   lineItemTotal,
+  orderPaymentMethodLabel,
   orderStatusLabelKey,
   orderTrackingSteps,
   type OrderListFilter,
@@ -24,6 +25,7 @@ import {
 export class OrdersPageComponent {
   private readonly ordersApi = inject(AccountOrdersApiService);
   private readonly auth = inject(AuthTokenService);
+  private readonly translate = inject(TranslateService);
 
   readonly loading = signal(true);
   readonly orders = signal<EcOrderDto[]>([]);
@@ -64,6 +66,11 @@ export class OrdersPageComponent {
 
   lineTotal(item: NonNullable<EcOrderDto['items']>[number]): number {
     return lineItemTotal(item);
+  }
+
+  paymentMethodLabel(order: EcOrderDto): string {
+    const lang = (this.translate.currentLang ?? '').toLowerCase();
+    return orderPaymentMethodLabel(order, lang.startsWith('ar'));
   }
 
   private load(): void {

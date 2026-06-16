@@ -42,8 +42,8 @@ export class ApiEndpoints {
     remove: '/Cart/RemoveItem',
   };
 
-  static readonly EcCheckout = {
-    placeOrder: '/api/services/app/EcCheckout/PlaceOrder',
+  static readonly FndLookupValues = {
+    getSelect2: '/api/services/app/FndLookupValues/GetFndLookupValuesSelect2',
   };
 
   static readonly EcCustomerProfile = {
@@ -54,7 +54,20 @@ export class ApiEndpoints {
   static readonly EcOrders = {
     getCustomerOrders: '/api/services/app/EcOrders/GetCustomerOrders',
     getOrderDetails: '/api/services/app/EcOrders/GetOrderDetails',
+    getOrderStatusHistory: '/api/services/app/EcOrders/GetOrderStatusHistory',
     getAll: '/api/services/app/EcOrders/GetAll',
+    placeOrder: '/api/services/app/EcOrders/PlaceOrder',
+  };
+
+  static readonly EcCheckout = {
+    placeOrder: '/api/services/app/EcCheckout/PlaceOrder',
+  };
+
+  static readonly EcWishlist = {
+    saveProduct: '/api/services/app/EcWishlist/SaveProduct',
+    remove: '/api/services/app/EcWishlist/Remove',
+    moveToCart: '/api/services/app/EcWishlist/MoveToCart',
+    getWishlist: '/api/services/app/EcWishlist/GetWishlist',
   };
 
   static readonly EcCustomerAddresses = {
@@ -65,7 +78,7 @@ export class ApiEndpoints {
     getSingle: '/api/services/app/EcCustomerAddresses/GetSingle',
   };
 
-  /** @deprecated Use EcCheckout.placeOrder */
+  /** @deprecated Use EcOrders.placeOrder */
   static readonly Checkout = {
     placeOrder: '/Orders/PlaceOrder',
   };

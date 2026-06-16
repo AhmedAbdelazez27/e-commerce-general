@@ -38,6 +38,8 @@ export function mapStorefrontProductToCardData(
 
   return {
     id: product.id,
+    productVariantId: product.productVariantId,
+    slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: product.brandName,

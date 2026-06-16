@@ -1,0 +1,166 @@
+<div class="container py-4 order-detail-page" style="max-width: 48rem">
+  <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
+    <a routerLink="/account/orders" class="btn btn-outline-secondary btn-sm">
+      {{ 'ORDERS.BACK_TO_ORDERS' | translate }}
+    </a>
+    @if (order()) {
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="reload()">
+        {{ 'COMMON.REFRESH' | translate }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (loadFailed() || !order()) {
+    <div class="orders-page__empty">
+      <p class="mb-3">{{ 'ORDERS.NOT_FOUND' | translate }}</p>
+      <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.BACK_TO_ORDERS' | translate }}</a>
+    </div>
+  } @else {
+    @let currentOrder = order()!;
+
+    <header class="mb-4">
+      <h1 class="h2 mb-1">{{ 'ORDERS.DETAILS_TITLE' | translate }}</h1>
+      <p class="text-muted mb-0">{{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ currentOrder.orderNumber }}</p>
+    </header>
+
+    <article class="order-container">
+      <div class="orders-page__status-row mb-3">
+        <span class="orders-page__status-chip">
+          {{ 'ORDERS.STATUS_ORDER' | translate }}: {{ statusName(currentOrder, 'order') }}
+        </span>
+        <span class="orders-page__status-chip">
+          {{ 'ORDERS.STATUS_PAYMENT' | translate }}: {{ statusName(currentOrder, 'payment') }}
+        </span>
+        <span class="orders-page__status-chip">
+          {{ 'ORDERS.STATUS_SHIPPING' | translate }}: {{ statusName(currentOrder, 'shipping') }}
+        </span>
+        <span class="orders-page__status-chip">
+          {{ 'CHECKOUT.PAYMENT_METHOD' | translate }}: {{ paymentMethodLabel(currentOrder) }}
+        </span>
+      </div>
+
+      <div class="order-detail-page__meta mb-3">
+        @if (currentOrder.addressText) {
+          <div class="order-detail-page__meta-row">
+            <span class="order-detail-page__meta-label">{{ 'ORDERS.ADDRESS' | translate }}</span>
+            <span>{{ currentOrder.addressText }}</span>
+          </div>
+        }
+        @if (currentOrder.shippingMethod) {
+          <div class="order-detail-page__meta-row">
+            <span class="order-detail-page__meta-label">{{ 'ORDERS.SHIPPING_METHOD_DETAIL' | translate }}</span>
+            <span>{{ currentOrder.shippingMethod }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="orders-page__tracker mb-4" aria-label="Order tracking">
+        @for (step of trackingSteps(currentOrder); track step.id) {
+          <div
+            class="orders-page__tracker-step"
+            [class.orders-page__tracker-step--done]="step.done"
+            [class.orders-page__tracker-step--current]="step.current"
+          >
+            <span class="orders-page__tracker-dot"></span>
+            <span class="orders-page__tracker-label">{{ step.labelKey | translate }}</span>
+          </div>
+        }
+      </div>
+
+      @if (currentOrder.items?.length) {
+        <div class="checkout-review-items mb-4">
+          <h2 class="checkout-step__subtitle">{{ 'ORDERS.ITEMS' | translate }}</h2>
+          <ul class="checkout-review-items__list">
+            @for (item of currentOrder.items; track item.id ?? $index) {
+              <li class="checkout-review-items__row">
+                <div class="checkout-review-items__info">
+                  <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+                  <span class="checkout-review-items__meta">
+                    @if (item.variantSkuSnapshot || item.variantSku) {
+                      {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
+                    }
+                    @if (item.quantity) {
+                      · × {{ item.quantity }}
+                    }
+                  </span>
+                  @if (item.specificationSummary) {
+                    <span class="checkout-review-items__meta">{{ item.specificationSummary }}</span>
+                  }
+                </div>
+                <span class="checkout-review-items__price">
+                  {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <section class="order-detail-page__summary" aria-label="Order summary">
+        <h2 class="checkout-step__subtitle">{{ 'ORDERS.SUMMARY' | translate }}</h2>
+        <dl class="order-detail-page__summary-list">
+          <div class="order-detail-page__summary-row">
+            <dt>{{ 'ORDERS.SUBTOTAL' | translate }}</dt>
+            <dd>{{ formatPrice(currentOrder.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          </div>
+          @if ((currentOrder.discountAmount ?? 0) > 0) {
+            <div class="order-detail-page__summary-row">
+              <dt>{{ 'ORDERS.DISCOUNT' | translate }}</dt>
+              <dd>-{{ formatPrice(currentOrder.discountAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+            </div>
+          }
+          @if ((currentOrder.taxAmount ?? 0) > 0) {
+            <div class="order-detail-page__summary-row">
+              <dt>{{ 'ORDERS.TAX' | translate }}</dt>
+              <dd>{{ formatPrice(currentOrder.taxAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+            </div>
+          }
+          @if ((currentOrder.shippingAmount ?? 0) > 0) {
+            <div class="order-detail-page__summary-row">
+              <dt>{{ 'ORDERS.SHIPPING' | translate }}</dt>
+              <dd>{{ formatPrice(currentOrder.shippingAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+            </div>
+          }
+          <div class="order-detail-page__summary-row order-detail-page__summary-row--total">
+            <dt>{{ 'ORDERS.TOTAL' | translate }}</dt>
+            <dd>{{ formatPrice(currentOrder.finalAmount ?? currentOrder.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          </div>
+        </dl>
+      </section>
+    </article>
+
+    <section class="order-container mt-3">
+      <h2 class="checkout-step__subtitle mb-3">{{ 'ORDERS.STATUS_HISTORY' | translate }}</h2>
+
+      @if (statusHistory().length === 0) {
+        <p class="text-muted mb-0">{{ 'ORDERS.STATUS_HISTORY_EMPTY' | translate }}</p>
+      } @else {
+        <ol class="order-detail-page__history">
+          @for (entry of statusHistory(); track entry.id ?? $index) {
+            <li class="order-detail-page__history-item">
+              <div class="order-detail-page__history-dot" aria-hidden="true"></div>
+              <div class="order-detail-page__history-body">
+                <div class="order-detail-page__history-title">{{ historyTitle(entry) }}</div>
+                @if (entry.statusCategory) {
+                  <div class="order-detail-page__history-category">{{ entry.statusCategory }}</div>
+                }
+                @if (historyNotes(entry); as notes) {
+                  <p class="order-detail-page__history-notes mb-0">{{ notes }}</p>
+                }
+                <div class="order-detail-page__history-meta">
+                  @if (entry.statusDate) {
+                    <time [dateTime]="entry.statusDate">
+                      {{ entry.statusDate | date: 'medium' }}
+                    </time>
+                  }
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+  }
+</div>

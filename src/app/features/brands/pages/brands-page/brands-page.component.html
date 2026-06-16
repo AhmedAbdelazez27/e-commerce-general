@@ -1,1 +1,29 @@
-<h1 class="h2">{{ 'PAGE.BRANDS' | translate }}</h1>
+<div class="container py-4 brands-page">
+  <app-catalog-breadcrumb [items]="breadcrumbs" />
+
+  <header class="brands-page__head mb-4">
+    <h1 class="h2 mb-1">{{ 'PAGE.BRANDS' | translate }}</h1>
+    <p class="text-muted mb-0">{{ 'BRANDS.PAGE_SUBTITLE' | translate }}</p>
+  </header>
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (loadFailed()) {
+    <div class="alert alert-warning mb-0">{{ 'BRANDS.LOAD_FAILED' | translate }}</div>
+  } @else {
+    <div class="brands-page__grid">
+      @for (brand of brands(); track brand.id) {
+        <app-brand-tile
+          [name]="name(brand)"
+          [initials]="initials(brand)"
+          [logoUrl]="logoUrl(brand)"
+          [description]="description(brand)"
+          [count]="brand.count"
+          [isFeatured]="brand.isFeatured"
+          [route]="shopRoute"
+          [queryParams]="shopQuery(brand)"
+        />
+      }
+    </div>
+  }
+</div>

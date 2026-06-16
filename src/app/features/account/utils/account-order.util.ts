@@ -1,4 +1,4 @@
-import type { EcOrderDto } from '../../checkout/models/place-order.model';
+import type { EcOrderDto, EcOrderStatusHistoryDto } from '../../checkout/models/place-order.model';
 
 export type OrderListFilter = 'active' | 'all';
 
@@ -99,4 +99,114 @@ export function lineItemName(item: NonNullable<EcOrderDto['items']>[number]): st
 
 export function lineItemTotal(item: NonNullable<EcOrderDto['items']>[number]): number {
   return item.lineTotal ?? item.total ?? (item.unitPrice ?? 0) * (item.quantity ?? 0);
+}
+
+export function localizedBilingualLabel(
+  nameAr: string | null | undefined,
+  nameEn: string | null | undefined,
+  fallback: string | null | undefined,
+  isArabic: boolean,
+): string {
+  const ar = nameAr?.trim();
+  const en = nameEn?.trim();
+  const fb = fallback?.trim();
+  return (isArabic ? ar : en) || fb || '—';
+}
+
+export function orderPaymentMethodLabel(order: EcOrderDto, isArabic: boolean): string {
+  return localizedBilingualLabel(
+    order.paymentMethodNameAr,
+    order.paymentMethodNameEn,
+    order.paymentMethod,
+    isArabic,
+  );
+}
+
+export function orderStatusDisplayName(
+  order: EcOrderDto,
+  kind: 'order' | 'payment' | 'shipping',
+  isArabic: boolean,
+): string {
+  if (kind === 'order') {
+    return localizedBilingualLabel(
+      order.orderStatusNameAr,
+      order.orderStatusNameEn,
+      order.orderStatus,
+      isArabic,
+    );
+  }
+  if (kind === 'payment') {
+    return localizedBilingualLabel(
+      order.paymentStatusNameAr,
+      order.paymentStatusNameEn,
+      order.paymentStatus,
+      isArabic,
+    );
+  }
+  return localizedBilingualLabel(
+    order.shippingStatusNameAr,
+    order.shippingStatusNameEn,
+    order.shippingStatus,
+    isArabic,
+  );
+}
+
+export function statusHistoryPrimaryLabel(entry: EcOrderStatusHistoryDto, isArabic: boolean): string {
+  const orderName = localizedBilingualLabel(
+    entry.orderStatusNameAr,
+    entry.orderStatusNameEn,
+    undefined,
+    isArabic,
+  );
+  const paymentName = localizedBilingualLabel(
+    entry.paymentStatusNameAr,
+    entry.paymentStatusNameEn,
+    undefined,
+    isArabic,
+  );
+  const shipmentName = localizedBilingualLabel(
+    entry.shipmentStatusNameAr,
+    entry.shipmentStatusNameEn,
+    undefined,
+    isArabic,
+  );
+
+  const category = normalizeStatusToken(entry.statusCategory);
+  const parts: string[] = [];
+
+  if (category.includes('order') && orderName !== '—') {
+    parts.push(orderName);
+  }
+  if (category.includes('payment') && paymentName !== '—') {
+    parts.push(paymentName);
+  }
+  if ((category.includes('ship') || category.includes('shipping')) && shipmentName !== '—') {
+    parts.push(shipmentName);
+  }
+
+  if (parts.length === 0) {
+    for (const name of [orderName, paymentName, shipmentName]) {
+      if (name !== '—') {
+        parts.push(name);
+      }
+    }
+  }
+
+  return parts.length ? parts.join(' · ') : '—';
+}
+
+export function statusHistoryNotes(entry: EcOrderStatusHistoryDto, isArabic: boolean): string | null {
+  const notes = localizedBilingualLabel(entry.notesAr, entry.notesEn, undefined, isArabic);
+  return notes === '—' ? null : notes;
+}
+
+export function sortStatusHistory(entries: EcOrderStatusHistoryDto[]): EcOrderStatusHistoryDto[] {
+  return [...entries].sort((a, b) => {
+    const aTime = Date.parse(a.statusDate ?? '');
+    const bTime = Date.parse(b.statusDate ?? '');
+    if (Number.isFinite(aTime) && Number.isFinite(bTime) && aTime !== bTime) {
+      return bTime - aTime;
+    }
+    return (b.id ?? 0) - (a.id ?? 0);
+  });
 }

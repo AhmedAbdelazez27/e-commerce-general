@@ -1,0 +1,130 @@
+.brands-page__head {
+  max-width: 40rem;
+}
+
+.brands-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-4);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.brand-tile {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  background: var(--ds-color-background-elevated);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  transition:
+    border-color var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast),
+    transform var(--ds-transition-fast);
+
+  &:hover {
+    border-color: var(--ds-color-primary);
+    box-shadow: var(--ds-shadow-card);
+    transform: translateY(-2px);
+
+    .brand-tile__cta {
+      color: var(--ds-color-primary);
+    }
+  }
+}
+
+.brand-tile__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-height: 100%;
+  padding: var(--ds-space-5) var(--ds-space-4) var(--ds-space-4);
+  text-align: center;
+}
+
+.brand-tile__badge {
+  position: absolute;
+  top: var(--ds-space-3);
+  inset-inline-end: var(--ds-space-3);
+  padding: 0.2rem 0.55rem;
+  font-size: var(--ds-font-size-2xs, 0.65rem);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ds-color-primary);
+  background: color-mix(in srgb, var(--ds-color-primary) 12%, transparent);
+  border-radius: var(--ds-radius-pill, 999px);
+}
+
+.brand-tile__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin-bottom: var(--ds-space-1);
+  border-radius: var(--ds-radius-full);
+  background: var(--ds-color-background-subtle);
+
+  &--initials {
+    border: 1px solid var(--ds-color-border);
+  }
+}
+
+.brand-tile__logo {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+
+.brand-tile__initials {
+  font-size: var(--ds-font-size-lg);
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-color-primary);
+  letter-spacing: 0.04em;
+}
+
+.brand-tile__name {
+  margin: 0;
+  font-size: var(--ds-font-size-md);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: var(--ds-line-height-tight);
+}
+
+.brand-tile__desc {
+  display: -webkit-box;
+  margin: 0;
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-text-muted);
+  line-height: var(--ds-line-height-relaxed);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.brand-tile__meta {
+  margin: 0;
+  font-size: var(--ds-font-size-xs);
+  color: var(--ds-color-text-muted);
+}
+
+.brand-tile__cta {
+  margin-top: auto;
+  padding-top: var(--ds-space-2);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: var(--ds-letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--ds-color-text-secondary);
+  transition: color var(--ds-transition-fast);
+}

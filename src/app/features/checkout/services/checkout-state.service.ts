@@ -1,8 +1,8 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-import { CHECKOUT_CONFIG } from '../config/checkout.config';
+import { CHECKOUT_CONFIG, CheckoutPaymentOption } from '../config/checkout.config';
 import type { CustomerAddressInput } from '../models/customer-address.model';
-import type { EcPlaceOrderRequest } from '../models/place-order.model';
+import type { EcPlaceOrderContext, EcPlaceOrderRequest } from '../models/place-order.model';
 import { isAllowedPaymentMethod, isAllowedShippingMethod } from '../utils/checkout-validation.util';
 
 export interface CheckoutValidationResult {
@@ -23,6 +23,8 @@ export class CheckoutStateService {
     CHECKOUT_CONFIG.shippingMethods[0]?.amount ?? 0,
   );
   private readonly couponCodeSignal = signal<string>('');
+  private readonly notesSignal = signal<string>('');
+  private readonly paymentMethodsSignal = signal<CheckoutPaymentOption[]>([]);
 
   readonly paymentMethod = this.paymentMethodSignal.asReadonly();
   readonly useNewAddress = this.useNewAddressSignal.asReadonly();
@@ -31,8 +33,15 @@ export class CheckoutStateService {
   readonly shippingMethod = this.shippingMethodSignal.asReadonly();
   readonly shippingAmount = this.shippingAmountSignal.asReadonly();
   readonly couponCode = this.couponCodeSignal.asReadonly();
+  readonly notes = this.notesSignal.asReadonly();
+  readonly paymentMethods = this.paymentMethodsSignal.asReadonly();
 
-  readonly hasPayment = computed(() => isAllowedPaymentMethod(this.paymentMethodSignal()));
+  readonly hasPayment = computed(() =>
+    isAllowedPaymentMethod(
+      this.paymentMethodSignal(),
+      this.paymentMethodsSignal().map((method) => method.id),
+    ),
+  );
   readonly hasShipping = computed(() => isAllowedShippingMethod(this.shippingMethodSignal()));
   readonly hasAddress = computed(() => {
     if (!this.hasShipping()) {
@@ -44,14 +53,38 @@ export class CheckoutStateService {
 
   readonly lastPlacedOrder = signal<import('../models/place-order.model').EcOrderDto | null>(null);
 
+  setPaymentMethods(methods: CheckoutPaymentOption[]): void {
+    this.paymentMethodsSignal.set(methods);
+    const current = this.paymentMethodSignal();
+    if (current && !methods.some((method) => method.id === current)) {
+      this.paymentMethodSignal.set(null);
+    }
+  }
+
   setPayment(methodId: string): void {
-    if (isAllowedPaymentMethod(methodId)) {
+    if (
+      isAllowedPaymentMethod(
+        methodId,
+        this.paymentMethodsSignal().map((method) => method.id),
+      )
+    ) {
       this.paymentMethodSignal.set(methodId);
     }
   }
 
+  paymentLabel(methodId: string | null): string {
+    if (!methodId) {
+      return '';
+    }
+    return this.paymentMethodsSignal().find((method) => method.id === methodId)?.label ?? methodId;
+  }
+
   setCouponCode(code: string | null): void {
     this.couponCodeSignal.set(code?.trim() ?? '');
+  }
+
+  setNotes(notes: string | null): void {
+    this.notesSignal.set(notes?.trim() ?? '');
   }
 
   selectSavedAddress(addressId: number): void {
@@ -107,9 +140,12 @@ export class CheckoutStateService {
     return { valid: true, errorKey: null };
   }
 
-  validateReviewStep(customerId: number): CheckoutValidationResult {
-    if (customerId < 1) {
+  validateReviewStep(context: EcPlaceOrderContext): CheckoutValidationResult {
+    if (context.customerId < 1) {
       return { valid: false, errorKey: 'CHECKOUT.CUSTOMER_REQUIRED' };
+    }
+    if (context.cartId < 1) {
+      return { valid: false, errorKey: 'CHECKOUT.CART_REQUIRED' };
     }
     const payment = this.validatePaymentStep();
     if (!payment.valid) {
@@ -122,16 +158,23 @@ export class CheckoutStateService {
     return { valid: true, errorKey: null };
   }
 
-  toPlaceOrderRequest(customerId: number): EcPlaceOrderRequest {
+  toPlaceOrderRequest(context: EcPlaceOrderContext): EcPlaceOrderRequest {
+    const notes = this.notesSignal().trim();
+    const couponCode = this.couponCodeSignal().trim();
+
+    const paymentMethodLkpId = Number(this.paymentMethodSignal() ?? 0);
+
     return {
-      customerId,
-      sessionId: '',
+      cartId: context.cartId,
+      customerId: context.customerId,
+      sessionId: context.sessionId,
       addressId: this.selectedAddressIdSignal() ?? 0,
       newAddress: null,
       shippingMethod: this.shippingMethodSignal(),
       shippingAmount: this.shippingAmountSignal(),
-      paymentMethod: this.paymentMethodSignal() ?? '',
-      couponCode: this.couponCodeSignal(),
+      paymentMethodLkpId: Number.isFinite(paymentMethodLkpId) ? paymentMethodLkpId : 0,
+      notes: notes || undefined,
+      couponCode,
     };
   }
 
@@ -143,6 +186,8 @@ export class CheckoutStateService {
     this.shippingMethodSignal.set(CHECKOUT_CONFIG.shippingMethods[0]?.id ?? 'Standard');
     this.shippingAmountSignal.set(CHECKOUT_CONFIG.shippingMethods[0]?.amount ?? 0);
     this.couponCodeSignal.set('');
+    this.notesSignal.set('');
+    this.paymentMethodsSignal.set([]);
     this.lastPlacedOrder.set(null);
   }
 

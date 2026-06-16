@@ -50,10 +50,9 @@ export class ReviewStepComponent implements OnInit {
     };
   });
 
-  readonly paymentLabelKey = computed(() => {
-    const id = this.checkoutState.paymentMethod();
-    return CHECKOUT_CONFIG.paymentMethods.find((m) => m.id === id)?.labelKey ?? id ?? '';
-  });
+  readonly paymentLabel = computed(() =>
+    this.checkoutState.paymentLabel(this.checkoutState.paymentMethod()),
+  );
 
   readonly shippingLabelKey = computed(() => {
     const id = this.checkoutState.shippingMethod();
@@ -77,9 +76,9 @@ export class ReviewStepComponent implements OnInit {
   }
 
   placeOrder(): void {
-    const customerId = this.resolveCustomerId();
+    const orderContext = this.cart.getPlaceOrderContext();
 
-    const validation = this.checkoutState.validateReviewStep(customerId);
+    const validation = this.checkoutState.validateReviewStep(orderContext);
     if (!validation.valid) {
       if (validation.errorKey) {
         this.toastr.warning(this.translate.instant(validation.errorKey));
@@ -95,7 +94,7 @@ export class ReviewStepComponent implements OnInit {
     }
 
     this.placing.set(true);
-    const body = this.checkoutState.toPlaceOrderRequest(customerId);
+    const body = this.checkoutState.toPlaceOrderRequest(orderContext);
     this.checkoutApi.placeOrder(body).subscribe({
       next: (order) => {
         this.placing.set(false);
@@ -123,6 +122,10 @@ export class ReviewStepComponent implements OnInit {
   }
 
   private redirectForValidationError(errorKey: string | null): void {
+    if (errorKey === 'CHECKOUT.CART_REQUIRED') {
+      void this.router.navigate(['/cart']);
+      return;
+    }
     if (
       errorKey === 'CHECKOUT.PAYMENT_REQUIRED' ||
       !this.checkoutState.hasPayment()

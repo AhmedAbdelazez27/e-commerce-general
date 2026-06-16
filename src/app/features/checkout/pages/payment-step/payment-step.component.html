@@ -8,30 +8,38 @@
     </div>
   }
 
-  <div class="checkout-options" [class.checkout-options--invalid]="showPaymentError()">
-    @for (option of paymentOptions; track option.id) {
-      <label class="checkout-option-card" [class.checkout-option-card--selected]="selectedId() === option.id">
-        <input
-          type="radio"
-          name="paymentMethod"
-          class="checkout-option-card__input"
-          [value]="option.id"
-          [checked]="selectedId() === option.id"
-          (change)="selectPayment(option.id)"
-        />
-        <span class="checkout-option-card__body">
-          <span class="checkout-option-card__title">{{ option.labelKey | translate }}</span>
-          @if (option.descriptionKey) {
-            <span class="checkout-option-card__desc">{{ option.descriptionKey | translate }}</span>
-          }
-        </span>
-      </label>
-    }
-  </div>
+  @if (loading()) {
+    <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (loadFailed()) {
+    <div class="alert alert-warning mb-0" role="alert">
+      {{ 'CHECKOUT.PAYMENT_LOAD_FAILED' | translate }}
+    </div>
+  } @else {
+    <div class="checkout-options" [class.checkout-options--invalid]="showPaymentError()">
+      @for (option of paymentOptions(); track option.id) {
+        <label class="checkout-option-card" [class.checkout-option-card--selected]="selectedId() === option.id">
+          <input
+            type="radio"
+            name="paymentMethod"
+            class="checkout-option-card__input"
+            [value]="option.id"
+            [checked]="selectedId() === option.id"
+            (change)="selectPayment(option.id)"
+          />
+          <span class="checkout-option-card__body">
+            <span class="checkout-option-card__title">{{ option.label }}</span>
+            @if (option.description) {
+              <span class="checkout-option-card__desc">{{ option.description }}</span>
+            }
+          </span>
+        </label>
+      }
+    </div>
+  }
 
   <div class="checkout-step__actions">
     <a routerLink="/cart" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK_TO_CART' | translate }}</a>
-    <button type="button" class="btn btn-primary" (click)="continue()">
+    <button type="button" class="btn btn-primary" [disabled]="loading() || loadFailed()" (click)="continue()">
       {{ 'CHECKOUT.CONTINUE' | translate }}
     </button>
   </div>

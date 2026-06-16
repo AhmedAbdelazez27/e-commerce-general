@@ -189,9 +189,11 @@ export function mapSearchProductToListingProduct(
   item: PublicSearchProductDto,
   _lang: AppLang,
 ): CatalogListingProduct {
-  const inStock = item.availabilityStatus === 'InStock';
+  const availability = item.availabilityStatus?.trim() || item.availableStatus?.trim();
+  const inStock = availability === 'InStock';
   const nameEn = item.nameEn?.trim() || item.name;
   const nameAr = item.nameAr?.trim() || item.name;
+  const finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0;
 
   return {
     id: item.productId ?? item.id,
@@ -199,7 +201,7 @@ export function mapSearchProductToListingProduct(
     slug: item.slug,
     nameEn,
     nameAr,
-    price: item.finalPrice,
+    price: finalPrice,
     compareAtPrice: item.oldPrice ?? undefined,
     categoryId: String(item.categoryId),
     categoryNameEn: item.categoryName,

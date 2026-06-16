@@ -1,4 +1,6 @@
 import { HomePageConfig } from '../models/home.model';
+import { HOME_BRANDS_MAX_ITEMS } from '../utils/home-brand.mapper';
+import { HOME_PRODUCT_SECTION_MAX_ITEMS } from '../utils/home-product-search.util';
 
 /** Home page structure — edit sections, copy keys, and routes here. */
 export const HOME_PAGE_CONFIG: HomePageConfig = {
@@ -10,41 +12,8 @@ export const HOME_PAGE_CONFIG: HomePageConfig = {
   curatedCollections: {
     sectionEyebrowKey: 'HOME.CURATED.EYEBROW',
     sectionTitleKey: 'HOME.CURATED.TITLE',
-    items: [
-      {
-        id: 'cosmetics',
-        eyebrowKey: 'HOME.CURATED.COSMETICS_EYEBROW',
-        titleKey: 'HOME.CURATED.COSMETICS_TITLE',
-        hoverCtaKey: 'HOME.CURATED.CTA',
-        imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDGVo0lIiop-mFSsEWDMp-njEiBkOqbUFKKQRNii-sZ3w4WeMDk8kN8klAJDSjfc21HMPkfHBvl-f1tuVdhiUSYbw8wd5dKG6gcLuCRC9p447y1HQvvrYEyWEE0RX7aeWlQw6n3-RPP7AHKCcbodv9c-OrLh0QVLf9Fr1bCNu0y5o2InvuBqVzOcqtPsbl3kVrOOwLryRbw_HAs3KChvwQTouMl2UL39nyzLXZ1yabM1eCjFZh2B6h1DiYjz58BELx2gfnBa7F_E9M',
-        imageAltKey: 'HOME.CURATED.COSMETICS_ALT',
-        route: '/shop',
-        queryParams: { category: 'make-up' },
-      },
-      {
-        id: 'derma',
-        eyebrowKey: 'HOME.CURATED.DERMA_EYEBROW',
-        titleKey: 'HOME.CURATED.DERMA_TITLE',
-        hoverCtaKey: 'HOME.CURATED.CTA_DERMA',
-        imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDdmerfxL1huvtZmwsV2zIsEXlCl2nTScGhUywip_cahD9mtEgKOuR_inWhw4gs4m9b1Wk7H107fUnh6Lg57rc_evyH7NhAGXNiTWLCGAykX_9MWAHo3DJpTvBZv7e57UnvxBdKqo1xGlthoh2VIJ-SI1ItdX7zsR-3LolDlCIk27hwS_FGjaph7ufs3t8Lj05vF7GfRBOMVjC0Zx1O1TzCJb69cALTlZpTgSvvl0bDqrdPJgOyoXDuegPxRPESnsanLrhzk7Hbz3A',
-        imageAltKey: 'HOME.CURATED.DERMA_ALT',
-        route: '/shop',
-        queryParams: { category: 'skin-care' },
-      },
-      {
-        id: 'perfume',
-        eyebrowKey: 'HOME.CURATED.PERFUME_EYEBROW',
-        titleKey: 'HOME.CURATED.PERFUME_TITLE',
-        hoverCtaKey: 'HOME.CURATED.CTA_PERFUME',
-        imageUrl:
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuCicyOKubdCMsEQScTpegwtDrqz2qFf_A947Ml50BSvP-MtYY9tTkRkkWlIG_AS-AQAes2mT0v69dw6Y6YHyqRy8XsRToXiumC94MrBlfhN5eEtTsB2Ccl9EayPxhpW_Zq13p7G7neaVi9nplUo6iTtnZOsYWvVAu7_2953uWFEz0oxoKq3jY5kd05xJQp1P1cQ_HZcMzVj6FR_s_0Dww46I2tXILEmiIeoT0Sd-fyJQydGsKwB2JvIVLMAF32PECiXUQ3U3bx8DT4',
-        imageAltKey: 'HOME.CURATED.PERFUME_ALT',
-        route: '/shop',
-        queryParams: { category: 'perfume' },
-      },
-    ],
+    searchFilter: { isFeatured: true },
+    maxItems: 3,
   },
   productSections: [
     {
@@ -62,6 +31,8 @@ export const HOME_PAGE_CONFIG: HomePageConfig = {
       viewAllRoute: '/shop',
       viewAllQuery: { sort: 'bestsellers' },
       layout: 'grid',
+      searchFilter: { isBestSeller: true },
+      maxItems: HOME_PRODUCT_SECTION_MAX_ITEMS,
     },
     {
       id: 'new-arrivals',
@@ -70,6 +41,8 @@ export const HOME_PAGE_CONFIG: HomePageConfig = {
       viewAllRoute: '/shop',
       viewAllQuery: { sort: 'new' },
       layout: 'grid',
+      searchFilter: { isNewArrival: true },
+      maxItems: HOME_PRODUCT_SECTION_MAX_ITEMS,
     },
   ],
   offers: [
@@ -107,16 +80,7 @@ export const HOME_PAGE_CONFIG: HomePageConfig = {
     titleKey: 'HOME.BRANDS.TITLE',
     subtitleKey: 'HOME.BRANDS.SUBTITLE',
     viewAllRoute: '/brands',
-    items: [
-      { id: 'lrp', nameKey: 'HOME.BRANDS.LRP', route: '/brands', queryParams: { brand: 'la-roche-posay' }, initials: 'LP' },
-      { id: 'eucerin', nameKey: 'HOME.BRANDS.EUCERIN', route: '/brands', queryParams: { brand: 'eucerin' }, initials: 'EU' },
-      { id: 'cerave', nameKey: 'HOME.BRANDS.CERAVE', route: '/brands', queryParams: { brand: 'cerave' }, initials: 'CV' },
-      { id: 'isdin', nameKey: 'HOME.BRANDS.ISDIN', route: '/brands', queryParams: { brand: 'isdin' }, initials: 'IS' },
-      { id: 'garnier', nameKey: 'HOME.BRANDS.GARNIER', route: '/brands', queryParams: { brand: 'garnier' }, initials: 'GA' },
-      { id: 'essence', nameKey: 'HOME.BRANDS.ESSENCE', route: '/brands', queryParams: { brand: 'essence' }, initials: 'ES' },
-      { id: 'babaria', nameKey: 'HOME.BRANDS.BABARIA', route: '/brands', queryParams: { brand: 'babaria' }, initials: 'BA' },
-      { id: 'avene', nameKey: 'HOME.BRANDS.AVENE', route: '/brands', queryParams: { brand: 'avene' }, initials: 'AV' },
-    ],
+    maxItems: HOME_BRANDS_MAX_ITEMS,
   },
   trustBadges: [
     {

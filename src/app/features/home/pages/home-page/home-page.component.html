@@ -2,11 +2,7 @@
   <app-home-hero [config]="config.hero" class="row"/>
 
   @if (config.curatedCollections; as curated) {
-    <app-home-curated-collections
-      [sectionEyebrowKey]="curated.sectionEyebrowKey"
-      [sectionTitleKey]="curated.sectionTitleKey"
-      [items]="curated.items"
-    />
+    <app-home-curated-collections [config]="curated" />
   }
 
   <app-home-category-shortcuts />
@@ -20,7 +16,7 @@
 
   <app-home-offers [offers]="config.offers" />
 
-  <app-home-brands [brands]="config.brands" />
+  <app-home-brands [config]="config.brands" />
 
   <app-home-trust-badges [badges]="config.trustBadges" />
 </div>

@@ -49,7 +49,8 @@ export class WishlistPageComponent implements OnInit {
   }
 
   onAddToCart(product: ProductCardData): void {
-    this.cartActions.addProductCard(product);
+    // Wishlist UX: "Add to cart" also removes it from wishlist.
+    this.wishlistActions.moveToCart(product);
   }
 
   onAddToWishlist(product: ProductCardData): void {

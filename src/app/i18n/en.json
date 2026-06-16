@@ -54,6 +54,13 @@
     "PAGE_SUBTITLE": "Browse all categories",
     "SHOP_NOW": "Shop"
   },
+  "BRANDS": {
+    "LOAD_FAILED": "Could not load brands. Please try again.",
+    "PAGE_SUBTITLE": "Browse all brands",
+    "PRODUCTS": "products",
+    "SHOP_NOW": "Shop",
+    "FEATURED": "Featured"
+  },
   "PROFILE": {
     "LOAD_FAILED": "Could not load your profile. Please try again.",
     "ACCOUNT_INFORMATION": "Account Information",
@@ -107,7 +114,22 @@
     "STATUS_SHIPPED": "Shipped",
     "STATUS_DELIVERED": "Delivered",
     "STATUS_CANCELLED": "Cancelled",
-    "STATUS_REFUNDED": "Refunded"
+    "STATUS_REFUNDED": "Refunded",
+    "VIEW_DETAILS": "View details",
+    "DETAILS_TITLE": "Order details",
+    "BACK_TO_ORDERS": "Back to orders",
+    "NOT_FOUND": "Order not found or could not be loaded.",
+    "ADDRESS": "Delivery address",
+    "SHIPPING_METHOD_DETAIL": "Shipping method",
+    "SUMMARY": "Order summary",
+    "SUBTOTAL": "Subtotal",
+    "DISCOUNT": "Discount",
+    "TAX": "Tax",
+    "SHIPPING": "Shipping",
+    "SKU": "SKU",
+    "STATUS_HISTORY": "Status history",
+    "STATUS_HISTORY_EMPTY": "No status updates yet.",
+    "CHANGED_BY": "Updated by"
   },
   "TOAST": {
     "SUCCESS": "Success",
@@ -267,6 +289,9 @@
       "TITLE": "New arrivals",
       "SUBTITLE": "Fresh additions to explore today"
     },
+    "PRODUCTS": {
+      "EMPTY": "No products to show right now."
+    },
     "OFFERS": {
       "TITLE": "Special offers",
       "SUBTITLE": "Save more on bundles and seasonal deals",
@@ -284,6 +309,7 @@
     "BRANDS": {
       "TITLE": "Shop by brand",
       "SUBTITLE": "Explore houses you know and trust",
+      "EMPTY": "No brands to show right now.",
       "LRP": "La Roche-Posay",
       "EUCERIN": "Eucerin",
       "CERAVE": "CeraVe",
@@ -372,6 +398,7 @@
     "ITEMS_COUNT": "{{count}} items",
     "ADDED_SUCCESS": "{{name}} was added to your wishlist",
     "REMOVED_SUCCESS": "{{name}} was removed from your wishlist",
+    "VIEW_WISHLIST": "View wishlist",
     "EMPTY": {
       "TITLE": "Your wishlist is empty",
       "TEXT": "Tap the heart on any product to save it here.",
@@ -389,6 +416,7 @@
     "SUBTOTAL": "Subtotal",
     "ITEM_UNAVAILABLE": "This item is no longer available",
     "ADDED_SUCCESS": "{{name}} was added to your cart",
+    "VIEW_CART": "View cart",
     "ADDED_ERROR": "Could not add this item to your cart. Please try again.",
     "ADD_UNAVAILABLE": "This product is currently unavailable",
     "VARIANT_REQUIRED": "Select a product option before adding to cart",
@@ -425,6 +453,7 @@
     "STEP_ADDRESS": "Address & shipping",
     "STEP_REVIEW": "Review order",
     "PAYMENT_HINT": "Choose how you would like to pay.",
+    "PAYMENT_LOAD_FAILED": "Could not load payment methods. Please try again.",
     "PAYMENT_COD": "Cash on delivery",
     "PAYMENT_COD_DESC": "Pay when your order arrives.",
     "PAYMENT_TRANSFER": "Manual bank transfer",
@@ -464,6 +493,7 @@
     "CONFIRM_ORDER": "Place order",
     "PLACE_ORDER_FAILED": "Could not place your order. Please try again.",
     "CUSTOMER_REQUIRED": "Please sign in again to complete checkout.",
+    "CART_REQUIRED": "Your cart could not be found. Refresh the cart and try again.",
     "SUCCESS_TITLE": "Order placed",
     "SUCCESS_MESSAGE": "Thank you. We have received your order.",
     "ORDER_NUMBER": "Order number",
