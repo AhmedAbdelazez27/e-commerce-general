@@ -8,9 +8,11 @@ import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import type { EcOrderDto } from '../../../checkout/models/place-order.model';
 import { AccountOrdersApiService } from '../../services/account-orders-api.service';
 import {
+  canLinkOrderItemToProduct,
   isActiveOrder,
   lineItemName,
   lineItemTotal,
+  orderItemProductLink,
   orderPaymentMethodLabel,
   orderStatusLabelKey,
   orderTrackingSteps,
@@ -66,6 +68,14 @@ export class OrdersPageComponent {
 
   lineTotal(item: NonNullable<EcOrderDto['items']>[number]): number {
     return lineItemTotal(item);
+  }
+
+  canOpenProduct(item: NonNullable<EcOrderDto['items']>[number]): boolean {
+    return canLinkOrderItemToProduct(item);
+  }
+
+  productLink(item: NonNullable<EcOrderDto['items']>[number]): string[] | null {
+    return orderItemProductLink(item);
   }
 
   paymentMethodLabel(order: EcOrderDto): string {

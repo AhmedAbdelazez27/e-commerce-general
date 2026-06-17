@@ -55,7 +55,11 @@
       <article class="order-container mt-3">
         <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
           <div>
-            <h4 class="mb-1 gold">{{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ order.orderNumber }}</h4>
+            <h4 class="mb-1 gold">
+              <a class="orders-page__order-link" [routerLink]="['/account/orders', order.id]">
+                {{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ order.orderNumber }}
+              </a>
+            </h4>
             <div class="orders-page__status-row">
               @if (order.orderStatus) {
                 <span class="orders-page__status-chip">
@@ -119,16 +123,36 @@
             <h3 class="checkout-step__subtitle">{{ 'ORDERS.ITEMS' | translate }}</h3>
             <ul class="checkout-review-items__list">
               @for (item of order.items; track $index) {
-                <li class="checkout-review-items__row">
-                  <div class="checkout-review-items__info">
-                    <span class="checkout-review-items__name">{{ lineName(item) }}</span>
-                    @if (item.quantity) {
-                      <span class="checkout-review-items__meta">× {{ item.quantity }}</span>
-                    }
-                  </div>
-                  <span class="checkout-review-items__price">
-                    {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
-                  </span>
+                <li>
+                  @if (canOpenProduct(item)) {
+                    <a
+                      class="checkout-review-items__row order-detail-page__item-row--linkable"
+                      [routerLink]="productLink(item)!"
+                      [attr.aria-label]="'ORDERS.OPEN_PRODUCT' | translate: { name: lineName(item) }"
+                    >
+                      <div class="checkout-review-items__info">
+                        <span class="checkout-review-items__name order-detail-page__product-link">{{ lineName(item) }}</span>
+                        @if (item.quantity) {
+                          <span class="checkout-review-items__meta">× {{ item.quantity }}</span>
+                        }
+                      </div>
+                      <span class="checkout-review-items__price">
+                        {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                      </span>
+                    </a>
+                  } @else {
+                    <div class="checkout-review-items__row">
+                      <div class="checkout-review-items__info">
+                        <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+                        @if (item.quantity) {
+                          <span class="checkout-review-items__meta">× {{ item.quantity }}</span>
+                        }
+                      </div>
+                      <span class="checkout-review-items__price">
+                        {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                      </span>
+                    </div>
+                  }
                 </li>
               }
             </ul>

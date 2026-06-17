@@ -74,24 +74,52 @@
           <h2 class="checkout-step__subtitle">{{ 'ORDERS.ITEMS' | translate }}</h2>
           <ul class="checkout-review-items__list">
             @for (item of currentOrder.items; track item.id ?? $index) {
-              <li class="checkout-review-items__row">
-                <div class="checkout-review-items__info">
-                  <span class="checkout-review-items__name">{{ lineName(item) }}</span>
-                  <span class="checkout-review-items__meta">
-                    @if (item.variantSkuSnapshot || item.variantSku) {
-                      {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
-                    }
-                    @if (item.quantity) {
-                      · × {{ item.quantity }}
-                    }
-                  </span>
-                  @if (item.specificationSummary) {
-                    <span class="checkout-review-items__meta">{{ item.specificationSummary }}</span>
-                  }
-                </div>
-                <span class="checkout-review-items__price">
-                  {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
-                </span>
+              <li>
+                @if (canOpenProduct(item)) {
+                  <a
+                    class="checkout-review-items__row order-detail-page__item-row--linkable"
+                    [routerLink]="productLink(item)!"
+                    [attr.aria-label]="'ORDERS.OPEN_PRODUCT' | translate: { name: lineName(item) }"
+                  >
+                    <div class="checkout-review-items__info">
+                      <span class="checkout-review-items__name order-detail-page__product-link">{{ lineName(item) }}</span>
+                      <span class="checkout-review-items__meta">
+                        @if (item.variantSkuSnapshot || item.variantSku) {
+                          {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
+                        }
+                        @if (item.quantity) {
+                          · × {{ item.quantity }}
+                        }
+                      </span>
+                      @if (item.specificationSummary) {
+                        <span class="checkout-review-items__meta">{{ item.specificationSummary }}</span>
+                      }
+                    </div>
+                    <span class="checkout-review-items__price">
+                      {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                    </span>
+                  </a>
+                } @else {
+                  <div class="checkout-review-items__row">
+                    <div class="checkout-review-items__info">
+                      <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+                      <span class="checkout-review-items__meta">
+                        @if (item.variantSkuSnapshot || item.variantSku) {
+                          {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
+                        }
+                        @if (item.quantity) {
+                          · × {{ item.quantity }}
+                        }
+                      </span>
+                      @if (item.specificationSummary) {
+                        <span class="checkout-review-items__meta">{{ item.specificationSummary }}</span>
+                      }
+                    </div>
+                    <span class="checkout-review-items__price">
+                      {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+                    </span>
+                  </div>
+                }
               </li>
             }
           </ul>

@@ -129,7 +129,7 @@
     "SKU": "SKU",
     "STATUS_HISTORY": "Status history",
     "STATUS_HISTORY_EMPTY": "No status updates yet.",
-    "CHANGED_BY": "Updated by"
+    "OPEN_PRODUCT": "View product: {{name}}"
   },
   "TOAST": {
     "SUCCESS": "Success",

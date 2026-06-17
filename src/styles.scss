@@ -819,6 +819,18 @@ app-profile-page{
     font-size: 14px;
 }
 
+.orders-page__order-link{
+    color: inherit;
+    text-decoration: none;
+}
+
+.orders-page__order-link:hover,
+.orders-page__order-link:focus-visible{
+    color: #775a19;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .orders-page__filters{
     display: flex;
     flex-wrap: wrap;
@@ -916,6 +928,39 @@ app-profile-page{
     .orders-page__tracker{
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+}
+
+.order-detail-page__item-row--linkable{
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+    margin: -4px;
+    padding: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.order-detail-page__item-row--linkable:hover,
+.order-detail-page__item-row--linkable:focus-visible{
+    background-color: #f9f9f7;
+    outline: none;
+}
+
+.order-detail-page__item-row--linkable:focus-visible{
+    box-shadow: 0 0 0 2px #775a19;
+}
+
+.order-detail-page__product-link{
+    color: #354052;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.order-detail-page__item-row--linkable:hover .order-detail-page__product-link,
+.order-detail-page__item-row--linkable:focus-visible .order-detail-page__product-link{
+    color: #775a19;
+    text-decoration-color: #775a19;
 }
 
 .order-detail-page__meta{

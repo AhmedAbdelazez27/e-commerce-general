@@ -101,6 +101,22 @@ export function lineItemTotal(item: NonNullable<EcOrderDto['items']>[number]): n
   return item.lineTotal ?? item.total ?? (item.unitPrice ?? 0) * (item.quantity ?? 0);
 }
 
+export function canLinkOrderItemToProduct(
+  item: NonNullable<EcOrderDto['items']>[number],
+): boolean {
+  return (item.productId ?? 0) > 0;
+}
+
+export function orderItemProductLink(
+  item: NonNullable<EcOrderDto['items']>[number],
+): string[] | null {
+  const productId = item.productId ?? 0;
+  if (productId <= 0) {
+    return null;
+  }
+  return ['/shop', String(productId)];
+}
+
 export function localizedBilingualLabel(
   nameAr: string | null | undefined,
   nameEn: string | null | undefined,

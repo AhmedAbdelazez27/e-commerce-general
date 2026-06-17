@@ -129,7 +129,7 @@
     "SKU": "رمز المنتج",
     "STATUS_HISTORY": "سجل الحالات",
     "STATUS_HISTORY_EMPTY": "لا توجد تحديثات للحالة بعد.",
-    "CHANGED_BY": "تم التحديث بواسطة"
+    "OPEN_PRODUCT": "عرض المنتج: {{name}}"
   },
   "TOAST": {
     "SUCCESS": "تم بنجاح",
