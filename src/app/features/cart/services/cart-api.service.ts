@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { dataFromEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
@@ -41,11 +41,15 @@ export class CartApiService {
   }
 
   updateCart(body: EcUpdateCartRequest): Observable<CartDto> {
+    const parse = (res: unknown) => {
+      const payload = resultFromAbpEnvelope<unknown>(res) ?? dataFromEnvelope<unknown>(res);
+      return normalizeCartDto(payload);
+    };
+
+    // Some deployments expose UpdateCart as POST (not PUT).
     return this.http.put<unknown>(ApiEndpoints.EcCart.updateCart, body).pipe(
-      map((res) => {
-        const payload = resultFromAbpEnvelope<unknown>(res) ?? dataFromEnvelope<unknown>(res);
-        return normalizeCartDto(payload);
-      }),
+      map(parse),
+      catchError(() => this.http.post<unknown>(ApiEndpoints.EcCart.updateCart, body).pipe(map(parse))),
     );
   }
 

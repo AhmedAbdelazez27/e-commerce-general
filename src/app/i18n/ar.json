@@ -345,6 +345,7 @@
     "RATING": "تقييم المنتج",
     "ADD_TO_CART": "أضف إلى السلة",
     "ADD_WISHLIST": "أضف إلى المفضلة",
+    "REMOVE_WISHLIST": "إزالة من المفضلة",
     "QUICK_VIEW": "معاينة سريعة",
     "SOLD_OUT": "نفدت الكمية",
     "BADGE_NEW": "جديد",
@@ -353,6 +354,7 @@
   "CATALOG": {
     "BREADCRUMB": "مسار التنقل",
     "BREADCRUMB_SEARCH": "نتائج البحث",
+    "SUBCATEGORIES": "تسوق حسب الفئة الفرعية",
     "ALL_PRODUCTS": "جميع المنتجات",
     "PRODUCT_COUNT": "{{count}} منتج",
     "LOADING": "جاري تحميل المنتجات…",
@@ -415,6 +417,7 @@
     "REMOVE": "إزالة",
     "SUBTOTAL": "المجموع",
     "ITEM_UNAVAILABLE": "هذا المنتج لم يعد متوفراً",
+    "UPDATE_QTY_FAILED": "تعذر تحديث الكمية. حاول مرة أخرى.",
     "ADDED_SUCCESS": "تمت إضافة {{name}} إلى السلة",
     "VIEW_CART": "عرض السلة",
     "ADDED_ERROR": "تعذرت إضافة المنتج إلى السلة. حاول مرة أخرى.",

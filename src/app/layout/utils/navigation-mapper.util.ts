@@ -14,14 +14,16 @@ function categoryLink(node: PublicCategoryDto): NavMegaLink {
 
 function columnFromChild(child: PublicCategoryDto): NavMegaColumn {
   const grandchildren = child.children ?? [];
-  const links =
-    grandchildren.length > 0 ? grandchildren.map(categoryLink) : [categoryLink(child)];
+  const isBranch = grandchildren.length > 0;
 
   return {
     id: String(child.id),
     titleEn: child.nameEn,
     titleAr: child.nameAr,
-    links,
+    isBranch,
+    route: SHOP_ROUTE,
+    queryParams: categoryShopQueryParams(child),
+    links: isBranch ? grandchildren.map(categoryLink) : [],
   };
 }
 
@@ -62,6 +64,7 @@ export function buildBrandsNavItem(brands: PublicBrandDto[]): NavCategory {
           {
             id: 'brands-list',
             titleKey: 'LAYOUT.NAV.BRANDS',
+            route: '/brands',
             links,
           },
         ]

@@ -3,9 +3,18 @@ export interface CartItemDto {
   ProductId: number;
   ProductVariantId?: number;
   ProductName?: string;
+  ProductNameAr?: string;
+  ProductNameEn?: string;
+  VariantName?: string;
+  VariantNameAr?: string;
+  VariantNameEn?: string;
   VariantSku?: string;
+  ProductImageUrl?: string;
+  ProductVariantImageUrl?: string;
+  ImageUrl?: string;
   Quantity: number;
   UnitPrice: number;
+  FinalPrice?: number;
   LineTotal?: number;
   DiscountAmount?: number;
 }
@@ -13,7 +22,8 @@ export interface CartItemDto {
 /** Shared customer/session context for EcCart operations. */
 export interface EcCartContextRequest {
   customerId: number;
-  sessionId: string | null;
+  /** Empty string for logged-in carts; guest carts use a stable UUID string. */
+  sessionId: string;
   couponCode: string | null;
 }
 
@@ -34,6 +44,16 @@ export interface CartDto {
   Items: CartItemDto[];
   SubTotal?: number;
   Total?: number;
+}
+
+/** Product snapshot stored with guest cart lines (no API). */
+export interface GuestCartProductMeta {
+  productId: number;
+  productNameEn: string;
+  productNameAr: string;
+  imageUrl?: string;
+  unitPrice: number;
+  isAvailable?: boolean;
 }
 
 export interface AddCartItemRequest {

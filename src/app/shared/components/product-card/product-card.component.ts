@@ -3,6 +3,7 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 import { ProductCardData } from '../../models/product-card.model';
 import {
   formatProductPrice,
@@ -21,6 +22,7 @@ import {
 export class ProductCardComponent {
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
+  private readonly wishlist = inject(WishlistService);
 
   readonly product = input.required<ProductCardData>();
   readonly compact = input(false);
@@ -42,6 +44,18 @@ export class ProductCardComponent {
   );
   readonly currencyLabel = computed(
     () => this.product().currency ?? this.translate.instant('PRODUCT_CARD.CURRENCY'),
+  );
+  readonly inWishlist = computed(() => {
+    this.wishlist.items();
+    const product = this.product();
+    const variantId = product.productVariantId;
+    if (variantId != null && variantId > 0) {
+      return this.wishlist.isInWishlistVariant(variantId);
+    }
+    return this.wishlist.isInWishlist(product.id);
+  });
+  readonly wishlistLabelKey = computed(() =>
+    this.inWishlist() ? 'PRODUCT_CARD.REMOVE_WISHLIST' : 'PRODUCT_CARD.ADD_WISHLIST',
   );
 
   onProductClick(): void {

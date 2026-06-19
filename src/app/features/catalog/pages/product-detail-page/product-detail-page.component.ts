@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
@@ -48,6 +49,7 @@ export class ProductDetailPageComponent implements OnInit {
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly cartActions = inject(CartActionsService);
+  private readonly auth = inject(AuthTokenService);
   private readonly wishlistActions = inject(WishlistActionsService);
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
@@ -163,9 +165,16 @@ export class ProductDetailPageComponent implements OnInit {
     if (!p) {
       return;
     }
-    this.cartActions.addProductDetailThen(p, this.quantity(), () => {
+    const afterAdd = (): void => {
+      if (!this.auth.isLoggedIn()) {
+        void this.router.navigate(['/auth/login'], {
+          queryParams: { returnUrl: '/checkout/payment' },
+        });
+        return;
+      }
       void this.router.navigate(['/checkout/payment']);
-    });
+    };
+    this.cartActions.addProductDetailThen(p, this.quantity(), afterAdd);
   }
 
   onRelatedAddToCart(item: ProductCardData): void {

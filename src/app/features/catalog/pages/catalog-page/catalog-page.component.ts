@@ -6,12 +6,14 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
+import { CatalogSubcategoryRailComponent } from '../../components/catalog-subcategory-rail/catalog-subcategory-rail.component';
 import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { CatalogEmptyStateComponent } from '../../components/catalog-empty-state/catalog-empty-state.component';
 import { CatalogFilterPanelComponent } from '../../components/catalog-filter-panel/catalog-filter-panel.component';
 import { CatalogListingHeaderComponent } from '../../components/catalog-listing-header/catalog-listing-header.component';
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { CatalogListingFacade } from '../../services/catalog-listing.facade';
 import { navigateToProductDetail } from '../../utils/catalog-navigation.util';
@@ -22,6 +24,7 @@ import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper'
   imports: [
     TranslateModule,
     CatalogBreadcrumbComponent,
+    CatalogSubcategoryRailComponent,
     CatalogListingHeaderComponent,
     CatalogListingToolbarComponent,
     CatalogFilterPanelComponent,
@@ -38,10 +41,13 @@ export class CatalogPageComponent implements OnInit {
   private readonly wishlistActions = inject(WishlistActionsService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly language = inject(LanguageService);
   readonly facade = inject(CatalogListingFacade);
 
   readonly cardProducts = computed(() =>
-    this.facade.filteredProducts().map((p) => mapCatalogProductToCardData(p)),
+    this.facade
+      .filteredProducts()
+      .map((p) => mapCatalogProductToCardData(p, this.language.currentLang())),
   );
 
   ngOnInit(): void {

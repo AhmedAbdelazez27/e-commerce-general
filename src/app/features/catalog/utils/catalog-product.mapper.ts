@@ -3,7 +3,10 @@ import { resolveDiscountFromCompare } from '../../../shared/utils/product-card.u
 import { CatalogListingProduct } from '../models/catalog-listing.model';
 import { productHasOffer } from './catalog-listing-filter.util';
 
-export function mapCatalogProductToCardData(product: CatalogListingProduct): ProductCardData {
+export function mapCatalogProductToCardData(
+  product: CatalogListingProduct,
+  lang: 'ar' | 'en' = 'en',
+): ProductCardData {
   const discountFromCompare = resolveDiscountFromCompare(product.price, product.compareAtPrice);
 
   return {
@@ -12,7 +15,7 @@ export function mapCatalogProductToCardData(product: CatalogListingProduct): Pro
     slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
-    brand: product.brandNameEn,
+    brand: lang === 'ar' ? product.brandNameAr || product.brandNameEn : product.brandNameEn,
     image: product.imageUrl,
     price: product.price,
     oldPrice: product.compareAtPrice,

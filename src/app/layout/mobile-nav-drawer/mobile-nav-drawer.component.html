@@ -76,27 +76,41 @@
 
       @for (category of categories(); track category.id) {
         @if (hasMegaMenu(category)) {
-          <button type="button" class="store-drawer__nav-link" (click)="toggleCategory(category)">
-            <span>{{ label(category) }}</span>
-            <i
-              class="fa-solid"
-              [class.fa-chevron-down]="!isCategoryExpanded(category.id)"
-              [class.fa-chevron-up]="isCategoryExpanded(category.id)"
-              aria-hidden="true"
-            ></i>
-          </button>
+          <div class="store-drawer__nav-row">
+            <a
+              class="store-drawer__nav-link"
+              [routerLink]="category.route"
+              [queryParams]="category.queryParams"
+              (click)="close()"
+            >
+              {{ label(category) }}
+            </a>
+            <button
+              type="button"
+              class="store-drawer__nav-toggle"
+              [attr.aria-expanded]="isCategoryExpanded(category.id)"
+              [attr.aria-label]="label(category)"
+              (click)="toggleCategory(category)"
+            >
+              <i
+                class="fa-solid"
+                [class.fa-chevron-down]="!isCategoryExpanded(category.id)"
+                [class.fa-chevron-up]="isCategoryExpanded(category.id)"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </div>
           @if (isCategoryExpanded(category.id)) {
             <div class="store-drawer__sub">
-              <a
-                class="store-drawer__sub-link fw-semibold"
-                [routerLink]="category.route"
-                [queryParams]="category.queryParams"
-                (click)="close()"
-              >
-                {{ 'LAYOUT.NAV.VIEW_ALL' | translate }} {{ label(category) }}
-              </a>
               @for (column of category.megaMenu; track column.id) {
-                <p class="small text-muted mb-1 mt-2">{{ columnTitle(column) }}</p>
+                <a
+                  class="store-drawer__sub-link fw-semibold mt-2"
+                  [routerLink]="column.route"
+                  [queryParams]="column.queryParams"
+                  (click)="close()"
+                >
+                  {{ columnTitle(column) }}
+                </a>
                 @for (link of column.links; track link.id) {
                   <a
                     class="store-drawer__sub-link"

@@ -10,8 +10,8 @@
 }
 
 section {
-    padding-left: 32px;
     padding-right: 32px;
+    padding-left: 32px;
     max-width: 1320px;
     margin: 24px auto !important;
     padding: 0;
@@ -202,10 +202,10 @@ fieldset:disabled .btn {
     text-align: center;
     border-radius: 0;
     border: 0;
-    border-right: 1px solid #d1c5b4;
     border-left: 1px solid #d1c5b4;
+    border-right: 1px solid #d1c5b4;
     padding: 0 0px;
-    padding-left: 13px;
+    padding-right: 13px;
 }
 
 .product-detail-main__actions {
@@ -500,7 +500,7 @@ app-product-detail-page {
         width: max-content;
 
         input {
-            padding-left: 0;
+            padding-right: 0;
         }
     }
 
@@ -1061,6 +1061,7 @@ app-profile-page{
     svg{
         stroke: #775a19;
         transition: ease 0.3s;
+            rotate: 180deg;
     }
 }
 

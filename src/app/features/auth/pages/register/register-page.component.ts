@@ -67,7 +67,6 @@ export class RegisterPageComponent {
 
     const raw = this.form.getRawValue();
     this.loading.set(true);
-    const sessionId = this.cart.getGuestSessionId();
     const hasGuestCart = this.cart.hasGuestCart();
     const tenantId = this.tenants.tenantId();
 
@@ -79,7 +78,7 @@ export class RegisterPageComponent {
         password: raw.password,
         birthDate: raw.birthDate || null,
         gender: raw.gender || null,
-      }, sessionId)
+      }, null)
       .pipe(
         switchMap((registerRes) => {
           const email = raw.email.trim().toLowerCase();
@@ -87,6 +86,9 @@ export class RegisterPageComponent {
           if (parsed) {
             this.tokens.saveLoginData(parsed.loginData, true);
             this.tokens.saveCustomerId(parsed.customerId, true);
+            if (hasGuestCart && parsed.customerId) {
+              return this.cart.syncGuestCartToServer();
+            }
             this.cart.refresh();
             return of(null);
           }
@@ -115,8 +117,8 @@ export class RegisterPageComponent {
               const profile = resultFromAbpEnvelope<{ id?: number }>(profileRes);
               const customerId = profile?.id != null ? String(profile.id) : null;
               this.tokens.saveCustomerId(customerId, true);
-              if (customerId && sessionId && hasGuestCart) {
-                return this.authApi.mergeGuestCart(customerId, sessionId);
+              if (customerId && hasGuestCart) {
+                return this.cart.syncGuestCartToServer();
               }
               return of(null);
             }),
@@ -141,9 +143,6 @@ export class RegisterPageComponent {
           // Token may have been returned in register response (handled above) or no token at all.
           this.toastr.success(this.translate.instant('AUTH.REGISTER_SUCCESS'));
           this.cart.refresh();
-          if (hasGuestCart) {
-            this.cart.clearGuestCart();
-          }
           void this.router.navigateByUrl(ApiEndpoints.postLoginUrl);
         },
         error: (err) => {

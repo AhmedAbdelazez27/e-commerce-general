@@ -11,6 +11,7 @@ import {
   GetProductFiltersParams,
   GetProductFiltersResult,
   PublicSearchProductDto,
+  PublicSearchProductPriceDto,
   PublicSpecificationFilterDto,
   SearchProductsRequest,
 } from '../models/catalog-public-listing.model';
@@ -187,13 +188,14 @@ export function mapFilterBrandsToOptions(
 
 export function mapSearchProductToListingProduct(
   item: PublicSearchProductDto,
-  _lang: AppLang,
+  lang: AppLang,
 ): CatalogListingProduct {
   const availability = item.availabilityStatus?.trim() || item.availableStatus?.trim();
   const inStock = availability === 'InStock';
   const nameEn = item.nameEn?.trim() || item.name;
   const nameAr = item.nameAr?.trim() || item.name;
   const finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0;
+  const imageUrl = item.mainImageUrl?.trim() || undefined;
 
   return {
     id: item.productId ?? item.id,
@@ -204,20 +206,20 @@ export function mapSearchProductToListingProduct(
     price: finalPrice,
     compareAtPrice: item.oldPrice ?? undefined,
     categoryId: String(item.categoryId),
-    categoryNameEn: item.categoryName,
-    categoryNameAr: item.categoryName,
+    categoryNameEn: item.categoryNameEn?.trim() || item.categoryName,
+    categoryNameAr: item.categoryNameAr?.trim() || item.categoryName,
     brandId: item.brandId != null ? String(item.brandId) : '',
-    brandNameEn: item.brandName ?? '',
-    brandNameAr: item.brandName ?? '',
+    brandNameEn: item.brandNameEn?.trim() || item.brandName?.trim() || '',
+    brandNameAr: item.brandNameAr?.trim() || item.brandName?.trim() || '',
     isAvailable: inStock,
     isNew: item.isNewArrival,
     isBestSeller: item.isBestSeller,
     isFeatured: item.isFeatured,
     hasOffer:
       (item.discountPercent != null && item.discountPercent > 0) ||
-      (item.oldPrice != null && item.oldPrice > item.finalPrice),
+      (item.oldPrice != null && item.oldPrice > finalPrice),
     discountPercent: item.discountPercent ?? undefined,
-    imageUrl: item.mainImageUrl ?? undefined,
+    imageUrl,
     createdAt: '',
   };
 }
@@ -227,4 +229,120 @@ export function mapSearchProductsToListingProducts(
   lang: AppLang,
 ): CatalogListingProduct[] {
   return items.map((item) => mapSearchProductToListingProduct(item, lang));
+}
+
+type JsonRecord = Record<string, unknown>;
+
+function readStringField(o: JsonRecord, ...keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = o[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return undefined;
+}
+
+function readNumberField(o: JsonRecord, ...keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = o[key];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function readBoolField(o: JsonRecord, ...keys: string[]): boolean {
+  for (const key of keys) {
+    const value = o[key];
+    if (typeof value === 'boolean') {
+      return value;
+    }
+  }
+  return false;
+}
+
+function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto | undefined {
+  if (raw == null || typeof raw !== 'object') {
+    return undefined;
+  }
+  const o = raw as JsonRecord;
+  const productVariantId = readNumberField(o, 'productVariantId', 'ProductVariantId');
+  if (productVariantId == null) {
+    return undefined;
+  }
+
+  return {
+    productVariantId,
+    basePrice: readNumberField(o, 'basePrice', 'BasePrice') ?? 0,
+    customerPrice: readNumberField(o, 'customerPrice', 'CustomerPrice') ?? 0,
+    discountAmount: readNumberField(o, 'discountAmount', 'DiscountAmount') ?? 0,
+    couponDiscountAmount:
+      readNumberField(o, 'couponDiscountAmount', 'CouponDiscountAmount') ?? 0,
+    taxAmount: readNumberField(o, 'taxAmount', 'TaxAmount') ?? 0,
+    finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
+  };
+}
+
+/** Normalizes ABP SearchProducts items (camelCase or PascalCase) into a stable DTO. */
+export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProductDto | null {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  const productId = readNumberField(o, 'productId', 'ProductId') ?? id;
+  if (id == null && productId == null) {
+    return null;
+  }
+
+  const price = normalizeSearchProductPrice(o['price'] ?? o['Price']);
+  const finalPrice =
+    readNumberField(o, 'finalPrice', 'FinalPrice') ?? price?.finalPrice ?? 0;
+
+  return {
+    id: id ?? productId!,
+    productId,
+    slug: readStringField(o, 'slug', 'Slug') ?? '',
+    sku: readStringField(o, 'sku', 'Sku', 'SKU') ?? '',
+    name: readStringField(o, 'name', 'Name') ?? '',
+    nameAr: readStringField(o, 'nameAr', 'NameAr'),
+    nameEn: readStringField(o, 'nameEn', 'NameEn'),
+    categoryId: readNumberField(o, 'categoryId', 'CategoryId') ?? 0,
+    categoryName: readStringField(o, 'categoryName', 'CategoryName') ?? '',
+    categoryNameAr: readStringField(o, 'categoryNameAr', 'CategoryNameAr'),
+    categoryNameEn: readStringField(o, 'categoryNameEn', 'CategoryNameEn'),
+    brandId: readNumberField(o, 'brandId', 'BrandId') ?? null,
+    brandName: readStringField(o, 'brandName', 'BrandName') ?? null,
+    brandNameAr: readStringField(o, 'brandNameAr', 'BrandNameAr') ?? null,
+    brandNameEn: readStringField(o, 'brandNameEn', 'BrandNameEn') ?? null,
+    mainImageUrl:
+      readStringField(o, 'mainImageUrl', 'MainImageUrl', 'imageUrl', 'ImageUrl') ?? null,
+    isFeatured: readBoolField(o, 'isFeatured', 'IsFeatured'),
+    isNewArrival: readBoolField(o, 'isNewArrival', 'IsNewArrival'),
+    isBestSeller: readBoolField(o, 'isBestSeller', 'IsBestSeller'),
+    price: price ?? {
+      productVariantId: 0,
+      basePrice: 0,
+      customerPrice: finalPrice,
+      discountAmount: 0,
+      couponDiscountAmount: 0,
+      taxAmount: 0,
+      finalPrice,
+    },
+    oldPrice: readNumberField(o, 'oldPrice', 'OldPrice') ?? null,
+    finalPrice,
+    discountPercent: readNumberField(o, 'discountPercent', 'DiscountPercent') ?? null,
+    hasVariants: readBoolField(o, 'hasVariants', 'HasVariants'),
+    availabilityStatus: readStringField(o, 'availabilityStatus', 'AvailabilityStatus'),
+    availableStatus: readStringField(o, 'availableStatus', 'AvailableStatus'),
+  };
+}
+
+export function normalizeSearchProductsResultItems(items: unknown[]): PublicSearchProductDto[] {
+  return items
+    .map((item) => normalizePublicSearchProductDto(item))
+    .filter((item): item is PublicSearchProductDto => item != null);
 }

@@ -37,6 +37,7 @@ function normalizeCartItem(raw: unknown): CartItemDto | null {
   const productVariantId = readNumber(o, 'ProductVariantId', 'productVariantId');
   const quantity = readNumber(o, 'Quantity', 'quantity') ?? 0;
   const unitPrice = readNumber(o, 'UnitPrice', 'unitPrice') ?? 0;
+  const finalPrice = readNumber(o, 'FinalPrice', 'finalPrice');
 
   if ((cartDetailId == null || cartDetailId <= 0) && quantity <= 0) {
     return null;
@@ -47,9 +48,18 @@ function normalizeCartItem(raw: unknown): CartItemDto | null {
     ProductId: productId,
     ProductVariantId: productVariantId ?? undefined,
     ProductName: readString(o, 'ProductName', 'productName'),
-    VariantSku: readString(o, 'VariantSku', 'variantSku'),
+    ProductNameAr: readString(o, 'ProductNameAr', 'productNameAr'),
+    ProductNameEn: readString(o, 'ProductNameEn', 'productNameEn'),
+    VariantName: readString(o, 'VariantName', 'variantName'),
+    VariantNameAr: readString(o, 'VariantNameAr', 'variantNameAr'),
+    VariantNameEn: readString(o, 'VariantNameEn', 'variantNameEn'),
+    VariantSku: readString(o, 'VariantSku', 'variantSku', 'variantSKU', 'VariantSKU'),
+    ProductImageUrl: readString(o, 'ProductImageUrl', 'productImageUrl'),
+    ProductVariantImageUrl: readString(o, 'ProductVariantImageUrl', 'productVariantImageUrl'),
+    ImageUrl: readString(o, 'ImageUrl', 'imageUrl'),
     Quantity: quantity,
     UnitPrice: unitPrice,
+    FinalPrice: finalPrice ?? undefined,
     LineTotal:
       readNumber(o, 'LineTotal', 'lineTotal') ??
       readNumber(o, 'TotalPrice', 'totalPrice') ??

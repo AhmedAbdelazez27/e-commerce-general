@@ -40,7 +40,10 @@
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
+    padding: var(--ds-space-2);
+    background: var(--ds-color-background-elevated);
     transition: transform var(--ds-transition-slow);
   }
 
@@ -153,6 +156,15 @@
   &:hover {
     background: var(--ds-color-primary);
     color: var(--ds-color-text-on-primary);
+  }
+
+  &.is-active {
+    color: var(--ds-color-accent);
+
+    &:hover {
+      background: var(--ds-color-background-elevated);
+      color: var(--ds-color-accent);
+    }
   }
 }
 
@@ -283,6 +295,12 @@
   &:hover {
     border-color: var(--ds-color-accent);
     color: var(--ds-color-accent);
+  }
+
+  &.is-active {
+    border-color: var(--ds-color-accent);
+    color: var(--ds-color-accent);
+    background: color-mix(in srgb, var(--ds-color-accent) 8%, transparent);
   }
 }
 

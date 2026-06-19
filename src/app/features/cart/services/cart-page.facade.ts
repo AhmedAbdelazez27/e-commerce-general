@@ -1,5 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthTokenService } from '../../../core/services/auth-token.service';
 import { CartService } from '../../../core/services/cart.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { CartCouponState, CartLineItemView, CartOrderSummaryView } from '../models/cart-view.model';
@@ -9,6 +11,8 @@ import { buildOrderSummary, findCoupon } from '../utils/cart-summary.util';
 @Injectable()
 export class CartPageFacade {
   private readonly cartService = inject(CartService);
+  private readonly auth = inject(AuthTokenService);
+  private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
 
@@ -109,6 +113,12 @@ export class CartPageFacade {
     }
     if (this.hasUnavailableItems()) {
       this.toast.warning(this.translate.instant('CART.CHECKOUT_UNAVAILABLE'));
+      return false;
+    }
+    if (!this.auth.isLoggedIn()) {
+      void this.router.navigate(['/auth/login'], {
+        queryParams: { returnUrl: '/checkout/payment' },
+      });
       return false;
     }
     return true;

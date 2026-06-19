@@ -345,6 +345,7 @@
     "RATING": "Product rating",
     "ADD_TO_CART": "Add to cart",
     "ADD_WISHLIST": "Add to wishlist",
+    "REMOVE_WISHLIST": "Remove from wishlist",
     "QUICK_VIEW": "Quick view",
     "SOLD_OUT": "Sold out",
     "BADGE_NEW": "New",
@@ -353,6 +354,7 @@
   "CATALOG": {
     "BREADCRUMB": "Breadcrumb",
     "BREADCRUMB_SEARCH": "Search results",
+    "SUBCATEGORIES": "Shop by subcategory",
     "ALL_PRODUCTS": "All products",
     "PRODUCT_COUNT": "{{count}} products",
     "LOADING": "Loading products…",
@@ -415,6 +417,7 @@
     "REMOVE": "Remove",
     "SUBTOTAL": "Subtotal",
     "ITEM_UNAVAILABLE": "This item is no longer available",
+    "UPDATE_QTY_FAILED": "Could not update quantity. Please try again.",
     "ADDED_SUCCESS": "{{name}} was added to your cart",
     "VIEW_CART": "View cart",
     "ADDED_ERROR": "Could not add this item to your cart. Please try again.",

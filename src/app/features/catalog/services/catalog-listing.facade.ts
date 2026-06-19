@@ -13,16 +13,19 @@ import {
   CatalogListingFilters,
   CatalogSortOption,
   CatalogSpecificationGroup,
+  CatalogSubcategoryItem,
   CatalogViewMode,
   DEFAULT_CATALOG_FILTERS,
 } from '../models/catalog-listing.model';
 import { CatalogListingApiService } from './catalog-listing-api.service';
 import {
   buildCategoryLookup,
+  categoryAncestorChain,
   categoryNodeForId,
   categorySlugForId,
   resolveCategoryFromQueryParams,
 } from '../utils/catalog-category-index.util';
+import { SHOP_ROUTE, categoryShopQueryParams } from '../../../shared/utils/category-shop-link.util';
 import {
   CATALOG_PAGE_SIZE,
   buildGetProductFiltersParams,
@@ -90,24 +93,61 @@ export class CatalogListingFacade {
     } satisfies CatalogCategoryOption;
   });
 
+  readonly subcategoryRail = computed((): CatalogSubcategoryItem[] => {
+    const id = this.activeCategoryId();
+    if (!id) {
+      return [];
+    }
+    const node = categoryNodeForId(id, this.categoryLookup());
+    const children = node?.children ?? [];
+    if (!children.length) {
+      return [];
+    }
+
+    return [...children]
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((child) => ({
+        id: String(child.id),
+        slug: child.slug,
+        nameEn: child.nameEn,
+        nameAr: child.nameAr,
+        imageUrl: child.imageUrl ?? child.iconUrl ?? null,
+        count: child.count,
+      }));
+  });
+
   readonly breadcrumbs = computed((): CatalogBreadcrumbItem[] => {
     const items: CatalogBreadcrumbItem[] = [
       { labelKey: 'PAGE.HOME', route: '/home' },
-      { labelKey: 'PAGE.SHOP', route: '/shop' },
+      { labelKey: 'PAGE.SHOP', route: SHOP_ROUTE },
     ];
-    const category = this.activeCategory();
+    const categoryId = this.activeCategoryId();
     const search = this.searchQuery().trim();
+    const lookup = this.categoryLookup();
 
-    if (category) {
-      items.push({
-        labelEn: category.nameEn,
-        labelAr: category.nameAr,
-        current: !search,
+    if (categoryId) {
+      const chain = categoryAncestorChain(categoryId, lookup);
+      const leaf = categoryNodeForId(categoryId, lookup);
+      const nodes = chain.length ? chain : leaf ? [leaf] : [];
+
+      nodes.forEach((node, index) => {
+        const isLeaf = index === nodes.length - 1;
+        items.push({
+          labelEn: node.nameEn,
+          labelAr: node.nameAr,
+          route: isLeaf && !search ? undefined : SHOP_ROUTE,
+          queryParams: isLeaf && !search ? undefined : categoryShopQueryParams(node),
+          current: isLeaf && !search,
+        });
       });
+
       if (search) {
         items.push({ labelKey: 'CATALOG.BREADCRUMB_SEARCH', current: true });
       }
-    } else if (search) {
+      return items;
+    }
+
+    if (search) {
       items[items.length - 1].current = false;
       items.push({ labelKey: 'CATALOG.BREADCRUMB_SEARCH', current: true });
     } else {

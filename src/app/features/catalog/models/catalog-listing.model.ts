@@ -93,6 +93,15 @@ export interface CatalogBreadcrumbItem {
   current?: boolean;
 }
 
+export interface CatalogSubcategoryItem {
+  id: string;
+  slug?: string;
+  nameEn: string;
+  nameAr: string;
+  imageUrl?: string | null;
+  count?: number;
+}
+
 export const DEFAULT_CATALOG_FILTERS: CatalogListingFilters = {
   categoryIds: [],
   brandIds: [],

@@ -16,14 +16,14 @@ export const HOME_PAGE_CONFIG: HomePageConfig = {
     maxItems: 3,
   },
   productSections: [
-    {
-      id: 'most-searched',
-      titleKey: 'HOME.MOST_SEARCHED.TITLE',
-      subtitleKey: 'HOME.MOST_SEARCHED.SUBTITLE',
-      viewAllRoute: '/shop',
-      viewAllQuery: { sort: 'popular' },
-      layout: 'scroll',
-    },
+    // {
+    //   id: 'most-searched',
+    //   titleKey: 'HOME.MOST_SEARCHED.TITLE',
+    //   subtitleKey: 'HOME.MOST_SEARCHED.SUBTITLE',
+    //   viewAllRoute: '/shop',
+    //   viewAllQuery: { sort: 'popular' },
+    //   layout: 'scroll',
+    // },
     {
       id: 'best-sellers',
       titleKey: 'HOME.BEST_SELLERS.TITLE',

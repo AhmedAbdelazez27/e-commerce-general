@@ -1,18 +1,27 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, from, of } from 'rxjs';
+import { catchError, concatMap, last, map, switchMap, tap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 import { AuthTokenService } from './auth-token.service';
 import { CartApiService } from '../../features/cart/services/cart-api.service';
-import type { CartDto, EcCartContextRequest } from '../../features/cart/models/cart.model';
-
-const GUEST_CART_KEY = 'guest_cart';
-const GUEST_CART_SESSION_ID_KEY = 'guest_cart_session_id';
+import type { CartDto, EcCartContextRequest, GuestCartProductMeta } from '../../features/cart/models/cart.model';
+import {
+  buildGuestCartItem,
+  clearGuestCartStorage,
+  nextGuestCartDetailId,
+  readGuestCartFromStorage,
+  recalcGuestCart,
+  writeGuestCartToStorage,
+} from '../../features/cart/utils/guest-cart-storage.util';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly cartApi = inject(CartApiService);
   private readonly auth = inject(AuthTokenService);
+  private readonly toast = inject(ToastService);
+  private readonly translate = inject(TranslateService);
 
   private readonly cartSignal = signal<CartDto | null>(null);
   private readonly loadingSignal = signal(false);
@@ -25,9 +34,6 @@ export class CartService {
     if (cart?.Items?.length) {
       return cart.Items.reduce((sum, item) => sum + (item.Quantity ?? 0), 0);
     }
-    if (!this.auth.isLoggedIn()) {
-      return this.readGuestCount();
-    }
     return 0;
   });
 
@@ -36,8 +42,14 @@ export class CartService {
       this.activeCouponCode = couponCode?.trim() ? couponCode.trim() : null;
     }
 
+    if (!this.auth.isLoggedIn()) {
+      const cart = readGuestCartFromStorage() ?? { Items: [] };
+      this.cartSignal.set(cart.Items.length ? cart : null);
+      return;
+    }
+
     const context = this.buildEcCartContext();
-    if (!context.sessionId && context.customerId <= 0) {
+    if (context.customerId <= 0) {
       this.cartSignal.set(null);
       return;
     }
@@ -55,50 +67,74 @@ export class CartService {
     });
   }
 
-  /** Stable session id for guest-cart merge on register/login. */
-  getGuestSessionId(): string | null {
-    if (this.auth.isLoggedIn()) {
-      return null;
-    }
-    try {
-      const existing = localStorage.getItem(GUEST_CART_SESSION_ID_KEY);
-      if (existing && existing.trim()) {
-        return existing;
-      }
-      const created = createSessionId();
-      localStorage.setItem(GUEST_CART_SESSION_ID_KEY, created);
-      return created;
-    } catch {
-      return null;
-    }
-  }
-
   hasGuestCart(): boolean {
     const cart = this.cartSignal();
     if (cart?.Items?.length) {
       return true;
     }
-    try {
-      const raw = localStorage.getItem(GUEST_CART_KEY);
-      return !!raw && raw.trim().length > 0;
-    } catch {
-      return false;
-    }
+    const stored = readGuestCartFromStorage();
+    return !!stored?.Items?.length;
   }
 
   clearGuestCart(): void {
-    localStorage.removeItem(GUEST_CART_KEY);
-    localStorage.removeItem(GUEST_CART_SESSION_ID_KEY);
-    this.cartSignal.set(null);
+    clearGuestCartStorage();
+    if (!this.auth.isLoggedIn()) {
+      this.cartSignal.set(null);
+    }
   }
 
-  addItem(productVariantId: number, quantity: number, couponCode?: string | null): Observable<boolean> {
+  /** Push local guest cart items to the server after login/register. */
+  syncGuestCartToServer(): Observable<void> {
+    if (!this.auth.isLoggedIn()) {
+      return of(undefined);
+    }
+
+    const guestCart = readGuestCartFromStorage();
+    const items = guestCart?.Items?.filter((item) => (item.ProductVariantId ?? 0) > 0) ?? [];
+    if (!items.length) {
+      return of(undefined);
+    }
+
+    const context = this.buildEcCartContext();
+    if (context.customerId <= 0) {
+      return of(undefined);
+    }
+
+    return from(items).pipe(
+      concatMap((item) =>
+        this.cartApi
+          .addToCart({
+            productVariantId: item.ProductVariantId!,
+            quantity: item.Quantity,
+            ...context,
+          })
+          .pipe(catchError(() => of(null))),
+      ),
+      last(null),
+      tap(() => this.clearGuestCart()),
+      switchMap(() => {
+        this.refresh();
+        return of(undefined);
+      }),
+    );
+  }
+
+  addItem(
+    productVariantId: number,
+    quantity: number,
+    couponCode?: string | null,
+    productMeta?: GuestCartProductMeta,
+  ): Observable<boolean> {
     if (productVariantId < 1 || quantity < 1) {
       return of(false);
     }
 
+    if (!this.auth.isLoggedIn()) {
+      return of(this.addGuestItem(productVariantId, quantity, productMeta));
+    }
+
     const context = this.buildEcCartContext(couponCode);
-    if (!context.sessionId && context.customerId <= 0) {
+    if (context.customerId <= 0) {
       return of(false);
     }
 
@@ -131,8 +167,13 @@ export class CartService {
       return;
     }
 
+    if (!this.auth.isLoggedIn()) {
+      this.updateGuestQuantity(cartDetailId, quantity);
+      return;
+    }
+
     const context = this.buildEcCartContext(couponCode);
-    if (!context.sessionId && context.customerId <= 0) {
+    if (context.customerId <= 0) {
       return;
     }
 
@@ -144,7 +185,14 @@ export class CartService {
           this.cartSignal.set(cart);
           this.loadingSignal.set(false);
         },
-        error: () => this.loadingSignal.set(false),
+        error: () => {
+          this.loadingSignal.set(false);
+          this.toast.error(this.translate.instant('CART.UPDATE_QTY_FAILED'));
+          this.cartApi.getEcCart(context).subscribe({
+            next: (cart) => this.cartSignal.set(cart),
+            error: () => undefined,
+          });
+        },
       });
   }
 
@@ -153,8 +201,13 @@ export class CartService {
       return;
     }
 
+    if (!this.auth.isLoggedIn()) {
+      this.removeGuestItem(cartDetailId);
+      return;
+    }
+
     const context = this.buildEcCartContext(couponCode);
-    if (!context.sessionId && context.customerId <= 0) {
+    if (context.customerId <= 0) {
       return;
     }
 
@@ -174,7 +227,6 @@ export class CartService {
       });
   }
 
-  /** Cart identifiers required by `EcOrders/PlaceOrder`. */
   getPlaceOrderContext(): {
     cartId: number;
     customerId: number;
@@ -185,14 +237,19 @@ export class CartService {
     return {
       cartId: this.cartSignal()?.CartId ?? 0,
       customerId: context.customerId,
-      sessionId: context.sessionId?.trim() ?? '',
+      sessionId: '',
       couponCode: context.couponCode,
     };
   }
 
   clearCart(couponCode?: string | null): Observable<boolean> {
+    if (!this.auth.isLoggedIn()) {
+      this.clearGuestCart();
+      return of(true);
+    }
+
     const context = this.buildEcCartContext(couponCode);
-    if (!context.sessionId && context.customerId <= 0) {
+    if (context.customerId <= 0) {
       return of(false);
     }
 
@@ -211,8 +268,81 @@ export class CartService {
     );
   }
 
+  private addGuestItem(
+    productVariantId: number,
+    quantity: number,
+    productMeta?: GuestCartProductMeta,
+  ): boolean {
+    if (!productMeta) {
+      return false;
+    }
+
+    const current = readGuestCartFromStorage() ?? { Items: [] };
+    const items = [...(current.Items ?? [])];
+    const existing = items.find((item) => item.ProductVariantId === productVariantId);
+
+    if (existing) {
+      existing.Quantity += quantity;
+      const unitPrice = existing.FinalPrice ?? existing.UnitPrice ?? productMeta.unitPrice;
+      existing.LineTotal = unitPrice * existing.Quantity;
+    } else {
+      items.push(
+        buildGuestCartItem(
+          productMeta,
+          productVariantId,
+          quantity,
+          nextGuestCartDetailId(items),
+        ),
+      );
+    }
+
+    const cart = recalcGuestCart(items);
+    writeGuestCartToStorage(cart);
+    this.cartSignal.set(cart);
+    return true;
+  }
+
+  private updateGuestQuantity(cartDetailId: number, quantity: number): void {
+    const current = readGuestCartFromStorage();
+    if (!current?.Items?.length) {
+      return;
+    }
+
+    const items = current.Items.map((item) => {
+      if (item.CartDetailId !== cartDetailId) {
+        return item;
+      }
+      const unitPrice = item.FinalPrice ?? item.UnitPrice ?? 0;
+      return {
+        ...item,
+        Quantity: quantity,
+        LineTotal: unitPrice * quantity,
+      };
+    });
+
+    const cart = recalcGuestCart(items);
+    writeGuestCartToStorage(cart);
+    this.cartSignal.set(cart.Items.length ? cart : null);
+  }
+
+  private removeGuestItem(cartDetailId: number): void {
+    const current = readGuestCartFromStorage();
+    if (!current?.Items?.length) {
+      return;
+    }
+
+    const items = current.Items.filter((item) => item.CartDetailId !== cartDetailId);
+    if (!items.length) {
+      this.clearGuestCart();
+      return;
+    }
+
+    const cart = recalcGuestCart(items);
+    writeGuestCartToStorage(cart);
+    this.cartSignal.set(cart);
+  }
+
   private buildEcCartContext(couponCode?: string | null): EcCartContextRequest {
-    const loggedIn = this.auth.isLoggedIn();
     const code =
       couponCode !== undefined
         ? couponCode?.trim()
@@ -221,13 +351,16 @@ export class CartService {
         : this.activeCouponCode;
 
     return {
-      customerId: loggedIn ? this.resolveCustomerId() : 0,
-      sessionId: loggedIn ? null : this.getGuestSessionId(),
+      customerId: this.resolveCustomerId(),
+      sessionId: '',
       couponCode: code,
     };
   }
 
   private resolveCustomerId(): number {
+    if (!this.auth.isLoggedIn()) {
+      return 0;
+    }
     const raw = this.auth.getCustomerId();
     if (!raw?.trim()) {
       return 0;
@@ -235,30 +368,4 @@ export class CartService {
     const id = Number(raw);
     return Number.isFinite(id) ? id : 0;
   }
-
-  private readGuestCount(): number {
-    const cart = this.readGuestCart();
-    if (!cart?.Items?.length) {
-      return 0;
-    }
-    return cart.Items.reduce((sum, item) => sum + (item.Quantity ?? 0), 0);
-  }
-
-  private readGuestCart(): CartDto | null {
-    try {
-      const raw = localStorage.getItem(GUEST_CART_KEY);
-      return raw ? (JSON.parse(raw) as CartDto) : null;
-    } catch {
-      return null;
-    }
-  }
-}
-
-function createSessionId(): string {
-  const cryptoObj = globalThis.crypto as Crypto | undefined;
-  if (cryptoObj && 'randomUUID' in cryptoObj && typeof cryptoObj.randomUUID === 'function') {
-    return cryptoObj.randomUUID();
-  }
-  const rand = Math.random().toString(16).slice(2);
-  return `guest-${Date.now().toString(16)}-${rand}`;
 }

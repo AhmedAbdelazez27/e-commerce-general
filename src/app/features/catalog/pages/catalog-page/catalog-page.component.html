@@ -1,13 +1,17 @@
 <div class="catalog-page">
   <app-catalog-breadcrumb [items]="facade.breadcrumbs()" />
 
-  <app-catalog-listing-header
+  @if (facade.subcategoryRail().length) {
+    <app-catalog-subcategory-rail [items]="facade.subcategoryRail()" />
+  }
+
+  <!-- <app-catalog-listing-header
     [titleEn]="facade.activeCategory()?.nameEn"
     [titleAr]="facade.activeCategory()?.nameAr"
     [productCount]="facade.productCount()"
     [category]="facade.activeCategory()"
     [searchQuery]="facade.searchQuery()"
-  />
+  /> -->
 
   <app-catalog-listing-toolbar
     [sort]="facade.sort()"

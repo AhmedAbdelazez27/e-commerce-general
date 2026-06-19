@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ProductDetail } from '../../features/catalog/models/product-detail.model';
+import { GuestCartProductMeta } from '../../features/cart/models/cart.model';
 import { ProductCardData } from '../../shared/models/product-card.model';
 import { resolveProductCardTitle } from '../../shared/utils/product-card.util';
 import { CartService } from './cart.service';
@@ -28,7 +29,7 @@ export class CartActionsService {
     }
 
     const name = resolveProductCardTitle(product, this.language.currentLang());
-    this.cart.addItem(variantId, quantity).subscribe((ok) => {
+    this.cart.addItem(variantId, quantity, null, this.metaFromCard(product)).subscribe((ok) => {
       if (ok) {
         this.showAddedSuccess(name);
       } else {
@@ -53,7 +54,7 @@ export class CartActionsService {
     const name =
       this.language.currentLang() === 'ar' ? product.nameAr : product.nameEn;
 
-    this.cart.addItem(variantId, qty).subscribe((ok) => {
+    this.cart.addItem(variantId, qty, null, this.metaFromDetail(product)).subscribe((ok) => {
       if (ok) {
         this.showAddedSuccess(name);
       } else {
@@ -78,7 +79,7 @@ export class CartActionsService {
     const name =
       this.language.currentLang() === 'ar' ? product.nameAr : product.nameEn;
 
-    this.cart.addItem(variantId, qty).subscribe((ok) => {
+    this.cart.addItem(variantId, qty, null, this.metaFromDetail(product)).subscribe((ok) => {
       if (ok) {
         this.showAddedSuccess(name);
         onSuccess();
@@ -86,6 +87,28 @@ export class CartActionsService {
         this.toast.error(this.translate.instant('CART.ADDED_ERROR'));
       }
     });
+  }
+
+  private metaFromCard(product: ProductCardData): GuestCartProductMeta {
+    return {
+      productId: product.id,
+      productNameEn: product.title,
+      productNameAr: product.titleAr ?? product.title,
+      imageUrl: product.image,
+      unitPrice: product.price,
+      isAvailable: product.isAvailable,
+    };
+  }
+
+  private metaFromDetail(product: ProductDetail): GuestCartProductMeta {
+    return {
+      productId: product.id,
+      productNameEn: product.nameEn,
+      productNameAr: product.nameAr,
+      imageUrl: product.images[0]?.url,
+      unitPrice: product.price,
+      isAvailable: product.isAvailable,
+    };
   }
 
   private showAddedSuccess(productName: string): void {

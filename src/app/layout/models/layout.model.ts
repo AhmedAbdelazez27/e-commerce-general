@@ -79,6 +79,10 @@ export interface NavMegaColumn {
   titleKey?: string;
   titleEn?: string;
   titleAr?: string;
+  /** When true, the column also lists direct subcategory links below the title. */
+  isBranch?: boolean;
+  route?: string | string[];
+  queryParams?: Record<string, string>;
   links: NavMegaLink[];
 }
 

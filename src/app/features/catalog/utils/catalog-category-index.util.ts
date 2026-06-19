@@ -68,3 +68,22 @@ export function categoryNodeForId(
   }
   return lookup.get(categoryId) ?? null;
 }
+
+/** Root-to-leaf chain for breadcrumbs (e.g. Electronics → Phones). */
+export function categoryAncestorChain(
+  categoryId: string,
+  lookup: Map<string, PublicCategoryDto>,
+): PublicCategoryDto[] {
+  const chain: PublicCategoryDto[] = [];
+  let current: PublicCategoryDto | null | undefined = lookup.get(categoryId);
+
+  while (current) {
+    chain.unshift(current);
+    if (current.parentCategoryId == null) {
+      break;
+    }
+    current = lookup.get(String(current.parentCategoryId));
+  }
+
+  return chain;
+}

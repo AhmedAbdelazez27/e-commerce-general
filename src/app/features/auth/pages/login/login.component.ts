@@ -52,7 +52,6 @@ export class LoginComponent {
     }
 
     const { userNameOrEmailAddress, password, rememberMe } = this.form.getRawValue();
-    const guestSessionId = this.cart.getGuestSessionId();
     const hasGuestCart = this.cart.hasGuestCart();
     const tenantId = this.tenants.tenantId();
     this.loading.set(true);
@@ -92,21 +91,17 @@ export class LoginComponent {
           return of(parsed.customerId);
         }),
         switchMap((customerId) => {
-          if (!customerId || !guestSessionId || !hasGuestCart) {
+          if (!customerId || !hasGuestCart) {
             return of(null);
           }
-          return this.authApi.mergeGuestCart(customerId, guestSessionId);
+          return this.cart.syncGuestCartToServer();
         }),
         finalize(() => this.loading.set(false)),
       )
       .subscribe({
         next: () => {
           this.toastr.success(this.translate.instant('AUTH.LOGIN_SUCCESS'));
-          // After merge (if any), refresh and clear guest cart.
           this.cart.refresh();
-          if (hasGuestCart) {
-            this.cart.clearGuestCart();
-          }
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           const target =
             returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('/auth')

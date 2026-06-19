@@ -11,6 +11,7 @@ import {
   SearchProductsRequest,
   SearchProductsResult,
 } from '../models/catalog-public-listing.model';
+import { normalizeSearchProductsResultItems } from '../utils/catalog-listing-api.mapper';
 
 const EMPTY_FILTERS: GetProductFiltersResult = {
   categories: [],
@@ -28,7 +29,10 @@ const EMPTY_SEARCH: SearchProductsResult = {
 function normalizeSearchProductsResult(res: unknown): SearchProductsResult {
   const fromEnvelope = resultFromAbpEnvelope<SearchProductsResult>(res);
   if (fromEnvelope && Array.isArray(fromEnvelope.items)) {
-    return fromEnvelope;
+    return {
+      totalCount: fromEnvelope.totalCount ?? fromEnvelope.items.length,
+      items: normalizeSearchProductsResultItems(fromEnvelope.items),
+    };
   }
 
   if (res != null && typeof res === 'object') {
@@ -36,7 +40,7 @@ function normalizeSearchProductsResult(res: unknown): SearchProductsResult {
     if (Array.isArray(direct.items)) {
       return {
         totalCount: direct.totalCount ?? direct.items.length,
-        items: direct.items,
+        items: normalizeSearchProductsResultItems(direct.items),
       };
     }
   }

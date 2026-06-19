@@ -1,0 +1,27 @@
+@if (items().length) {
+  <section class="catalog-subcategory-rail" [attr.aria-label]="'CATALOG.SUBCATEGORIES' | translate" style="margin-bottom: 0px !important;margin-top: 0px !important;">
+    <div class="catalog-subcategory-rail__panel">
+      <div class="catalog-subcategory-rail__track" role="list">
+        @for (item of items(); track item.id) {
+          <a
+            class="catalog-subcategory-rail__card"
+            role="listitem"
+            [routerLink]="shopRoute"
+            [queryParams]="queryParams(item)"
+          >
+            <span class="catalog-subcategory-rail__media">
+              @if (item.imageUrl) {
+                <img [src]="item.imageUrl" [alt]="label(item)" loading="lazy" decoding="async" />
+              } @else {
+                <span class="catalog-subcategory-rail__placeholder" aria-hidden="true">
+                  <i class="fa-solid fa-layer-group"></i>
+                </span>
+              }
+            </span>
+            <span class="catalog-subcategory-rail__name">{{ label(item) }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}
