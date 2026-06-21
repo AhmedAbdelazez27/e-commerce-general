@@ -17,7 +17,13 @@
   <div class="product-detail-info__panels">
     @if (isActive('description')) {
       <div class="product-detail-info__panel" role="tabpanel">
-        <p class="product-detail-info__text">{{ description() }}</p>
+        @if (hasDescription()) {
+          <p class="product-detail-info__text">{{ description() }}</p>
+        } @else {
+          <p class="product-detail-info__text product-detail-info__text--muted">
+            {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
+          </p>
+        }
       </div>
     }
 
@@ -49,7 +55,13 @@
   <div class="product-detail-info__accordion">
     <details class="product-detail-info__details" open>
       <summary>{{ 'PRODUCT_DETAIL.TAB.description' | translate }}</summary>
-      <p class="product-detail-info__text">{{ description() }}</p>
+      @if (hasDescription()) {
+        <p class="product-detail-info__text">{{ description() }}</p>
+      } @else {
+        <p class="product-detail-info__text product-detail-info__text--muted">
+          {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
+        </p>
+      }
     </details>
     <details class="product-detail-info__details">
       <summary>{{ 'PRODUCT_DETAIL.TAB.specifications' | translate }}</summary>

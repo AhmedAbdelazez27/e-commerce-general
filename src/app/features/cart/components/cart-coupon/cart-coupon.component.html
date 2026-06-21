@@ -13,7 +13,7 @@
       [ngModel]="couponInput()"
       (ngModelChange)="couponInputChange.emit($event)"
       [placeholder]="'CART.COUPON.PLACEHOLDER' | translate"
-      [disabled]="couponState().status === 'applied'"
+      [disabled]="couponState().status === 'applied' || couponState().status === 'loading'"
       autocomplete="off"
     />
     @if (couponState().status === 'applied') {
@@ -21,8 +21,17 @@
         {{ 'CART.COUPON.REMOVE' | translate }}
       </button>
     } @else {
-      <button type="button" class="btn btn-apply-coupon" (click)="apply.emit()">
-        {{ 'CART.COUPON.APPLY' | translate }}
+      <button
+        type="button"
+        class="btn btn-apply-coupon"
+        (click)="apply.emit()"
+        [disabled]="couponState().status === 'loading'"
+      >
+        @if (couponState().status === 'loading') {
+          {{ 'COMMON.LOADING' | translate }}
+        } @else {
+          {{ 'CART.COUPON.APPLY' | translate }}
+        }
       </button>
     }
   </div>
@@ -30,13 +39,13 @@
   @if (couponState().status === 'applied' && couponState().messageKey) {
     <p class="cart-coupon__msg cart-coupon__msg--success">
       <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-      {{ couponState().messageKey! | translate }}
+      {{ couponState().messageKey! | translate: couponState().messageParams }}
     </p>
   }
   @if (couponState().status === 'invalid') {
     <p class="cart-coupon__msg cart-coupon__msg--error">
       <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-      {{ couponState().messageKey! | translate }}
+      {{ couponState().messageKey! | translate: couponState().messageParams }}
     </p>
   }
 </div>

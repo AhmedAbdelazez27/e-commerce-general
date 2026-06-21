@@ -75,7 +75,7 @@ export function sortCatalogProducts(
     case 'rating':
       return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     case 'name':
-      return list.sort((a, b) => a.nameEn.localeCompare(b.nameEn));
+      return list.sort((a, b) => a.nameEn.localeCompare(b.nameEn, undefined, { sensitivity: 'base' }));
     case 'featured':
     default:
       return list.sort((a, b) => {

@@ -24,6 +24,27 @@ export function normalizeCartDto(raw: unknown): CartDto {
     Items: items,
     SubTotal: readNumber(o, 'SubTotal', 'subTotal') ?? total,
     Total: total,
+    CouponCode: readString(o, 'CouponCode', 'couponCode', 'AppliedCouponCode', 'appliedCouponCode'),
+    CouponDiscountAmount:
+      readNumber(
+        o,
+        'CouponDiscountAmount',
+        'couponDiscountAmount',
+        'CouponDiscount',
+        'couponDiscount',
+        'TotalCouponDiscount',
+        'totalCouponDiscount',
+      ) ?? undefined,
+    DiscountAmount:
+      readNumber(
+        o,
+        'DiscountAmount',
+        'discountAmount',
+        'TotalDiscountAmount',
+        'totalDiscountAmount',
+        'TotalDiscount',
+        'totalDiscount',
+      ) ?? undefined,
   };
 }
 

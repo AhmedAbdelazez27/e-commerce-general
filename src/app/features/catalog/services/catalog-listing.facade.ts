@@ -35,6 +35,7 @@ import {
   mapFilterSpecificationsToGroups,
   mapSearchProductsToListingProducts,
 } from '../utils/catalog-listing-api.mapper';
+import { sortCatalogProducts } from '../utils/catalog-listing-filter.util';
 
 @Injectable()
 export class CatalogListingFacade {
@@ -67,7 +68,9 @@ export class CatalogListingFacade {
 
   readonly activeCategoryId = signal<string | null>(null);
 
-  readonly filteredProducts = computed(() => this.products());
+  readonly filteredProducts = computed(() =>
+    sortCatalogProducts(this.products(), this.sort()),
+  );
   readonly productCount = computed(() => this.totalCount());
 
   readonly activeCategory = computed(() => {
@@ -301,6 +304,7 @@ export class CatalogListingFacade {
     this.activeCategoryId.set(null);
     this.searchQuery.set('');
     this.skipCount.set(0);
+    this.sort.set('featured');
     this.navigatingFromFacade = true;
     void this.router
       .navigate([], {

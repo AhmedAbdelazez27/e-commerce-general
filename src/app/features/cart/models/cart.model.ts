@@ -44,6 +44,9 @@ export interface CartDto {
   Items: CartItemDto[];
   SubTotal?: number;
   Total?: number;
+  CouponCode?: string;
+  CouponDiscountAmount?: number;
+  DiscountAmount?: number;
 }
 
 /** Product snapshot stored with guest cart lines (no API). */

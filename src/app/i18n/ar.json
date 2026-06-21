@@ -35,7 +35,10 @@
     "LOGIN_FAILED": "فشل تسجيل الدخول. تحقق من البريد وكلمة المرور.",
     "REGISTER_SUCCESS": "تم إنشاء الحساب بنجاح",
     "REGISTER_SUCCESS_LOGIN": "تم إنشاء الحساب. يمكنك تسجيل الدخول الآن.",
-    "REGISTER_FAILED": "فشل التسجيل. حاول مرة أخرى."
+    "REGISTER_FAILED": "فشل التسجيل. حاول مرة أخرى.",
+    "SESSION_EXPIRED": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "CONTINUE_WITHOUT_LOGIN": "متابعة التسوق بدون تسجيل",
+    "STORE_NAV": "تنقل المتجر"
   },
   "COMMON": {
     "REFRESH": "تحديث",
@@ -431,9 +434,14 @@
       "PLACEHOLDER": "أدخل رمز الخصم",
       "APPLY": "تطبيق",
       "REMOVE": "إزالة",
-      "INVALID": "رمز الخصم غير صالح.",
-      "WELCOME_APPLIED": "تم تطبيق WELCOME — خصم 10% على الطلب.",
-      "SAVE15_APPLIED": "تم تطبيق SAVE15 — خصم 15% على الطلب."
+      "NOT_FOUND": "رمز الخصم غير صالح.",
+      "INACTIVE": "هذا الكوبون غير نشط.",
+      "NOT_STARTED": "هذا الكوبون غير صالح بعد.",
+      "EXPIRED": "انتهت صلاحية هذا الكوبون.",
+      "USAGE_EXCEEDED": "وصل هذا الكوبون إلى حد الاستخدام.",
+      "MIN_ORDER": "الحد الأدنى للطلب {{amount}} لتطبيق هذا الكوبون.",
+      "LOGIN_REQUIRED": "سجّل الدخول لتطبيق رمز الخصم.",
+      "APPLIED": "تم تطبيق {{code}} — وفرت {{savings}}."
     },
     "SUMMARY_REGION": "ملخص الطلب",
     "SUMMARY_TITLE": "ملخص الطلب",
@@ -523,6 +531,7 @@
     "BUY_NOW": "اشتر الآن",
     "SHIPPING_TITLE": "الشحن",
     "RETURNS_TITLE": "الإرجاع",
+    "NO_DESCRIPTION": "وصف المنتج غير متوفر.",
     "TAB": {
       "description": "الوصف",
       "specifications": "المواصفات",

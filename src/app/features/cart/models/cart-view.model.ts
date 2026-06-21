@@ -1,10 +1,4 @@
-export type CartCouponStatus = 'idle' | 'applied' | 'invalid';
-
-export interface CartCouponDefinition {
-  code: string;
-  percentOff: number;
-  labelKey: string;
-}
+export type CartCouponStatus = 'idle' | 'applied' | 'invalid' | 'loading';
 
 export interface CartLineItemView {
   cartDetailId: number;
@@ -36,4 +30,5 @@ export interface CartCouponState {
   code: string;
   appliedCode?: string;
   messageKey?: string;
+  messageParams?: Record<string, string | number>;
 }

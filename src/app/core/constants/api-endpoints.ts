@@ -26,6 +26,10 @@ export class ApiEndpoints {
     finalPrice: '/api/services/app/EcPublicCatalog/GetFinalPrice',
   };
 
+  static readonly EcCoupons = {
+    getAll: '/api/services/app/EcCoupons/GetAll',
+  };
+
   static readonly EcCart = {
     mergeGuestCart: '/api/services/app/EcCart/MergeGuestCart',
     addToCart: '/api/services/app/EcCart/AddToCart',

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 
 import { SKIP_AUTH } from '../http/http-context.tokens';
+import { AuthSessionService } from '../services/auth-session.service';
 import { ToastService } from '../services/toast.service';
 
 function messageFromError(err: HttpErrorResponse): string {
@@ -21,12 +22,16 @@ function messageFromError(err: HttpErrorResponse): string {
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
+  const authSession = inject(AuthSessionService);
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (!(err instanceof HttpErrorResponse)) {
         return throwError(() => err);
       }
       if (req.context.get(SKIP_AUTH)) {
+        return throwError(() => err);
+      }
+      if (authSession.shouldSuppressUnauthorizedToast(err.status, req.headers.has('Authorization'))) {
         return throwError(() => err);
       }
       toast.error(messageFromError(err));

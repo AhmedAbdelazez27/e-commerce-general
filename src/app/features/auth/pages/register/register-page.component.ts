@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { finalize, switchMap } from 'rxjs/operators';
@@ -9,10 +9,11 @@ import { of } from 'rxjs';
 import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CartService } from '../../../../core/services/cart.service';
-import { AppLang, LanguageService } from '../../../../core/services/language.service';
 import { TenantService } from '../../../../core/services/tenant.service';
+import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
+import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
 
 function passwordsMatch(control: AbstractControl): { mismatch: true } | null {
@@ -26,7 +27,7 @@ function passwordsMatch(control: AbstractControl): { mismatch: true } | null {
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule, AuthPageHeaderComponent],
   templateUrl: './register-page.component.html',
 })
 export class RegisterPageComponent {
@@ -34,9 +35,9 @@ export class RegisterPageComponent {
   private readonly authApi = inject(AuthApiService);
   private readonly tokens = inject(AuthTokenService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
-  private readonly language = inject(LanguageService);
   private readonly cart = inject(CartService);
   private readonly tenants = inject(TenantService);
 
@@ -55,8 +56,8 @@ export class RegisterPageComponent {
     { validators: passwordsMatch },
   );
 
-  setLang(lang: AppLang): void {
-    void this.language.useLanguage(lang);
+  continueUrl(): string {
+    return resolveAuthContinueUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
   }
 
   submit(): void {

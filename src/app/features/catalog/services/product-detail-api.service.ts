@@ -14,6 +14,7 @@ import {
   PublicProductVariantDto,
   PublicRelatedProductDto,
 } from '../models/catalog-public-product.model';
+import { normalizePublicProductDetailsDto } from '../utils/product-detail-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class ProductDetailApiService {
@@ -34,7 +35,10 @@ export class ProductDetailApiService {
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.productDetails, { params: httpParams })
       .pipe(
-        map((res) => resultFromAbpEnvelope<PublicProductDetailsDto>(res)),
+        map((res) => {
+          const raw = resultFromAbpEnvelope<unknown>(res);
+          return raw ? normalizePublicProductDetailsDto(raw) : null;
+        }),
         catchError(() => of(null)),
       );
   }

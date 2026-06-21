@@ -59,7 +59,11 @@ export interface PublicProductDetailsDto {
   nameAr?: string;
   nameEn?: string;
   shortDescription?: string | null;
+  shortDescriptionAr?: string | null;
+  shortDescriptionEn?: string | null;
   description?: string | null;
+  descriptionAr?: string | null;
+  descriptionEn?: string | null;
   categoryId: number;
   categoryName?: string;
   brandId?: number | null;

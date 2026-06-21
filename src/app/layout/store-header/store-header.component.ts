@@ -1,8 +1,9 @@
 import { Component, inject, input, output } from '@angular/core';
 // import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { AuthSessionService } from '../../core/services/auth-session.service';
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
@@ -18,8 +19,8 @@ export class StoreHeaderComponent {
   private readonly cart = inject(CartService);
   private readonly wishlist = inject(WishlistService);
   private readonly auth = inject(AuthTokenService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly language = inject(LanguageService);
-  private readonly router = inject(Router);
 
   readonly mobileMenuOpen = input(false);
   readonly openMobileMenu = output<void>();
@@ -67,8 +68,6 @@ export class StoreHeaderComponent {
   }
 
   logout(): void {
-    this.auth.clearSession();
-    this.cart.refresh();
-    void this.router.navigateByUrl('/home');
+    this.authSession.signOut();
   }
 }

@@ -14,6 +14,7 @@ import { BundledJsonTranslateLoader } from './i18n/bundled-json-translate-loader
 import { apiBaseUrlInterceptor } from './core/interceptors/api-base-url.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { unauthorizedInterceptor } from './core/interceptors/unauthorized.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LanguageService } from './core/services/language.service';
 import { TenantService } from './core/services/tenant.service';
@@ -40,7 +41,13 @@ export const appConfig: ApplicationConfig = {
     { provide: APP_ENVIRONMENT, useValue: environment },
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([loadingInterceptor, apiBaseUrlInterceptor, authInterceptor, errorInterceptor]),
+      withInterceptors([
+        loadingInterceptor,
+        apiBaseUrlInterceptor,
+        authInterceptor,
+        unauthorizedInterceptor,
+        errorInterceptor,
+      ]),
     ),
     importProvidersFrom(
       TranslateModule.forRoot({

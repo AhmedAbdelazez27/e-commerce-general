@@ -126,6 +126,7 @@ export interface PublicSearchProductDto {
   finalPrice: number;
   discountPercent?: number | null;
   hasVariants: boolean;
+  createdDate?: string | null;
   availabilityStatus?: string;
   availableStatus?: string;
 }

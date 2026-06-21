@@ -1,21 +1,51 @@
 import { CART_CONFIG } from '../config/cart.config';
-import { CartCouponDefinition } from '../models/cart-view.model';
+import { CartDto } from '../models/cart.model';
+import { EcCouponDto } from '../models/ec-coupon.model';
 import { CartOrderSummaryView } from '../models/cart-view.model';
+import { estimateCouponDiscount } from './coupon-validation.util';
 
-export function findCoupon(code: string): CartCouponDefinition | undefined {
-  const normalized = code.trim().toUpperCase();
-  return CART_CONFIG.coupons.find((c) => c.code === normalized);
+export interface OrderSummaryOptions {
+  discountAmount?: number;
+  deliveryFee?: number;
+}
+
+export function resolveCartDiscountAmount(
+  cart: CartDto | null | undefined,
+  subtotal: number,
+  appliedCoupon?: EcCouponDto | null,
+): number {
+  if (cart) {
+    if (cart.CouponDiscountAmount != null && cart.CouponDiscountAmount > 0) {
+      return cart.CouponDiscountAmount;
+    }
+
+    if (cart.DiscountAmount != null && cart.DiscountAmount > 0) {
+      return cart.DiscountAmount;
+    }
+
+    if (cart.SubTotal != null && cart.Total != null && cart.SubTotal > cart.Total) {
+      return cart.SubTotal - cart.Total;
+    }
+  }
+
+  if (appliedCoupon && subtotal > 0) {
+    return estimateCouponDiscount(appliedCoupon, subtotal);
+  }
+
+  return 0;
 }
 
 export function buildOrderSummary(
   subtotal: number,
   itemCount: number,
-  discountPercent = 0,
+  options: OrderSummaryOptions = {},
 ): CartOrderSummaryView {
-  const discount = discountPercent > 0 ? (subtotal * discountPercent) / 100 : 0;
+  const discount = options.discountAmount ?? 0;
   const afterDiscount = Math.max(0, subtotal - discount);
   const isFreeDelivery = afterDiscount >= CART_CONFIG.freeDeliveryThreshold;
-  const deliveryFee = itemCount > 0 && !isFreeDelivery ? CART_CONFIG.deliveryFee : 0;
+  const deliveryFee =
+    options.deliveryFee ??
+    (itemCount > 0 && !isFreeDelivery ? CART_CONFIG.deliveryFee : 0);
   const total = afterDiscount + deliveryFee;
 
   return {

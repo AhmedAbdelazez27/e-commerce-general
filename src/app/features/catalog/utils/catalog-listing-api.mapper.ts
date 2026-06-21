@@ -20,11 +20,11 @@ export const CATALOG_PAGE_SIZE = 20;
 
 const SORT_BY_MAP: Record<CatalogSortOption, string> = {
   featured: 'featured',
-  'price-asc': 'priceAsc',
-  'price-desc': 'priceDesc',
+  'price-asc': 'price_asc',
+  'price-desc': 'price_desc',
   newest: 'newest',
   rating: 'rating',
-  name: 'name',
+  name: 'name_asc',
 };
 
 function parseNumericIds(ids: string[]): number[] {
@@ -220,7 +220,7 @@ export function mapSearchProductToListingProduct(
       (item.oldPrice != null && item.oldPrice > finalPrice),
     discountPercent: item.discountPercent ?? undefined,
     imageUrl,
-    createdAt: '',
+    createdAt: item.createdDate?.trim() ?? '',
   };
 }
 
@@ -336,6 +336,7 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
     finalPrice,
     discountPercent: readNumberField(o, 'discountPercent', 'DiscountPercent') ?? null,
     hasVariants: readBoolField(o, 'hasVariants', 'HasVariants'),
+    createdDate: readStringField(o, 'createdDate', 'CreatedDate'),
     availabilityStatus: readStringField(o, 'availabilityStatus', 'AvailabilityStatus'),
     availableStatus: readStringField(o, 'availableStatus', 'AvailableStatus'),
   };

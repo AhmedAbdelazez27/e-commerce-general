@@ -30,6 +30,10 @@ export class ProductDetailInfoComponent {
     return this.language.currentLang() === 'ar' ? p.descriptionAr : p.descriptionEn;
   }
 
+  hasDescription(): boolean {
+    return this.description().trim().length > 0;
+  }
+
   shippingText(): string {
     const p = this.product();
     return this.language.currentLang() === 'ar' ? p.shippingInfoAr : p.shippingInfoEn;

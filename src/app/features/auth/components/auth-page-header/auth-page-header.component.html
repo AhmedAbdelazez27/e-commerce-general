@@ -1,0 +1,32 @@
+<header class="auth-page-header">
+  <a class="auth-page-header__logo" [routerLink]="branding.homeRoute">
+    <img [src]="branding.logoSrc" [alt]="branding.logoAltKey | translate" width="160" height="40" />
+  </a>
+
+  <nav class="auth-page-header__nav" [attr.aria-label]="'AUTH.STORE_NAV' | translate">
+    <a class="auth-page-header__link" [routerLink]="branding.homeRoute">{{ 'PAGE.HOME' | translate }}</a>
+    <a class="auth-page-header__link" [routerLink]="header.shopRoute">{{ 'PAGE.SHOP' | translate }}</a>
+    <a class="auth-page-header__link" [routerLink]="header.cartRoute">{{ 'PAGE.CART' | translate }}</a>
+  </nav>
+
+  <div class="auth-page-header__lang" role="group" [attr.aria-label]="'LAYOUT.HEADER.LANGUAGE' | translate">
+    <button
+      type="button"
+      class="btn btn-sm"
+      [class.btn-primary]="currentLang() === 'en'"
+      [class.btn-outline-secondary]="currentLang() !== 'en'"
+      (click)="setLang('en')"
+    >
+      EN
+    </button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      [class.btn-primary]="currentLang() === 'ar'"
+      [class.btn-outline-secondary]="currentLang() !== 'ar'"
+      (click)="setLang('ar')"
+    >
+      ع
+    </button>
+  </div>
+</header>

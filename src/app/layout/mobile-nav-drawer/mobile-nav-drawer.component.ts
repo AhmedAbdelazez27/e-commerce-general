@@ -3,6 +3,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { AuthSessionService } from '../../core/services/auth-session.service';
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
@@ -21,6 +22,7 @@ export class MobileNavDrawerComponent {
   private readonly cart = inject(CartService);
   private readonly wishlist = inject(WishlistService);
   private readonly auth = inject(AuthTokenService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly language = inject(LanguageService);
   private readonly navigation = inject(NavigationService);
   private readonly translate = inject(TranslateService);
@@ -105,9 +107,7 @@ export class MobileNavDrawerComponent {
   }
 
   logout(): void {
-    this.auth.clearSession();
-    this.cart.refresh();
+    this.authSession.signOut();
     this.close();
-    void this.router.navigateByUrl('/home');
   }
 }

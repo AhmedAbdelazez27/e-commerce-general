@@ -16,6 +16,100 @@ import {
   ProductDetailVariantContext,
 } from '../models/product-detail.model';
 
+type JsonRecord = Record<string, unknown>;
+
+function readStringField(o: JsonRecord, ...keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = o[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return undefined;
+}
+
+function readNumberField(o: JsonRecord, ...keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = o[key];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function pickDescription(...values: (string | null | undefined)[]): string {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return '';
+}
+
+/** Normalizes ABP GetProductDetails payload (camelCase or PascalCase). */
+export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDetailsDto | null {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  if (id == null) {
+    return null;
+  }
+
+  const base = raw as PublicProductDetailsDto;
+
+  return {
+    ...base,
+    id,
+    productId: readNumberField(o, 'productId', 'ProductId') ?? base.productId ?? id,
+    slug: readStringField(o, 'slug', 'Slug') ?? base.slug ?? null,
+    sku: readStringField(o, 'sku', 'Sku', 'SKU') ?? base.sku,
+    name: readStringField(o, 'name', 'Name') ?? base.name,
+    nameAr: readStringField(o, 'nameAr', 'NameAr') ?? base.nameAr,
+    nameEn: readStringField(o, 'nameEn', 'NameEn') ?? base.nameEn,
+    shortDescription:
+      readStringField(o, 'shortDescription', 'ShortDescription') ?? base.shortDescription ?? null,
+    shortDescriptionAr:
+      readStringField(o, 'shortDescriptionAr', 'ShortDescriptionAr') ??
+      base.shortDescriptionAr ??
+      null,
+    shortDescriptionEn:
+      readStringField(o, 'shortDescriptionEn', 'ShortDescriptionEn') ??
+      base.shortDescriptionEn ??
+      null,
+    description: readStringField(o, 'description', 'Description') ?? base.description ?? null,
+    descriptionAr: readStringField(o, 'descriptionAr', 'DescriptionAr') ?? base.descriptionAr ?? null,
+    descriptionEn: readStringField(o, 'descriptionEn', 'DescriptionEn') ?? base.descriptionEn ?? null,
+    mainImageUrl:
+      readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl ?? null,
+  };
+}
+
+function resolveProductDescriptions(
+  dto: PublicProductDetailsDto,
+): { descriptionEn: string; descriptionAr: string } {
+  const descriptionEn = pickDescription(
+    dto.descriptionEn,
+    dto.description,
+    dto.shortDescriptionEn,
+    dto.shortDescription,
+  );
+  const descriptionAr = pickDescription(
+    dto.descriptionAr,
+    dto.shortDescriptionAr,
+    dto.descriptionEn,
+    dto.description,
+    dto.shortDescriptionEn,
+    dto.shortDescription,
+  );
+
+  return { descriptionEn, descriptionAr };
+}
+
 function resolveDetailsPrice(dto: PublicProductDetailsDto): number {
   if (dto.price?.finalPrice != null && dto.price.finalPrice > 0) {
     return dto.price.finalPrice;
@@ -157,8 +251,7 @@ export function mapPublicProductDetailsToProductDetail(
   const price = resolveDetailsPrice(dto);
   const compareAtPrice = dto.oldPrice != null && dto.oldPrice > price ? dto.oldPrice : undefined;
   const inStock = dto.availabilityStatus === 'InStock';
-  const descriptionEn = dto.description ?? dto.shortDescription ?? nameEn;
-  const descriptionAr = dto.description ?? dto.shortDescription ?? nameAr;
+  const { descriptionEn, descriptionAr } = resolveProductDescriptions(dto);
 
   const images =
     overrides?.images ??

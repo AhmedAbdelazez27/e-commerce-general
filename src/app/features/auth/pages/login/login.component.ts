@@ -8,17 +8,18 @@ import { finalize } from 'rxjs/operators';
 import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CartService } from '../../../../core/services/cart.service';
-import { AppLang, LanguageService } from '../../../../core/services/language.service';
 import { TenantService } from '../../../../core/services/tenant.service';
+import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
+import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule, AuthPageHeaderComponent],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -29,7 +30,6 @@ export class LoginComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
-  private readonly language = inject(LanguageService);
   private readonly cart = inject(CartService);
   private readonly tenants = inject(TenantService);
 
@@ -41,8 +41,8 @@ export class LoginComponent {
     rememberMe: [true],
   });
 
-  setLang(lang: AppLang): void {
-    void this.language.useLanguage(lang);
+  continueUrl(): string {
+    return resolveAuthContinueUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
   }
 
   submit(): void {

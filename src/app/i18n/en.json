@@ -35,7 +35,10 @@
     "LOGIN_FAILED": "Sign in failed. Check your email and password.",
     "REGISTER_SUCCESS": "Account created successfully",
     "REGISTER_SUCCESS_LOGIN": "Account created. Please sign in.",
-    "REGISTER_FAILED": "Registration failed. Please try again."
+    "REGISTER_FAILED": "Registration failed. Please try again.",
+    "SESSION_EXPIRED": "Your session has expired. Please sign in again.",
+    "CONTINUE_WITHOUT_LOGIN": "Continue without signing in",
+    "STORE_NAV": "Store navigation"
   },
   "COMMON": {
     "REFRESH": "Refresh",
@@ -431,9 +434,14 @@
       "PLACEHOLDER": "Enter coupon code",
       "APPLY": "Apply",
       "REMOVE": "Remove",
-      "INVALID": "This coupon code is not valid.",
-      "WELCOME_APPLIED": "WELCOME applied — 10% off your order.",
-      "SAVE15_APPLIED": "SAVE15 applied — 15% off your order."
+      "NOT_FOUND": "This coupon code is not valid.",
+      "INACTIVE": "This coupon is no longer active.",
+      "NOT_STARTED": "This coupon is not valid yet.",
+      "EXPIRED": "This coupon has expired.",
+      "USAGE_EXCEEDED": "This coupon has reached its usage limit.",
+      "MIN_ORDER": "Minimum order of {{amount}} required for this coupon.",
+      "LOGIN_REQUIRED": "Sign in to apply your coupon code.",
+      "APPLIED": "{{code}} applied — you save {{savings}}."
     },
     "SUMMARY_REGION": "Order summary",
     "SUMMARY_TITLE": "Order summary",
@@ -523,6 +531,7 @@
     "BUY_NOW": "Buy now",
     "SHIPPING_TITLE": "Shipping",
     "RETURNS_TITLE": "Returns",
+    "NO_DESCRIPTION": "Product description is not available.",
     "TAB": {
       "description": "Description",
       "specifications": "Specifications",
