@@ -1,7 +1,27 @@
 // Design system tokens — premium physical-products storefront.
 // Brand colors (--store-*) are set at runtime by StorefrontConfigService.
+// Portal theme (--portal-*) is set at runtime by PortalThemeService (GetPortalConfiguration).
 
 :root {
+  // — Portal theme (GetPortalConfiguration) — runtime via PortalThemeService —
+  --portal-primary: #775a19;
+  --portal-secondary: #4e5f7c;
+  --portal-accent: #d24858;
+  --portal-success: #198754;
+  --portal-danger: #d24858;
+  --portal-warning: #ffc107;
+  --portal-background: #f9f9f7;
+  --portal-text: #1a1a1a;
+  --portal-header-bg: #ffffff;
+  --portal-footer-bg: #775a19;
+  --portal-radius: 0.25rem;
+  --portal-font-family-ar: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --portal-font-family-en: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --portal-font-family: var(--portal-font-family-en);
+  --portal-font-size-base: 16px;
+  --portal-font-size-heading: 30px;
+  --portal-font-size-small: 14px;
+
   // — Brand (overridable via storefront.config.json) —
   --ds-color-primary: var(--store-primary, #775a19);
   --ds-color-primary-soft: #ffdea5;

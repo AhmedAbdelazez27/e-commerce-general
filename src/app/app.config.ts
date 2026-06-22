@@ -19,9 +19,9 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LanguageService } from './core/services/language.service';
 import { TenantService } from './core/services/tenant.service';
 import {
-  initStorefrontConfigFactory,
-  StorefrontConfigService,
-} from './core/storefront-config/storefront-config.service';
+  initPortalConfigFactory,
+  PortalConfigService,
+} from './core/portal-config/portal-config.service';
 import { APP_ENVIRONMENT } from './core/tokens/app-environment.token';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
@@ -65,8 +65,8 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: APP_INITIALIZER,
-      useFactory: initStorefrontConfigFactory,
-      deps: [StorefrontConfigService],
+      useFactory: initPortalConfigFactory,
+      deps: [PortalConfigService],
       multi: true,
     },
     {

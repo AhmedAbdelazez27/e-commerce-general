@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portal CSS Variables — مرجع المصمم</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #1a1a1a;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 12mm;
+    }
+    h1 { font-size: 20pt; margin: 0 0 4mm; color: #775a19; }
+    h2 { font-size: 14pt; margin: 10mm 0 4mm; border-bottom: 2px solid #e5e5e5; padding-bottom: 2mm; }
+    .meta { color: #666; font-size: 9.5pt; margin-bottom: 8mm; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 6mm; font-size: 10pt; }
+    th, td { border: 1px solid #d0d0d0; padding: 6px 8px; text-align: right; vertical-align: top; }
+    th { background: #f4f4f2; font-weight: 600; }
+    code, .var { font-family: Consolas, 'Courier New', monospace; font-size: 9.5pt; background: #f8f8f6; padding: 1px 4px; border-radius: 3px; direction: ltr; display: inline-block; }
+    .example { direction: ltr; text-align: left; }
+    .note { background: #fff9e6; border: 1px solid #ffc107; border-radius: 6px; padding: 8px 12px; margin: 6mm 0; font-size: 10pt; }
+    .usage { background: #f9f9f7; border-radius: 6px; padding: 10px 12px; direction: ltr; text-align: left; font-family: Consolas, monospace; font-size: 9.5pt; white-space: pre-wrap; margin: 4mm 0; }
+    .footer-doc { margin-top: 12mm; font-size: 9pt; color: #888; text-align: center; }
+    .ltr { direction: ltr; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>مرجع متغيرات CSS — Portal Theme</h1>
+  <p class="meta">
+    E-Commerce Storefront · GetPortalConfiguration API<br />
+    للمصمم (CSS/SCSS) — بدون الحاجة لمعرفة TypeScript
+  </p>
+
+  <div class="note">
+    القيم تأتي من الباك إند تلقائياً وتُحقَن على <code>:root</code>. في ملفات SCSS استخدم
+    <code>var(--portal-*)</code> بدلاً من الألوان الثابتة. إذا فشل تحميل الـ API تُستخدم قيم <strong>Default</strong> أدناه.
+  </div>
+
+  <h2>1. الألوان والفونتات — من الـ API</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>حقل الـ API</th>
+        <th>متغير CSS</th>
+        <th>Default</th>
+        <th>مثال من الباك</th>
+        <th>الاستخدام</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ltr">primaryColor</td>
+        <td><span class="var">--portal-primary</span></td>
+        <td class="example">#775a19</td>
+        <td class="example">#b1d822</td>
+        <td>لون رئيسي، hover، links، accent</td>
+      </tr>
+      <tr>
+        <td class="ltr">secondaryColor</td>
+        <td><span class="var">--portal-secondary</span></td>
+        <td class="example">#4e5f7c</td>
+        <td class="example">#ffffff</td>
+        <td>عناصر ثانوية</td>
+      </tr>
+      <tr>
+        <td class="ltr">accentColor</td>
+        <td><span class="var">--portal-accent</span></td>
+        <td class="example">#d24858</td>
+        <td class="example">#ffc107</td>
+        <td>تمييز، badges، تنبيهات</td>
+      </tr>
+      <tr>
+        <td class="ltr">backgroundColor</td>
+        <td><span class="var">--portal-background</span></td>
+        <td class="example">#f9f9f7</td>
+        <td class="example">#ffffff</td>
+        <td>خلفية الصفحة</td>
+      </tr>
+      <tr>
+        <td class="ltr">textColor</td>
+        <td><span class="var">--portal-text</span></td>
+        <td class="example">#1a1a1a</td>
+        <td class="example">#000000</td>
+        <td>لون النص الأساسي</td>
+      </tr>
+      <tr>
+        <td class="ltr">headerColor</td>
+        <td><span class="var">--portal-header-bg</span></td>
+        <td class="example">#ffffff</td>
+        <td class="example">#ffffff</td>
+        <td>خلفية الهيدر / الـ nav</td>
+      </tr>
+      <tr>
+        <td class="ltr">footerColor</td>
+        <td><span class="var">--portal-footer-bg</span></td>
+        <td class="example">#775a19</td>
+        <td class="example">#000000</td>
+        <td>خلفية الفوتر</td>
+      </tr>
+      <tr>
+        <td class="ltr">fontFamilyAr</td>
+        <td><span class="var">--portal-font-family-ar</span></td>
+        <td class="example">Manrope, system-ui, …</td>
+        <td class="example">Cairo</td>
+        <td>فونت الواجهة العربية</td>
+      </tr>
+      <tr>
+        <td class="ltr">fontFamilyEn</td>
+        <td><span class="var">--portal-font-family-en</span></td>
+        <td class="example">Manrope, system-ui, …</td>
+        <td class="example">Roboto</td>
+        <td>فونت الواجهة الإنجليزية</td>
+      </tr>
+      <tr>
+        <td class="ltr">fontSizeBase</td>
+        <td><span class="var">--portal-font-size-base</span></td>
+        <td class="example">16px</td>
+        <td class="example">14px</td>
+        <td>حجم النص العادي</td>
+      </tr>
+      <tr>
+        <td class="ltr">fontSizeHeading</td>
+        <td><span class="var">--portal-font-size-heading</span></td>
+        <td class="example">30px</td>
+        <td class="example">24px</td>
+        <td>حجم العناوين</td>
+      </tr>
+      <tr>
+        <td class="ltr">fontSizeSmall</td>
+        <td><span class="var">--portal-font-size-small</span></td>
+        <td class="example">14px</td>
+        <td class="example">12px</td>
+        <td>نص صغير / captions</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. متغير مشتق (يُحدَّث حسب اللغة)</h2>
+  <table>
+    <thead>
+      <tr><th>متغير CSS</th><th>Default</th><th>الوصف</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="var">--portal-font-family</span></td>
+        <td class="example">var(--portal-font-family-en)</td>
+        <td>الفونت النشط: عربي → fontFamilyAr · إنجليزي → fontFamilyEn</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. متغيرات CSS بدون حقل API (قيم افتراضية ثابتة)</h2>
+  <table>
+    <thead>
+      <tr><th>متغير CSS</th><th>Default</th><th>ملاحظة</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="var">--portal-success</span></td><td class="example">#198754</td><td>نجاح / stock</td></tr>
+      <tr><td><span class="var">--portal-danger</span></td><td class="example">#d24858</td><td>أخطاء / حذف</td></tr>
+      <tr><td><span class="var">--portal-warning</span></td><td class="example">#ffc107</td><td>تحذيرات</td></tr>
+      <tr><td><span class="var">--portal-radius</span></td><td class="example">0.25rem</td><td>border-radius عام</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. أمثلة استخدام SCSS</h2>
+  <div class="usage">.nav-item {
+  color: var(--portal-text);
+}
+.nav-item:hover {
+  color: var(--portal-primary);
+  border-bottom-color: var(--portal-primary);
+}
+.store-footer {
+  background: var(--portal-footer-bg);
+}</div>
+
+  <h2>5. حقول الـ API خارج نطاق CSS</h2>
+  <p style="font-size: 10pt; color: #444;">
+    logoUrl · darkLogoUrl · mobileLogoUrl · faviconUrl · portalName · contactInfo · socialMedia · seo · show* flags · mobileSettings
+    — يتعامل معها فريق التطوير (HTML/TS)، ليست متغيرات CSS.
+  </p>
+
+  <p class="footer-doc">
+    ملف التعريف في المشروع: src/styles/design-system/_tokens.scss<br />
+    E-Commerce Store · Portal CSS Variables Guide
+  </p>
+</body>
+</html>

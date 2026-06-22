@@ -11,6 +11,10 @@ export class ApiEndpoints {
     categories: '/Categories/GetTree',
   };
 
+  static readonly EcPublicSettings = {
+    getPortalConfiguration: '/api/services/app/EcPublicSettings/GetPortalConfiguration',
+  };
+
   static readonly EcPublicCatalog = {
     categoriesTree: '/api/services/app/EcPublicCatalog/GetCategoriesTree',
     homeSliders: '/api/services/app/EcPublicCatalog/GetHomeSliders',

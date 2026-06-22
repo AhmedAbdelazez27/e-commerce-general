@@ -20,7 +20,7 @@
           }
         </ul>
         <div class="store-footer__social">
-          @for (social of config.socialLinks; track social.id) {
+          @for (social of socialLinks(); track social.id) {
             <a
               class="store-footer__social-link"
               [href]="social.href"
@@ -42,8 +42,68 @@
               <a class="store-footer__link" [routerLink]="link.route">{{ link.labelKey | translate }}</a>
             </li>
           }
+          @if (enableChatSupport() && chatSupportHref(); as chatHref) {
+            <li>
+              <a
+                class="store-footer__link"
+                [href]="chatHref"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ 'LAYOUT.FOOTER.CHAT_SUPPORT' | translate }}
+              </a>
+            </li>
+          }
         </ul>
       </div>
+
+      @if (hasContactInfo()) {
+        <div>
+          <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CONTACT' | translate }}</h2>
+          <ul class="store-footer__links store-footer__contact">
+            @if (contactInfo().email) {
+              <li>
+                <a class="store-footer__link" [href]="'mailto:' + contactInfo().email">
+                  {{ contactInfo().email }}
+                </a>
+              </li>
+            }
+            @if (contactInfo().supportEmail && contactInfo().supportEmail !== contactInfo().email) {
+              <li>
+                <a class="store-footer__link" [href]="'mailto:' + contactInfo().supportEmail">
+                  {{ contactInfo().supportEmail }}
+                </a>
+              </li>
+            }
+            @if (contactInfo().phone) {
+              <li>
+                <a class="store-footer__link" [href]="'tel:' + contactInfo().phone">
+                  {{ contactInfo().phone }}
+                </a>
+              </li>
+            }
+            @if (contactInfo().supportPhone && contactInfo().supportPhone !== contactInfo().phone) {
+              <li>
+                <a class="store-footer__link" [href]="'tel:' + contactInfo().supportPhone">
+                  {{ contactInfo().supportPhone }}
+                </a>
+              </li>
+            }
+            @if (contactInfo().whatsApp) {
+              <li>
+                <a
+                  class="store-footer__link"
+                  [href]="'https://wa.me/' + contactInfo().whatsApp.replace(/\D/g, '')"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'LAYOUT.FOOTER.WHATSAPP' | translate }}: {{ contactInfo().whatsApp }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
 
       @if (config.newsletter.enabled) {
         <div>

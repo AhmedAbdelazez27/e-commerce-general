@@ -3,6 +3,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { PortalConfigService } from '../../core/portal-config/portal-config.service';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
@@ -27,6 +28,7 @@ export class MobileNavDrawerComponent {
   private readonly navigation = inject(NavigationService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly portal = inject(PortalConfigService);
 
   readonly open = input(false);
   readonly closed = output<void>();
@@ -43,6 +45,14 @@ export class MobileNavDrawerComponent {
 
   close(): void {
     this.closed.emit();
+  }
+
+  logoSrc(): string {
+    return this.portal.mobileLogoSrc();
+  }
+
+  logoAlt(): string {
+    return this.portal.portalName(this.language.currentLang());
   }
 
   onBackdropClick(): void {

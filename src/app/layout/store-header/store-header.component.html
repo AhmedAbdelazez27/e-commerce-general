@@ -13,7 +13,7 @@
 
     <div class="store-header__main">
       <a class="store-header__logo" [routerLink]="branding.homeRoute">
-        <img [src]="branding.logoSrc" [alt]="branding.logoAltKey | translate" width="160" height="40" />
+        <img [src]="logoSrc()" [alt]="logoAlt()" width="160" height="40" />
       </a>
 
     <!-- Navbar search — disabled for now; re-enable when product search is ready

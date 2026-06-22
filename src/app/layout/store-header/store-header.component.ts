@@ -3,6 +3,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { PortalConfigService } from '../../core/portal-config/portal-config.service';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
@@ -21,6 +22,7 @@ export class StoreHeaderComponent {
   private readonly auth = inject(AuthTokenService);
   private readonly authSession = inject(AuthSessionService);
   private readonly language = inject(LanguageService);
+  private readonly portal = inject(PortalConfigService);
 
   readonly mobileMenuOpen = input(false);
   readonly openMobileMenu = output<void>();
@@ -32,6 +34,14 @@ export class StoreHeaderComponent {
   readonly itemCount = this.cart.itemCount;
   readonly wishlistCount = this.wishlist.itemCount;
   readonly currentLang = () => this.language.currentLang();
+
+  logoSrc(): string {
+    return this.portal.logoSrc();
+  }
+
+  logoAlt(): string {
+    return this.portal.portalName(this.language.currentLang());
+  }
 
   // searchQuery = '';
 

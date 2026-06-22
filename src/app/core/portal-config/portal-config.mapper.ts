@@ -1,0 +1,125 @@
+import { SocialLink } from '../../layout/models/layout.model';
+import {
+  PortalConfigurationDto,
+  PortalSocialMedia,
+} from './portal-configuration.model';
+
+const SWAGGER_PLACEHOLDER = 'string';
+
+/** Ignore empty or Swagger placeholder values from the API. */
+export function pickPortalString(value: string | undefined | null): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === SWAGGER_PLACEHOLDER) {
+    return undefined;
+  }
+  return trimmed;
+}
+
+export function pickPortalNumber(value: number | undefined | null): number | undefined {
+  if (value == null || Number.isNaN(value) || value <= 0) {
+    return undefined;
+  }
+  return value;
+}
+
+/** Normalize API DTO before merging with defaults. */
+export function normalizePortalConfigurationDto(
+  dto: PortalConfigurationDto,
+): PortalConfigurationDto {
+  return {
+    ...dto,
+    portalNameAr: pickPortalString(dto.portalNameAr),
+    portalNameEn: pickPortalString(dto.portalNameEn),
+    portalDescriptionAr: pickPortalString(dto.portalDescriptionAr),
+    portalDescriptionEn: pickPortalString(dto.portalDescriptionEn),
+    logoUrl: pickPortalString(dto.logoUrl),
+    darkLogoUrl: pickPortalString(dto.darkLogoUrl),
+    mobileLogoUrl: pickPortalString(dto.mobileLogoUrl),
+    faviconUrl: pickPortalString(dto.faviconUrl),
+    splashScreenImageUrl: pickPortalString(dto.splashScreenImageUrl),
+    primaryColor: pickPortalString(dto.primaryColor),
+    secondaryColor: pickPortalString(dto.secondaryColor),
+    accentColor: pickPortalString(dto.accentColor),
+    backgroundColor: pickPortalString(dto.backgroundColor),
+    textColor: pickPortalString(dto.textColor),
+    headerColor: pickPortalString(dto.headerColor),
+    footerColor: pickPortalString(dto.footerColor),
+    fontFamilyAr: pickPortalString(dto.fontFamilyAr),
+    fontFamilyEn: pickPortalString(dto.fontFamilyEn),
+    fontSizeBase: pickPortalNumber(dto.fontSizeBase),
+    fontSizeHeading: pickPortalNumber(dto.fontSizeHeading),
+    fontSizeSmall: pickPortalNumber(dto.fontSizeSmall),
+    featuredProductsCount: pickPortalNumber(dto.featuredProductsCount),
+    bestSellerCount: pickPortalNumber(dto.bestSellerCount),
+    newArrivalCount: pickPortalNumber(dto.newArrivalCount),
+    contactInfo: dto.contactInfo
+      ? {
+          email: pickPortalString(dto.contactInfo.email),
+          phone: pickPortalString(dto.contactInfo.phone),
+          whatsApp: pickPortalString(dto.contactInfo.whatsApp),
+          supportEmail: pickPortalString(dto.contactInfo.supportEmail),
+          supportPhone: pickPortalString(dto.contactInfo.supportPhone),
+        }
+      : undefined,
+    socialMedia: dto.socialMedia ? normalizeSocialMedia(dto.socialMedia) : undefined,
+    seo: dto.seo
+      ? {
+          seoTitleAr: pickPortalString(dto.seo.seoTitleAr),
+          seoTitleEn: pickPortalString(dto.seo.seoTitleEn),
+          seoDescriptionAr: pickPortalString(dto.seo.seoDescriptionAr),
+          seoDescriptionEn: pickPortalString(dto.seo.seoDescriptionEn),
+          seoKeywords: pickPortalString(dto.seo.seoKeywords),
+        }
+      : undefined,
+    mobileSettings: dto.mobileSettings ?? undefined,
+  };
+}
+
+function normalizeSocialMedia(social: Partial<PortalSocialMedia>): Partial<PortalSocialMedia> {
+  return {
+    facebookUrl: pickPortalString(social.facebookUrl),
+    instagramUrl: pickPortalString(social.instagramUrl),
+    twitterUrl: pickPortalString(social.twitterUrl),
+    tikTokUrl: pickPortalString(social.tikTokUrl),
+    linkedInUrl: pickPortalString(social.linkedInUrl),
+    youTubeUrl: pickPortalString(social.youTubeUrl),
+    snapchatUrl: pickPortalString(social.snapchatUrl),
+  };
+}
+
+const SOCIAL_NETWORKS: {
+  id: string;
+  key: keyof PortalSocialMedia;
+  labelKey: string;
+  iconClass: string;
+}[] = [
+  { id: 'instagram', key: 'instagramUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_INSTAGRAM', iconClass: 'fa-brands fa-instagram' },
+  { id: 'facebook', key: 'facebookUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_FACEBOOK', iconClass: 'fa-brands fa-facebook-f' },
+  { id: 'tiktok', key: 'tikTokUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_TIKTOK', iconClass: 'fa-brands fa-tiktok' },
+  { id: 'twitter', key: 'twitterUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_TWITTER', iconClass: 'fa-brands fa-x-twitter' },
+  { id: 'linkedin', key: 'linkedInUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_LINKEDIN', iconClass: 'fa-brands fa-linkedin-in' },
+  { id: 'youtube', key: 'youTubeUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_YOUTUBE', iconClass: 'fa-brands fa-youtube' },
+  { id: 'snapchat', key: 'snapchatUrl', labelKey: 'LAYOUT.FOOTER.SOCIAL_SNAPCHAT', iconClass: 'fa-brands fa-snapchat' },
+];
+
+/** Build footer social links from API URLs, falling back to static layout links. */
+export function resolvePortalSocialLinks(
+  social: PortalSocialMedia,
+  fallback: SocialLink[],
+): SocialLink[] {
+  const fromApi: SocialLink[] = [];
+
+  for (const network of SOCIAL_NETWORKS) {
+    const href = pickPortalString(social[network.key]);
+    if (href) {
+      fromApi.push({
+        id: network.id,
+        labelKey: network.labelKey,
+        href,
+        iconClass: network.iconClass,
+      });
+    }
+  }
+
+  return fromApi.length > 0 ? fromApi : fallback;
+}

@@ -1,0 +1,92 @@
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
+import { LAYOUT_CONFIG } from '../../layout/config/layout.config';
+import { SocialLink } from '../../layout/models/layout.model';
+import { AppLang } from '../services/language.service';
+import { StorefrontConfigService } from '../storefront-config/storefront-config.service';
+import { DEFAULT_PORTAL_CONFIG } from './default-portal-config';
+import { EcPublicSettingsApiService } from './ec-public-settings-api.service';
+import { mergePortalConfig } from './portal-config-merge.util';
+import {
+  normalizePortalConfigurationDto,
+  resolvePortalSocialLinks,
+} from './portal-config.mapper';
+import { PortalConfiguration } from './portal-configuration.model';
+import { PortalThemeService } from '../portal-theme/portal-theme.service';
+
+/** Loads branding content from GetPortalConfiguration (logo, social, contact). */
+@Injectable({ providedIn: 'root' })
+export class PortalConfigService {
+  private readonly api = inject(EcPublicSettingsApiService);
+  private readonly storefrontConfig = inject(StorefrontConfigService);
+  private readonly portalTheme = inject(PortalThemeService);
+
+  private readonly configSignal = signal<PortalConfiguration>(structuredClone(DEFAULT_PORTAL_CONFIG));
+  private readonly loadedSignal = signal(false);
+  private readonly loadErrorSignal = signal(false);
+
+  readonly config = this.configSignal.asReadonly();
+  readonly loaded = this.loadedSignal.asReadonly();
+  readonly loadError = this.loadErrorSignal.asReadonly();
+
+  readonly socialLinks = computed<SocialLink[]>(() =>
+    resolvePortalSocialLinks(this.configSignal().socialMedia, LAYOUT_CONFIG.footer.socialLinks),
+  );
+
+  readonly hasContactInfo = computed(() => {
+    const { email, phone, whatsApp, supportEmail, supportPhone } = this.configSignal().contactInfo;
+    return !!(email || phone || whatsApp || supportEmail || supportPhone);
+  });
+
+  readonly chatSupportHref = computed(() => {
+    const { whatsApp, supportPhone, phone } = this.configSignal().contactInfo;
+    const raw = whatsApp || supportPhone || phone;
+    if (!raw) {
+      return null;
+    }
+    const digits = raw.replace(/\D/g, '');
+    return digits ? `https://wa.me/${digits}` : null;
+  });
+
+  readonly enableChatSupport = computed(() => this.configSignal().mobileSettings.enableChatSupport);
+
+  async load(): Promise<void> {
+    await this.storefrontConfig.load();
+
+    try {
+      const remote = await firstValueFrom(this.api.getPortalConfiguration());
+      if (remote) {
+        this.configSignal.set(
+          mergePortalConfig(DEFAULT_PORTAL_CONFIG, normalizePortalConfigurationDto(remote)),
+        );
+        this.portalTheme.apply(this.configSignal());
+        this.loadErrorSignal.set(false);
+      } else {
+        this.loadErrorSignal.set(true);
+      }
+    } catch {
+      this.loadErrorSignal.set(true);
+    } finally {
+      this.loadedSignal.set(true);
+    }
+  }
+
+  portalName(lang: AppLang): string {
+    const config = this.configSignal();
+    return lang === 'ar' ? config.portalNameAr : config.portalNameEn;
+  }
+
+  logoSrc(): string {
+    return this.configSignal().logoUrl || LAYOUT_CONFIG.branding.logoSrc;
+  }
+
+  mobileLogoSrc(): string {
+    const config = this.configSignal();
+    return config.mobileLogoUrl || config.logoUrl || LAYOUT_CONFIG.branding.logoSrc;
+  }
+}
+
+export function initPortalConfigFactory(svc: PortalConfigService): () => Promise<void> {
+  return () => svc.load();
+}
