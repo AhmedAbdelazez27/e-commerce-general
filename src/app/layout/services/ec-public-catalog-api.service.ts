@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../core/constants/api-endpoints';
+import { PublicCurrencyDto } from '../../core/models/currency.model';
 import { resultArrayFromAbpEnvelope } from '../../core/utils/api-envelope.util';
 import {
   PublicBrandDto,
@@ -36,6 +37,13 @@ export class EcPublicCatalogApiService {
     const params = new HttpParams().set('lang', lang);
     return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.homeSliders, { params }).pipe(
       map((res) => resultArrayFromAbpEnvelope<PublicHomeSliderDto>(res)),
+      catchError(() => of([])),
+    );
+  }
+
+  getCurrencies(): Observable<PublicCurrencyDto[]> {
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.getCurrencies).pipe(
+      map((res) => resultArrayFromAbpEnvelope<PublicCurrencyDto>(res)),
       catchError(() => of([])),
     );
   }

@@ -203,6 +203,62 @@ html[dir='rtl'] {
   }
 }
 
+.store-header__currency-group {
+  display: flex;
+  align-items: center;
+  padding: var(--ds-space-2);
+  border-radius: var(--ds-radius-md);
+  transition: background-color var(--ds-transition-fast);
+
+  &:hover {
+    background: var(--ds-color-background-subtle);
+  }
+}
+
+.store-header__currency-select {
+  display: none;
+  min-width: 6.5rem;
+  max-width: 11rem;
+  padding: var(--ds-space-1) var(--ds-space-5) var(--ds-space-1) var(--ds-space-2);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--portal-background) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M2 4l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.45rem center;
+  background-size: 0.65rem;
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--portal-text);
+  cursor: pointer;
+  appearance: none;
+
+  &:hover,
+  &:focus {
+    border-color: var(--portal-primary);
+    outline: none;
+  }
+
+  &--drawer {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    font-size: var(--ds-font-size-sm);
+    padding: var(--ds-space-2) var(--ds-space-5) var(--ds-space-2) var(--ds-space-3);
+  }
+}
+
+.store-header__currency-field {
+  display: block;
+  width: 100%;
+}
+
+.store-header__currency-field-label {
+  display: block;
+  margin-bottom: var(--ds-space-1);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--portal-text-muted);
+}
+
 .store-header__search--inline {
   display: none;
 }
@@ -620,8 +676,9 @@ html[dir='rtl'] .store-drawer {
   padding: var(--ds-space-4);
 }
 
-.store-drawer .store-header__lang {
-  display: inline-flex;
+.store-drawer .store-header__lang,
+.store-drawer .store-header__currency-select--drawer {
+  display: block;
 }
 
 .store-drawer__search {
@@ -877,7 +934,8 @@ body.store-drawer-open {
   }
 
   .store-header__action-label,
-  .store-header__lang {
+  .store-header__lang,
+  .store-header__currency-select {
     display: none;
   }
 }
@@ -896,8 +954,9 @@ body.store-drawer-open {
     display: block;
   }
 
-  .store-header__lang {
-    display: inline-flex;
+  .store-header__lang,
+  .store-header__currency-select:not(.store-header__currency-select--drawer) {
+    display: inline-block;
   }
 }
 
@@ -936,8 +995,9 @@ body.store-drawer-open {
     display: block;
   }
 
-  .store-header__lang {
-    display: inline-flex;
+  .store-header__lang,
+  .store-header__currency-select:not(.store-header__currency-select--drawer) {
+    display: inline-block;
   }
 
   .store-nav--desktop {

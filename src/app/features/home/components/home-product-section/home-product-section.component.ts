@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { StorefrontProduct } from '../../../../shared/models/storefront-product.
 import { mapStorefrontProductToCardData } from '../../../../shared/utils/product-card.util';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { CurrencyService } from '../../../../core/services/currency.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { CatalogListingApiService } from '../../../catalog/services/catalog-listing-api.service';
 import { navigateToProductDetail } from '../../../catalog/utils/catalog-navigation.util';
@@ -31,7 +33,9 @@ export class HomeProductSectionComponent implements OnInit {
   private readonly wishlistActions = inject(WishlistActionsService);
   private readonly listingApi = inject(CatalogListingApiService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly section = input.required<HomeProductSectionConfig>();
   readonly products = input<StorefrontProduct[]>([]);
@@ -51,7 +55,10 @@ export class HomeProductSectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFromApi();
-    this.translate.onLangChange.subscribe(() => this.loadFromApi());
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadFromApi());
+    this.currency.currencyChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadFromApi());
   }
 
   onProductClick(product: ProductCardData): void {
@@ -78,7 +85,12 @@ export class HomeProductSectionComponent implements OnInit {
 
     this.loading.set(true);
     const lang = this.language.apiCulture();
-    const body = buildHomeProductSearchRequest(filter, lang, this.section().maxItems);
+    const body = buildHomeProductSearchRequest(
+      filter,
+      lang,
+      this.currency.selection(),
+      this.section().maxItems,
+    );
 
     this.listingApi
       .searchProducts(body)

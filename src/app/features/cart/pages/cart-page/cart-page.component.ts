@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { CartService } from '../../../../core/services/cart.service';
 
 import { CartCouponComponent } from '../../components/cart-coupon/cart-coupon.component';
 import { CartEmptyStateComponent } from '../../components/cart-empty-state/cart-empty-state.component';
@@ -22,7 +24,13 @@ import { CartPageFacade } from '../../services/cart-page.facade';
 })
 export class CartPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly cart = inject(CartService);
+  private readonly translate = inject(TranslateService);
   readonly facade = inject(CartPageFacade);
+
+  currencyLabel(): string {
+    return this.cart.displayCurrencyCode() || this.translate.instant('PRODUCT_CARD.CURRENCY');
+  }
 
   ngOnInit(): void {
     this.facade.initPage();

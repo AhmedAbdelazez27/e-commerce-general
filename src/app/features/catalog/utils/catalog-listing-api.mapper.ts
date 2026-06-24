@@ -1,4 +1,5 @@
 import { AppLang } from '../../../core/services/language.service';
+import type { CurrencySelection } from '../../../core/models/currency.model';
 import {
   CatalogBrandOption,
   CatalogCategoryOption,
@@ -100,8 +101,13 @@ export function buildGetProductFiltersParams(
   filters: CatalogListingFilters,
   searchQuery: string,
   lang: string,
+  currency: CurrencySelection,
 ): GetProductFiltersParams {
-  return buildSharedListingParams(filters, searchQuery, lang);
+  return {
+    ...buildSharedListingParams(filters, searchQuery, lang),
+    currencyId: currency.id,
+    currencyCode: currency.code,
+  };
 }
 
 /** Builds a sparse body — no zero/null defaults that would widen the search. */
@@ -111,6 +117,7 @@ export function buildSearchProductsRequest(
   lang: string,
   sort: CatalogSortOption,
   skipCount: number,
+  currency: CurrencySelection,
   maxResultCount = CATALOG_PAGE_SIZE,
 ): SearchProductsRequest {
   const shared = buildSharedListingParams(filters, searchQuery, lang);
@@ -143,6 +150,9 @@ export function buildSearchProductsRequest(
   if (shared.specificationFilters?.length) {
     request.specificationFilters = shared.specificationFilters;
   }
+
+  request.currencyId = currency.id;
+  request.currencyCode = currency.code;
 
   return request;
 }
@@ -221,6 +231,7 @@ export function mapSearchProductToListingProduct(
     discountPercent: item.discountPercent ?? undefined,
     imageUrl,
     createdAt: item.createdDate?.trim() ?? '',
+    currencyCode: item.price?.currencyCode,
   };
 }
 
@@ -282,6 +293,16 @@ function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto 
       readNumberField(o, 'couponDiscountAmount', 'CouponDiscountAmount') ?? 0,
     taxAmount: readNumberField(o, 'taxAmount', 'TaxAmount') ?? 0,
     finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
+    currencyId: readNumberField(o, 'currencyId', 'CurrencyId'),
+    currencyCode: readStringField(o, 'currencyCode', 'CurrencyCode'),
+    currencyName: readStringField(o, 'currencyName', 'CurrencyName'),
+    currencyNameAr: readStringField(o, 'currencyNameAr', 'CurrencyNameAr'),
+    currencyNameEn: readStringField(o, 'currencyNameEn', 'CurrencyNameEn'),
+    currencyRate: readNumberField(o, 'currencyRate', 'CurrencyRate'),
+    localCurrencyId: readNumberField(o, 'localCurrencyId', 'LocalCurrencyId'),
+    localCurrencyCode: readStringField(o, 'localCurrencyCode', 'LocalCurrencyCode'),
+    basePriceLocal: readNumberField(o, 'basePriceLocal', 'BasePriceLocal'),
+    finalPriceLocal: readNumberField(o, 'finalPriceLocal', 'FinalPriceLocal'),
   };
 }
 

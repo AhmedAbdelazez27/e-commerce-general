@@ -4,6 +4,8 @@ export interface GetProductDetailsParams {
   productId?: number;
   slug?: string;
   lang?: string;
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 export interface PublicProductImageDto {

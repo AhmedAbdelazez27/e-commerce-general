@@ -96,6 +96,12 @@ export class CatalogListingApiService {
     if (input.maxPrice != null) {
       params = params.set('MaxPrice', String(input.maxPrice));
     }
+    if (input.currencyId != null && input.currencyId > 0) {
+      params = params.set('CurrencyId', String(input.currencyId));
+    }
+    if (input.currencyCode?.trim()) {
+      params = params.set('CurrencyCode', input.currencyCode.trim());
+    }
     params = this.appendSpecificationFilterParams(params, input.specificationFilters ?? []);
 
     return params;

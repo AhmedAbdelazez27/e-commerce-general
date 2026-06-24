@@ -1,9 +1,11 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { CurrencyService } from '../../../../core/services/currency.service';
 import { CatalogListingApiService } from '../../../catalog/services/catalog-listing-api.service';
 import { HomeCuratedCollection, HomeCuratedCollectionsConfig } from '../../models/home.model';
 import { mapFeaturedProductsToCuratedCollections } from '../../utils/home-curated.mapper';
@@ -17,7 +19,9 @@ import { buildHomeProductSearchRequest } from '../../utils/home-product-search.u
 export class HomeCuratedCollectionsComponent implements OnInit {
   private readonly listingApi = inject(CatalogListingApiService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly config = input.required<HomeCuratedCollectionsConfig>();
 
@@ -36,7 +40,10 @@ export class HomeCuratedCollectionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFromApi();
-    this.translate.onLangChange.subscribe(() => this.loadFromApi());
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadFromApi());
+    this.currency.currencyChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadFromApi());
   }
 
   eyebrow(item: HomeCuratedCollection): string {
@@ -87,7 +94,12 @@ export class HomeCuratedCollectionsComponent implements OnInit {
 
     this.loading.set(true);
     const lang = this.language.apiCulture();
-    const body = buildHomeProductSearchRequest(filter, lang, this.config().maxItems);
+    const body = buildHomeProductSearchRequest(
+      filter,
+      lang,
+      this.currency.selection(),
+      this.config().maxItems,
+    );
 
     this.listingApi
       .searchProducts(body)

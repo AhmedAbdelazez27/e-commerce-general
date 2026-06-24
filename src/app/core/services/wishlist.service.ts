@@ -2,8 +2,11 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { map } from 'rxjs/operators';
 
 import { AuthTokenService } from './auth-token.service';
+import { CurrencyService } from './currency.service';
 import { EcWishlistApiService } from '../../features/wishlist/services/ec-wishlist-api.service';
+import type { EcWishlistContextRequest, EcWishlistDto } from '../../features/wishlist/models/ec-wishlist.model';
 import { ProductCardData } from '../../shared/models/product-card.model';
+import { mapStorefrontProductToCardData } from '../../shared/utils/product-card.util';
 
 const WISHLIST_STORAGE_KEY = 'ecommerce_wishlist';
 
@@ -11,18 +14,40 @@ const WISHLIST_STORAGE_KEY = 'ecommerce_wishlist';
 export class WishlistService {
   private readonly auth = inject(AuthTokenService);
   private readonly api = inject(EcWishlistApiService);
+  private readonly currency = inject(CurrencyService);
   private readonly itemsSignal = signal<ProductCardData[]>([]);
+  private readonly wishlistMetaSignal = signal<Pick<EcWishlistDto, 'CurrencyCode'> | null>(null);
+
+  constructor() {
+    this.currency.currencyChanged$.subscribe(() => {
+      if (this.auth.isLoggedIn()) {
+        this.refresh();
+      }
+    });
+  }
 
   readonly items = this.itemsSignal.asReadonly();
   readonly itemCount = computed(() => this.itemsSignal().length);
 
+  displayCurrencyCode(): string {
+    const fromWishlist = this.wishlistMetaSignal()?.CurrencyCode?.trim();
+    if (fromWishlist) {
+      return fromWishlist;
+    }
+    return this.currency.displayCode();
+  }
+
   refresh(): void {
-    const customerId = this.resolveCustomerId();
-    if (customerId > 0) {
-      this.api.getWishlist(customerId).subscribe((items) => this.itemsSignal.set(items));
+    const context = this.buildEcWishlistContext();
+    if (context.customerId > 0) {
+      this.api.getWishlist(context).subscribe((dto) => {
+        this.wishlistMetaSignal.set(dto.CurrencyCode ? { CurrencyCode: dto.CurrencyCode } : null);
+        this.itemsSignal.set(this.mapWishlistItems(dto));
+      });
       return;
     }
 
+    this.wishlistMetaSignal.set(null);
     this.itemsSignal.set(this.readFromStorage());
   }
 
@@ -54,21 +79,21 @@ export class WishlistService {
   }
 
   toggle(product: ProductCardData): 'added' | 'removed' {
-    const customerId = this.resolveCustomerId();
+    const context = this.buildEcWishlistContext();
     const variantId = product.productVariantId ?? 0;
 
-    if (customerId > 0 && variantId > 0) {
+    if (context.customerId > 0 && variantId > 0) {
       const exists = this.isInWishlistVariant(variantId);
       if (exists) {
         this.api
-          .remove(variantId, customerId)
+          .remove(variantId, context)
           .pipe(map((ok) => (ok ? 'removed' : 'removed' as const)))
           .subscribe(() => this.removeVariant(variantId));
         return 'removed';
       }
 
       this.api
-        .saveProduct({ productVariantId: variantId, customerId })
+        .saveProduct({ productVariantId: variantId, ...context })
         .subscribe((ok) => {
           if (ok) {
             this.persist([...this.itemsSignal(), product]);
@@ -87,10 +112,10 @@ export class WishlistService {
   }
 
   moveToCart(product: ProductCardData): void {
-    const customerId = this.resolveCustomerId();
+    const context = this.buildEcWishlistContext();
     const variantId = product.productVariantId ?? 0;
-    if (customerId > 0 && variantId > 0) {
-      this.api.moveToCart({ productVariantId: variantId, customerId }).subscribe((ok) => {
+    if (context.customerId > 0 && variantId > 0) {
+      this.api.moveToCart({ productVariantId: variantId, ...context }).subscribe((ok) => {
         if (ok) {
           this.removeVariant(variantId);
         }
@@ -99,6 +124,25 @@ export class WishlistService {
     }
 
     this.remove(product.id);
+  }
+
+  private mapWishlistItems(dto: EcWishlistDto): ProductCardData[] {
+    const wishlistCurrency = dto.CurrencyCode?.trim();
+    return dto.Items.map((item) =>
+      mapStorefrontProductToCardData(item, {
+        currency: item.currencyCode ?? wishlistCurrency,
+      }),
+    );
+  }
+
+  private buildEcWishlistContext(): EcWishlistContextRequest {
+    const selection = this.currency.selection();
+
+    return {
+      customerId: this.resolveCustomerId(),
+      currencyId: selection.id > 0 ? selection.id : undefined,
+      currencyCode: selection.code || undefined,
+    };
   }
 
   private persist(items: ProductCardData[]): void {

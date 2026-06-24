@@ -25,6 +25,8 @@ export interface EcCartContextRequest {
   /** Empty string for logged-in carts; guest carts use a stable UUID string. */
   sessionId: string;
   couponCode: string | null;
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 /** Body for `EcCart/AddToCart` (camelCase per API contract). */
@@ -47,6 +49,10 @@ export interface CartDto {
   CouponCode?: string;
   CouponDiscountAmount?: number;
   DiscountAmount?: number;
+  CurrencyId?: number;
+  CurrencyCode?: string;
+  CurrencyNameAr?: string;
+  CurrencyNameEn?: string;
 }
 
 /** Product snapshot stored with guest cart lines (no API). */

@@ -18,4 +18,5 @@ export interface StorefrontProduct {
   isAvailable?: boolean;
   isNew?: boolean;
   isBestSeller?: boolean;
+  currencyCode?: string;
 }

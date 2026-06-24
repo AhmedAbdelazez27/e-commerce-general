@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
@@ -27,9 +27,14 @@ export class WishlistPageComponent implements OnInit {
   private readonly wishlist = inject(WishlistService);
   private readonly wishlistActions = inject(WishlistActionsService);
   private readonly cartActions = inject(CartActionsService);
+  private readonly translate = inject(TranslateService);
 
   readonly items = this.wishlist.items;
   readonly itemCount = this.wishlist.itemCount;
+
+  currencyLabel(): string {
+    return this.wishlist.displayCurrencyCode() || this.translate.instant('PRODUCT_CARD.CURRENCY');
+  }
 
   readonly breadcrumbs: CatalogBreadcrumbItem[] = [
     { labelKey: 'PAGE.HOME', route: '/home' },
@@ -59,5 +64,12 @@ export class WishlistPageComponent implements OnInit {
 
   onQuickView(product: ProductCardData): void {
     navigateToProductDetail(this.router, product);
+  }
+
+  productForCard(product: ProductCardData): ProductCardData {
+    if (product.currency?.trim()) {
+      return product;
+    }
+    return { ...product, currency: this.currencyLabel() };
   }
 }

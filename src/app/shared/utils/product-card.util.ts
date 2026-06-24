@@ -52,7 +52,7 @@ export function mapStorefrontProductToCardData(
     isAvailable: product.isAvailable ?? true,
     isNew: product.isNew ?? false,
     isBestSeller: product.isBestSeller ?? false,
-    currency: options?.currency,
+    currency: product.currencyCode ?? options?.currency,
   };
 }
 

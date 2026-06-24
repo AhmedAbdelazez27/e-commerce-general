@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
+import { CurrencyService } from '../../../../core/services/currency.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { ProductShareMenuComponent } from '../../../../shared/components/product-share-menu/product-share-menu.component';
@@ -50,6 +51,7 @@ export class ProductDetailPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly productDetailService = inject(ProductDetailService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
   private readonly cartActions = inject(CartActionsService);
   private readonly auth = inject(AuthTokenService);
@@ -82,7 +84,10 @@ export class ProductDetailPageComponent implements OnInit {
     return Math.max(1, p.stockQuantity);
   });
 
-  readonly currencyLabel = computed(() => this.translate.instant('PRODUCT_CARD.CURRENCY'));
+  readonly currencyLabel = computed(() => {
+    const code = this.currency.displayCode();
+    return code || this.translate.instant('PRODUCT_CARD.CURRENCY');
+  });
 
   readonly shareUrl = computed(() => {
     const p = this.product();
@@ -115,6 +120,13 @@ export class ProductDetailPageComponent implements OnInit {
     });
 
     this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const ref = this.currentRef();
+      if (ref.productId || ref.slug) {
+        this.loadProduct(ref);
+      }
+    });
+
+    this.currency.currencyChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       const ref = this.currentRef();
       if (ref.productId || ref.slug) {
         this.loadProduct(ref);

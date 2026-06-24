@@ -195,7 +195,9 @@
       "WISHLIST": "Wishlist",
       "CART": "Cart",
       "ORDERS": "My orders",
-      "LANGUAGE": "Language"
+      "LANGUAGE": "Language",
+      "CURRENCY": "Currency",
+      "CURRENCY_CHANGED": "Currency changed — prices may differ"
     },
     "NAV": {
       "REGION": "Shop by category",

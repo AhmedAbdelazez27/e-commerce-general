@@ -1,4 +1,5 @@
 import type { AppLang } from '../../../core/services/language.service';
+import type { CurrencySelection } from '../../../core/models/currency.model';
 import { mapSearchProductToListingProduct } from '../../catalog/utils/catalog-listing-api.mapper';
 import {
   PublicSearchProductDto,
@@ -18,6 +19,7 @@ export function resolveHomeProductSectionLimit(maxItems?: number): number {
 export function buildHomeProductSearchRequest(
   filter: HomeProductSectionSearchFilter,
   lang: string,
+  currency: CurrencySelection,
   maxResultCount?: number,
 ): SearchProductsRequest {
   const request: SearchProductsRequest = {
@@ -26,6 +28,8 @@ export function buildHomeProductSearchRequest(
     includeChildrenCategories: true,
     skipCount: 0,
     maxResultCount: resolveHomeProductSectionLimit(maxResultCount),
+    currencyId: currency.id,
+    currencyCode: currency.code,
   };
 
   if (filter.isNewArrival) {
@@ -61,5 +65,6 @@ export function mapSearchProductToStorefrontProduct(
     isAvailable: listing.isAvailable,
     isNew: listing.isNew,
     isBestSeller: listing.isBestSeller,
+    currencyCode: listing.currencyCode,
   };
 }

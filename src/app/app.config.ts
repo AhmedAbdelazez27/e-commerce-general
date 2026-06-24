@@ -18,6 +18,7 @@ import { unauthorizedInterceptor } from './core/interceptors/unauthorized.interc
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { tenantInterceptor } from './core/interceptors/tenant.interceptor';
 import { LanguageService } from './core/services/language.service';
+import { CurrencyService } from './core/services/currency.service';
 import { TenantService } from './core/services/tenant.service';
 import { PortalConfigService } from './core/portal-config/portal-config.service';
 import { APP_ENVIRONMENT } from './core/tokens/app-environment.token';
@@ -27,11 +28,13 @@ import { environment } from '../environments/environment';
 function initAppFactory(
   tenants: TenantService,
   lang: LanguageService,
+  currency: CurrencyService,
   portal: PortalConfigService,
 ) {
   return async () => {
     await tenants.initFromHost();
     await lang.initFromStorage();
+    await currency.init();
     await portal.load();
   };
 }
@@ -69,7 +72,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: initAppFactory,
-      deps: [TenantService, LanguageService, PortalConfigService],
+      deps: [TenantService, LanguageService, CurrencyService, PortalConfigService],
       multi: true,
     },
   ],

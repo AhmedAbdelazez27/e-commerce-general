@@ -45,6 +45,10 @@ export function normalizeCartDto(raw: unknown): CartDto {
         'TotalDiscount',
         'totalDiscount',
       ) ?? undefined,
+    CurrencyId: readNumber(o, 'CurrencyId', 'currencyId'),
+    CurrencyCode: readString(o, 'CurrencyCode', 'currencyCode'),
+    CurrencyNameAr: readString(o, 'CurrencyNameAr', 'currencyNameAr'),
+    CurrencyNameEn: readString(o, 'CurrencyNameEn', 'currencyNameEn'),
   };
 }
 

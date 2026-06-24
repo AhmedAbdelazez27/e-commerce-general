@@ -1,28 +1,35 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 // import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
+import type { PublicCurrencyDto } from '../../core/models/currency.model';
 import { PortalConfigService } from '../../core/portal-config/portal-config.service';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { AuthTokenService } from '../../core/services/auth-token.service';
 import { CartService } from '../../core/services/cart.service';
+import { CurrencyService } from '../../core/services/currency.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
+import { currencyFromSelectValue, currencyOptionLabel } from '../utils/currency-selector.util';
 
 @Component({
   selector: 'app-store-header',
   imports: [RouterLink, TranslateModule],
   templateUrl: './store-header.component.html',
 })
-export class StoreHeaderComponent {
+export class StoreHeaderComponent implements OnInit {
   private readonly cart = inject(CartService);
   private readonly wishlist = inject(WishlistService);
   private readonly auth = inject(AuthTokenService);
   private readonly authSession = inject(AuthSessionService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly portal = inject(PortalConfigService);
+  private readonly translate = inject(TranslateService);
+  private readonly toastr = inject(ToastrService);
 
   readonly mobileMenuOpen = input(false);
   readonly openMobileMenu = output<void>();
@@ -33,7 +40,13 @@ export class StoreHeaderComponent {
 
   readonly itemCount = this.cart.itemCount;
   readonly wishlistCount = this.wishlist.itemCount;
+  readonly currencies = this.currency.currencies;
+  readonly selectedCurrency = this.currency.selectedCurrency;
   readonly currentLang = () => this.language.currentLang();
+
+  ngOnInit(): void {
+    void this.currency.ensureLoaded();
+  }
 
   logoSrc(): string {
     return this.portal.logoSrc();
@@ -65,6 +78,28 @@ export class StoreHeaderComponent {
 
   setLang(lang: AppLang): void {
     void this.language.useLanguage(lang);
+  }
+
+  setCurrency(currency: PublicCurrencyDto): void {
+    this.currency.setCurrency(currency);
+    this.toastr.info(this.translate.instant('LAYOUT.HEADER.CURRENCY_CHANGED'));
+  }
+
+  onCurrencySelect(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    const next = currencyFromSelectValue(this.currencies(), value);
+    if (!next || next.id === this.selectedCurrency()?.id) {
+      return;
+    }
+    this.setCurrency(next);
+  }
+
+  currencyLabel(currency: PublicCurrencyDto): string {
+    return currencyOptionLabel(currency, this.language.currentLang());
+  }
+
+  showCurrencySelector(): boolean {
+    return this.currencies().length > 1;
   }
 
   // submitSearch(event: Event): void {

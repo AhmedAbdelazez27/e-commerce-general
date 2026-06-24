@@ -195,7 +195,9 @@
       "WISHLIST": "المفضلة",
       "CART": "السلة",
       "ORDERS": "طلباتي",
-      "LANGUAGE": "اللغة"
+      "LANGUAGE": "اللغة",
+      "CURRENCY": "العملة",
+      "CURRENCY_CHANGED": "تم تغيير العملة — قد تختلف الأسعار"
     },
     "NAV": {
       "REGION": "تسوق حسب الفئة",

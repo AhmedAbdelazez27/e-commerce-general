@@ -3,6 +3,7 @@ import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
 import { ProductDetailLoadRef } from '../models/catalog-public-product.model';
 import { ProductDetail, ProductDetailVariant, ProductDetailVariantContext } from '../models/product-detail.model';
@@ -31,11 +32,20 @@ const EMPTY_RESULT: ProductDetailResult = { product: null, variants: [], related
 export class ProductDetailService {
   private readonly api = inject(ProductDetailApiService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
 
   load(ref: ProductDetailLoadRef): Observable<ProductDetailResult> {
     const lang = this.language.apiCulture();
+    const currency = this.currency.selection();
 
-    return this.api.getProductDetails({ ...ref, lang }).pipe(
+    return this.api
+      .getProductDetails({
+        ...ref,
+        lang,
+        currencyId: currency.id,
+        currencyCode: currency.code,
+      })
+      .pipe(
       switchMap((details) => {
         if (!details) {
           return of(EMPTY_RESULT);
@@ -50,10 +60,10 @@ export class ProductDetailService {
         const nameAr = details.nameAr?.trim() || details.name;
 
         return forkJoin({
-          variants: this.api.getProductVariants(productId, lang),
+          variants: this.api.getProductVariants(productId, lang, currency),
           images: this.api.getProductImages(productId),
           specifications: this.api.getProductSpecifications(productId, lang),
-          related: this.api.getRelatedProducts(productId, lang),
+          related: this.api.getRelatedProducts(productId, lang, currency),
         }).pipe(
           switchMap(({ variants, images, specifications, related }) => {
             const variantList = mapProductVariants(variants);
@@ -67,6 +77,7 @@ export class ProductDetailService {
               defaultVariant,
               productImages,
               lang,
+              currency,
               1,
             ).pipe(
               map((context) => {
@@ -104,6 +115,7 @@ export class ProductDetailService {
     quantity: number,
   ): Observable<ProductDetail> {
     const lang = this.language.apiCulture();
+    const currency = this.currency.selection();
 
     return this.buildVariantContext(
       product.id,
@@ -111,6 +123,7 @@ export class ProductDetailService {
       variant,
       product.images,
       lang,
+      currency,
       quantity,
       true,
     ).pipe(
@@ -134,7 +147,9 @@ export class ProductDetailService {
       return of(product);
     }
 
-    return this.api.getFinalPrice(variantId, this.language.apiCulture(), quantity).pipe(
+    return this.api
+      .getFinalPrice(variantId, this.language.apiCulture(), this.currency.selection(), quantity)
+      .pipe(
       map((finalPrice) => (finalPrice ? applyFinalPriceToProduct(product, finalPrice) : product)),
       catchError(() => of(product)),
     );
@@ -146,6 +161,7 @@ export class ProductDetailService {
     variant: ProductDetailVariant | null,
     fallbackImages: ProductDetail['images'],
     lang: string,
+    currency: ReturnType<CurrencyService['selection']>,
     quantity: number,
     preferVariantImages = false,
   ): Observable<ProductDetailVariantContext> {
@@ -167,7 +183,7 @@ export class ProductDetailService {
 
     const price$ =
       productVariantId != null
-        ? this.api.getFinalPrice(productVariantId, lang, quantity)
+        ? this.api.getFinalPrice(productVariantId, lang, currency, quantity)
         : of(null);
 
     return forkJoin({

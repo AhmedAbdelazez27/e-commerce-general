@@ -32,6 +32,7 @@ export class ApiEndpoints {
     getFaqs: '/api/services/app/EcPublicCatalog/GetFaqs',
     searchFaqs: '/api/services/app/EcPublicCatalog/SearchFaqs',
     rateFaq: '/api/services/app/EcPublicCatalog/RateFaq',
+    getCurrencies: '/api/services/app/EcPublicCatalog/GetCurrencies',
   };
 
   static readonly EcCoupons = {

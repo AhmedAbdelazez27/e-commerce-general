@@ -20,6 +20,8 @@ export interface GetProductFiltersParams {
   includeChildrenCategories?: boolean;
   lang?: string;
   specificationFilters?: PublicSpecificationFilterDto[];
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 /** POST SearchProducts request body — only send fields the user actually selected. */
@@ -39,6 +41,8 @@ export interface SearchProductsRequest {
   specificationFilters?: PublicSpecificationFilterDto[];
   skipCount?: number;
   maxResultCount?: number;
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 export interface PublicFilterCategoryDto {
@@ -99,6 +103,16 @@ export interface PublicSearchProductPriceDto {
   couponDiscountAmount: number;
   taxAmount: number;
   finalPrice: number;
+  currencyId?: number;
+  currencyCode?: string;
+  currencyName?: string;
+  currencyNameAr?: string;
+  currencyNameEn?: string;
+  currencyRate?: number;
+  localCurrencyId?: number;
+  localCurrencyCode?: string;
+  basePriceLocal?: number;
+  finalPriceLocal?: number;
 }
 
 export interface PublicSearchProductDto {

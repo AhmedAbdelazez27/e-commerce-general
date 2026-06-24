@@ -1,6 +1,36 @@
-import type { EcWishlistItem } from '../models/ec-wishlist.model';
+import type { EcWishlistDto, EcWishlistItem } from '../models/ec-wishlist.model';
 
 type JsonRecord = Record<string, unknown>;
+
+/** Normalizes EcWishlist / ABP wishlist payloads (camelCase or PascalCase) into `EcWishlistDto`. */
+export function normalizeWishlistDto(raw: unknown): EcWishlistDto {
+  if (raw == null) {
+    return { Items: [] };
+  }
+
+  if (Array.isArray(raw)) {
+    return { Items: normalizeWishlistItems(raw) };
+  }
+
+  if (typeof raw !== 'object') {
+    return { Items: [] };
+  }
+
+  const o = raw as JsonRecord;
+  const itemsRaw = o['Items'] ?? o['items'];
+  const items = Array.isArray(itemsRaw) ? normalizeWishlistItems(itemsRaw) : [];
+
+  return {
+    CurrencyId: readNumber(o, 'CurrencyId', 'currencyId'),
+    CurrencyCode: readString(o, 'CurrencyCode', 'currencyCode'),
+    CurrencyNameAr: readString(o, 'CurrencyNameAr', 'currencyNameAr'),
+    CurrencyNameEn: readString(o, 'CurrencyNameEn', 'currencyNameEn'),
+    CurrencyRate: readNumber(o, 'CurrencyRate', 'currencyRate'),
+    LocalCurrencyId: readNumber(o, 'LocalCurrencyId', 'localCurrencyId'),
+    LocalCurrencyCode: readString(o, 'LocalCurrencyCode', 'localCurrencyCode'),
+    Items: items,
+  };
+}
 
 export function normalizeWishlistItems(raw: unknown): EcWishlistItem[] {
   if (!Array.isArray(raw)) {
@@ -17,13 +47,14 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   }
 
   const o = raw as JsonRecord;
+  const price = normalizeWishlistItemPrice(o['price'] ?? o['Price']);
 
-  const productVariantId = readNumber(o, 'productVariantId', 'ProductVariantId') ?? 0;
+  const productVariantId =
+    readNumber(o, 'productVariantId', 'ProductVariantId') ?? price?.productVariantId ?? 0;
   if (productVariantId <= 0) {
     return null;
   }
 
-  // Many backends return either productId or variantId as "id".
   const id =
     readNumber(o, 'productId', 'ProductId') ??
     readNumber(o, 'id', 'Id') ??
@@ -38,8 +69,11 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     readString(o, 'titleAr', 'TitleAr') ??
     nameEn;
 
-  const price =
-    readNumber(o, 'price', 'Price', 'finalPrice', 'FinalPrice', 'unitPrice', 'UnitPrice') ?? 0;
+  const priceValue =
+    readNumber(o, 'finalPrice', 'FinalPrice') ??
+    price?.finalPrice ??
+    readNumber(o, 'price', 'Price', 'unitPrice', 'UnitPrice') ??
+    0;
   const compareAtPrice = readNumber(o, 'compareAtPrice', 'CompareAtPrice', 'oldPrice', 'OldPrice');
 
   const imageUrl =
@@ -56,13 +90,16 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   const isNew = readBool(o, 'isNew', 'IsNew');
   const isBestSeller = readBool(o, 'isBestSeller', 'IsBestSeller');
 
+  const currencyCode =
+    readString(o, 'currencyCode', 'CurrencyCode') ?? price?.currencyCode ?? undefined;
+
   return {
     id,
     productVariantId,
     slug,
     nameEn: nameEn || String(id),
     nameAr: nameAr || nameEn || String(id),
-    price,
+    price: priceValue,
     compareAtPrice: compareAtPrice ?? undefined,
     imageUrl,
     brandName,
@@ -72,6 +109,24 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     isAvailable: isAvailable ?? undefined,
     isNew: isNew ?? undefined,
     isBestSeller: isBestSeller ?? undefined,
+    currencyCode,
+  };
+}
+
+function normalizeWishlistItemPrice(raw: unknown): {
+  productVariantId?: number;
+  finalPrice?: number;
+  currencyCode?: string;
+} | undefined {
+  if (raw == null || typeof raw !== 'object') {
+    return undefined;
+  }
+
+  const o = raw as JsonRecord;
+  return {
+    productVariantId: readNumber(o, 'productVariantId', 'ProductVariantId'),
+    finalPrice: readNumber(o, 'finalPrice', 'FinalPrice'),
+    currencyCode: readString(o, 'currencyCode', 'CurrencyCode'),
   };
 }
 
@@ -104,4 +159,3 @@ function readBool(o: JsonRecord, ...keys: string[]): boolean | undefined {
   }
   return undefined;
 }
-

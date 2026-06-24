@@ -82,6 +82,7 @@ export interface CatalogListingProduct {
   discountPercent?: number;
   imageUrl?: string;
   createdAt: string;
+  currencyCode?: string;
 }
 
 export interface CatalogBreadcrumbItem {

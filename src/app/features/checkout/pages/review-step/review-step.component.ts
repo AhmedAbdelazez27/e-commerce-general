@@ -70,6 +70,10 @@ export class ReviewStepComponent implements OnInit {
     return found ? formatAddressLines(found).join(' · ') : '';
   });
 
+  currencyLabel(): string {
+    return this.cart.displayCurrencyCode() || this.translate.instant('PRODUCT_CARD.CURRENCY');
+  }
+
   ngOnInit(): void {
     this.cart.refresh(this.checkoutState.couponCode() || null);
     const customerId = this.resolveCustomerId();

@@ -3,6 +3,7 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { ProductShareMenuComponent } from '../product-share-menu/product-share-menu.component';
 import { ProductCardData } from '../../models/product-card.model';
@@ -23,6 +24,7 @@ import {
 })
 export class ProductCardComponent {
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
   private readonly wishlist = inject(WishlistService);
 
@@ -44,9 +46,17 @@ export class ProductCardComponent {
   readonly showRating = computed(
     () => this.product().rating != null || (this.product().reviewsCount ?? 0) > 0,
   );
-  readonly currencyLabel = computed(
-    () => this.product().currency ?? this.translate.instant('PRODUCT_CARD.CURRENCY'),
-  );
+  readonly currencyLabel = computed(() => {
+    const fromProduct = this.product().currency?.trim();
+    if (fromProduct) {
+      return fromProduct;
+    }
+    const selected = this.currency.displayCode();
+    if (selected) {
+      return selected;
+    }
+    return this.translate.instant('PRODUCT_CARD.CURRENCY');
+  });
   readonly inWishlist = computed(() => {
     this.wishlist.items();
     const product = this.product();

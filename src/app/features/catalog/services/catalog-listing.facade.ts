@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { PublicCategoryDto } from '../../../layout/models/catalog-public.model';
 import { EcPublicCatalogApiService } from '../../../layout/services/ec-public-catalog-api.service';
 import {
@@ -44,7 +45,13 @@ export class CatalogListingFacade {
   private readonly listingApi = inject(CatalogListingApiService);
   private readonly catalogApi = inject(EcPublicCatalogApiService);
   private readonly language = inject(LanguageService);
+  private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
+
+  constructor() {
+    this.currency.currencyChanged$.subscribe(() => this.reloadCatalog());
+    this.translate.onLangChange.subscribe(() => this.reloadCatalog());
+  }
 
   private readonly categoryLookup = signal<Map<string, PublicCategoryDto>>(new Map());
   private readonly products = signal<ReturnType<typeof mapSearchProductsToListingProducts>>([]);
@@ -159,10 +166,6 @@ export class CatalogListingFacade {
     return items;
   });
 
-  constructor() {
-    this.translate.onLangChange.subscribe(() => this.reloadCatalog());
-  }
-
   handleRouteQueryChange(): void {
     if (this.navigatingFromFacade || !this.initialized()) {
       return;
@@ -216,14 +219,16 @@ export class CatalogListingFacade {
     }
 
     const lang = this.language.apiCulture();
+    const currency = this.currency.selection();
     const filters = this.filters();
-    const filterParams = buildGetProductFiltersParams(filters, this.searchQuery(), lang);
+    const filterParams = buildGetProductFiltersParams(filters, this.searchQuery(), lang, currency);
     const searchBody = buildSearchProductsRequest(
       filters,
       this.searchQuery(),
       lang,
       this.sort(),
       this.skipCount(),
+      currency,
       CATALOG_PAGE_SIZE,
     );
 

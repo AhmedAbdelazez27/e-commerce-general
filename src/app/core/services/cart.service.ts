@@ -4,6 +4,7 @@ import { catchError, concatMap, last, map, switchMap, tap } from 'rxjs/operators
 import { TranslateService } from '@ngx-translate/core';
 
 import { AuthTokenService } from './auth-token.service';
+import { CurrencyService } from './currency.service';
 import { CartApiService } from '../../features/cart/services/cart-api.service';
 import type { CartDto, EcCartContextRequest, GuestCartProductMeta } from '../../features/cart/models/cart.model';
 import {
@@ -20,12 +21,21 @@ import { ToastService } from './toast.service';
 export class CartService {
   private readonly cartApi = inject(CartApiService);
   private readonly auth = inject(AuthTokenService);
+  private readonly currency = inject(CurrencyService);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
 
   private readonly cartSignal = signal<CartDto | null>(null);
   private readonly loadingSignal = signal(false);
   private activeCouponCode: string | null = null;
+
+  constructor() {
+    this.currency.currencyChanged$.subscribe(() => {
+      if (this.auth.isLoggedIn()) {
+        this.refresh();
+      }
+    });
+  }
 
   readonly cart = this.cartSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
@@ -36,6 +46,14 @@ export class CartService {
     }
     return 0;
   });
+
+  displayCurrencyCode(): string {
+    const fromCart = this.cartSignal()?.CurrencyCode?.trim();
+    if (fromCart) {
+      return fromCart;
+    }
+    return this.currency.displayCode();
+  }
 
   refresh(couponCode?: string | null): void {
     if (couponCode !== undefined) {
@@ -349,11 +367,14 @@ export class CartService {
           ? couponCode.trim()
           : null
         : this.activeCouponCode;
+    const selection = this.currency.selection();
 
     return {
       customerId: this.resolveCustomerId(),
       sessionId: '',
       couponCode: code,
+      currencyId: selection.id > 0 ? selection.id : undefined,
+      currencyCode: selection.code || undefined,
     };
   }
 

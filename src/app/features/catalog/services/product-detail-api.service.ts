@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
+import type { CurrencySelection } from '../../../core/models/currency.model';
+import { appendCurrencyToHttpParams } from '../../../core/utils/currency-http-params.util';
 import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
 import {
   GetProductDetailsParams,
@@ -31,6 +33,12 @@ export class ProductDetailApiService {
     if (params.slug?.trim()) {
       httpParams = httpParams.set('Slug', params.slug.trim());
     }
+    if (params.currencyId != null && params.currencyId > 0 && params.currencyCode?.trim()) {
+      httpParams = appendCurrencyToHttpParams(httpParams, {
+        id: params.currencyId,
+        code: params.currencyCode.trim(),
+      });
+    }
 
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.productDetails, { params: httpParams })
@@ -43,8 +51,13 @@ export class ProductDetailApiService {
       );
   }
 
-  getProductVariants(productId: number, lang: string): Observable<PublicProductVariantDto[]> {
-    const params = new HttpParams().set('productId', String(productId)).set('lang', lang);
+  getProductVariants(
+    productId: number,
+    lang: string,
+    currency: CurrencySelection,
+  ): Observable<PublicProductVariantDto[]> {
+    let params = new HttpParams().set('productId', String(productId)).set('lang', lang);
+    params = appendCurrencyToHttpParams(params, currency);
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.productVariants, { params })
       .pipe(
@@ -93,12 +106,14 @@ export class ProductDetailApiService {
   getRelatedProducts(
     productId: number,
     lang: string,
+    currency: CurrencySelection,
     maxResultCount = 8,
   ): Observable<PublicRelatedProductDto[]> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('productId', String(productId))
       .set('lang', lang)
       .set('maxResultCount', String(maxResultCount > 0 ? maxResultCount : 8));
+    params = appendCurrencyToHttpParams(params, currency);
 
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.relatedProducts, { params })
@@ -111,6 +126,7 @@ export class ProductDetailApiService {
   getFinalPrice(
     productVariantId: number,
     lang: string,
+    currency: CurrencySelection,
     quantity = 1,
     couponCode?: string,
   ): Observable<PublicFinalPriceDto | null> {
@@ -121,6 +137,7 @@ export class ProductDetailApiService {
     if (couponCode?.trim()) {
       params = params.set('CouponCode', couponCode.trim());
     }
+    params = appendCurrencyToHttpParams(params, currency);
 
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.finalPrice, { params })
