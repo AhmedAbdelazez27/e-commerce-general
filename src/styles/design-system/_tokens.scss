@@ -7,14 +7,14 @@
   --portal-primary: #114d7d;
   --portal-secondary: #4e5f7c;
   --portal-accent: #1b6fec;
-  --portal-success: #20965f;
-  --portal-danger: #ff8f9c;
-  --portal-warning: #f3bc16;
-  --portal-background: #f9f9f7;
-  --portal-text: #1a1a1a;
+  --portal-success: #78ce7c; // static — not from GetPortalConfiguration
+  --portal-danger: #ff8f9c; // static — not from GetPortalConfiguration
+  --portal-warning: #f3bc16; // static — not from GetPortalConfiguration
+  --portal-background: #fff; // الاقسام , sectionBackgroundColor
+  --portal-text: #1a1a1a; 
   --portal-header-bg: #ffffff;
   --portal-footer-bg: #f9f9f7;
-  --portal-body-bg: #f9f9f7;
+  --portal-body-bg: #f9f9f7; // الرئيسية  , mainBackgroundColor
   --portal-radius: 0.25rem;
   --portal-font-family-ar: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --portal-font-family-en: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -30,7 +30,7 @@
   --ds-color-on-primary-soft: #261900;
   --ds-color-secondary: var(--portal-secondary, #4e5f7c);
   --ds-color-accent: var(--portal-accent, #1b6fec);
-  --ds-color-success: var(--portal-success, #20965f);
+  --ds-color-success: var(--portal-success, #78ce7c);
   --ds-color-danger: var(--portal-danger, #ff8f9c);
   --ds-color-warning: var(--portal-warning, #ffc107);
   --ds-color-rating: #e8a317;
@@ -48,9 +48,9 @@
   --ds-color-text-link-hover: color-mix(in srgb, var(--portal-primary) 75%, #000);
 
   // — Surfaces & borders —
-  --ds-color-background: var(--store-background, #f9f9f7);
+  --ds-color-background: var(--portal-background, #fff);
   --ds-color-background-subtle: #f4f4f2;
-  --ds-color-background-elevated: #ffffff;
+  --ds-color-background-elevated: var(--portal-background, #fff);
   --ds-color-background-inverse: var(--portal-primary);
   --ds-color-border: #e5e5e5;
   --ds-color-border-strong: #d0d0d0;

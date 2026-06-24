@@ -4,7 +4,7 @@ export const DEFAULT_STOREFRONT_CONFIG: StorefrontConfig = {
   theme: {
     primaryColor: 'var(--portal-primary)',
     secondaryColor: 'var(--portal-secondary)',
-    accentColor: 'var(--portal-danger)',
+    accentColor: 'var(--portal-accent)',
     successColor: 'var(--portal-success)',
     dangerColor: 'var(--portal-danger)',
     warningColor: 'var(--portal-warning)',

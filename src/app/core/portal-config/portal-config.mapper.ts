@@ -41,6 +41,8 @@ export function normalizePortalConfigurationDto(
     secondaryColor: pickPortalString(dto.secondaryColor),
     accentColor: pickPortalString(dto.accentColor),
     backgroundColor: pickPortalString(dto.backgroundColor),
+    sectionBackgroundColor: pickPortalString(dto.sectionBackgroundColor),
+    mainBackgroundColor: pickPortalString(dto.mainBackgroundColor),
     textColor: pickPortalString(dto.textColor),
     headerColor: pickPortalString(dto.headerColor),
     footerColor: pickPortalString(dto.footerColor),
@@ -52,6 +54,8 @@ export function normalizePortalConfigurationDto(
     featuredProductsCount: pickPortalNumber(dto.featuredProductsCount),
     bestSellerCount: pickPortalNumber(dto.bestSellerCount),
     newArrivalCount: pickPortalNumber(dto.newArrivalCount),
+    addressAr: pickPortalString(dto.addressAr),
+    addressEn: pickPortalString(dto.addressEn),
     contactInfo: dto.contactInfo
       ? {
           email: pickPortalString(dto.contactInfo.email),
@@ -59,6 +63,8 @@ export function normalizePortalConfigurationDto(
           whatsApp: pickPortalString(dto.contactInfo.whatsApp),
           supportEmail: pickPortalString(dto.contactInfo.supportEmail),
           supportPhone: pickPortalString(dto.contactInfo.supportPhone),
+          addressAr: pickPortalString(dto.contactInfo.addressAr) ?? pickPortalString(dto.addressAr),
+          addressEn: pickPortalString(dto.contactInfo.addressEn) ?? pickPortalString(dto.addressEn),
         }
       : undefined,
     socialMedia: dto.socialMedia ? normalizeSocialMedia(dto.socialMedia) : undefined,

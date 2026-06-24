@@ -758,6 +758,11 @@ body.store-drawer-open {
   }
 }
 
+.store-footer__address {
+  cursor: default;
+  text-decoration: none;
+}
+
 .store-footer__social {
   display: flex;
   gap: var(--ds-space-3);

@@ -17,11 +17,10 @@ export function applyPortalThemeToDocument(theme: PortalThemeTokens, lang: AppLa
   root.style.setProperty('--portal-primary', theme.primaryColor);
   root.style.setProperty('--portal-secondary', theme.secondaryColor);
   root.style.setProperty('--portal-accent', theme.accentColor);
-  root.style.setProperty('--portal-success', theme.successColor);
-  root.style.setProperty('--portal-danger', theme.dangerColor);
-  root.style.setProperty('--portal-warning', theme.warningColor);
+  // --portal-success / --portal-danger / --portal-warning: static in _tokens.scss (not from API)
   root.style.setProperty('--portal-radius', theme.borderRadius);
   root.style.setProperty('--portal-background', theme.backgroundColor);
+  root.style.setProperty('--portal-body-bg', theme.bodyBackgroundColor);
   root.style.setProperty('--portal-text', theme.textColor);
   root.style.setProperty('--portal-header-bg', theme.headerColor);
   root.style.setProperty('--portal-footer-bg', theme.footerColor);

@@ -1,10 +1,8 @@
 import { HOME_BRANDS_MAX_ITEMS } from '../../features/home/utils/home-brand.mapper';
 import { HOME_PRODUCT_SECTION_MAX_ITEMS } from '../../features/home/utils/home-product-search.util';
-import { DEFAULT_STOREFRONT_CONFIG } from '../storefront-config/default-storefront-config';
+import { PORTAL_THEME_COLOR_DEFAULTS } from '../portal-theme/portal-theme.defaults';
 import { LAYOUT_CONFIG } from '../../layout/config/layout.config';
 import { PortalConfiguration } from './portal-configuration.model';
-
-const theme = DEFAULT_STOREFRONT_CONFIG.theme;
 
 /** Defaults aligned with static layout/home config and storefront theme. */
 export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
@@ -17,15 +15,17 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
   mobileLogoUrl: LAYOUT_CONFIG.branding.logoSrc,
   faviconUrl: '',
   splashScreenImageUrl: '',
-  primaryColor: theme.primaryColor,
-  secondaryColor: theme.secondaryColor,
-  accentColor: theme.accentColor,
-  backgroundColor: theme.backgroundColor ?? 'var(--portal-background)',
-  textColor: '#1a1a1a',
-  headerColor: 'var(--portal-background)',
-  footerColor: theme.primaryColor,
-  fontFamilyAr: theme.fontFamily,
-  fontFamilyEn: theme.fontFamily,
+  primaryColor: PORTAL_THEME_COLOR_DEFAULTS.primary,
+  secondaryColor: PORTAL_THEME_COLOR_DEFAULTS.secondary,
+  accentColor: PORTAL_THEME_COLOR_DEFAULTS.accent,
+  backgroundColor: PORTAL_THEME_COLOR_DEFAULTS.mainBackground,
+  sectionBackgroundColor: PORTAL_THEME_COLOR_DEFAULTS.sectionBackground,
+  mainBackgroundColor: PORTAL_THEME_COLOR_DEFAULTS.mainBackground,
+  textColor: PORTAL_THEME_COLOR_DEFAULTS.text,
+  headerColor: PORTAL_THEME_COLOR_DEFAULTS.header,
+  footerColor: PORTAL_THEME_COLOR_DEFAULTS.footer,
+  fontFamilyAr: 'Manrope, system-ui, -apple-system, "Segoe UI", sans-serif',
+  fontFamilyEn: 'Manrope, system-ui, -apple-system, "Segoe UI", sans-serif',
   fontSizeBase: 16,
   fontSizeHeading: 30,
   fontSizeSmall: 14,
@@ -37,12 +37,16 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
   featuredProductsCount: 3,
   bestSellerCount: HOME_PRODUCT_SECTION_MAX_ITEMS,
   newArrivalCount: HOME_PRODUCT_SECTION_MAX_ITEMS,
+  addressAr: '',
+  addressEn: '',
   contactInfo: {
     email: '',
     phone: '',
     whatsApp: '',
     supportEmail: '',
     supportPhone: '',
+    addressAr: '',
+    addressEn: '',
   },
   socialMedia: {
     facebookUrl: '',

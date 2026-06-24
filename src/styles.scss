@@ -257,6 +257,14 @@ main {
     padding: 24px;
 }
 
+.store-footer__contact .store-footer__link {
+    color: var(--portal-accent);
+
+    &:hover {
+        color: var(--portal-primary);
+    }
+}
+
 .store-footer__trust-item {
     padding: 24px 0;
     background-color: var(--portal-accent);
@@ -1135,7 +1143,7 @@ app-profile-page {
 
 .product-card__badge--new {
     background: var(--portal-success)!important;
-    color: var(--portal-secondary) !important;
+    color: var(--portal-text) !important;
 }
 
 // — FAQ page (app-faq-page) — dynamic portal theme vars —

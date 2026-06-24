@@ -61,6 +61,11 @@
         <div>
           <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CONTACT' | translate }}</h2>
           <ul class="store-footer__links store-footer__contact">
+            @if (contactAddress()) {
+              <li>
+                <span class="store-footer__link store-footer__address">{{ contactAddress() }}</span>
+              </li>
+            }
             @if (contactInfo().email) {
               <li>
                 <a class="store-footer__link" [href]="'mailto:' + contactInfo().email">

@@ -1,28 +1,44 @@
 import { DEFAULT_STOREFRONT_CONFIG } from '../storefront-config/default-storefront-config';
 import { PortalConfiguration } from '../portal-config/portal-configuration.model';
+import { PORTAL_THEME_COLOR_DEFAULTS } from './portal-theme.defaults';
 import { PortalThemeTokens } from './portal-theme.model';
 
 const storefrontTheme = DEFAULT_STOREFRONT_CONFIG.theme;
 
-/** Map portal configuration to theme tokens, keeping storefront defaults for non-API fields. */
+function resolveColor(value: string | undefined | null, fallback: string): string {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed.startsWith('var(--')) {
+    return fallback;
+  }
+  return trimmed;
+}
+
+/** Map portal configuration to theme tokens (API-driven colors only). */
 export function mapPortalConfigurationToTheme(config: PortalConfiguration): PortalThemeTokens {
   return {
-    primaryColor: config.primaryColor || storefrontTheme.primaryColor,
-    secondaryColor: config.secondaryColor || storefrontTheme.secondaryColor,
-    accentColor: config.accentColor || storefrontTheme.accentColor,
-    successColor: storefrontTheme.successColor,
-    dangerColor: storefrontTheme.dangerColor,
-    warningColor: storefrontTheme.warningColor,
-    backgroundColor: config.backgroundColor || storefrontTheme.backgroundColor || 'var(--portal-background)',
-    textColor: config.textColor || '#1a1a1a',
-    headerColor: config.headerColor || 'var(--portal-background)',
-    footerColor: config.footerColor || config.primaryColor || storefrontTheme.primaryColor,
-    fontFamilyAr: config.fontFamilyAr || storefrontTheme.fontFamily,
-    fontFamilyEn: config.fontFamilyEn || storefrontTheme.fontFamily,
+    primaryColor: resolveColor(config.primaryColor, PORTAL_THEME_COLOR_DEFAULTS.primary),
+    secondaryColor: resolveColor(config.secondaryColor, PORTAL_THEME_COLOR_DEFAULTS.secondary),
+    accentColor: resolveColor(config.accentColor, PORTAL_THEME_COLOR_DEFAULTS.accent),
+    backgroundColor: resolveColor(
+      config.sectionBackgroundColor || config.backgroundColor,
+      PORTAL_THEME_COLOR_DEFAULTS.sectionBackground,
+    ),
+    bodyBackgroundColor: resolveColor(
+      config.mainBackgroundColor || config.backgroundColor,
+      PORTAL_THEME_COLOR_DEFAULTS.mainBackground,
+    ),
+    textColor: resolveColor(config.textColor, PORTAL_THEME_COLOR_DEFAULTS.text),
+    headerColor: resolveColor(
+      config.headerColor || config.sectionBackgroundColor,
+      PORTAL_THEME_COLOR_DEFAULTS.header,
+    ),
+    footerColor: resolveColor(config.footerColor, PORTAL_THEME_COLOR_DEFAULTS.footer),
+    fontFamilyAr: config.fontFamilyAr?.trim() || storefrontTheme.fontFamily,
+    fontFamilyEn: config.fontFamilyEn?.trim() || storefrontTheme.fontFamily,
     fontSizeBase: config.fontSizeBase || 16,
     fontSizeHeading: config.fontSizeHeading || 30,
     fontSizeSmall: config.fontSizeSmall || 14,
-    borderRadius: storefrontTheme.borderRadius,
+    borderRadius: storefrontTheme.borderRadius || PORTAL_THEME_COLOR_DEFAULTS.borderRadius,
     faviconUrl: config.faviconUrl,
   };
 }

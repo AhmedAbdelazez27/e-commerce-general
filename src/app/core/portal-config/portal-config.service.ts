@@ -13,6 +13,7 @@ import {
   resolvePortalSocialLinks,
 } from './portal-config.mapper';
 import { PortalConfiguration } from './portal-configuration.model';
+import { portalHasContactInfo } from './portal-contact.util';
 import { PortalThemeService } from '../portal-theme/portal-theme.service';
 
 /** Loads branding content from GetPortalConfiguration (logo, social, contact). */
@@ -34,10 +35,7 @@ export class PortalConfigService {
     resolvePortalSocialLinks(this.configSignal().socialMedia, LAYOUT_CONFIG.footer.socialLinks),
   );
 
-  readonly hasContactInfo = computed(() => {
-    const { email, phone, whatsApp, supportEmail, supportPhone } = this.configSignal().contactInfo;
-    return !!(email || phone || whatsApp || supportEmail || supportPhone);
-  });
+  readonly hasContactInfo = computed(() => portalHasContactInfo(this.configSignal()));
 
   readonly chatSupportHref = computed(() => {
     const { whatsApp, supportPhone, phone } = this.configSignal().contactInfo;
@@ -60,7 +58,6 @@ export class PortalConfigService {
         this.configSignal.set(
           mergePortalConfig(DEFAULT_PORTAL_CONFIG, normalizePortalConfigurationDto(remote)),
         );
-        this.portalTheme.apply(this.configSignal());
         this.loadErrorSignal.set(false);
       } else {
         this.loadErrorSignal.set(true);
@@ -68,6 +65,7 @@ export class PortalConfigService {
     } catch {
       this.loadErrorSignal.set(true);
     } finally {
+      this.portalTheme.apply(this.configSignal());
       this.loadedSignal.set(true);
     }
   }

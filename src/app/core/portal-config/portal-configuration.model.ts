@@ -4,6 +4,8 @@ export interface PortalContactInfo {
   whatsApp: string;
   supportEmail: string;
   supportPhone: string;
+  addressAr: string;
+  addressEn: string;
 }
 
 export interface PortalSocialMedia {
@@ -49,7 +51,10 @@ export interface PortalConfiguration {
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
+  /** @deprecated Use sectionBackgroundColor — kept for API backward compatibility */
   backgroundColor: string;
+  sectionBackgroundColor: string;
+  mainBackgroundColor: string;
   textColor: string;
   headerColor: string;
   footerColor: string;
@@ -66,6 +71,8 @@ export interface PortalConfiguration {
   featuredProductsCount: number;
   bestSellerCount: number;
   newArrivalCount: number;
+  addressAr: string;
+  addressEn: string;
   contactInfo: PortalContactInfo;
   socialMedia: PortalSocialMedia;
   seo: PortalSeoConfig;
