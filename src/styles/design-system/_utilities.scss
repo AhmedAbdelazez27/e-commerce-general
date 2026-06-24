@@ -25,7 +25,7 @@
 .ds-section__subtitle {
   margin-block: calc(var(--ds-space-2) * -1) var(--ds-space-8);
   font-size: var(--ds-font-size-sm);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
 }
 
 .ds-stack {
@@ -74,18 +74,18 @@
 .ds-price {
   font-size: var(--ds-font-size-lg);
   font-weight: var(--ds-font-weight-semibold);
-  color: var(--ds-color-text);
+  color: var(--portal-text);
 }
 
 .ds-price--compare {
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-normal);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
   text-decoration: line-through;
 }
 
 .ds-price--sale {
-  color: var(--ds-color-accent);
+  color: var(--portal-danger);
 }
 
 .ds-badge-sale {
@@ -95,8 +95,8 @@
   font-weight: var(--ds-font-weight-semibold);
   letter-spacing: var(--ds-letter-spacing-wide);
   text-transform: uppercase;
-  color: var(--ds-color-text-on-accent);
-  background-color: var(--ds-color-accent);
+  color: var(--portal-text-on-accent);
+  background-color: var(--portal-danger);
   border-radius: var(--ds-radius-sm);
 }
 

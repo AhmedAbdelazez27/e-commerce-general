@@ -48,3 +48,32 @@ export interface PublicBrandDto {
   isFeatured: boolean;
   count: number;
 }
+
+/** EcPublicCatalog FAQ (ABP `result` item). */
+export interface PublicFaqDto {
+  id: number;
+  categoryLkpId: number;
+  categoryNameAr: string;
+  categoryNameEn: string;
+  questionAr: string;
+  questionEn: string;
+  answerAr: string;
+  answerEn: string;
+  imageUrl: string | null;
+  videoUrl: string | null;
+  pdfAttachmentUrl: string | null;
+  displayOrder: number;
+  viewCount: number;
+  helpfulCount: number;
+  notHelpfulCount: number;
+}
+
+export interface SearchFaqsRequest {
+  searchText: string;
+  categoryLkpId?: number;
+}
+
+export interface RateFaqRequest {
+  id: number;
+  isHelpful: boolean;
+}

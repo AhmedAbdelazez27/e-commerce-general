@@ -58,6 +58,14 @@
           aria-hidden="true"
         ></i>
       </button>
+      @if (shareUrl()) {
+        <app-product-share-menu
+          [compact]="true"
+          [title]="displayTitle()"
+          [url]="shareUrl()"
+          [shareText]="shareMessage()"
+        />
+      }
     </div>
   </div>
 

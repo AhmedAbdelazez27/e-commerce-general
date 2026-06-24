@@ -4,7 +4,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../core/services/language.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
+import { ProductShareMenuComponent } from '../product-share-menu/product-share-menu.component';
 import { ProductCardData } from '../../models/product-card.model';
+import { buildProductShareUrl } from '../../utils/product-share.util';
 import {
   formatProductPrice,
   productCardHasDiscount,
@@ -15,7 +17,7 @@ import {
 
 @Component({
   selector: 'app-product-card',
-  imports: [DecimalPipe, TranslateModule],
+  imports: [DecimalPipe, TranslateModule, ProductShareMenuComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
 })
@@ -57,6 +59,17 @@ export class ProductCardComponent {
   readonly wishlistLabelKey = computed(() =>
     this.inWishlist() ? 'PRODUCT_CARD.REMOVE_WISHLIST' : 'PRODUCT_CARD.ADD_WISHLIST',
   );
+  readonly shareUrl = computed(() => {
+    const product = this.product();
+    if (typeof window === 'undefined') {
+      return '';
+    }
+    return buildProductShareUrl(window.location.origin, product);
+  });
+  readonly shareMessage = computed(() => {
+    const product = this.product();
+    return `${this.displayTitle()} — ${formatProductPrice(product.price)} ${this.currencyLabel()}`;
+  });
 
   onProductClick(): void {
     this.productClick.emit(this.product());

@@ -43,7 +43,7 @@
 .category-tile__media--placeholder {
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--ds-color-primary) 12%, var(--ds-color-background-subtle)),
+    color-mix(in srgb, var(--portal-primary) 12%, var(--ds-color-background-subtle)),
     var(--ds-color-background-elevated)
   );
 
@@ -60,7 +60,7 @@
   left: 50%;
   transform: translate(-50%, -65%);
   font-size: 2rem;
-  color: color-mix(in srgb, var(--ds-color-primary) 55%, transparent);
+  color: color-mix(in srgb, var(--portal-primary) 55%, transparent);
   pointer-events: none;
 }
 
@@ -72,7 +72,7 @@
   justify-content: flex-end;
   gap: var(--ds-space-1);
   padding: var(--ds-space-4);
-  color: #fff;
+  color: var(--portal-secondary);
   background: linear-gradient(
     to top,
     rgb(0 0 0 / 82%) 0%,
@@ -87,7 +87,7 @@
   padding: 0.2rem 0.55rem;
   font-size: var(--ds-font-size-xs);
   font-weight: var(--ds-font-weight-semibold);
-  background: var(--ds-color-primary);
+  background: var(--portal-primary);
   border-radius: var(--ds-radius-sm);
 }
 

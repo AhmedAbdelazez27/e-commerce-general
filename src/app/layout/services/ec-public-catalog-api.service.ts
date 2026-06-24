@@ -8,8 +8,15 @@ import { resultArrayFromAbpEnvelope } from '../../core/utils/api-envelope.util';
 import {
   PublicBrandDto,
   PublicCategoryDto,
+  PublicFaqDto,
   PublicHomeSliderDto,
+  RateFaqRequest,
+  SearchFaqsRequest,
 } from '../models/catalog-public.model';
+
+function sortPublicFaqs(faqs: PublicFaqDto[]): PublicFaqDto[] {
+  return [...faqs].sort((a, b) => a.displayOrder - b.displayOrder);
+}
 
 @Injectable({ providedIn: 'root' })
 export class EcPublicCatalogApiService {
@@ -39,5 +46,25 @@ export class EcPublicCatalogApiService {
       map((res) => resultArrayFromAbpEnvelope<PublicBrandDto>(res)),
       catchError(() => of([])),
     );
+  }
+
+  getFaqs(categoryLkpId?: number): Observable<PublicFaqDto[]> {
+    let params = new HttpParams();
+    if (categoryLkpId != null) {
+      params = params.set('categoryLkpId', String(categoryLkpId));
+    }
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.getFaqs, { params }).pipe(
+      map((res) => sortPublicFaqs(resultArrayFromAbpEnvelope<PublicFaqDto>(res))),
+    );
+  }
+
+  searchFaqs(body: SearchFaqsRequest): Observable<PublicFaqDto[]> {
+    return this.http.post<unknown>(ApiEndpoints.EcPublicCatalog.searchFaqs, body).pipe(
+      map((res) => sortPublicFaqs(resultArrayFromAbpEnvelope<PublicFaqDto>(res))),
+    );
+  }
+
+  rateFaq(body: RateFaqRequest): Observable<void> {
+    return this.http.post<unknown>(ApiEndpoints.EcPublicCatalog.rateFaq, body).pipe(map(() => undefined));
   }
 }

@@ -1,5 +1,6 @@
 import type { CustomerAddressDto, PagedAddressesResult } from '../models/customer-address.model';
 import type { EcOrderDto, EcOrderStatusHistoryDto } from '../models/place-order.model';
+import type { ValidateCouponResultDto } from '../models/validate-coupon.model';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -183,6 +184,23 @@ function readBool(o: JsonRecord, ...keys: string[]): boolean | undefined {
     }
   }
   return undefined;
+}
+
+export function normalizeValidateCouponResult(raw: unknown): ValidateCouponResultDto | null {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+
+  const o = raw as JsonRecord;
+  return {
+    validDate: readString(o, 'validDate', 'ValidDate') ?? '',
+    isActive: readNumber(o, 'isActive', 'IsActive') ?? 0,
+    usageLimit: readNumber(o, 'usageLimit', 'UsageLimit') ?? null,
+    discountAmount: readNumber(o, 'discountAmount', 'DiscountAmount') ?? 0,
+    validAmount: readString(o, 'validAmount', 'ValidAmount') ?? '',
+    remainingAmountToBeUsed:
+      readNumber(o, 'remainingAmountToBeUsed', 'RemainingAmountToBeUsed') ?? 0,
+  };
 }
 
 export function formatAddressLines(

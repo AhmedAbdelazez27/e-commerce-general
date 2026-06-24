@@ -10,3 +10,12 @@ export interface FndLookupSelect2Result {
   total: number;
   results: FndLookupSelect2Item[];
 }
+
+export interface FndLookupValueDto {
+  id: number;
+  nameEn: string;
+  nameAr: string;
+  lookupCode: string;
+  lookupType: string;
+  yesNo?: boolean;
+}

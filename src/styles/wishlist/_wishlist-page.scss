@@ -41,7 +41,7 @@
   height: 4.5rem;
   border-radius: var(--ds-radius-full);
   background: var(--ds-color-background-subtle);
-  color: var(--ds-color-primary);
+  color: var(--portal-primary);
   font-size: 1.75rem;
 }
 
@@ -54,5 +54,5 @@
 .wishlist-empty__text {
   margin: 0;
   max-width: 28rem;
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
 }

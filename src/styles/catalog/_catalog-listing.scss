@@ -30,7 +30,7 @@
     text-decoration: none;
 
     &:hover {
-      color: var(--ds-color-primary);
+      color: var(--portal-primary);
     }
   }
 
@@ -94,17 +94,17 @@
     transform var(--ds-transition-fast);
 
   &:hover {
-    color: var(--ds-color-primary);
+    color: var(--portal-primary);
 
     .catalog-subcategory-rail__media {
-      border-color: color-mix(in srgb, var(--ds-color-primary) 45%, var(--ds-color-border));
+      border-color: color-mix(in srgb, var(--portal-primary) 45%, var(--ds-color-border));
       box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
       transform: translateY(-2px);
     }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--ds-color-primary);
+    outline: 2px solid var(--portal-primary);
     outline-offset: 2px;
   }
 
@@ -122,7 +122,7 @@
   height: 4.5rem;
   border: 1px solid var(--ds-color-border);
   border-radius: 50%;
-  background: #fff;
+  background: var(--portal-background);
   overflow: hidden;
   transition:
     border-color var(--ds-transition-fast),
@@ -135,7 +135,7 @@
     object-fit: contain;
     object-position: center;
     padding: 0.45rem;
-    background: #fff;
+    background: var(--portal-background);
   }
 
   @media (min-width: 768px) {
@@ -318,7 +318,7 @@
   cursor: pointer;
 
   input {
-    accent-color: var(--ds-color-primary);
+    accent-color: var(--portal-primary);
   }
 }
 

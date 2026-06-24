@@ -1,8 +1,6 @@
 import { CART_CONFIG } from '../config/cart.config';
 import { CartDto } from '../models/cart.model';
-import { EcCouponDto } from '../models/ec-coupon.model';
 import { CartOrderSummaryView } from '../models/cart-view.model';
-import { estimateCouponDiscount } from './coupon-validation.util';
 
 export interface OrderSummaryOptions {
   discountAmount?: number;
@@ -12,7 +10,7 @@ export interface OrderSummaryOptions {
 export function resolveCartDiscountAmount(
   cart: CartDto | null | undefined,
   subtotal: number,
-  appliedCoupon?: EcCouponDto | null,
+  appliedDiscountAmount?: number | null,
 ): number {
   if (cart) {
     if (cart.CouponDiscountAmount != null && cart.CouponDiscountAmount > 0) {
@@ -28,8 +26,8 @@ export function resolveCartDiscountAmount(
     }
   }
 
-  if (appliedCoupon && subtotal > 0) {
-    return estimateCouponDiscount(appliedCoupon, subtotal);
+  if (appliedDiscountAmount != null && appliedDiscountAmount > 0) {
+    return appliedDiscountAmount;
   }
 
   return 0;

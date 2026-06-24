@@ -1,0 +1,130 @@
+<div class="container py-4 faq-page">
+  <app-catalog-breadcrumb [items]="breadcrumbs" />
+
+  <div class="faq-page__search">
+    <div class="faq-page__search-field">
+      <i class="fa-solid fa-magnifying-glass faq-page__search-icon" aria-hidden="true"></i>
+      <input
+        type="search"
+        class="faq-page__search-input"
+        [ngModel]="searchText()"
+        (ngModelChange)="onSearchInput($event)"
+        [placeholder]="'FAQ.SEARCH_PLACEHOLDER' | translate"
+        [attr.aria-label]="'FAQ.SEARCH_PLACEHOLDER' | translate"
+      />
+    </div>
+  </div>
+
+  @if (categories().length > 0) {
+    <div class="faq-page__categories mb-4" role="tablist" [attr.aria-label]="'FAQ.ALL_CATEGORIES' | translate">
+      <button
+        type="button"
+        class="faq-page__category-pill"
+        role="tab"
+        [class.is-active]="selectedCategoryId() === null"
+        [attr.aria-selected]="selectedCategoryId() === null"
+        (click)="selectCategory(null)"
+      >
+        {{ 'FAQ.ALL_CATEGORIES' | translate }}
+      </button>
+      @for (category of categories(); track category.id) {
+        <button
+          type="button"
+          class="faq-page__category-pill"
+          role="tab"
+          [class.is-active]="selectedCategoryId() === category.id"
+          [attr.aria-selected]="selectedCategoryId() === category.id"
+          (click)="selectCategory(category.id)"
+        >
+          {{ categoryLabel(category) }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (loadFailed()) {
+    <div class="alert alert-warning mb-0">{{ 'FAQ.LOAD_FAILED' | translate }}</div>
+  } @else if (faqs().length === 0) {
+    <div class="alert alert-light mb-0">{{ 'FAQ.EMPTY' | translate }}</div>
+  } @else {
+    @for (group of groupedFaqs(); track group.categoryLkpId) {
+      @if (showGroupTitles()) {
+        <h2 class="faq-page__group-title">{{ groupTitle(group) }}</h2>
+      }
+
+      @for (faq of group.faqs; track faq.id) {
+        <details
+          class="faq-page__item"
+          [open]="isDefaultOpen(faq.id)"
+          (toggle)="onFaqToggle(faq.id, $event)"
+        >
+          <summary class="faq-page__summary">
+            <span class="faq-page__summary-text">{{ question(faq) }}</span>
+            <i class="fa-solid fa-chevron-down faq-page__chevron" aria-hidden="true"></i>
+          </summary>
+
+          <div class="faq-page__answer">
+            <p class="mb-0">{{ answer(faq) }}</p>
+
+            @if (mediaUrl(faq.imageUrl); as imageUrl) {
+              <div class="faq-page__media">
+                <img [src]="imageUrl" [alt]="question(faq)" loading="lazy" />
+              </div>
+            }
+
+            @if (mediaUrl(faq.videoUrl); as videoUrl) {
+              <div class="faq-page__media">
+                <video [src]="videoUrl" controls preload="metadata"></video>
+              </div>
+            }
+
+            @if (mediaUrl(faq.pdfAttachmentUrl); as pdfUrl) {
+              <a
+                class="faq-page__attachment-link"
+                [href]="pdfUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ 'FAQ.ATTACHMENT_PDF' | translate }}
+              </a>
+            }
+
+            <div class="faq-page__feedback">
+              @if (hasVoted(faq.id)) {
+                <span class="faq-page__feedback-thanks">{{ 'FAQ.VOTE_THANKS' | translate }}</span>
+              } @else {
+                <span class="faq-page__feedback-label">{{ 'FAQ.WAS_HELPFUL' | translate }}</span>
+              }
+              <div class="faq-page__feedback-actions">
+                <button
+                  type="button"
+                  class="faq-page__feedback-btn"
+                  [class.is-voted]="hasVoted(faq.id)"
+                  [disabled]="hasVoted(faq.id) || isVoting(faq.id)"
+                  [attr.aria-label]="'FAQ.HELPFUL' | translate"
+                  (click)="vote(faq, true)"
+                >
+                  <i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>
+                  <span class="faq-page__feedback-count">{{ faq.helpfulCount }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="faq-page__feedback-btn"
+                  [class.is-voted]="hasVoted(faq.id)"
+                  [disabled]="hasVoted(faq.id) || isVoting(faq.id)"
+                  [attr.aria-label]="'FAQ.NOT_HELPFUL' | translate"
+                  (click)="vote(faq, false)"
+                >
+                  <i class="fa-regular fa-thumbs-down" aria-hidden="true"></i>
+                  <span class="faq-page__feedback-count">{{ faq.notHelpfulCount }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+      }
+    }
+  }
+</div>

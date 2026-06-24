@@ -59,7 +59,7 @@
   width: 100%;
   height: 100%;
   min-height: 100%;
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
   font-size: 2rem;
 }
 
@@ -84,18 +84,18 @@
 }
 
 .product-card__badge--sale {
-  color: var(--ds-color-text-on-accent);
-  background: var(--ds-color-accent);
+  color: var(--portal-text-on-accent);
+  background: var(--portal-danger);
 }
 
 .product-card__badge--new {
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   background: var(--ds-color-background-elevated);
 }
 
 .product-card__badge--bestseller {
-  color: var(--ds-color-text-on-primary);
-  background: var(--ds-color-primary);
+  color: var(--portal-text-on-primary);
+  background: var(--portal-primary);
 }
 
 .product-card__sold-out {
@@ -114,7 +114,7 @@
     font-weight: var(--ds-font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--ds-letter-spacing-wide);
-    color: var(--ds-color-text);
+    color: var(--portal-text);
     background: var(--ds-color-background-elevated);
     border-radius: var(--ds-radius-sm);
     box-shadow: var(--ds-shadow-sm);
@@ -147,23 +147,23 @@
   border: 0;
   border-radius: var(--ds-radius-full);
   background: var(--ds-color-background-elevated);
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   cursor: pointer;
   transition:
     background-color var(--ds-transition-fast),
     color var(--ds-transition-fast);
 
   &:hover {
-    background: var(--ds-color-primary);
-    color: var(--ds-color-text-on-primary);
+    background: var(--portal-primary);
+    color: var(--portal-text-on-primary);
   }
 
   &.is-active {
-    color: var(--ds-color-accent);
+    color: var(--portal-danger);
 
     &:hover {
       background: var(--ds-color-background-elevated);
-      color: var(--ds-color-accent);
+      color: var(--portal-danger);
     }
   }
 }
@@ -187,7 +187,7 @@
 .product-card__brand {
   margin: 0;
   font-size: var(--ds-font-size-xs);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--ds-letter-spacing-wide);
 }
@@ -209,11 +209,11 @@
   font-weight: var(--ds-font-weight-medium);
   line-height: var(--ds-line-height-tight);
   text-align: start;
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   cursor: pointer;
 
   &:hover {
-    color: var(--ds-color-primary);
+    color: var(--portal-primary);
   }
 }
 
@@ -223,7 +223,7 @@
   align-items: center;
   gap: var(--ds-space-1);
   font-size: var(--ds-font-size-xs);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
 }
 
 .product-card__stars {
@@ -242,7 +242,7 @@
 
 .product-card__rating-value {
   font-weight: var(--ds-font-weight-semibold);
-  color: var(--ds-color-text);
+  color: var(--portal-text);
 }
 
 .product-card__prices {
@@ -259,12 +259,12 @@
 }
 
 .product-card__price--sale {
-  color: var(--ds-color-accent);
+  color: var(--portal-danger);
 }
 
 .product-card__compare {
   font-size: var(--ds-font-size-sm);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
   text-decoration: line-through;
 }
 
@@ -286,21 +286,21 @@
   border: 1px solid var(--ds-color-border);
   border-radius: var(--ds-radius-md);
   background: transparent;
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   cursor: pointer;
   transition:
     border-color var(--ds-transition-fast),
     color var(--ds-transition-fast);
 
   &:hover {
-    border-color: var(--ds-color-accent);
-    color: var(--ds-color-accent);
+    border-color: var(--portal-danger);
+    color: var(--portal-danger);
   }
 
   &.is-active {
-    border-color: var(--ds-color-accent);
-    color: var(--ds-color-accent);
-    background: color-mix(in srgb, var(--ds-color-accent) 8%, transparent);
+    border-color: var(--portal-danger);
+    color: var(--portal-danger);
+    background: color-mix(in srgb, var(--portal-danger) 8%, transparent);
   }
 }
 

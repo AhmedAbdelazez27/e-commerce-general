@@ -31,12 +31,12 @@
     transform var(--ds-transition-fast);
 
   &:hover {
-    border-color: var(--ds-color-primary);
+    border-color: var(--portal-primary);
     box-shadow: var(--ds-shadow-card);
     transform: translateY(-2px);
 
     .brand-tile__cta {
-      color: var(--ds-color-primary);
+      color: var(--portal-primary);
     }
   }
 }
@@ -61,8 +61,8 @@
   font-weight: var(--ds-font-weight-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--ds-color-primary);
-  background: color-mix(in srgb, var(--ds-color-primary) 12%, transparent);
+  color: var(--portal-primary);
+  background: color-mix(in srgb, var(--portal-primary) 12%, transparent);
   border-radius: var(--ds-radius-pill, 999px);
 }
 
@@ -90,7 +90,7 @@
 .brand-tile__initials {
   font-size: var(--ds-font-size-lg);
   font-weight: var(--ds-font-weight-bold);
-  color: var(--ds-color-primary);
+  color: var(--portal-primary);
   letter-spacing: 0.04em;
 }
 
@@ -105,7 +105,7 @@
   display: -webkit-box;
   margin: 0;
   font-size: var(--ds-font-size-sm);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
   line-height: var(--ds-line-height-relaxed);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -115,7 +115,7 @@
 .brand-tile__meta {
   margin: 0;
   font-size: var(--ds-font-size-xs);
-  color: var(--ds-color-text-muted);
+  color: var(--portal-text-muted);
 }
 
 .brand-tile__cta {
@@ -125,6 +125,6 @@
   font-weight: var(--ds-font-weight-bold);
   letter-spacing: var(--ds-letter-spacing-wide);
   text-transform: uppercase;
-  color: var(--ds-color-text-secondary);
+  color: var(--portal-text-secondary);
   transition: color var(--ds-transition-fast);
 }

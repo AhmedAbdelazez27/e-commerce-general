@@ -35,27 +35,27 @@
 }
 
 #toast-container .toast-success.app-toast {
-  background-color: color-mix(in srgb, var(--ds-color-success, #198754) 12%, #fff);
-  color: var(--ds-color-text);
-  border-color: color-mix(in srgb, var(--ds-color-success, #198754) 35%, transparent);
+  background-color: color-mix(in srgb, var(--ds-color-success, var(--portal-success)) 12%, #fff);
+  color: var(--portal-text);
+  border-color: color-mix(in srgb, var(--ds-color-success, var(--portal-success)) 35%, transparent);
 }
 
 #toast-container .toast-error.app-toast {
   background-color: color-mix(in srgb, var(--ds-color-danger, #dc3545) 10%, #fff);
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   border-color: color-mix(in srgb, var(--ds-color-danger, #dc3545) 30%, transparent);
 }
 
 #toast-container .toast-warning.app-toast {
   background-color: color-mix(in srgb, var(--ds-color-warning, #ffc107) 18%, #fff);
-  color: var(--ds-color-text);
+  color: var(--portal-text);
   border-color: color-mix(in srgb, var(--ds-color-warning, #ffc107) 40%, transparent);
 }
 
 #toast-container .toast-info.app-toast {
-  background-color: color-mix(in srgb, var(--ds-color-primary) 10%, #fff);
-  color: var(--ds-color-text);
-  border-color: color-mix(in srgb, var(--ds-color-primary) 28%, transparent);
+  background-color: color-mix(in srgb, var(--portal-primary) 10%, #fff);
+  color: var(--portal-text);
+  border-color: color-mix(in srgb, var(--portal-primary) 28%, transparent);
 }
 
 #toast-container .toast-close-button {

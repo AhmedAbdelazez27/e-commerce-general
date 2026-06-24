@@ -67,12 +67,12 @@ section {
 .btn.disabled,
 .btn:disabled,
 fieldset:disabled .btn {
-    background-color: #987d42;
-    border-color: #987d42;
+    background-color: var(--portal-primary);
+    border-color: var(--portal-primary);
 }
 
 .gold {
-    color: #775a19;
+    color: var(--portal-primary);
 }
 
 .category-mega {
@@ -96,14 +96,14 @@ fieldset:disabled .btn {
 
 .store-header__lang-group .store-header__lang button.is-active {
     background: transparent;
-    color: var(--ds-color-primary);
+    color: var(--portal-primary);
 }
 
 
 
 .product-card__badge--bestseller {
-    color: #000000 !important;
-    background: #ffdea5 !important;
+    color: var(--portal-text) !important;
+    background: var(--portal-secondary) !important;
 }
 
 
@@ -123,7 +123,7 @@ fieldset:disabled .btn {
 }
 
 .catalog-page__sidebar {
-    background: #ffffff;
+    background: var(--portal-background);
     border: 0;
     border-radius: var(--ds-radius-lg);
     box-shadow: var(--ds-shadow-card-hover);
@@ -164,7 +164,7 @@ fieldset:disabled .btn {
 }
 
 .product-card__body {
-    background: #fff;
+    background: var(--portal-background);
 }
 
 .product-card__wishlist-btn {
@@ -216,7 +216,7 @@ fieldset:disabled .btn {
 .btn-black {
     padding-top: 1.25rem;
     padding-bottom: 1.25rem;
-    background-color: #2f3130;
+    background-color: var(--portal-accent);
     border-radius: 10px;
     text-transform: uppercase;
     border: none;
@@ -227,8 +227,8 @@ fieldset:disabled .btn {
     padding-bottom: 1.25rem;
     background-color: transparent;
     border-radius: 10px;
-    color: #2f3130;
-    border: 1px solid #2f3130;
+    color: var(--portal-accent);
+    border: 1px solid var(--portal-accent);
     text-transform: uppercase;
 
 }
@@ -251,50 +251,50 @@ main {
 
 .store-footer {
     margin-top: auto;
-    background: #f4f4f2;
-    color: #2f3130;
+    background: var(--portal-footer-bg);
+    color: var(--portal-accent);
     padding: 24px;
 }
 
 .store-footer__trust-item {
     padding: 24px 0;
-    background-color: #2f3130;
-    color: #fff;
+    background-color: var(--portal-accent);
+    color: var(--portal-secondary);
     border-radius: 10px;
     transition: ease 0.3s;
-    border: 1px solid #2f3130;
+    border: 1px solid var(--portal-accent);
 }
 
 .store-footer__trust-item:hover {
-    color: #2f3130;
-    border: 1px solid #2f3130;
-    background-color: #ffdea5;
+    color: var(--portal-accent);
+    border: 1px solid var(--portal-accent);
+    background-color: var(--portal-secondary);
 }
 
 
 .store-footer__newsletter-input {
     padding: var(--ds-space-3) var(--ds-space-4);
-    border: 1px solid #2f3130;
+    border: 1px solid var(--portal-accent);
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.08);
-    color: #2f3130;
+    color: var(--portal-accent);
     font-size: var(--ds-font-size-sm);
 }
 
 .store-footer__newsletter-input::placeholder {
-    color: #2f3130;
+    color: var(--portal-accent);
     opacity: 0.5;
 }
 
 .store-footer__newsletter-input:focus {
     outline: none;
-    border-color: #2f3130;
+    border-color: var(--portal-accent);
 }
 
 .store-footer__newsletter-btn {
     border-radius: 5px;
-    background: #2f3130;
-    color: #fff;
+    background: var(--portal-accent);
+    color: var(--portal-secondary);
 }
 
 
@@ -311,7 +311,7 @@ main {
 .catalog-toolbar__sort {
     .form-select.form-select-sm {
         height: 39px !important;
-        background-color: #fff !important;
+        background: var(--portal-background) !important;
         border-radius: 5px !important;
     }
 }
@@ -320,7 +320,7 @@ main {
     flex-direction: row !important;
 
     .product-card__body {
-        background: #fff;
+        background: var(--portal-background);
     }
 
     .product-card__media {
@@ -331,17 +331,17 @@ main {
 .btn-login {
     padding-top: 1.25rem;
     padding-bottom: 1.25rem;
-    background-color: #2f3130;
+    background-color: var(--portal-accent);
     border-radius: 0;
     text-transform: uppercase;
     border: none;
-    color: #fff;
+    color: var(--portal-secondary);
     width: 100%;
 }
 
 .btn-login:hover {
-    background-color: #987d42;
-    color: #fff;
+    background-color: var(--portal-primary);
+    color: var(--portal-secondary);
 }
 
 .form-login {
@@ -351,7 +351,7 @@ main {
 
 .login-box {
     padding: 24px;
-    background: #fff;
+    background: var(--portal-background);
 }
 
 
@@ -389,11 +389,11 @@ main {
         background: linear-gradient(to top in oklab, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.22) 70%, transparent 100%);
 
         .home-hero__headline {
-            color: #fff;
+            color: var(--portal-secondary);
         }
 
         .home-hero__secondary-cta {
-            color: #ffdea5 !important;
+            color: var(--portal-secondary) !important;
         }
     }
 
@@ -406,7 +406,7 @@ main {
 
 .home-curated__card-title,
 .home-offers__cta {
-    color: #ffdea5 !important;
+    color: var(--portal-secondary) !important;
 }
 
 .home-curated {
@@ -422,28 +422,34 @@ main {
     border-radius: 15px;
 }
 
+.home-offers__card--accent {
+    background: color-mix(in srgb, var(--portal-danger) 14%);
+    border: 1px solid color-mix(in srgb, var(--portal-danger));
+    color: var(--portal-text);
+}
+
 .home-offers__card.home-offers__card--accent .home-offers__cta {
-    color: #d24858 !important;
+    color: var(--portal-danger) !important;
 }
 
 .home-offers__card.home-offers__card--primary {
-    background: #ffdea5;
+    background: var(--portal-secondary);
 
     .home-offers__title {
-        color: #000;
+        color: var(--portal-text);
     }
 
     .home-offers__text {
-        color: #000;
+        color: var(--portal-text);
     }
 
     .home-offers__cta {
-        color: #000 !important;
+        color: var(--portal-text) !important;
     }
 }
 
 .home-offers__card.home-offers__card--dark .home-offers__title {
-    color: #ffdea5;
+    color: var(--portal-secondary);
 }
 
 .badge--sale,
@@ -453,8 +459,8 @@ main {
 
 .store-footer__social {
     .store-footer__social-link {
-        background-color: #2f3130;
-        color: #ffdea5 !important;
+        background-color: var(--portal-accent);
+        color: var(--portal-secondary) !important;
     }
 }
 
@@ -468,10 +474,10 @@ app-home-hero section {
 
 .home-trust {
     border-radius: 15px;
-    background: #ffdea5;
+    background: var(--portal-secondary);
 
     .home-trust__desc {
-        color: #000;
+        color: var(--portal-text);
     }
 }
 
@@ -488,7 +494,7 @@ app-product-detail-page {
 }
 
 .product-detail-info__table {
-    background: #fff;
+    background: var(--portal-background);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: var(--ds-shadow-card-hover);
@@ -517,7 +523,7 @@ app-product-detail-page {
 
 
 .catalog-toolbar__view.btn-group.btn-group-sm {
-    background-color: #fff;
+    background: var(--portal-background);
 }
 
 .product-card.product-card--compact {
@@ -584,8 +590,8 @@ app-register-page {
 .store-footer__bottom {
 
     opacity: 1;
-    background: #ffdea5;
-    color: #000;
+    background: var(--portal-secondary);
+    color: var(--portal-text);
     border-radius: 10px;
 }
 
@@ -603,20 +609,20 @@ app-register-page {
 
 .cart-coupon {
     box-shadow: var(--ds-shadow-card-hover);
-    background: #2f3130;
+    background: var(--portal-accent);
     border-radius: 10px;
     border: 0;
 }
 
 
 .white {
-    color: #fff;
+    color: var(--portal-secondary);
 }
 
 .coupon-input,
 .coupon-input:focus {
     padding: 12px !important;
-    color: #fff;
+    color: var(--portal-secondary);
     background-color: #464646;
     border: 0;
     border-radius: 6px;
@@ -627,22 +633,22 @@ app-register-page {
 
 
 .coupon-input::placeholder {
-    color: #fff;
+    color: var(--portal-secondary);
     /* Your custom color */
     opacity: 0.5;
 }
 
 .btn-apply-coupon {
     padding: 12px 24px;
-    background-color: #ffdea5;
-    color: #000;
-    border: 1px solid #ffdea5;
+    background-color: var(--portal-secondary);
+    color: var(--portal-text);
+    border: 1px solid var(--portal-secondary);
 }
 
 .btn-apply-coupon:hover {
-    background-color: #2f3130;
-    color: #ffdea5;
-    border: 1px solid #ffdea5;
+    background-color: var(--portal-accent);
+    color: var(--portal-secondary);
+    border: 1px solid var(--portal-secondary);
 }
 
 .category-tile {
@@ -661,7 +667,7 @@ app-register-page {
 
 .checkout-page {
     box-shadow: var(--ds-shadow-card-hover);
-    background-color: #fff;
+    background: var(--portal-background);
     border-radius: 10px;
     padding: 24px;
 }
@@ -678,7 +684,7 @@ app-checkout-order-summary {
         max-width: unset;
         box-shadow: none;
         border: 1px solid #ebebeb;
-        background-color: #f9f9f7;
+        background-color: var(--portal-background);
     }
 }
 
@@ -695,7 +701,7 @@ app-profile-page{
 
     .card{
             border-radius: 10px;
-    background-color: #fff;
+    background: var(--portal-background);
     border: none;
      box-shadow: var(--ds-shadow-card-hover);
 
@@ -711,13 +717,13 @@ app-profile-page{
     .profile-info{
         padding: 16px;
         border-radius: 10px;
-        background-color: #ffffff;
+        background-color: var(--portal-background);
         border: 1px solid #ebebeb;
         font-size: 14px;
     }
 
     .profile-info--stats{
-        background-color: #f9f9f7;
+        background-color: var(--portal-background);
     }
 
     .profile-info__title{
@@ -742,7 +748,7 @@ app-profile-page{
     }
 
     .profile-info__value--highlight{
-        color: #775a19;
+        color: var(--portal-primary);
     }
 
     .profile-info__badge{
@@ -757,7 +763,7 @@ app-profile-page{
     }
 
     .profile-info__badge--vip{
-        color: #775a19;
+        color: var(--portal-primary);
         background-color: #f6f0e4;
     }
 
@@ -766,7 +772,7 @@ app-profile-page{
 
 
 .nav-link.active{
-        background-color: #775a19 !important;
+        background-color: var(--portal-primary) !important;
 }
 
 .btn-edit{
@@ -783,21 +789,21 @@ app-profile-page{
     align-items: center;
     padding: 24px;
     border-radius: 10px;
-    background-color: #f9f9f7;
+    background-color: var(--portal-background);
 }
 
 
 .add-address{
            padding: 16px;
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: var(--portal-background);
     border: 1px solid #ebebeb;
 }
 
 .address{
       padding: 16px;
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: var(--portal-background);
     border: 1px solid #ebebeb;
     font-size: 14px;
 }
@@ -809,7 +815,7 @@ app-profile-page{
 .order-container{
       padding: 16px;
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: var(--portal-background);
     border: 1px solid #ebebeb;
     font-size: 14px;
 }
@@ -821,7 +827,7 @@ app-profile-page{
 
 .orders-page__order-link:hover,
 .orders-page__order-link:focus-visible{
-    color: #775a19;
+    color: var(--portal-primary);
     text-decoration: underline;
     text-underline-offset: 2px;
 }
@@ -844,7 +850,7 @@ app-profile-page{
     justify-content: center;
     padding: 32px 16px;
     border-radius: 10px;
-    background-color: #f9f9f7;
+    background-color: var(--portal-background);
     text-align: center;
 }
 
@@ -896,7 +902,7 @@ app-profile-page{
     height: 14px;
     border-radius: 50%;
     border: 2px solid #d1d5db;
-    background-color: #fff;
+    background: var(--portal-background);
 }
 
 .orders-page__tracker-label{
@@ -911,8 +917,8 @@ app-profile-page{
 
 .orders-page__tracker-step--done .orders-page__tracker-dot,
 .orders-page__tracker-step--current .orders-page__tracker-dot{
-    border-color: #775a19;
-    background-color: #775a19;
+    border-color: var(--portal-primary);
+    background-color: var(--portal-primary);
 }
 
 .orders-page__tracker-step--current .orders-page__tracker-label{
@@ -936,12 +942,12 @@ app-profile-page{
 
 .order-detail-page__item-row--linkable:hover,
 .order-detail-page__item-row--linkable:focus-visible{
-    background-color: #f9f9f7;
+    background-color: var(--portal-background);
     outline: none;
 }
 
 .order-detail-page__item-row--linkable:focus-visible{
-    box-shadow: 0 0 0 2px #775a19;
+    box-shadow: 0 0 0 2px var(--portal-primary);
 }
 
 .order-detail-page__product-link{
@@ -954,8 +960,8 @@ app-profile-page{
 
 .order-detail-page__item-row--linkable:hover .order-detail-page__product-link,
 .order-detail-page__item-row--linkable:focus-visible .order-detail-page__product-link{
-    color: #775a19;
-    text-decoration-color: #775a19;
+    color: var(--portal-primary);
+    text-decoration-color: var(--portal-primary);
 }
 
 .order-detail-page__meta{
@@ -1028,8 +1034,8 @@ app-profile-page{
     height: 14px;
     margin-top: 4px;
     border-radius: 50%;
-    border: 2px solid #775a19;
-    background-color: #fff;
+    border: 2px solid var(--portal-primary);
+    background: var(--portal-background);
 }
 
 .order-detail-page__history-title{
@@ -1059,7 +1065,7 @@ app-profile-page{
 
 .btn-back{
     svg{
-        stroke: #775a19;
+        stroke: var(--portal-primary);
         transition: ease 0.3s;
             rotate: 180deg;
     }
@@ -1087,7 +1093,7 @@ app-profile-page{
 
 .orders-bar{
     padding: 8px;
-    background-color: #fff;
+    background: var(--portal-background);
     border-radius: 10px;
     border: 1px solid #ebebeb;
 }
@@ -1120,6 +1126,6 @@ app-profile-page{
 }
 
 .product-card__badge--new{
-    background: #009b5f  !important;
-    color: #fff !important;
+    background: var(--portal-success) !important;
+    color: var(--portal-secondary) !important;
 }

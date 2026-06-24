@@ -6,7 +6,11 @@ import { map } from 'rxjs/operators';
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
 import type { EcOrderDto, EcPlaceOrderRequest } from '../models/place-order.model';
-import { normalizeOrder } from '../utils/checkout-api.mapper';
+import type {
+  ValidateCouponRequest,
+  ValidateCouponResultDto,
+} from '../models/validate-coupon.model';
+import { normalizeOrder, normalizeValidateCouponResult } from '../utils/checkout-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutApiService {
@@ -15,6 +19,12 @@ export class CheckoutApiService {
   placeOrder(body: EcPlaceOrderRequest): Observable<EcOrderDto | null> {
     return this.http.post<unknown>(ApiEndpoints.EcCheckout.placeOrder, body).pipe(
       map((res) => normalizeOrder(resultFromAbpEnvelope(res))),
+    );
+  }
+
+  validateCoupon(body: ValidateCouponRequest): Observable<ValidateCouponResultDto | null> {
+    return this.http.post<unknown>(ApiEndpoints.EcCheckout.validateCoupon, body).pipe(
+      map((res) => normalizeValidateCouponResult(resultFromAbpEnvelope(res))),
     );
   }
 }

@@ -1,4 +1,5 @@
 import { EcCouponDto } from '../models/ec-coupon.model';
+import type { ValidateCouponResultDto } from '../../checkout/models/validate-coupon.model';
 
 export type CouponRejectReason =
   | 'not_found'
@@ -7,10 +8,15 @@ export type CouponRejectReason =
   | 'expired'
   | 'usage_exceeded'
   | 'min_order'
+  | 'min_order_remaining'
   | 'guest_requires_login';
 
 export type CouponValidationResult =
   | { valid: true; coupon: EcCouponDto }
+  | { valid: false; reason: CouponRejectReason; params?: Record<string, string | number> };
+
+export type CouponApiValidationResult =
+  | { valid: true; discountAmount: number }
   | { valid: false; reason: CouponRejectReason; params?: Record<string, string | number> };
 
 const REASON_MESSAGE_KEYS: Record<CouponRejectReason, string> = {
@@ -20,11 +26,72 @@ const REASON_MESSAGE_KEYS: Record<CouponRejectReason, string> = {
   expired: 'CART.COUPON.EXPIRED',
   usage_exceeded: 'CART.COUPON.USAGE_EXCEEDED',
   min_order: 'CART.COUPON.MIN_ORDER',
+  min_order_remaining: 'CART.COUPON.MIN_ORDER_REMAINING',
   guest_requires_login: 'CART.COUPON.LOGIN_REQUIRED',
 };
 
 export function couponRejectMessageKey(reason: CouponRejectReason): string {
   return REASON_MESSAGE_KEYS[reason];
+}
+
+function isAbpYes(value: unknown): boolean {
+  if (typeof value === 'string') {
+    return value.trim().toLowerCase() === 'yes';
+  }
+  if (typeof value === 'number') {
+    return value === 1;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  return false;
+}
+
+function isAbpActive(value: unknown): boolean {
+  if (typeof value === 'number') {
+    return value === 1;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === '1' || normalized === 'yes' || normalized === 'true';
+  }
+  return false;
+}
+
+export function validateCouponApiResult(
+  result: ValidateCouponResultDto | null | undefined,
+): CouponApiValidationResult {
+  if (!result) {
+    return { valid: false, reason: 'not_found' };
+  }
+
+  if (!isAbpActive(result.isActive)) {
+    return { valid: false, reason: 'inactive' };
+  }
+
+  if (!isAbpYes(result.validDate)) {
+    return { valid: false, reason: 'expired' };
+  }
+
+  if (!isAbpYes(result.validAmount)) {
+    const remaining = result.remainingAmountToBeUsed ?? 0;
+    if (remaining > 0) {
+      return {
+        valid: false,
+        reason: 'min_order_remaining',
+        params: { amount: remaining },
+      };
+    }
+    return { valid: false, reason: 'min_order' };
+  }
+
+  return {
+    valid: true,
+    discountAmount: Math.max(0, result.discountAmount ?? 0),
+  };
 }
 
 export function validateCouponForCart(

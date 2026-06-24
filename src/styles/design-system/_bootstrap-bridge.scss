@@ -2,20 +2,20 @@
 
 :root {
   --bs-body-font-family: var(--ds-font-family);
-  --bs-body-color: var(--ds-color-text);
+  --bs-body-color: var(--portal-text);
   --bs-body-bg: var(--ds-color-background);
   --bs-border-color: var(--ds-color-border);
-  --bs-link-color: var(--ds-color-text-link);
-  --bs-link-hover-color: var(--ds-color-text-link-hover);
+  --bs-link-color: var(--portal-text-link);
+  --bs-link-hover-color: var(--portal-text-link-hover);
 }
 
 .btn-primary {
-  --bs-btn-bg: var(--ds-color-primary);
-  --bs-btn-border-color: var(--ds-color-primary);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--ds-color-primary) 85%, #000);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--ds-color-primary) 85%, #000);
-  --bs-btn-active-bg: color-mix(in srgb, var(--ds-color-primary) 75%, #000);
-  --bs-btn-active-border-color: color-mix(in srgb, var(--ds-color-primary) 75%, #000);
+  --bs-btn-bg: var(--portal-primary);
+  --bs-btn-border-color: var(--portal-primary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--portal-primary) 85%, #000);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--portal-primary) 85%, #000);
+  --bs-btn-active-bg: color-mix(in srgb, var(--portal-primary) 75%, #000);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--portal-primary) 75%, #000);
   border-radius: var(--ds-radius-md);
   font-weight: var(--ds-font-weight-medium);
   transition:
@@ -25,41 +25,41 @@
 }
 
 .btn-outline-primary {
-  --bs-btn-color: var(--ds-color-primary);
-  --bs-btn-border-color: var(--ds-color-primary);
-  --bs-btn-hover-bg: var(--ds-color-primary);
-  --bs-btn-hover-border-color: var(--ds-color-primary);
-  --bs-btn-hover-color: var(--ds-color-text-on-primary);
+  --bs-btn-color: var(--portal-primary);
+  --bs-btn-border-color: var(--portal-primary);
+  --bs-btn-hover-bg: var(--portal-primary);
+  --bs-btn-hover-border-color: var(--portal-primary);
+  --bs-btn-hover-color: var(--portal-text-on-primary);
   border-radius: var(--ds-radius-md);
 }
 
 .btn-accent,
 .btn-danger.btn-sale {
-  --bs-btn-bg: var(--ds-color-accent);
-  --bs-btn-border-color: var(--ds-color-accent);
-  --bs-btn-color: var(--ds-color-text-on-accent);
-  --bs-btn-hover-bg: color-mix(in srgb, var(--ds-color-accent) 88%, #000);
-  --bs-btn-hover-border-color: color-mix(in srgb, var(--ds-color-accent) 88%, #000);
+  --bs-btn-bg: var(--portal-danger);
+  --bs-btn-border-color: var(--portal-danger);
+  --bs-btn-color: var(--portal-text-on-accent);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--portal-danger) 88%, #000);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--portal-danger) 88%, #000);
 }
 
 .text-primary {
-  color: var(--ds-color-primary) !important;
+  color: var(--portal-primary) !important;
 }
 
 .text-secondary {
-  color: var(--ds-color-text-secondary) !important;
+  color: var(--portal-text-secondary) !important;
 }
 
 .text-muted {
-  color: var(--ds-color-text-muted) !important;
+  color: var(--portal-text-muted) !important;
 }
 
 .text-accent {
-  color: var(--ds-color-accent) !important;
+  color: var(--portal-danger) !important;
 }
 
 a {
-  color: var(--ds-color-text-link);
+  color: var(--portal-text-link);
 }
 
 .form-control,
@@ -74,19 +74,19 @@ a {
 .form-control:focus,
 .form-select:focus {
   border-color: var(--ds-color-border-focus);
-  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--ds-color-primary) 18%, transparent);
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--portal-primary) 18%, transparent);
 }
 
 .badge.bg-primary {
-  background-color: var(--ds-color-primary) !important;
+  background-color: var(--portal-primary) !important;
 }
 
 .badge.bg-accent {
-  background-color: var(--ds-color-accent) !important;
+  background-color: var(--portal-danger) !important;
 }
 
 .border-primary {
-  border-color: var(--ds-color-primary) !important;
+  border-color: var(--portal-primary) !important;
 }
 
 .card {

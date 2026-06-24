@@ -1,0 +1,32 @@
+<div class="product-share" [class.is-open]="open()" [class.product-share--compact]="compact()">
+  <button
+    type="button"
+    class="btn btn-outline-secondary btn-outline-black product-share__trigger"
+    [class.product-share__trigger--compact]="compact()"
+    [attr.aria-expanded]="open()"
+    [attr.aria-label]="'PRODUCT_SHARE.BUTTON' | translate"
+    (click)="toggle($event)"
+  >
+    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+    <span class="product-share__trigger-label">{{ 'PRODUCT_SHARE.BUTTON' | translate }}</span>
+  </button>
+
+  @if (open()) {
+    <div class="product-share__menu" role="menu">
+      @if (canNativeShare()) {
+        <button type="button" class="product-share__item" role="menuitem" (click)="onNativeShare()">
+          <i class="fa-solid fa-arrow-up-from-bracket product-share__icon" aria-hidden="true"></i>
+          <span>{{ 'PRODUCT_SHARE.NATIVE' | translate }}</span>
+        </button>
+      }
+      <button type="button" class="product-share__item" role="menuitem" (click)="onWhatsAppShare()">
+        <i class="fa-brands fa-whatsapp product-share__icon product-share__icon--whatsapp" aria-hidden="true"></i>
+        <span>{{ 'PRODUCT_SHARE.WHATSAPP' | translate }}</span>
+      </button>
+      <button type="button" class="product-share__item" role="menuitem" (click)="onCopyLink()">
+        <i class="fa-regular fa-copy product-share__icon" aria-hidden="true"></i>
+        <span>{{ 'PRODUCT_SHARE.COPY_LINK' | translate }}</span>
+      </button>
+    </div>
+  }
+</div>

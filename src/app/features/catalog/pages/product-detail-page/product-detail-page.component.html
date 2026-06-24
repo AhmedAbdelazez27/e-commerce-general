@@ -154,6 +154,13 @@
             <i class="fa-regular fa-heart" aria-hidden="true"></i>
             Add to Wishlist
           </button>
+          @if (shareUrl()) {
+            <app-product-share-menu
+              [title]="displayName()"
+              [url]="shareUrl()"
+              [shareText]="shareMessage()"
+            />
+          }
         </div>
       </div>
     </section>

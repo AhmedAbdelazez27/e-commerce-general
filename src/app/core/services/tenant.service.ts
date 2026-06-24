@@ -3,7 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiEndpoints } from '../constants/api-endpoints';
-import { SKIP_AUTH } from '../http/http-context.tokens';
+import { SKIP_AUTH, SKIP_TENANT_HEADER } from '../http/http-context.tokens';
 import { resultFromAbpEnvelope } from '../utils/api-envelope.util';
 
 type TenantAvailabilityResult = {
@@ -13,6 +13,10 @@ type TenantAvailabilityResult = {
 
 const STORAGE_TENANCY = 'tenancy_name';
 const STORAGE_TENANT_ID = 'tenant_id';
+const LOCALHOST_DEFAULT_TENANCY = 'compassint';
+
+/** ABP TenantAvailabilityState.Available */
+const TENANT_STATE_AVAILABLE = 1;
 
 @Injectable({ providedIn: 'root' })
 export class TenantService {
@@ -22,20 +26,23 @@ export class TenantService {
   readonly tenantId = signal<number | null>(null);
 
   async initFromHost(): Promise<void> {
+    const tenancy = this.detectTenancyName(window.location.hostname);
     const fromStorage = this.readFromStorage();
-    if (fromStorage) {
+
+    if (fromStorage && fromStorage.tenancyName === tenancy) {
       this.tenancyName.set(fromStorage.tenancyName);
       this.tenantId.set(fromStorage.tenantId);
       return;
     }
 
-    const tenancy = this.detectTenancyName(window.location.hostname);
     if (!tenancy) {
+      this.tenancyName.set(null);
+      this.tenantId.set(null);
       this.persist(null, null);
       return;
     }
 
-    const context = new HttpContext().set(SKIP_AUTH, true);
+    const context = new HttpContext().set(SKIP_AUTH, true).set(SKIP_TENANT_HEADER, true);
     const res = await firstValueFrom(
       this.http.post<unknown>(
         ApiEndpoints.Account.isTenantAvailable,
@@ -48,28 +55,27 @@ export class TenantService {
     const state = result?.state ?? null;
     const id = typeof result?.tenantId === 'number' ? result.tenantId : null;
 
-    // ABP: state=1 usually means Available. Anything else -> treat as host.
-    if (state === 1 && id != null) {
+    if (state === TENANT_STATE_AVAILABLE && id != null) {
       this.tenancyName.set(tenancy);
       this.tenantId.set(id);
       this.persist(tenancy, id);
       return;
     }
 
+    this.tenancyName.set(null);
+    this.tenantId.set(null);
     this.persist(null, null);
   }
 
   private detectTenancyName(hostname: string): string | null {
     const host = hostname.toLowerCase();
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
-      return null;
+      return LOCALHOST_DEFAULT_TENANCY;
     }
-    // If hostname looks like an IP, skip.
     if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
       return null;
     }
     const parts = host.split('.').filter(Boolean);
-    // subdomain.domain.tld (at least 3 parts)
     if (parts.length < 3) {
       return null;
     }
@@ -104,4 +110,3 @@ export class TenantService {
     }
   }
 }
-

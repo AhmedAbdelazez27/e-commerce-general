@@ -16,22 +16,24 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { unauthorizedInterceptor } from './core/interceptors/unauthorized.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { tenantInterceptor } from './core/interceptors/tenant.interceptor';
 import { LanguageService } from './core/services/language.service';
 import { TenantService } from './core/services/tenant.service';
-import {
-  initPortalConfigFactory,
-  PortalConfigService,
-} from './core/portal-config/portal-config.service';
+import { PortalConfigService } from './core/portal-config/portal-config.service';
 import { APP_ENVIRONMENT } from './core/tokens/app-environment.token';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
-function initLangFactory(lang: LanguageService) {
-  return () => lang.initFromStorage();
-}
-
-function initTenantFactory(tenants: TenantService) {
-  return () => tenants.initFromHost();
+function initAppFactory(
+  tenants: TenantService,
+  lang: LanguageService,
+  portal: PortalConfigService,
+) {
+  return async () => {
+    await tenants.initFromHost();
+    await lang.initFromStorage();
+    await portal.load();
+  };
 }
 
 export const appConfig: ApplicationConfig = {
@@ -44,6 +46,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([
         loadingInterceptor,
         apiBaseUrlInterceptor,
+        tenantInterceptor,
         authInterceptor,
         unauthorizedInterceptor,
         errorInterceptor,
@@ -65,20 +68,8 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: APP_INITIALIZER,
-      useFactory: initPortalConfigFactory,
-      deps: [PortalConfigService],
-      multi: true,
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initLangFactory,
-      deps: [LanguageService],
-      multi: true,
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initTenantFactory,
-      deps: [TenantService],
+      useFactory: initAppFactory,
+      deps: [TenantService, LanguageService, PortalConfigService],
       multi: true,
     },
   ],

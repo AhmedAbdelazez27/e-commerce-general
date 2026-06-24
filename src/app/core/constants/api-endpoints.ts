@@ -28,6 +28,9 @@ export class ApiEndpoints {
     productSpecifications: '/api/services/app/EcPublicCatalog/GetProductSpecifications',
     relatedProducts: '/api/services/app/EcPublicCatalog/GetRelatedProducts',
     finalPrice: '/api/services/app/EcPublicCatalog/GetFinalPrice',
+    getFaqs: '/api/services/app/EcPublicCatalog/GetFaqs',
+    searchFaqs: '/api/services/app/EcPublicCatalog/SearchFaqs',
+    rateFaq: '/api/services/app/EcPublicCatalog/RateFaq',
   };
 
   static readonly EcCoupons = {
@@ -52,6 +55,7 @@ export class ApiEndpoints {
 
   static readonly FndLookupValues = {
     getSelect2: '/api/services/app/FndLookupValues/GetFndLookupValuesSelect2',
+    getAllWithSearch: '/api/services/app/FndLookupValues/GetAllWithSearch',
   };
 
   static readonly EcCustomerProfile = {
@@ -69,6 +73,7 @@ export class ApiEndpoints {
 
   static readonly EcCheckout = {
     placeOrder: '/api/services/app/EcCheckout/PlaceOrder',
+    validateCoupon: '/api/services/app/EcCheckout/ValidateCoupon',
   };
 
   static readonly EcWishlist = {

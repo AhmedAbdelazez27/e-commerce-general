@@ -6,10 +6,9 @@ import { finalize } from 'rxjs/operators';
 import { AuthTokenService } from '../../../core/services/auth-token.service';
 import { CartService } from '../../../core/services/cart.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { CheckoutApiService } from '../../checkout/services/checkout-api.service';
 import { CheckoutStateService } from '../../checkout/services/checkout-state.service';
-import { EcCouponDto } from '../models/ec-coupon.model';
 import { CartCouponState, CartLineItemView, CartOrderSummaryView } from '../models/cart-view.model';
-import { EcCouponsApiService } from '../services/ec-coupons-api.service';
 import { enrichCartItems } from '../utils/cart-enrichment.util';
 import {
   clearCouponStorage,
@@ -20,8 +19,7 @@ import {
 } from '../utils/coupon-storage.util';
 import {
   couponRejectMessageKey,
-  estimateCouponDiscount,
-  validateCouponForCart,
+  validateCouponApiResult,
 } from '../utils/coupon-validation.util';
 import { buildOrderSummary, resolveCartDiscountAmount } from '../utils/cart-summary.util';
 
@@ -33,12 +31,12 @@ export class CartPageFacade {
   private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
-  private readonly couponsApi = inject(EcCouponsApiService);
+  private readonly checkoutApi = inject(CheckoutApiService);
   private readonly checkoutState = inject(CheckoutStateService);
 
   readonly couponInput = signal('');
   readonly couponState = signal<CartCouponState>({ status: 'idle', code: '' });
-  private readonly appliedCouponMeta = signal<EcCouponDto | null>(null);
+  private readonly appliedDiscountAmount = signal<number | null>(null);
 
   readonly lineItems = computed((): CartLineItemView[] => {
     const cart = this.cartService.cart();
@@ -65,9 +63,9 @@ export class CartPageFacade {
     const subtotal =
       cart?.SubTotal != null && cart.SubTotal > 0 ? cart.SubTotal : lineSubtotal;
     const itemCount = this.lineItems().reduce((sum, item) => sum + item.quantity, 0);
-    const appliedCoupon =
-      this.couponState().status === 'applied' ? this.appliedCouponMeta() : null;
-    const discount = resolveCartDiscountAmount(cart, subtotal, appliedCoupon);
+    const appliedDiscount =
+      this.couponState().status === 'applied' ? this.appliedDiscountAmount() : null;
+    const discount = resolveCartDiscountAmount(cart, subtotal, appliedDiscount);
     const summary = buildOrderSummary(subtotal, itemCount, { discountAmount: discount });
 
     if (cart?.Total != null && cart.Total >= 0 && discount > 0) {
@@ -162,15 +160,29 @@ export class CartPageFacade {
       return;
     }
 
-    const subtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
+    const customerId = this.resolveCustomerId();
+    if (customerId <= 0) {
+      this.couponState.set({
+        status: 'invalid',
+        code,
+        messageKey: 'CART.COUPON.LOGIN_REQUIRED',
+      });
+      return;
+    }
+
+    const subtotal = this.resolveOrderSubtotal();
     this.couponState.set({ status: 'loading', code });
 
-    this.couponsApi
-      .getByCode(code)
+    this.checkoutApi
+      .validateCoupon({
+        couponCode: code,
+        totalOrder: subtotal,
+        customerId,
+      })
       .pipe(finalize(() => {}))
       .subscribe({
-        next: (coupon) => {
-          const validation = validateCouponForCart(coupon, subtotal, true);
+        next: (result) => {
+          const validation = validateCouponApiResult(result);
           if (!validation.valid) {
             this.couponState.set({
               status: 'invalid',
@@ -181,23 +193,23 @@ export class CartPageFacade {
             return;
           }
 
-          this.appliedCouponMeta.set(validation.coupon);
-          const estimatedSavings = estimateCouponDiscount(validation.coupon, subtotal);
+          const discountAmount = validation.discountAmount;
+          this.appliedDiscountAmount.set(discountAmount);
 
           this.couponState.set({
             status: 'applied',
             code,
-            appliedCode: validation.coupon.code,
+            appliedCode: code,
             messageKey: 'CART.COUPON.APPLIED',
             messageParams: {
-              code: validation.coupon.code,
-              savings: estimatedSavings,
+              code,
+              savings: discountAmount,
             },
           });
 
-          writeAppliedCouponCode(validation.coupon.code);
-          this.checkoutState.setCouponCode(validation.coupon.code);
-          this.cartService.refresh(validation.coupon.code);
+          writeAppliedCouponCode(code);
+          this.checkoutState.setCouponCode(code);
+          this.cartService.refresh(code);
         },
         error: () => {
           this.couponState.set({
@@ -212,7 +224,7 @@ export class CartPageFacade {
   removeCoupon(refreshCart = true): void {
     this.couponInput.set('');
     this.couponState.set({ status: 'idle', code: '' });
-    this.appliedCouponMeta.set(null);
+    this.appliedDiscountAmount.set(null);
     clearCouponStorage();
     this.checkoutState.setCouponCode(null);
     if (refreshCart) {
@@ -252,19 +264,56 @@ export class CartPageFacade {
       return;
     }
 
-    const coupon = this.appliedCouponMeta();
-    if (!coupon) {
+    const customerId = this.resolveCustomerId();
+    if (customerId <= 0) {
       return;
     }
 
-    const subtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
-    const validation = validateCouponForCart(coupon, subtotal, this.auth.isLoggedIn());
+    const code = state.appliedCode;
+    const subtotal = this.resolveOrderSubtotal();
 
-    if (!validation.valid && validation.reason === 'min_order') {
-      this.toast.warning(
-        this.translate.instant(couponRejectMessageKey(validation.reason), validation.params),
-      );
-      this.removeCoupon();
+    this.checkoutApi
+      .validateCoupon({
+        couponCode: code,
+        totalOrder: subtotal,
+        customerId,
+      })
+      .subscribe({
+        next: (result) => {
+          const validation = validateCouponApiResult(result);
+          if (!validation.valid) {
+            if (validation.reason === 'min_order' || validation.reason === 'min_order_remaining') {
+              this.toast.warning(
+                this.translate.instant(
+                  couponRejectMessageKey(validation.reason),
+                  validation.params,
+                ),
+              );
+            }
+            this.removeCoupon();
+            return;
+          }
+
+          this.appliedDiscountAmount.set(validation.discountAmount);
+        },
+        error: () => {
+          this.removeCoupon();
+        },
+      });
+  }
+
+  private resolveOrderSubtotal(): number {
+    const cart = this.cartService.cart();
+    const lineSubtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
+    return cart?.SubTotal != null && cart.SubTotal > 0 ? cart.SubTotal : lineSubtotal;
+  }
+
+  private resolveCustomerId(): number {
+    const raw = this.auth.getCustomerId();
+    if (!raw?.trim()) {
+      return 0;
     }
+    const id = Number(raw);
+    return Number.isFinite(id) ? id : 0;
   }
 }

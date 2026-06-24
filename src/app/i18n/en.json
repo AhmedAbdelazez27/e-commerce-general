@@ -11,6 +11,7 @@
     "WISHLIST": "Wishlist",
     "BRANDS": "Brands",
     "BRAND_DETAIL": "Brand",
+    "FAQ": "FAQ",
     "LOGIN": "Sign in",
     "REGISTER": "Register"
   },
@@ -63,6 +64,20 @@
     "PRODUCTS": "products",
     "SHOP_NOW": "Shop",
     "FEATURED": "Featured"
+  },
+  "FAQ": {
+    "PAGE_TITLE": "Frequently asked questions",
+    "PAGE_SUBTITLE": "Find answers to common questions",
+    "SEARCH_PLACEHOLDER": "Search questions…",
+    "ALL_CATEGORIES": "All categories",
+    "LOAD_FAILED": "Could not load FAQs. Please try again.",
+    "EMPTY": "No questions match your search.",
+    "WAS_HELPFUL": "Was this helpful?",
+    "HELPFUL": "Helpful",
+    "NOT_HELPFUL": "Not helpful",
+    "VOTE_THANKS": "Thanks for your feedback.",
+    "VOTE_FAILED": "Could not submit your vote. Please try again.",
+    "ATTACHMENT_PDF": "Download PDF attachment"
   },
   "PROFILE": {
     "LOAD_FAILED": "Could not load your profile. Please try again.",
@@ -170,6 +185,7 @@
     "NAV": {
       "REGION": "Shop by category",
       "ORDERS": "My orders",
+      "FAQ": "FAQ",
       "VIEW_ALL": "View all",
       "BAZAR": "Bazar",
       "BRANDS": "Brands",
@@ -446,6 +462,7 @@
       "EXPIRED": "This coupon has expired.",
       "USAGE_EXCEEDED": "This coupon has reached its usage limit.",
       "MIN_ORDER": "Minimum order of {{amount}} required for this coupon.",
+      "MIN_ORDER_REMAINING": "Add {{amount}} more to your order to use this coupon.",
       "LOGIN_REQUIRED": "Sign in to apply your coupon code.",
       "APPLIED": "{{code}} applied — you save {{savings}}."
     },
@@ -543,5 +560,14 @@
       "specifications": "Specifications",
       "shipping": "Shipping & returns"
     }
+  },
+  "PRODUCT_SHARE": {
+    "BUTTON": "Share",
+    "COPY_LINK": "Copy link",
+    "WHATSAPP": "WhatsApp",
+    "NATIVE": "Share…",
+    "COPIED": "Link copied",
+    "COPY_FAILED": "Could not copy link",
+    "SHARE_FAILED": "Could not share"
   }
 }

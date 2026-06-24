@@ -9,7 +9,9 @@ import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
+import { ProductShareMenuComponent } from '../../../../shared/components/product-share-menu/product-share-menu.component';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { buildProductShareUrl } from '../../../../shared/utils/product-share.util';
 import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { ProductDetailInfoComponent } from '../../components/product-detail-info/product-detail-info.component';
 import { ProductDetailRelatedComponent } from '../../components/product-detail-related/product-detail-related.component';
@@ -38,6 +40,7 @@ import {
     ProductGalleryComponent,
     ProductDetailInfoComponent,
     ProductDetailRelatedComponent,
+    ProductShareMenuComponent,
   ],
   templateUrl: './product-detail-page.component.html',
 })
@@ -80,6 +83,24 @@ export class ProductDetailPageComponent implements OnInit {
   });
 
   readonly currencyLabel = computed(() => this.translate.instant('PRODUCT_CARD.CURRENCY'));
+
+  readonly shareUrl = computed(() => {
+    const p = this.product();
+    if (!p || typeof window === 'undefined') {
+      return '';
+    }
+    return buildProductShareUrl(window.location.origin, p);
+  });
+
+  readonly shareMessage = computed(() => {
+    const p = this.product();
+    if (!p) {
+      return '';
+    }
+    const name = localizedProductName(p, this.language.currentLang());
+    const price = `${formatProductPrice(p.price)} ${this.currencyLabel()}`;
+    return `${name} — ${price}`;
+  });
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {

@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem 0;
+  gap: 16px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -61,7 +61,7 @@
 .checkout-stepper__item--complete .checkout-stepper__index {
   background: var(--bs-primary);
   border-color: var(--bs-primary);
-  color: #fff;
+  color: var(--portal-secondary);
 }
 
 .checkout-stepper__divider {

@@ -204,10 +204,10 @@ Example:
     "primaryColor": "#121212",
     "secondaryColor": "#666666",
     "accentColor": "#c41e3a",
-    "successColor": "#198754",
+    "successColor": "var(--portal-success)",
     "dangerColor": "#dc3545",
-    "warningColor": "#ffc107",
-    "backgroundColor": "#ffffff",
+    "warningColor": "var(--portal-warning)",
+    "backgroundColor": "var(--portal-background)",
     "fontFamily": "Manrope, system-ui, sans-serif",
     "borderRadius": "4px"
   }

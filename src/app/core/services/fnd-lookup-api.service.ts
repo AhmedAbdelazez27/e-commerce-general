@@ -4,8 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../constants/api-endpoints';
-import { resultFromAbpEnvelope } from '../utils/api-envelope.util';
-import { FndLookupSelect2Item, FndLookupSelect2Result } from '../models/fnd-lookup.model';
+import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../utils/api-envelope.util';
+import { FndLookupSelect2Item, FndLookupSelect2Result, FndLookupValueDto } from '../models/fnd-lookup.model';
 
 const EMPTY_SELECT2: FndLookupSelect2Result = { total: 0, results: [] };
 
@@ -39,6 +39,77 @@ export class FndLookupApiService {
   getPaymentMethods(lang: string): Observable<FndLookupSelect2Item[]> {
     return this.getSelect2('PaymentMethod', lang).pipe(map((result) => result.results));
   }
+
+  getAllWithSearch(lookupCode: string, lookupType: string): Observable<FndLookupValueDto[]> {
+    const params = new HttpParams().set('lookupCode', lookupCode).set('lookupType', lookupType);
+
+    return this.http.get<unknown>(ApiEndpoints.FndLookupValues.getAllWithSearch, { params }).pipe(
+      map((res) =>
+        resultArrayFromAbpEnvelope<unknown>(res)
+          .map(normalizeLookupValue)
+          .filter((item): item is FndLookupValueDto => item != null),
+      ),
+      catchError(() => of([])),
+    );
+  }
+
+  getFaqCategories(): Observable<FndLookupValueDto[]> {
+    return this.getAllWithSearch('EcFAQs', 'EcFAQsCategory');
+  }
+}
+
+function normalizeLookupValue(raw: unknown): FndLookupValueDto | null {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+
+  const item = raw as Record<string, unknown>;
+  const id = typeof item['id'] === 'number' ? item['id'] : typeof item['Id'] === 'number' ? item['Id'] : null;
+  const nameEn =
+    typeof item['nameEn'] === 'string'
+      ? item['nameEn']
+      : typeof item['NameEn'] === 'string'
+        ? item['NameEn']
+        : '';
+  const nameAr =
+    typeof item['nameAr'] === 'string'
+      ? item['nameAr']
+      : typeof item['NameAr'] === 'string'
+        ? item['NameAr']
+        : '';
+  const lookupCode =
+    typeof item['lookupCode'] === 'string'
+      ? item['lookupCode']
+      : typeof item['LookupCode'] === 'string'
+        ? item['LookupCode']
+        : '';
+  const lookupType =
+    typeof item['lookupType'] === 'string'
+      ? item['lookupType']
+      : typeof item['LookupType'] === 'string'
+        ? item['LookupType']
+        : '';
+
+  if (id == null) {
+    return null;
+  }
+
+  const yesNoRaw = item['yesNo'] ?? item['YesNo'];
+  const yesNo =
+    typeof yesNoRaw === 'boolean' ? yesNoRaw : yesNoRaw === 1 ? true : yesNoRaw === 0 ? false : undefined;
+
+  if (yesNo === false) {
+    return null;
+  }
+
+  return {
+    id,
+    nameEn: nameEn.trim(),
+    nameAr: nameAr.trim(),
+    lookupCode: lookupCode.trim(),
+    lookupType: lookupType.trim(),
+    yesNo,
+  };
 }
 
 function normalizeSelect2Result(raw: unknown): FndLookupSelect2Result {

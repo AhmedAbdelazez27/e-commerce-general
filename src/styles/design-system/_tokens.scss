@@ -4,16 +4,17 @@
 
 :root {
   // — Portal theme (GetPortalConfiguration) — runtime via PortalThemeService —
-  --portal-primary: #775a19;
+  --portal-primary: #114d7d;
   --portal-secondary: #4e5f7c;
-  --portal-accent: #d24858;
-  --portal-success: #198754;
-  --portal-danger: #d24858;
-  --portal-warning: #ffc107;
+  --portal-accent: #1b6fec;
+  --portal-success: #20965f;
+  --portal-danger: #ff8f9c;
+  --portal-warning: #f3bc16;
   --portal-background: #f9f9f7;
   --portal-text: #1a1a1a;
   --portal-header-bg: #ffffff;
-  --portal-footer-bg: #775a19;
+  --portal-footer-bg: #f9f9f7;
+  --portal-body-bg: #f9f9f7;
   --portal-radius: 0.25rem;
   --portal-font-family-ar: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --portal-font-family-en: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -23,36 +24,37 @@
   --portal-font-size-small: 14px;
 
   // — Brand (overridable via storefront.config.json) —
-  --ds-color-primary: var(--store-primary, #775a19);
-  --ds-color-primary-soft: #ffdea5;
+
+   --ds-color-primary: var(--portal-primary, #114d7d);
+  --portal-primary-soft: var(--portal-secondary);
   --ds-color-on-primary-soft: #261900;
-  --ds-color-secondary: var(--store-secondary, #4e5f7c);
-  --ds-color-accent: var(--store-accent, #D24858);
-  --ds-color-success: var(--store-success, #198754);
-  --ds-color-danger: var(--store-danger, #D24858);
-  --ds-color-warning: var(--store-warning, #ffc107);
+  --ds-color-secondary: var(--portal-secondary, #4e5f7c);
+  --ds-color-accent: var(--portal-accent, #1b6fec);
+  --ds-color-success: var(--portal-success, #20965f);
+  --ds-color-danger: var(--portal-danger, #ff8f9c);
+  --ds-color-warning: var(--portal-warning, #ffc107);
   --ds-color-rating: #e8a317;
   --ds-color-skeleton-mid: #ececec;
   --ds-color-media-fallback: #d4d4d4;
 
   // — Text —
-  --ds-color-text: #1a1a1a;
+ --ds-color-text: #1a1a1a;
   --ds-color-text-secondary: var(--ds-color-secondary);
   --ds-color-text-muted: #8a8a8a;
   --ds-color-text-inverse: #ffffff;
   --ds-color-text-on-primary: #ffffff;
   --ds-color-text-on-accent: #ffffff;
-  --ds-color-text-link: var(--ds-color-primary);
-  --ds-color-text-link-hover: color-mix(in srgb, var(--ds-color-primary) 75%, #000);
+  --ds-color-text-link: var(--portal-primary);
+  --ds-color-text-link-hover: color-mix(in srgb, var(--portal-primary) 75%, #000);
 
   // — Surfaces & borders —
   --ds-color-background: var(--store-background, #f9f9f7);
   --ds-color-background-subtle: #f4f4f2;
   --ds-color-background-elevated: #ffffff;
-  --ds-color-background-inverse: var(--ds-color-primary);
+  --ds-color-background-inverse: var(--portal-primary);
   --ds-color-border: #e5e5e5;
   --ds-color-border-strong: #d0d0d0;
-  --ds-color-border-focus: var(--ds-color-primary);
+  --ds-color-border-focus: var(--portal-primary);
   --ds-color-divider: #ebebeb;
 
   // — Radius (configurable base via --store-radius) —

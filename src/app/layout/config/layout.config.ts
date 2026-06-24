@@ -50,10 +50,9 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
   },
   utilityNavLinks: [
     {
-      id: 'orders',
-      labelKey: 'LAYOUT.NAV.ORDERS',
-      route: '/account/orders',
-      requiresAuth: true,
+      id: 'faq',
+      labelKey: 'LAYOUT.NAV.FAQ',
+      route: '/faq',
     },
   ],
   footer: {
@@ -65,7 +64,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     customerServiceLinks: [
       { id: 'orders', labelKey: 'LAYOUT.FOOTER.ORDERS', route: '/account/orders' },
       { id: 'contact', labelKey: 'LAYOUT.FOOTER.CONTACT', route: '/home' },
-      { id: 'faq', labelKey: 'LAYOUT.FOOTER.FAQ', route: '/home' },
+      { id: 'faq', labelKey: 'LAYOUT.FOOTER.FAQ', route: '/faq' },
     ],
     socialLinks: [
       {

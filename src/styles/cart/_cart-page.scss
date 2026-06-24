@@ -112,7 +112,7 @@
     text-decoration: none;
 
     &:hover {
-      color: var(--ds-color-primary);
+      color: var(--portal-primary);
     }
   }
 }
@@ -258,7 +258,7 @@
   }
 
   &--discount dd {
-    color: var(--ds-color-accent);
+    color: var(--portal-danger);
   }
 
   &--total {
