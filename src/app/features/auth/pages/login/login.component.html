@@ -46,13 +46,54 @@
             <label class="form-check-label" for="rememberMe">{{ 'AUTH.REMEMBER_ME' | translate }}</label>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading()">
+          <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading() || socialLoading()">
             @if (loading()) {
               {{ 'COMMON.LOADING' | translate }}
             } @else {
               {{ 'PAGE.LOGIN' | translate }}
             }
           </button>
+
+          @if (showSocialLogin) {
+            <div class="auth-social-divider my-3">
+              <span>{{ 'AUTH.OR_CONTINUE_WITH' | translate }}</span>
+            </div>
+            <div class="d-grid gap-2 mb-3">
+              @if (showGoogleLogin) {
+                <div class="auth-social-btn-wrap position-relative">
+                  <span
+                    class="btn btn-outline-secondary auth-social-btn w-100 auth-social-btn--google-visual"
+                    [class.pe-none]="loading() || socialLoading()"
+                  >
+                    @if (socialLoading()) {
+                      {{ 'COMMON.LOADING' | translate }}
+                    } @else {
+                      {{ 'AUTH.SIGN_IN_WITH_GOOGLE' | translate }}
+                    }
+                  </span>
+                  <div
+                    #googleSignInHost
+                    class="auth-google-signin-host"
+                    [class.auth-google-signin-host--disabled]="loading() || socialLoading()"
+                  ></div>
+                </div>
+              }
+              @if (showFacebookLogin) {
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary auth-social-btn"
+                  [disabled]="loading() || socialLoading()"
+                  (click)="loginWithFacebook()"
+                >
+                  @if (socialLoading()) {
+                    {{ 'COMMON.LOADING' | translate }}
+                  } @else {
+                    {{ 'AUTH.SIGN_IN_WITH_FACEBOOK' | translate }}
+                  }
+                </button>
+              }
+            </div>
+          }
 
           <p class="text-center mb-2">
             <a routerLink="/auth/register">{{ 'AUTH.CREATE_ACCOUNT' | translate }}</a>

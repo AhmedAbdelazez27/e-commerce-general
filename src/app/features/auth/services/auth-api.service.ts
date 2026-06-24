@@ -6,6 +6,7 @@ import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { SKIP_AUTH, SKIP_UNAUTHORIZED_HANDLING } from '../../../core/http/http-context.tokens';
 import { TokenAuthRequest } from '../models/login.models';
 import { RegisterECommerceCustomerRequest, RegisterFormValue } from '../models/register.models';
+import { ExternalAuthenticateRequest } from '../models/external-auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
@@ -13,6 +14,10 @@ export class AuthApiService {
 
   authenticate(credentials: TokenAuthRequest): Observable<unknown> {
     return this.postAnonymous(ApiEndpoints.Auth.authenticate, credentials);
+  }
+
+  externalAuthenticate(body: ExternalAuthenticateRequest): Observable<unknown> {
+    return this.postAnonymous(ApiEndpoints.Auth.externalAuthenticateECommerce, body);
   }
 
   register(form: RegisterFormValue, sessionId: string | null): Observable<unknown> {

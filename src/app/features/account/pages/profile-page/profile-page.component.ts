@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -35,6 +35,12 @@ export class ProfilePageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  readonly completeProfileMode = signal(
+    this.route.snapshot.queryParamMap.get('completeProfile') === '1',
+  );
 
   readonly loading = signal(true);
   readonly profile = signal<CustomerProfileDto | null>(null);
@@ -155,6 +161,12 @@ export class ProfilePageComponent {
         next: (updated) => {
           if (updated) {
             this.profile.set(updated);
+          }
+          if (this.completeProfileMode()) {
+            this.completeProfileMode.set(false);
+            this.toastr.success(this.translate.instant('PROFILE.COMPLETE_PROFILE_SUCCESS'));
+            void this.router.navigateByUrl('/home');
+            return;
           }
           this.toastr.success(this.translate.instant('PROFILE.UPDATED'));
           this.cancelProfileEdit();
@@ -280,6 +292,9 @@ export class ProfilePageComponent {
           this.profile.set(payload);
           if (payload?.id) {
             this.loadAddresses();
+          }
+          if (this.completeProfileMode() && payload && !payload.mobile?.trim()) {
+            this.startProfileEdit();
           }
         },
         error: () => {

@@ -13,6 +13,12 @@
 
   <h1 class="h2 mb-3">{{ 'PAGE.PROFILE' | translate }}</h1>
 
+  @if (completeProfileMode()) {
+    <div class="alert alert-info mb-3" role="status">
+      {{ 'PROFILE.COMPLETE_PROFILE_BANNER' | translate }}
+    </div>
+  }
+
   @if (loading()) {
   <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
   } @else if (!profile()) {

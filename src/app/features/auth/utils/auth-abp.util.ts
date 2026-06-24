@@ -119,6 +119,36 @@ export function parseTokenAuthEnvelopeDetailed(
   };
 }
 
+function readBoolean(obj: JsonRecord, ...keys: string[]): boolean {
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === 'boolean') {
+      return value;
+    }
+  }
+  return false;
+}
+
+/** Maps ExternalAuthenticateECommerce `result` to session + profile-completion flag. */
+export function parseExternalAuthEnvelopeDetailed(
+  res: unknown,
+): { loginData: LoginDataDto; customerId: string | null; requiresProfileCompletion: boolean } | null {
+  const parsed = parseTokenAuthEnvelopeDetailed(res);
+  if (!parsed) {
+    return null;
+  }
+
+  const result = resultFromAbpEnvelope<JsonRecord>(res);
+  const requiresProfileCompletion = result
+    ? readBoolean(result, 'requiresProfileCompletion', 'RequiresProfileCompletion')
+    : false;
+
+  return {
+    ...parsed,
+    requiresProfileCompletion,
+  };
+}
+
 export function splitFullName(fullName: string): { name: string; surname: string } {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) {

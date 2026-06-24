@@ -3,6 +3,7 @@ export class ApiEndpoints {
     authenticate: '/api/TokenAuth/Authenticate',
     registerECommerceCustomer: '/api/TokenAuth/RegisterECommerceCustomer',
     getECommerceCustomerProfile: '/api/TokenAuth/GetECommerceCustomerProfile',
+    externalAuthenticateECommerce: '/api/TokenAuth/ExternalAuthenticateECommerce',
   };
 
   static readonly Catalog = {

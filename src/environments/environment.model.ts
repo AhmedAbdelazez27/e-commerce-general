@@ -9,4 +9,10 @@ export interface AppEnvironment {
   apiBaseUrl: string;
   appName: string;
   defaultLang: string;
+  /** Google Identity Services Web client ID (must match backend). */
+  googleClientId?: string;
+  /** Facebook Login App ID (must match backend). */
+  facebookAppId?: string;
+  /** Show social login buttons when client IDs are configured. */
+  enableSocialLogin?: boolean;
 }

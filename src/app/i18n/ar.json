@@ -39,7 +39,20 @@
     "REGISTER_FAILED": "فشل التسجيل. حاول مرة أخرى.",
     "SESSION_EXPIRED": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
     "CONTINUE_WITHOUT_LOGIN": "متابعة التسوق بدون تسجيل",
-    "STORE_NAV": "تنقل المتجر"
+    "STORE_NAV": "تنقل المتجر",
+    "OR_CONTINUE_WITH": "أو تابع باستخدام",
+    "SIGN_IN_WITH_GOOGLE": "المتابعة مع Google",
+    "SIGN_IN_WITH_FACEBOOK": "المتابعة مع Facebook",
+    "EXTERNAL_LOGIN_FAILED": "فشل تسجيل الدخول الخارجي. حاول مرة أخرى.",
+    "EXTERNAL_LOGIN_CANCELLED": "تم إلغاء تسجيل الدخول.",
+    "EXTERNAL_GOOGLE_UNAVAILABLE": "تسجيل Google غير متاح. حاول مرة أخرى أو استخدم البريد.",
+    "EXTERNAL_NOT_CONFIGURED": "تسجيل الدخول الاجتماعي غير مُعدّ لهذا المتجر.",
+    "EXTERNAL_INVALID_PROVIDER": "مزود تسجيل غير صالح. تواصل مع الدعم.",
+    "EXTERNAL_INVALID_FACEBOOK": "فشل تسجيل Facebook. حاول مرة أخرى.",
+    "EXTERNAL_INVALID_GOOGLE": "فشل تسجيل Google. حاول مرة أخرى.",
+    "EXTERNAL_EMAIL_REQUIRED": "البريد الإلكتروني مطلوب. اسمح بالبريد أو استخدم حساباً آخر.",
+    "EXTERNAL_CREATE_USER_FAILED": "تعذر إنشاء الحساب. حاول مرة أخرى أو تواصل مع الدعم.",
+    "EXTERNAL_USER_INACTIVE": "هذا الحساب غير نشط. تواصل مع الدعم."
   },
   "COMMON": {
     "REFRESH": "تحديث",
@@ -106,7 +119,9 @@
     "ADDRESS_DELETE_FAILED": "تعذر حذف العنوان. حاول مرة أخرى.",
     "UPDATED": "تم تحديث الملف الشخصي بنجاح.",
     "UPDATE_FAILED": "تعذر تحديث الملف الشخصي. حاول مرة أخرى.",
-    "UPDATE_FORM_INVALID": "يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح."
+    "UPDATE_FORM_INVALID": "يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح.",
+    "COMPLETE_PROFILE_BANNER": "أضف رقم جوالك لإكمال حسابك.",
+    "COMPLETE_PROFILE_SUCCESS": "اكتمل ملفك الشخصي. أهلاً بك!"
   },
   "ORDERS": {
     "TITLE": "طلباتي",

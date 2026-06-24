@@ -1,30 +1,43 @@
-import { Component, inject, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
+import { APP_ENVIRONMENT } from '../../../../core/tokens/app-environment.token';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { TenantService } from '../../../../core/services/tenant.service';
 import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
+import { ExternalAuthService } from '../../services/external-auth.service';
+import { SocialAuthSdkService } from '../../services/social-auth-sdk.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
 import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
-import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, TranslateModule, AuthPageHeaderComponent],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly authApi = inject(AuthApiService);
+  private readonly externalAuth = inject(ExternalAuthService);
+  private readonly socialSdk = inject(SocialAuthSdkService);
+  private readonly env = inject(APP_ENVIRONMENT);
   private readonly tokens = inject(AuthTokenService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -34,6 +47,15 @@ export class LoginComponent {
   private readonly tenants = inject(TenantService);
 
   readonly loading = signal(false);
+  readonly socialLoading = signal(false);
+  readonly showSocialLogin =
+    !!this.env.enableSocialLogin &&
+    (this.socialSdk.hasGoogle || this.socialSdk.hasFacebook);
+  readonly showGoogleLogin = this.socialSdk.hasGoogle;
+  readonly showFacebookLogin = this.socialSdk.hasFacebook;
+
+  @ViewChild('googleSignInHost') private googleSignInHost?: ElementRef<HTMLElement>;
+  private unmountGoogleButton?: () => void;
 
   readonly form = this.fb.nonNullable.group({
     userNameOrEmailAddress: ['', [Validators.required, Validators.email]],
@@ -43,6 +65,50 @@ export class LoginComponent {
 
   continueUrl(): string {
     return resolveAuthContinueUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.showGoogleLogin || !this.googleSignInHost) {
+      return;
+    }
+
+    this.unmountGoogleButton = this.socialSdk.mountGoogleSignInButton(
+      this.googleSignInHost.nativeElement,
+      {
+        onClick: () => {
+          if (this.loading() || this.socialLoading()) {
+            return;
+          }
+          this.socialLoading.set(true);
+        },
+        onCredential: (idToken) => {
+          this.externalAuth
+            .loginWithGoogleIdToken(idToken, this.route.snapshot.queryParamMap.get('returnUrl'))
+            .pipe(finalize(() => this.socialLoading.set(false)))
+            .subscribe({
+              error: () => undefined,
+            });
+        },
+        onError: () => {
+          this.socialLoading.set(false);
+        },
+      },
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.unmountGoogleButton?.();
+  }
+
+  loginWithFacebook(): void {
+    if (this.loading() || this.socialLoading()) {
+      return;
+    }
+    this.socialLoading.set(true);
+    this.externalAuth
+      .loginWithFacebook(this.route.snapshot.queryParamMap.get('returnUrl'))
+      .pipe(finalize(() => this.socialLoading.set(false)))
+      .subscribe();
   }
 
   submit(): void {
@@ -77,7 +143,6 @@ export class LoginComponent {
           this.tokens.saveLoginData(parsed.loginData, rememberMe);
           this.tokens.saveCustomerId(parsed.customerId, rememberMe);
 
-          // Load profile (to resolve commerce customer id) if missing.
           if (!parsed.customerId) {
             return this.authApi.getECommerceCustomerProfile().pipe(
               switchMap((profileRes) => {

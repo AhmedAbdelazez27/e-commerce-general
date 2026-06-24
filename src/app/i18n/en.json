@@ -39,7 +39,20 @@
     "REGISTER_FAILED": "Registration failed. Please try again.",
     "SESSION_EXPIRED": "Your session has expired. Please sign in again.",
     "CONTINUE_WITHOUT_LOGIN": "Continue without signing in",
-    "STORE_NAV": "Store navigation"
+    "STORE_NAV": "Store navigation",
+    "OR_CONTINUE_WITH": "Or continue with",
+    "SIGN_IN_WITH_GOOGLE": "Continue with Google",
+    "SIGN_IN_WITH_FACEBOOK": "Continue with Facebook",
+    "EXTERNAL_LOGIN_FAILED": "External sign-in failed. Please try again.",
+    "EXTERNAL_LOGIN_CANCELLED": "Sign-in was cancelled.",
+    "EXTERNAL_GOOGLE_UNAVAILABLE": "Google sign-in is unavailable. Try again or use email.",
+    "EXTERNAL_NOT_CONFIGURED": "Social sign-in is not configured for this store.",
+    "EXTERNAL_INVALID_PROVIDER": "Invalid sign-in provider. Please contact support.",
+    "EXTERNAL_INVALID_FACEBOOK": "Facebook sign-in failed. Please try again.",
+    "EXTERNAL_INVALID_GOOGLE": "Google sign-in failed. Please try again.",
+    "EXTERNAL_EMAIL_REQUIRED": "An email address is required. Grant email permission or use another account.",
+    "EXTERNAL_CREATE_USER_FAILED": "Could not create your account. Please try again or contact support.",
+    "EXTERNAL_USER_INACTIVE": "This account is inactive. Please contact support."
   },
   "COMMON": {
     "REFRESH": "Refresh",
@@ -106,7 +119,9 @@
     "ADDRESS_DELETE_FAILED": "Could not delete the address. Please try again.",
     "UPDATED": "Profile updated successfully.",
     "UPDATE_FAILED": "Could not update your profile. Please try again.",
-    "UPDATE_FORM_INVALID": "Please fill in all required fields correctly."
+    "UPDATE_FORM_INVALID": "Please fill in all required fields correctly.",
+    "COMPLETE_PROFILE_BANNER": "Add your mobile number to complete your account.",
+    "COMPLETE_PROFILE_SUCCESS": "Your profile is complete. Welcome!"
   },
   "ORDERS": {
     "TITLE": "My orders",

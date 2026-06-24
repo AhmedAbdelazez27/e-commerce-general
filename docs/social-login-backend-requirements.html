@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>مطلوب من الباك — تسجيل الدخول الاجتماعي</title>
+  <style>
+    @page { margin: 2cm; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      font-size: 13pt;
+      line-height: 1.6;
+      color: #1a1a1a;
+      max-width: 18cm;
+      margin: 0 auto;
+      padding: 1.5cm;
+    }
+    h1 {
+      font-size: 18pt;
+      border-bottom: 2px solid #114d7d;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.25rem;
+      color: #114d7d;
+    }
+    .subtitle {
+      color: #555;
+      margin-bottom: 1.5rem;
+      font-size: 11pt;
+    }
+    h2 {
+      font-size: 13pt;
+      background: #f4f4f2;
+      padding: 0.4rem 0.6rem;
+      border-right: 4px solid #114d7d;
+      margin-top: 1.25rem;
+    }
+    .values {
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      font-size: 11pt;
+      direction: ltr;
+      text-align: left;
+    }
+    ul { margin: 0.4rem 0; padding-right: 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+    .origins {
+      background: #f9f9f7;
+      border: 1px solid #ddd;
+      padding: 0.6rem 1rem;
+      font-family: Consolas, monospace;
+      font-size: 11pt;
+      direction: ltr;
+      text-align: left;
+      margin: 0.5rem 0;
+    }
+    .checklist { list-style: none; padding-right: 0; }
+    .checklist li::before { content: "☐  "; }
+    .error-box {
+      background: #fff5f5;
+      border: 1px solid #ff8f9c;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+    .error-code { font-family: Consolas, monospace; font-weight: bold; direction: ltr; display: inline-block; }
+    .note { font-size: 10.5pt; color: #666; }
+  </style>
+</head>
+<body>
+
+  <h1>مطلوب من الباك / DevOps</h1>
+  <p class="subtitle">تسجيل الدخول الاجتماعي — E-Commerce Frontend</p>
+
+  <h2>القيم المعتمدة</h2>
+  <div class="values">
+    <strong>Google ClientId (Web):</strong><br />
+    811170436036-5vi9egvrnv7hpa01vvpep4lidks8g4cl.apps.googleusercontent.com<br /><br />
+    <strong>Facebook AppId:</strong><br />
+    1256194259769527
+  </div>
+
+  <h2>1) Google Cloud Console</h2>
+  <ul>
+    <li>فتح OAuth Client من نوع <strong>Web application</strong> (نفس ClientId أعلاه)</li>
+    <li>المسار: <span dir="ltr">APIs &amp; Services → Credentials</span></li>
+    <li>إضافة في <strong>Authorized JavaScript origins</strong> (بدون <span dir="ltr">/</span> في الآخر):</li>
+  </ul>
+  <div class="origins">
+    http://localhost:4200<br />
+    http://compassint.ddns.net:PORT &nbsp; <span class="note">← حسب بورت الفرونت الفعلي</span><br />
+    https://DOMAIN &nbsp; <span class="note">← دومين الإنتاج</span>
+  </div>
+  <p class="note">Google Sign-In يحتاج JavaScript origins — ليس Redirect URIs فقط.</p>
+
+  <h2>2) Facebook Developers</h2>
+  <ul>
+    <li>إضافة المختبرين كـ <strong>Testers</strong> إذا التطبيق في Development mode</li>
+    <li>ضبط App Domains و Facebook Login لـ localhost ودومين السيرفر/الإنتاج</li>
+  </ul>
+
+  <h2>3) تأكيد على السيرفر</h2>
+  <ul class="checklist">
+    <li>Google.ClientId = القيمة أعلاه</li>
+    <li>Facebook.AppId = القيمة أعلاه</li>
+    <li>POST /api/TokenAuth/ExternalAuthenticateECommerce يعمل مع header Abp.TenantId</li>
+  </ul>
+
+  <h2>خطأ حالي من Google (للمرجع)</h2>
+  <div class="error-box">
+    <span class="error-code">Error 400: origin_mismatch</span><br /><br />
+    السبب: الـ JavaScript origin غير مسجّل في Google Console على نفس Web Client.
+  </div>
+
+</body>
+</html>
