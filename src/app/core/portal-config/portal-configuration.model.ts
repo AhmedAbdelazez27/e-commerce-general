@@ -43,6 +43,7 @@ export interface PortalConfiguration {
   portalNameEn: string;
   portalDescriptionAr: string;
   portalDescriptionEn: string;
+  portalBaseUrl: string;
   logoUrl: string;
   darkLogoUrl: string;
   mobileLogoUrl: string;

@@ -1,4 +1,5 @@
 import type { AppLang } from '../../../core/services/language.service';
+import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import { PublicHomeSliderDto } from '../../../layout/models/catalog-public.model';
 import { SHOP_ROUTE } from '../../../shared/utils/category-shop-link.util';
 import { HomeHeroSlide } from '../models/home.model';
@@ -34,7 +35,7 @@ export function resolveSliderImageUrl(
     }
   }
 
-  return raw;
+  return resolveAttachmentUrl(raw) ?? SLIDER_PLACEHOLDER_IMAGE;
 }
 
 function localizedField(

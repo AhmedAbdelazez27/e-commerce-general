@@ -13,7 +13,7 @@ type TenantAvailabilityResult = {
 
 const STORAGE_TENANCY = 'tenancy_name';
 const STORAGE_TENANT_ID = 'tenant_id';
-const LOCALHOST_DEFAULT_TENANCY = 'compassint';
+const LOCALHOST_DEFAULT_TENANCY = 'compassint';//compassint
 
 /** ABP TenantAvailabilityState.Available */
 const TENANT_STATE_AVAILABLE = 1;

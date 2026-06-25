@@ -1,4 +1,5 @@
 import type { CartDto, CartItemDto } from '../models/cart.model';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -79,9 +80,13 @@ function normalizeCartItem(raw: unknown): CartItemDto | null {
     VariantNameAr: readString(o, 'VariantNameAr', 'variantNameAr'),
     VariantNameEn: readString(o, 'VariantNameEn', 'variantNameEn'),
     VariantSku: readString(o, 'VariantSku', 'variantSku', 'variantSKU', 'VariantSKU'),
-    ProductImageUrl: readString(o, 'ProductImageUrl', 'productImageUrl'),
-    ProductVariantImageUrl: readString(o, 'ProductVariantImageUrl', 'productVariantImageUrl'),
-    ImageUrl: readString(o, 'ImageUrl', 'imageUrl'),
+    ProductImageUrl: resolveAttachmentUrlOptional(
+      readString(o, 'ProductImageUrl', 'productImageUrl'),
+    ),
+    ProductVariantImageUrl: resolveAttachmentUrlOptional(
+      readString(o, 'ProductVariantImageUrl', 'productVariantImageUrl'),
+    ),
+    ImageUrl: resolveAttachmentUrlOptional(readString(o, 'ImageUrl', 'imageUrl')),
     Quantity: quantity,
     UnitPrice: unitPrice,
     FinalPrice: finalPrice ?? undefined,

@@ -1,4 +1,5 @@
 import { PublicCategoryDto } from '../../../layout/models/catalog-public.model';
+import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import {
   categoryShopQueryParams,
   SHOP_ROUTE,
@@ -19,7 +20,7 @@ export function mapCategoryToHomeShortcut(node: PublicCategoryDto): HomeCategory
     queryParams: categoryShopQueryParams(node),
     iconClass: DEFAULT_ICON,
     productCount: node.count ?? 0,
-    imageUrl: node.imageUrl ?? null,
+    imageUrl: resolveAttachmentUrl(node.imageUrl ?? node.iconUrl) ?? null,
     isFeatured: node.isFeatured,
   };
 }

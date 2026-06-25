@@ -15,4 +15,6 @@ export interface AppEnvironment {
   facebookAppId?: string;
   /** Show social login buttons when client IDs are configured. */
   enableSocialLogin?: boolean;
+  /** ERP attachments host when API returns relative `/appatt/...` paths. */
+  attachmentsBaseUrl?: string;
 }

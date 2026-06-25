@@ -1,4 +1,5 @@
 import { PublicBrandDto } from '../../../layout/models/catalog-public.model';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import {
   brandInitials,
   brandShopQueryParams,
@@ -24,7 +25,7 @@ export function mapPublicBrandToHomeBrandCard(dto: PublicBrandDto): HomeBrandCar
     name: dto.name,
     route: brandShopRoute(),
     queryParams: brandShopQueryParams(dto),
-    logoUrl: dto.logoUrl?.trim() || undefined,
+    logoUrl: resolveAttachmentUrlOptional(dto.logoUrl),
     initials: brandInitials(displayName),
   };
 }

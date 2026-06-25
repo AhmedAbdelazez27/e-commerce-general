@@ -6,6 +6,7 @@ import { finalize } from 'rxjs/operators';
 
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import { PublicCategoryDto } from '../../../layout/models/catalog-public.model';
 import { EcPublicCatalogApiService } from '../../../layout/services/ec-public-catalog-api.service';
 import {
@@ -121,7 +122,7 @@ export class CatalogListingFacade {
         slug: child.slug,
         nameEn: child.nameEn,
         nameAr: child.nameAr,
-        imageUrl: child.imageUrl ?? child.iconUrl ?? null,
+        imageUrl: resolveAttachmentUrl(child.imageUrl ?? child.iconUrl),
         count: child.count,
       }));
   });

@@ -22,8 +22,11 @@ import { CurrencyService } from './core/services/currency.service';
 import { TenantService } from './core/services/tenant.service';
 import { PortalConfigService } from './core/portal-config/portal-config.service';
 import { APP_ENVIRONMENT } from './core/tokens/app-environment.token';
+import { setAttachmentBaseUrl } from './core/utils/attachment-url.util';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
+
+setAttachmentBaseUrl(environment.attachmentsBaseUrl);
 
 function initAppFactory(
   tenants: TenantService,

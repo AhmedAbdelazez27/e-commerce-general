@@ -1,5 +1,6 @@
 import { AppLang } from '../../../core/services/language.service';
 import type { CurrencySelection } from '../../../core/models/currency.model';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import {
   CatalogBrandOption,
   CatalogCategoryOption,
@@ -205,7 +206,7 @@ export function mapSearchProductToListingProduct(
   const nameEn = item.nameEn?.trim() || item.name;
   const nameAr = item.nameAr?.trim() || item.name;
   const finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0;
-  const imageUrl = item.mainImageUrl?.trim() || undefined;
+  const imageUrl = resolveAttachmentUrlOptional(item.mainImageUrl);
 
   return {
     id: item.productId ?? item.id,
@@ -340,7 +341,9 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
     brandNameAr: readStringField(o, 'brandNameAr', 'BrandNameAr') ?? null,
     brandNameEn: readStringField(o, 'brandNameEn', 'BrandNameEn') ?? null,
     mainImageUrl:
-      readStringField(o, 'mainImageUrl', 'MainImageUrl', 'imageUrl', 'ImageUrl') ?? null,
+      resolveAttachmentUrlOptional(
+        readStringField(o, 'mainImageUrl', 'MainImageUrl', 'imageUrl', 'ImageUrl'),
+      ) ?? null,
     isFeatured: readBoolField(o, 'isFeatured', 'IsFeatured'),
     isNewArrival: readBoolField(o, 'isNewArrival', 'IsNewArrival'),
     isBestSeller: readBoolField(o, 'isBestSeller', 'IsBestSeller'),

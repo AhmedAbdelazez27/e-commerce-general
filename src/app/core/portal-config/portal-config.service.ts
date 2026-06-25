@@ -15,6 +15,11 @@ import {
 import { PortalConfiguration } from './portal-configuration.model';
 import { portalHasContactInfo } from './portal-contact.util';
 import { PortalThemeService } from '../portal-theme/portal-theme.service';
+import {
+  pickPortalAttachmentBaseUrl,
+  setAttachmentBaseUrl,
+} from '../utils/attachment-url.util';
+import { APP_ENVIRONMENT } from '../tokens/app-environment.token';
 
 /** Loads branding content from GetPortalConfiguration (logo, social, contact). */
 @Injectable({ providedIn: 'root' })
@@ -22,6 +27,7 @@ export class PortalConfigService {
   private readonly api = inject(EcPublicSettingsApiService);
   private readonly storefrontConfig = inject(StorefrontConfigService);
   private readonly portalTheme = inject(PortalThemeService);
+  private readonly env = inject(APP_ENVIRONMENT);
 
   private readonly configSignal = signal<PortalConfiguration>(structuredClone(DEFAULT_PORTAL_CONFIG));
   private readonly loadedSignal = signal(false);
@@ -65,9 +71,17 @@ export class PortalConfigService {
     } catch {
       this.loadErrorSignal.set(true);
     } finally {
+      this.syncAttachmentBaseUrl();
       this.portalTheme.apply(this.configSignal());
       this.loadedSignal.set(true);
     }
+  }
+
+  private syncAttachmentBaseUrl(): void {
+    const config = this.configSignal();
+    setAttachmentBaseUrl(
+      pickPortalAttachmentBaseUrl(config.portalBaseUrl) || this.env.attachmentsBaseUrl || '',
+    );
   }
 
   portalName(lang: AppLang): string {

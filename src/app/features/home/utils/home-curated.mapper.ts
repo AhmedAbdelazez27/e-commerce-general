@@ -1,4 +1,5 @@
 import type { AppLang } from '../../../core/services/language.service';
+import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import { PublicSearchProductDto } from '../../catalog/models/catalog-public-listing.model';
 import { HomeCuratedCollection } from '../models/home.model';
 
@@ -38,7 +39,7 @@ export function mapFeaturedProductToCuratedCollection(
     eyebrow,
     title: name,
     hoverCtaKey: 'HOME.CURATED.CTA',
-    imageUrl: item.mainImageUrl?.trim() || CURATED_IMAGE_PLACEHOLDER,
+    imageUrl: resolveAttachmentUrl(item.mainImageUrl) ?? CURATED_IMAGE_PLACEHOLDER,
     imageAlt: name,
     route: `/shop/${productId}`,
   };

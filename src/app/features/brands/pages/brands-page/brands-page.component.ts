@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 import { CatalogBreadcrumbComponent } from '../../../catalog/components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { CatalogBreadcrumbItem } from '../../../catalog/models/catalog-listing.model';
 import { LanguageService } from '../../../../core/services/language.service';
+import { resolveAttachmentUrl } from '../../../../core/utils/attachment-url.util';
 import { EcPublicCatalogApiService } from '../../../../layout/services/ec-public-catalog-api.service';
 import { PublicBrandDto } from '../../../../layout/models/catalog-public.model';
 import { BrandTileComponent } from '../../../../shared/components/brand-tile/brand-tile.component';
@@ -59,7 +60,7 @@ export class BrandsPageComponent {
   }
 
   logoUrl(brand: PublicBrandDto): string | null {
-    return brand.logoUrl?.trim() || null;
+    return resolveAttachmentUrl(brand.logoUrl);
   }
 
   shopQuery(brand: PublicBrandDto): Record<string, string> {

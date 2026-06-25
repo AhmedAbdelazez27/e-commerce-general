@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 import { ToastService } from '../../../../core/services/toast.service';
+import { resolveAttachmentUrl } from '../../../../core/utils/attachment-url.util';
 import { LanguageService } from '../../../../core/services/language.service';
 import { FndLookupApiService } from '../../../../core/services/fnd-lookup-api.service';
 import { CatalogBreadcrumbComponent } from '../../../catalog/components/catalog-breadcrumb/catalog-breadcrumb.component';
@@ -138,7 +139,7 @@ export class FaqPageComponent {
   }
 
   mediaUrl(value: string | null | undefined): string | null {
-    return value?.trim() || null;
+    return resolveAttachmentUrl(value);
   }
 
   private reloadCurrent(): void {

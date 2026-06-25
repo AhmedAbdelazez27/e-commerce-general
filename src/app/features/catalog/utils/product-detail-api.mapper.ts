@@ -1,4 +1,5 @@
 import { AppLang } from '../../../core/services/language.service';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
 import {
   PublicFinalPriceDto,
@@ -85,7 +86,9 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
     descriptionAr: readStringField(o, 'descriptionAr', 'DescriptionAr') ?? base.descriptionAr ?? null,
     descriptionEn: readStringField(o, 'descriptionEn', 'DescriptionEn') ?? base.descriptionEn ?? null,
     mainImageUrl:
-      readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl ?? null,
+      resolveAttachmentUrlOptional(
+        readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl,
+      ) ?? null,
   };
 }
 
@@ -174,7 +177,7 @@ export function mapProductImages(
     })
     .map((image) => ({
       id: String(image.id),
-      url: image.imageUrl ?? undefined,
+      url: resolveAttachmentUrlOptional(image.imageUrl),
       altEn: image.altText ?? altEn,
       altAr: image.altText ?? altAr,
     }));
@@ -257,7 +260,14 @@ export function mapPublicProductDetailsToProductDetail(
     overrides?.images ??
     mapProductImages(dto.images ?? [], nameEn, nameAr) ??
     (dto.mainImageUrl
-      ? [{ id: 'main', url: dto.mainImageUrl, altEn: nameEn, altAr: nameAr }]
+      ? [
+          {
+            id: 'main',
+            url: resolveAttachmentUrlOptional(dto.mainImageUrl),
+            altEn: nameEn,
+            altAr: nameAr,
+          },
+        ]
       : [{ id: 'placeholder', altEn: nameEn, altAr: nameAr }]);
 
   const specifications =
@@ -368,7 +378,7 @@ export function mapRelatedProductToListingProduct(
       (item.discountPercent != null && item.discountPercent > 0) ||
       (item.oldPrice != null && item.oldPrice > item.finalPrice),
     discountPercent: item.discountPercent ?? undefined,
-    imageUrl: item.mainImageUrl ?? undefined,
+    imageUrl: resolveAttachmentUrlOptional(item.mainImageUrl),
     createdAt: '',
   };
 }

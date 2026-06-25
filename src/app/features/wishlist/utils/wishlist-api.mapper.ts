@@ -1,4 +1,5 @@
 import type { EcWishlistDto, EcWishlistItem } from '../models/ec-wishlist.model';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -76,9 +77,21 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     0;
   const compareAtPrice = readNumber(o, 'compareAtPrice', 'CompareAtPrice', 'oldPrice', 'OldPrice');
 
-  const imageUrl =
-    readString(o, 'imageUrl', 'ImageUrl', 'image', 'Image', 'thumbnailUrl', 'ThumbnailUrl') ??
-    undefined;
+  const imageUrl = resolveAttachmentUrlOptional(
+    readString(
+      o,
+      'imageUrl',
+      'ImageUrl',
+      'productImageUrl',
+      'ProductImageUrl',
+      'productVariantImageUrl',
+      'ProductVariantImageUrl',
+      'image',
+      'Image',
+      'thumbnailUrl',
+      'ThumbnailUrl',
+    ),
+  );
 
   const slug = readString(o, 'slug', 'Slug') ?? undefined;
   const brandName = readString(o, 'brandName', 'BrandName') ?? undefined;

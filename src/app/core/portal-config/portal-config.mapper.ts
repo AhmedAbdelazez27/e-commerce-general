@@ -1,5 +1,9 @@
 import { SocialLink } from '../../layout/models/layout.model';
 import {
+  pickPortalAttachmentBaseUrl,
+  resolveAttachmentUrlOptional,
+} from '../utils/attachment-url.util';
+import {
   PortalConfigurationDto,
   PortalSocialMedia,
 } from './portal-configuration.model';
@@ -26,17 +30,20 @@ export function pickPortalNumber(value: number | undefined | null): number | und
 export function normalizePortalConfigurationDto(
   dto: PortalConfigurationDto,
 ): PortalConfigurationDto {
+  const portalBaseUrl = pickPortalAttachmentBaseUrl(dto.portalBaseUrl);
+
   return {
     ...dto,
     portalNameAr: pickPortalString(dto.portalNameAr),
     portalNameEn: pickPortalString(dto.portalNameEn),
     portalDescriptionAr: pickPortalString(dto.portalDescriptionAr),
     portalDescriptionEn: pickPortalString(dto.portalDescriptionEn),
-    logoUrl: pickPortalString(dto.logoUrl),
-    darkLogoUrl: pickPortalString(dto.darkLogoUrl),
-    mobileLogoUrl: pickPortalString(dto.mobileLogoUrl),
-    faviconUrl: pickPortalString(dto.faviconUrl),
-    splashScreenImageUrl: pickPortalString(dto.splashScreenImageUrl),
+    portalBaseUrl,
+    logoUrl: resolveAttachmentUrlOptional(dto.logoUrl, portalBaseUrl),
+    darkLogoUrl: resolveAttachmentUrlOptional(dto.darkLogoUrl, portalBaseUrl),
+    mobileLogoUrl: resolveAttachmentUrlOptional(dto.mobileLogoUrl, portalBaseUrl),
+    faviconUrl: resolveAttachmentUrlOptional(dto.faviconUrl, portalBaseUrl),
+    splashScreenImageUrl: resolveAttachmentUrlOptional(dto.splashScreenImageUrl, portalBaseUrl),
     primaryColor: pickPortalString(dto.primaryColor),
     secondaryColor: pickPortalString(dto.secondaryColor),
     accentColor: pickPortalString(dto.accentColor),

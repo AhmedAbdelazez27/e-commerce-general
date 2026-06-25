@@ -10,6 +10,7 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
   portalNameEn: 'E-Commerce Store',
   portalDescriptionAr: '',
   portalDescriptionEn: '',
+  portalBaseUrl: '',
   logoUrl: LAYOUT_CONFIG.branding.logoSrc,
   darkLogoUrl: LAYOUT_CONFIG.branding.logoSrc,
   mobileLogoUrl: LAYOUT_CONFIG.branding.logoSrc,
