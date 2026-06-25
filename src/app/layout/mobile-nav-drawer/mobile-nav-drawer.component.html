@@ -42,6 +42,7 @@
         <button type="button" [class.is-active]="currentLang() === 'en'" (click)="setLang('en')">EN</button>
       </div>
 
+    <!-- Currency selector hidden temporarily -->
       @if (showCurrencySelector()) {
         <label class="store-header__currency-field mb-3">
           <span class="store-header__currency-field-label">{{ 'LAYOUT.HEADER.CURRENCY' | translate }}</span>

@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { PortalConfiguration } from '../portal-config/portal-configuration.model';
 import { AppLang, LanguageService } from '../services/language.service';
-import { applyPortalFontFamily, applyPortalThemeToDocument } from './portal-theme-applier';
+import { applyPortalFontFamily, applyPortalFavicon, applyPortalThemeToDocument } from './portal-theme-applier';
 import { mapPortalConfigurationToTheme } from './portal-theme.mapper';
 import { PortalThemeTokens } from './portal-theme.model';
 
@@ -30,5 +30,6 @@ export class PortalThemeService {
 
   private applyTokens(tokens: PortalThemeTokens): void {
     applyPortalThemeToDocument(tokens, this.language.currentLang() as AppLang);
+    applyPortalFavicon(tokens.faviconUrl);
   }
 }

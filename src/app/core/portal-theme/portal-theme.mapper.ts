@@ -13,6 +13,15 @@ function resolveColor(value: string | undefined | null, fallback: string): strin
   return trimmed;
 }
 
+function resolveFaviconUrl(config: PortalConfiguration): string {
+  return (
+    config.faviconUrl?.trim() ||
+    config.mobileLogoUrl?.trim() ||
+    config.logoUrl?.trim() ||
+    ''
+  );
+}
+
 /** Map portal configuration to theme tokens (API-driven colors only). */
 export function mapPortalConfigurationToTheme(config: PortalConfiguration): PortalThemeTokens {
   return {
@@ -39,6 +48,6 @@ export function mapPortalConfigurationToTheme(config: PortalConfiguration): Port
     fontSizeHeading: config.fontSizeHeading || 30,
     fontSizeSmall: config.fontSizeSmall || 14,
     borderRadius: storefrontTheme.borderRadius || PORTAL_THEME_COLOR_DEFAULTS.borderRadius,
-    faviconUrl: config.faviconUrl,
+    faviconUrl: resolveFaviconUrl(config),
   };
 }

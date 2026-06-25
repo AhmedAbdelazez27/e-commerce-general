@@ -45,11 +45,16 @@ export function applyPortalFavicon(faviconUrl: string | undefined): void {
     return;
   }
 
-  let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-  if (!link) {
-    link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
+  const href = faviconUrl.trim();
+  const selectors = ['link[rel="icon"]', 'link[rel="shortcut icon"]'];
+
+  for (const selector of selectors) {
+    let link = document.querySelector<HTMLLinkElement>(selector);
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = selector.includes('shortcut') ? 'shortcut icon' : 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = href;
   }
-  link.href = faviconUrl;
 }
