@@ -117,10 +117,37 @@
   }
 }
 
-.cart-item__unit-price {
+.cart-item__prices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ds-space-2);
   margin: 0 0 var(--ds-space-2);
+}
+
+.cart-item__unit-price {
   font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-semibold);
   color: var(--portal-text);
+}
+
+.cart-item__unit-price--sale {
+  color: var(--portal-danger);
+}
+
+.cart-item__unit-compare {
+  font-size: var(--ds-font-size-xs);
+  color: var(--portal-text-muted);
+  text-decoration: line-through;
+}
+
+.cart-item__badge-sale {
+  padding: 0 var(--ds-space-1);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  color: var(--portal-text-on-accent);
+  background: var(--portal-danger);
+  border-radius: var(--ds-radius-sm);
 }
 
 .cart-item__unavailable-msg {
@@ -176,6 +203,16 @@
 .cart-item__subtotal-value {
   font-size: var(--ds-font-size-lg);
   font-weight: var(--ds-font-weight-semibold);
+}
+
+.cart-item__subtotal-value--sale {
+  color: var(--portal-danger);
+}
+
+.cart-item__subtotal-compare {
+  font-size: var(--ds-font-size-sm);
+  color: var(--portal-text-muted);
+  text-decoration: line-through;
 }
 
 // — Coupon —

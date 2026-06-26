@@ -21,7 +21,11 @@ import {
   couponRejectMessageKey,
   validateCouponApiResult,
 } from '../utils/coupon-validation.util';
-import { buildOrderSummary, resolveCartDiscountAmount } from '../utils/cart-summary.util';
+import {
+  buildOrderSummary,
+  cartItemsHaveEmbeddedProductDiscount,
+  resolveCartMerchandiseTotals,
+} from '../utils/cart-summary.util';
 
 @Injectable()
 export class CartPageFacade {
@@ -59,28 +63,21 @@ export class CartPageFacade {
 
   readonly orderSummary = computed((): CartOrderSummaryView => {
     const cart = this.cartService.cart();
-    const lineSubtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
-    const subtotal =
-      cart?.SubTotal != null && cart.SubTotal > 0 ? cart.SubTotal : lineSubtotal;
-    const itemCount = this.lineItems().reduce((sum, item) => sum + item.quantity, 0);
+    const lines = this.lineItems();
+    const itemCount = lines.reduce((sum, item) => sum + item.quantity, 0);
     const appliedDiscount =
       this.couponState().status === 'applied' ? this.appliedDiscountAmount() : null;
-    const discount = resolveCartDiscountAmount(cart, subtotal, appliedDiscount);
-    const summary = buildOrderSummary(subtotal, itemCount, { discountAmount: discount });
+    const merchandise = resolveCartMerchandiseTotals(
+      cart,
+      lines,
+      cart?.Items ?? [],
+      appliedDiscount,
+    );
 
-    if (cart?.Total != null && cart.Total >= 0 && discount > 0) {
-      const serverNet = cart.Total;
-      const deliveryFee = summary.deliveryFee;
-      const impliedNet = summary.subtotal - summary.discount;
-      if (Math.abs(serverNet - impliedNet) > 0.01 && serverNet < summary.subtotal) {
-        return {
-          ...summary,
-          total: serverNet + deliveryFee,
-        };
-      }
-    }
-
-    return summary;
+    return buildOrderSummary(merchandise.subtotal, itemCount, {
+      discountAmount: merchandise.discount,
+      merchandiseTotal: merchandise.merchandiseTotal,
+    });
   });
 
   constructor() {
@@ -305,6 +302,10 @@ export class CartPageFacade {
   private resolveOrderSubtotal(): number {
     const cart = this.cartService.cart();
     const lineSubtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
+    const rawItems = cart?.Items ?? [];
+    if (cartItemsHaveEmbeddedProductDiscount(rawItems)) {
+      return lineSubtotal;
+    }
     return cart?.SubTotal != null && cart.SubTotal > 0 ? cart.SubTotal : lineSubtotal;
   }
 

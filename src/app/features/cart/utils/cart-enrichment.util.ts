@@ -1,8 +1,36 @@
 import { CATALOG_LISTING_PRODUCTS } from '../../catalog/data/catalog-listing.mock';
+import { CatalogListingProduct } from '../../catalog/models/catalog-listing.model';
 import { CartItemDto } from '../models/cart.model';
 import { CartLineItemView } from '../models/cart-view.model';
 
 const productById = new Map(CATALOG_LISTING_PRODUCTS.map((p) => [p.id, p]));
+
+function resolveListUnitPrice(
+  item: CartItemDto,
+  catalog: CatalogListingProduct | undefined,
+  saleUnitPrice: number,
+): number | undefined {
+  if (item.FinalPrice != null && item.UnitPrice > item.FinalPrice) {
+    return item.UnitPrice;
+  }
+
+  if (catalog?.compareAtPrice != null && catalog.compareAtPrice > saleUnitPrice) {
+    return catalog.compareAtPrice;
+  }
+
+  return undefined;
+}
+
+function resolveLineDiscountPercent(
+  compareAtUnitPrice: number | undefined,
+  unitPrice: number,
+): number | undefined {
+  if (compareAtUnitPrice == null || compareAtUnitPrice <= unitPrice || unitPrice <= 0) {
+    return undefined;
+  }
+
+  return Math.round(((compareAtUnitPrice - unitPrice) / compareAtUnitPrice) * 100);
+}
 
 export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
   const cartDetailId = item.CartDetailId ?? 0;
@@ -13,6 +41,8 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
   const catalog =
     item.ProductId > 0 ? productById.get(item.ProductId) : undefined;
   const unitPrice = item.FinalPrice ?? item.UnitPrice ?? catalog?.price ?? 0;
+  const compareAtUnitPrice = resolveListUnitPrice(item, catalog, unitPrice);
+  const discountPercent = resolveLineDiscountPercent(compareAtUnitPrice, unitPrice);
   const quantity = Math.max(0, item.Quantity ?? 0);
   const lineTotal = item.LineTotal ?? unitPrice * quantity;
   const nameFromApi = item.ProductName?.trim();
@@ -36,6 +66,8 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
     brandEn: catalog?.brandNameEn ?? '',
     brandAr: catalog?.brandNameAr ?? '',
     unitPrice,
+    compareAtUnitPrice,
+    discountPercent,
     quantity,
     lineTotal,
     imageUrl: imageUrl || undefined,

@@ -54,6 +54,11 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
       labelKey: 'LAYOUT.NAV.FAQ',
       route: '/faq',
     },
+    {
+      id: 'contact',
+      labelKey: 'LAYOUT.NAV.CONTACT',
+      route: '/contact',
+    },
   ],
   footer: {
     companyLinks: [
@@ -63,7 +68,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     ],
     customerServiceLinks: [
       { id: 'orders', labelKey: 'LAYOUT.FOOTER.ORDERS', route: '/account/orders' },
-      { id: 'contact', labelKey: 'LAYOUT.FOOTER.CONTACT', route: '/home' },
+      { id: 'contact', labelKey: 'LAYOUT.FOOTER.CONTACT', route: '/contact' },
       { id: 'faq', labelKey: 'LAYOUT.FOOTER.FAQ', route: '/faq' },
     ],
     socialLinks: [

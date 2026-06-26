@@ -1,0 +1,182 @@
+<div class="container py-4 contact-page">
+  <app-catalog-breadcrumb [items]="breadcrumbs" />
+
+  <header class="contact-page__header">
+    <h1 class="contact-page__title">{{ 'CONTACT.PAGE_TITLE' | translate }}</h1>
+    <p class="contact-page__subtitle">{{ 'CONTACT.PAGE_SUBTITLE' | translate }}</p>
+  </header>
+
+  <div class="contact-page__layout">
+    <section class="contact-page__form-card" [attr.aria-label]="'CONTACT.FORM_TITLE' | translate">
+      <h2 class="contact-page__section-title">{{ 'CONTACT.FORM_TITLE' | translate }}</h2>
+
+      @if (submitted()) {
+        <div class="contact-page__success-state">
+          <span class="contact-page__success-icon" aria-hidden="true">
+            <i class="fa-solid fa-circle-check"></i>
+          </span>
+          <p class="contact-page__success-text">{{ 'CONTACT.SUBMIT_SUCCESS' | translate }}</p>
+          <button type="button" class="btn btn-outline-primary" (click)="resetForm()">
+            {{ 'CONTACT.SEND_ANOTHER' | translate }}
+          </button>
+        </div>
+      } @else {
+        <form class="contact-page__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="contact-name">{{ 'CONTACT.FIELD_NAME' | translate }}</label>
+              <input
+                id="contact-name"
+                type="text"
+                class="form-control"
+                formControlName="name"
+                [class.is-invalid]="fieldError('name')"
+                autocomplete="name"
+              />
+              @if (fieldError('name'); as err) {
+                <div class="invalid-feedback d-block">{{ err | translate }}</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="contact-email">{{ 'CONTACT.FIELD_EMAIL' | translate }}</label>
+              <input
+                id="contact-email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                [class.is-invalid]="fieldError('email')"
+                autocomplete="email"
+              />
+              @if (fieldError('email'); as err) {
+                <div class="invalid-feedback d-block">{{ err | translate }}</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="contact-phone">{{ 'CONTACT.FIELD_PHONE' | translate }}</label>
+              <input
+                id="contact-phone"
+                type="tel"
+                class="form-control"
+                formControlName="phone1"
+                [class.is-invalid]="fieldError('phone1')"
+                autocomplete="tel"
+              />
+              @if (fieldError('phone1'); as err) {
+                <div class="invalid-feedback d-block">{{ err | translate }}</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="contact-company">
+                {{ 'CONTACT.FIELD_COMPANY' | translate }}
+                <span class="contact-page__optional">{{ 'CONTACT.OPTIONAL' | translate }}</span>
+              </label>
+              <input
+                id="contact-company"
+                type="text"
+                class="form-control"
+                formControlName="companyName"
+                [class.is-invalid]="fieldError('companyName')"
+                autocomplete="organization"
+              />
+              @if (fieldError('companyName'); as err) {
+                <div class="invalid-feedback d-block">{{ err | translate }}</div>
+              }
+            </div>
+
+            <div class="col-12">
+              <label class="form-label" for="contact-message">{{ 'CONTACT.FIELD_MESSAGE' | translate }}</label>
+              <textarea
+                id="contact-message"
+                class="form-control"
+                rows="5"
+                formControlName="message"
+                [class.is-invalid]="fieldError('message')"
+              ></textarea>
+              @if (fieldError('message'); as err) {
+                <div class="invalid-feedback d-block">{{ err | translate }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="contact-page__actions">
+            <button type="submit" class="btn btn-primary contact-page__submit" [disabled]="loading()">
+              @if (loading()) {
+                <i class="fa-solid fa-spinner fa-spin-pulse" aria-hidden="true"></i>
+                {{ 'COMMON.LOADING' | translate }}
+              } @else {
+                <i class="fa-regular fa-paper-plane" aria-hidden="true"></i>
+                {{ 'CONTACT.SUBMIT' | translate }}
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+
+    @if (hasContactInfo()) {
+      <section class="contact-page__info-card" [attr.aria-label]="'CONTACT.INFO_TITLE' | translate">
+        <h2 class="contact-page__section-title">{{ 'CONTACT.INFO_TITLE' | translate }}</h2>
+        <ul class="contact-page__info-list">
+          @if (contactAddress()) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-solid fa-location-dot"></i>
+              </span>
+              <span class="contact-page__info-value">{{ contactAddress() }}</span>
+            </li>
+          }
+          @if (contactInfo().email) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-regular fa-envelope"></i>
+              </span>
+              <a class="contact-page__info-value" [href]="'mailto:' + contactInfo().email">{{ contactInfo().email }}</a>
+            </li>
+          }
+          @if (contactInfo().supportEmail && contactInfo().supportEmail !== contactInfo().email) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-regular fa-envelope"></i>
+              </span>
+              <a class="contact-page__info-value" [href]="'mailto:' + contactInfo().supportEmail">{{ contactInfo().supportEmail }}</a>
+            </li>
+          }
+          @if (contactInfo().phone) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-solid fa-phone"></i>
+              </span>
+              <a class="contact-page__info-value" [href]="'tel:' + contactInfo().phone">{{ contactInfo().phone }}</a>
+            </li>
+          }
+          @if (contactInfo().supportPhone && contactInfo().supportPhone !== contactInfo().phone) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-solid fa-phone"></i>
+              </span>
+              <a class="contact-page__info-value" [href]="'tel:' + contactInfo().supportPhone">{{ contactInfo().supportPhone }}</a>
+            </li>
+          }
+          @if (contactInfo().whatsApp) {
+            <li class="contact-page__info-item">
+              <span class="contact-page__info-icon" aria-hidden="true">
+                <i class="fa-brands fa-whatsapp"></i>
+              </span>
+              <a
+                class="contact-page__info-value"
+                [href]="'https://wa.me/' + contactInfo().whatsApp.replace(/\D/g, '')"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ contactInfo().whatsApp }}
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+</div>

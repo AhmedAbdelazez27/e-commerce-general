@@ -104,6 +104,10 @@ export class ApiEndpoints {
     profile: '/Customers/GetProfile',
   };
 
+  static readonly CrmContactUs = {
+    createByTenancyName: '/api/services/app/CrmContactUs/CreateByTenancyName',
+  };
+
   /** Default route after successful customer login. */
   static readonly postLoginUrl = '/account/profile';
 }

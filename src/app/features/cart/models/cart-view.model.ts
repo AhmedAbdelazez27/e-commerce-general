@@ -9,6 +9,8 @@ export interface CartLineItemView {
   brandEn: string;
   brandAr: string;
   unitPrice: number;
+  compareAtUnitPrice?: number;
+  discountPercent?: number;
   quantity: number;
   lineTotal: number;
   imageUrl?: string;

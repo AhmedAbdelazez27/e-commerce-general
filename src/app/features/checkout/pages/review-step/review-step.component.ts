@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { enrichCartItems } from '../../../cart/utils/cart-enrichment.util';
-import { resolveCartDiscountAmount } from '../../../cart/utils/cart-summary.util';
+import { resolveCartMerchandiseTotals } from '../../../cart/utils/cart-summary.util';
 import { CHECKOUT_CONFIG } from '../../config/checkout.config';
 import { CheckoutOrderSummaryComponent } from '../../components/checkout-order-summary/checkout-order-summary.component';
 import type { CustomerAddressDto } from '../../models/customer-address.model';
@@ -42,16 +42,14 @@ export class ReviewStepComponent implements OnInit {
 
   readonly totals = computed(() => {
     const cart = this.cart.cart();
-    const subtotal = this.lineItems().reduce((sum, item) => sum + item.lineTotal, 0);
-    const resolvedSubtotal =
-      cart?.SubTotal != null && cart.SubTotal > 0 ? cart.SubTotal : subtotal;
-    const discount = resolveCartDiscountAmount(cart, resolvedSubtotal, null);
+    const lines = this.lineItems();
+    const merchandise = resolveCartMerchandiseTotals(cart, lines, cart?.Items ?? [], null);
     const shippingAmount = this.checkoutState.shippingAmount();
     return {
-      subtotal: resolvedSubtotal,
-      discount,
+      subtotal: merchandise.subtotal,
+      discount: merchandise.discount,
       shippingAmount,
-      total: Math.max(0, resolvedSubtotal - discount) + shippingAmount,
+      total: merchandise.merchandiseTotal + shippingAmount,
     };
   });
 

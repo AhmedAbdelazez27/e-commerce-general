@@ -16,9 +16,22 @@
     <h2 class="cart-item__title">
       <a [routerLink]="['/shop', item().productId]">{{ displayTitle() }}</a>
     </h2>
-    <p class="cart-item__unit-price">
-      {{ formatPrice(item().unitPrice) }} {{ currencyLabel() }}
-    </p>
+    <div class="cart-item__prices">
+      <span
+        class="cart-item__unit-price"
+        [class.cart-item__unit-price--sale]="hasDiscount()"
+      >
+        {{ formatPrice(item().unitPrice) }} {{ currencyLabel() }}
+      </span>
+      @if (hasDiscount() && item().compareAtUnitPrice; as oldPrice) {
+        <span class="cart-item__unit-compare">
+          {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
+        </span>
+        @if (discountPercent(); as pct) {
+          <span class="cart-item__badge-sale">-{{ pct }}%</span>
+        }
+      }
+    </div>
 
     @if (!item().isAvailable) {
       <p class="cart-item__unavailable-msg">{{ 'CART.ITEM_UNAVAILABLE' | translate }}</p>
@@ -70,8 +83,16 @@
 
   <div class="cart-item__subtotal">
     <span class="cart-item__subtotal-label">{{ 'CART.SUBTOTAL' | translate }}</span>
-    <span class="cart-item__subtotal-value">
+    <span
+      class="cart-item__subtotal-value"
+      [class.cart-item__subtotal-value--sale]="hasDiscount()"
+    >
       {{ formatPrice(item().lineTotal) }} {{ currencyLabel() }}
     </span>
+    @if (compareAtLineTotal(); as oldTotal) {
+      <span class="cart-item__subtotal-compare">
+        {{ formatPrice(oldTotal) }} {{ currencyLabel() }}
+      </span>
+    }
   </div>
 </article>

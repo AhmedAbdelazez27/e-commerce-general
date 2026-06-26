@@ -35,6 +35,23 @@ export class CartItemRowComponent {
     return formatProductPrice(value);
   }
 
+  hasDiscount(): boolean {
+    const item = this.item();
+    return item.compareAtUnitPrice != null && item.compareAtUnitPrice > item.unitPrice;
+  }
+
+  discountPercent(): number | null {
+    return this.item().discountPercent ?? null;
+  }
+
+  compareAtLineTotal(): number | null {
+    const item = this.item();
+    if (!this.hasDiscount() || item.compareAtUnitPrice == null) {
+      return null;
+    }
+    return item.compareAtUnitPrice * item.quantity;
+  }
+
   decrement(): void {
     const i = this.item();
     this.quantityChange.emit({ cartDetailId: i.cartDetailId, quantity: i.quantity - 1 });
