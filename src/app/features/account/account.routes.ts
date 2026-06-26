@@ -25,6 +25,11 @@ export const accountRoutes: Routes = [
             (m) => m.OrderDetailPageComponent,
           ),
       },
+      {
+        path: 'returns',
+        loadChildren: () =>
+          import('../returns/returns.routes').then((m) => m.returnsRoutes),
+      },
     ],
   },
 ];

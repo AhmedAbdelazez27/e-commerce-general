@@ -2,6 +2,9 @@
   <div class="d-flex align-items-center justify-content-end mb-3 orders-bar">
   
     <div class="d-flex gap-2">
+      <a routerLink="/account/returns" class="btn btn-outline-secondary btn-sm">
+        {{ 'RETURNS.TITLE' | translate }}
+      </a>
       <button type="button" class="btn btn-outline-secondary btn-sm btn-refresh" (click)="reload()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path

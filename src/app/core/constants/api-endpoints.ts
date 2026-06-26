@@ -23,6 +23,7 @@ export class ApiEndpoints {
     productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
     searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
     productDetails: '/api/services/app/EcPublicCatalog/GetProductDetails',
+    productShareInfo: '/api/services/app/EcPublicCatalog/GetProductShareInfo',
     productVariants: '/api/services/app/EcPublicCatalog/GetProductVariants',
     productImages: '/api/services/app/EcPublicCatalog/GetProductImages',
     variantImages: '/api/services/app/EcPublicCatalog/GetVariantImages',
@@ -91,6 +92,12 @@ export class ApiEndpoints {
     update: '/api/services/app/EcCustomerAddresses/Update',
     delete: '/api/services/app/EcCustomerAddresses/Delete',
     getSingle: '/api/services/app/EcCustomerAddresses/GetSingle',
+  };
+
+  static readonly EcReturns = {
+    getAll: '/api/services/app/EcReturns/GetAll',
+    getSingle: '/api/services/app/EcReturns/GetSingle',
+    create: '/api/services/app/EcReturns/Create',
   };
 
   /** @deprecated Use EcOrders.placeOrder */

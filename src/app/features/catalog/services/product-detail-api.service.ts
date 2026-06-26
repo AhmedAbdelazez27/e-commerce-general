@@ -16,7 +16,9 @@ import {
   PublicProductVariantDto,
   PublicRelatedProductDto,
 } from '../models/catalog-public-product.model';
+import type { PublicProductShareInfoDto } from '../models/product-share-info.model';
 import { normalizePublicProductDetailsDto } from '../utils/product-detail-api.mapper';
+import { normalizeProductShareInfoDto } from '../utils/product-share-info-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class ProductDetailApiService {
@@ -46,6 +48,19 @@ export class ProductDetailApiService {
         map((res) => {
           const raw = resultFromAbpEnvelope<unknown>(res);
           return raw ? normalizePublicProductDetailsDto(raw) : null;
+        }),
+        catchError(() => of(null)),
+      );
+  }
+
+  getProductShareInfo(productId: number): Observable<PublicProductShareInfoDto | null> {
+    const params = new HttpParams().set('ProductId', String(productId));
+    return this.http
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productShareInfo, { params })
+      .pipe(
+        map((res) => {
+          const raw = resultFromAbpEnvelope<unknown>(res);
+          return raw ? normalizeProductShareInfoDto(raw) : null;
         }),
         catchError(() => of(null)),
       );

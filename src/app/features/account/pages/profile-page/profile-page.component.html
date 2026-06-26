@@ -367,7 +367,10 @@
         <div class="card-body">
           <h4 class="mb-2">{{ 'PROFILE.ORDER_HISTORY' | translate }}</h4>
           <p class="text-muted mb-3">{{ 'ORDERS.SUBTITLE' | translate }}</p>
-          <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.TITLE' | translate }}</a>
+          <div class="d-flex flex-wrap gap-2">
+            <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.TITLE' | translate }}</a>
+            <a routerLink="/account/returns" class="btn btn-outline-primary">{{ 'RETURNS.TITLE' | translate }}</a>
+          </div>
         </div>
       </div>
     </div>

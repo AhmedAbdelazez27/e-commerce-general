@@ -4,10 +4,10 @@ export const catalogRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/catalog-page/catalog-page.component').then((m) => m.CatalogPageComponent),
+      import('./pages/shop-page/shop-page.component').then((m) => m.ShopPageComponent),
   },
   {
-    path: ':id',
+    path: ':slug',
     loadComponent: () =>
       import('./pages/product-detail-page/product-detail-page.component').then(
         (m) => m.ProductDetailPageComponent,

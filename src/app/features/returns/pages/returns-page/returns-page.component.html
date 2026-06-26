@@ -1,0 +1,123 @@
+<div class="container py-4 returns-page orders-page" style="max-width: 48rem">
+  <div class="d-flex align-items-center justify-content-between mb-3 gap-2 orders-bar">
+    <a routerLink="/account/profile" class="btn btn-outline-primary bold btn-sm btn-back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M11 7L6 12L11 17M17 7L12 12L17 17" stroke="" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+      {{ 'RETURNS.BACK_TO_ACCOUNT' | translate }}
+    </a>
+    <div class="d-flex gap-2">
+      <a routerLink="/account/orders" class="btn btn-outline-secondary btn-sm">
+        {{ 'ORDERS.TITLE' | translate }}
+      </a>
+      <button type="button" class="btn btn-outline-secondary btn-sm btn-refresh" (click)="reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M20 11C19.7554 9.24017 18.9391 7.60961 17.6766 6.35945C16.4142 5.10928 14.7758 4.30887 13.0137 4.0815C11.2516 3.85414 9.46362 4.21243 7.9252 5.1012C6.38678 5.98996 5.18325 7.35989 4.5 8.99995M4 4.99995V8.99995H8M4 12.9999C4.24456 14.7597 5.06093 16.3903 6.32336 17.6404C7.58579 18.8906 9.22424 19.691 10.9863 19.9184C12.7484 20.1458 14.5364 19.7875 16.0748 18.8987C17.6132 18.0099 18.8168 16.64 19.5 14.9999M20 18.9999V14.9999H16"
+            stroke="" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        {{ 'COMMON.REFRESH' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+    <div>
+      <h1 class="h2 mb-1">{{ 'RETURNS.TITLE' | translate }}</h1>
+      <p class="text-muted mb-0">{{ 'RETURNS.SUBTITLE' | translate }}</p>
+    </div>
+    <a routerLink="/account/returns/new" class="btn btn-primary btn-sm">
+      {{ 'RETURNS.START_RETURN' | translate }}
+    </a>
+  </div>
+
+  <div class="orders-page__filters mb-3">
+    <button type="button" class="btn" [class.btn-primary]="filter() === 'active'"
+      [class.btn-outline-secondary]="filter() !== 'active'" (click)="setFilter('active')">
+      {{ 'RETURNS.ACTIVE' | translate }}
+      @if (!loading()) {
+      <span class="orders-page__count">({{ activeReturns().length }})</span>
+      }
+    </button>
+    <button type="button" class="btn" [class.btn-primary]="filter() === 'completed'"
+      [class.btn-outline-secondary]="filter() !== 'completed'" (click)="setFilter('completed')">
+      {{ 'RETURNS.COMPLETED' | translate }}
+      @if (!loading()) {
+      <span class="orders-page__count">({{ completedReturns().length }})</span>
+      }
+    </button>
+    <button type="button" class="btn" [class.btn-primary]="filter() === 'all'"
+      [class.btn-outline-secondary]="filter() !== 'all'" (click)="setFilter('all')">
+      {{ 'RETURNS.ALL' | translate }}
+      @if (!loading()) {
+      <span class="orders-page__count">({{ returns().length }})</span>
+      }
+    </button>
+  </div>
+
+  @if (loading()) {
+  <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (filteredReturns().length === 0) {
+  <div class="orders-page__empty">
+    <p class="mb-3">
+      {{ filter() === 'active' ? ('RETURNS.EMPTY_ACTIVE' | translate) : filter() === 'completed' ?
+      ('RETURNS.EMPTY_COMPLETED' | translate) : ('RETURNS.EMPTY_ALL' | translate) }}
+    </p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+      <a routerLink="/account/returns/new" class="btn btn-primary">{{ 'RETURNS.START_RETURN' | translate }}</a>
+      <a routerLink="/shop" class="btn btn-outline-secondary">{{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}</a>
+    </div>
+  </div>
+  } @else {
+  @for (ret of filteredReturns(); track ret.id) {
+  <article class="order-container mt-3">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+      <div>
+        <h4 class="mb-1 gold">
+          <a class="orders-page__order-link" [routerLink]="['/account/returns', ret.id]">
+            {{ 'RETURNS.RETURN_NUMBER' | translate }}: {{ ret.returnNo }}
+          </a>
+        </h4>
+        <div class="orders-page__status-row">
+          <span class="orders-page__status-chip returns-page__status-chip">
+            {{ statusName(ret) || ('RETURNS.STATUS_PENDING' | translate) }}
+          </span>
+          @if (ret.orderNumber) {
+          <span class="orders-page__status-chip">
+            {{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ ret.orderNumber }}
+          </span>
+          }
+        </div>
+      </div>
+      <div class="orders-page__total text-end">
+        <span class="orders-page__total-label">{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</span>
+        <strong>{{ formatPrice(ret.requestedRefundAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</strong>
+      </div>
+    </div>
+
+    <div class="checkout-review-items__row returns-page__item-row">
+      <div class="checkout-review-items__info">
+        <span class="checkout-review-items__name">{{ ret.productNameSnapshot }}</span>
+        @if (ret.variantSkuSnapshot) {
+        <span class="checkout-review-items__meta">
+          {{ 'ORDERS.SKU' | translate }}: {{ ret.variantSkuSnapshot }}
+        </span>
+        }
+        @if (ret.creationTime) {
+        <span class="checkout-review-items__meta">
+          {{ ret.creationTime | date: 'medium' }}
+        </span>
+        }
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <a class="btn btn-outline-primary btn-sm" [routerLink]="['/account/returns', ret.id]">
+        {{ 'RETURNS.VIEW_DETAILS' | translate }}
+      </a>
+    </div>
+  </article>
+  }
+  }
+</div>

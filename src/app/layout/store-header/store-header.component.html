@@ -98,6 +98,11 @@
           <span class="store-header__action-label">{{ 'LAYOUT.HEADER.ORDERS' | translate }}</span>
         </a>
 
+        <a class="store-header__action" [routerLink]="header.returnsRoute">
+          <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+          <span class="store-header__action-label">{{ 'LAYOUT.HEADER.RETURNS' | translate }}</span>
+        </a>
+
         <button type="button" class="store-header__action" (click)="logout()">
           <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
           <span class="store-header__action-label">{{ 'LAYOUT.HEADER.LOGOUT' | translate }}</span>

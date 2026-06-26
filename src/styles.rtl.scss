@@ -931,6 +931,53 @@ app-profile-page{
     }
 }
 
+.returns-page__select-card {
+    border: 1px solid var(--portal-border, #e8e8e8);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background: var(--portal-surface, #fff);
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.returns-page__select-card:hover:not(:disabled),
+.returns-page__select-card:focus-visible:not(:disabled) {
+    border-color: var(--portal-primary, #c9a227);
+    box-shadow: 0 0 0 1px var(--portal-primary, #c9a227);
+}
+
+.returns-page__select-card:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.returns-page__reason-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.returns-page__reason-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--portal-border, #e8e8e8);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.returns-page__policy-hint {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.returns-page__status-chip {
+    font-weight: 600;
+}
+
 .order-detail-page__item-row--linkable{
     text-decoration: none;
     color: inherit;

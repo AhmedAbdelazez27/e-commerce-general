@@ -156,7 +156,7 @@
           </button>
           @if (shareUrl()) {
             <app-product-share-menu
-              [title]="displayName()"
+              [title]="shareTitle()"
               [url]="shareUrl()"
               [shareText]="shareMessage()"
             />

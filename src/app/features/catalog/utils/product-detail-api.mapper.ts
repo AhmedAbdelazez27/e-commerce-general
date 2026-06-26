@@ -401,6 +401,27 @@ export function parseProductRouteParam(param: string | null): { productId?: numb
   return { slug: value };
 }
 
+export function resolveProductLoadRef(
+  slugParam: string | null | undefined,
+  productIdQuery: string | null | undefined,
+): { productId?: number; slug?: string } {
+  const p = productIdQuery?.trim();
+  if (p && /^\d+$/.test(p)) {
+    return { productId: Number(p) };
+  }
+
+  const slug = slugParam?.trim();
+  if (slug && /^\d+$/.test(slug)) {
+    return { productId: Number(slug) };
+  }
+
+  if (slug) {
+    return { slug };
+  }
+
+  return {};
+}
+
 export function productDetailLinkSegment(product: { id: number; slug?: string | null }): string {
   return product.slug?.trim() || String(product.id);
 }

@@ -45,6 +45,7 @@ export interface StoreLayoutConfig {
     loginRoute: string;
     accountRoute: string;
     ordersRoute: string;
+    returnsRoute: string;
   };
   utilityNavLinks: LayoutLink[];
   footer: {

@@ -1,0 +1,220 @@
+<div class="container py-4 create-return-page orders-page" style="max-width: 48rem">
+  <div class="d-flex align-items-center justify-content-between mb-3 gap-2 orders-bar">
+    <a routerLink="/account/returns" class="btn btn-outline-primary bold btn-sm btn-back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M11 7L6 12L11 17M17 7L12 12L17 17" stroke="" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+      {{ 'RETURNS.BACK_TO_RETURNS' | translate }}
+    </a>
+  </div>
+
+  <header class="mb-4">
+    <h1 class="h2 mb-1">{{ 'RETURNS.CREATE_TITLE' | translate }}</h1>
+    <p class="text-muted mb-0">{{ 'RETURNS.CREATE_SUBTITLE' | translate }}</p>
+  </header>
+
+  @if (step() !== 'success') {
+  <div class="returns-page__wizard-progress mb-4" aria-live="polite">
+    <span class="text-muted small">
+      {{ 'RETURNS.STEP_OF' | translate: { current: stepNumber(), total: totalSteps } }}
+    </span>
+    <div class="progress mt-2" style="height: 4px">
+      <div class="progress-bar" role="progressbar" [style.width.%]="(stepNumber() / totalSteps) * 100"></div>
+    </div>
+  </div>
+  }
+
+  @if (loading()) {
+  <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (step() === 'success' && createdReturn(); as created) {
+  <article class="order-container text-center">
+    <h2 class="h4 mb-2">{{ 'RETURNS.SUCCESS_TITLE' | translate }}</h2>
+    <p class="text-muted mb-3">{{ 'RETURNS.SUCCESS_MESSAGE' | translate: { returnNo: created.returnNo } }}</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+      <button type="button" class="btn btn-primary" (click)="viewCreatedReturn()">
+        {{ 'RETURNS.VIEW_DETAILS' | translate }}
+      </button>
+      <a routerLink="/account/returns" class="btn btn-outline-secondary">{{ 'RETURNS.BACK_TO_RETURNS' | translate }}</a>
+    </div>
+  </article>
+  } @else if (step() === 'order') {
+  <section>
+    <h2 class="checkout-step__subtitle mb-3">{{ 'RETURNS.SELECT_ORDER' | translate }}</h2>
+    @if (eligibleOrders().length === 0) {
+    <div class="orders-page__empty">
+      <p class="mb-3">{{ 'RETURNS.NO_ELIGIBLE_ORDERS' | translate }}</p>
+      <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.TITLE' | translate }}</a>
+    </div>
+    } @else {
+    @for (order of eligibleOrders(); track order.id) {
+    <button type="button" class="order-container returns-page__select-card w-100 text-start mb-3"
+      (click)="selectOrder(order)">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <strong>{{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ order.orderNumber }}</strong>
+          <div class="text-muted small mt-1">
+            {{ order.items?.length ?? 0 }} {{ 'ORDERS.ITEMS' | translate }}
+          </div>
+        </div>
+        <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate
+          }}</strong>
+      </div>
+    </button>
+    }
+    }
+  </section>
+  } @else if (step() === 'item' && selectedOrder(); as order) {
+  <section>
+    <h2 class="checkout-step__subtitle mb-3">{{ 'RETURNS.SELECT_ITEM' | translate }}</h2>
+    <p class="text-muted small mb-3">{{ 'ORDERS.ORDER_NUMBER' | translate }}: {{ order.orderNumber }}</p>
+    @if (itemLoading()) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+    } @else if ((order.items?.length ?? 0) === 0) {
+    <div class="orders-page__empty">
+      <p class="mb-3">{{ 'RETURNS.NO_RETURNABLE_ITEMS' | translate }}</p>
+      <a [routerLink]="['/account/orders', order.id]" class="btn btn-primary">
+        {{ 'ORDERS.VIEW_DETAILS' | translate }}
+      </a>
+    </div>
+    } @else {
+    <ul class="checkout-review-items__list">
+      @for (item of order.items ?? []; track item.id ?? $index) {
+      <li>
+        <button type="button" class="checkout-review-items__row returns-page__select-card w-100 text-start"
+          [disabled]="!canReturnItem(item)" (click)="selectItem(item)">
+          <div class="checkout-review-items__info">
+            <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+            @if (item.variantSkuSnapshot || item.variantSku) {
+            <span class="checkout-review-items__meta">
+              {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
+            </span>
+            }
+            @if (!canReturnItem(item)) {
+            <span class="checkout-review-items__meta text-danger">{{ 'RETURNS.ITEM_ALREADY_RETURNED' | translate
+              }}</span>
+            }
+          </div>
+          <span class="checkout-review-items__price">
+            {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+          </span>
+        </button>
+      </li>
+      }
+    </ul>
+    }
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" (click)="back()">
+      {{ 'RETURNS.BACK' | translate }}
+    </button>
+  </section>
+  } @else if (selectedItem(); as item) {
+  <form [formGroup]="form">
+    <div class="order-container mb-3">
+      <div class="checkout-review-items__row">
+        <div class="checkout-review-items__info">
+          <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+          @if (item.variantSkuSnapshot || item.variantSku) {
+          <span class="checkout-review-items__meta">
+            {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
+          </span>
+          }
+        </div>
+        <span class="checkout-review-items__price">
+          {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+        </span>
+      </div>
+    </div>
+
+    @if (step() === 'reason') {
+    <section>
+      <h2 class="checkout-step__subtitle mb-3">{{ 'RETURNS.SELECT_REASON' | translate }}</h2>
+      <div class="returns-page__reason-list">
+        @for (option of reasonOptions; track option.id) {
+        <label class="returns-page__reason-option">
+          <input type="radio" formControlName="reasonId" [value]="option.id" />
+          <span>{{ option.labelKey | translate }}</span>
+        </label>
+        }
+      </div>
+      @if (form.controls.reasonId.value === 'other') {
+      <div class="mt-3">
+        <label class="form-label" for="otherReason">{{ 'RETURNS.OTHER_REASON_LABEL' | translate }}</label>
+        <textarea id="otherReason" class="form-control" rows="3" formControlName="otherReason"
+          [placeholder]="'RETURNS.OTHER_REASON_PLACEHOLDER' | translate"></textarea>
+      </div>
+      }
+      @if (showFormErrors() && !form.controls.reasonId.valid) {
+      <p class="text-danger small mt-2">{{ 'RETURNS.REASON_REQUIRED' | translate }}</p>
+      }
+      @if (showFormErrors() && form.controls.reasonId.value === 'other' && !form.controls.otherReason.value.trim()) {
+      <p class="text-danger small mt-2">{{ 'RETURNS.OTHER_REASON_REQUIRED' | translate }}</p>
+      }
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary" (click)="back()">{{ 'RETURNS.BACK' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="goToDetails()">{{ 'RETURNS.CONTINUE' | translate
+          }}</button>
+      </div>
+    </section>
+    }
+
+    @if (step() === 'details') {
+    <section>
+      <h2 class="checkout-step__subtitle mb-3">{{ 'RETURNS.REFUND_DETAILS' | translate }}</h2>
+      <div class="mb-3">
+        <label class="form-label" for="requestedRefundAmount">{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</label>
+        <input id="requestedRefundAmount" type="number" class="form-control" formControlName="requestedRefundAmount"
+          min="0.01" [max]="lineTotal(item)" step="0.01" />
+        <p class="text-muted small mt-1">{{ 'RETURNS.MAX_REFUND' | translate }}: {{ formatPrice(lineTotal(item)) }}
+        </p>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="notes">{{ 'RETURNS.FIELD_NOTES' | translate }}</label>
+        <textarea id="notes" class="form-control" rows="3" formControlName="notes"
+          [placeholder]="'RETURNS.NOTES_PLACEHOLDER' | translate"></textarea>
+      </div>
+      <p class="returns-page__policy-hint text-muted small">{{ 'RETURNS.POLICY_HINT' | translate }}</p>
+      @if (showFormErrors() && form.controls.requestedRefundAmount.invalid) {
+      <p class="text-danger small">{{ 'RETURNS.AMOUNT_INVALID' | translate }}</p>
+      }
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary" (click)="back()">{{ 'RETURNS.BACK' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="goToReview()">{{ 'RETURNS.CONTINUE' | translate
+          }}</button>
+      </div>
+    </section>
+    }
+
+    @if (step() === 'review') {
+    <section>
+      <h2 class="checkout-step__subtitle mb-3">{{ 'RETURNS.REVIEW_TITLE' | translate }}</h2>
+      <dl class="order-detail-page__summary-list">
+        <div class="order-detail-page__summary-row">
+          <dt>{{ 'RETURNS.FIELD_REASON' | translate }}</dt>
+          <dd>{{ resolvedReason() }}</dd>
+        </div>
+        <div class="order-detail-page__summary-row">
+          <dt>{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</dt>
+          <dd>{{ formatPrice(form.controls.requestedRefundAmount.value) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+          </dd>
+        </div>
+        @if (form.controls.notes.value.trim()) {
+        <div class="order-detail-page__summary-row">
+          <dt>{{ 'RETURNS.FIELD_NOTES' | translate }}</dt>
+          <dd>{{ form.controls.notes.value }}</dd>
+        </div>
+        }
+      </dl>
+      <p class="returns-page__policy-hint text-muted small">{{ 'RETURNS.POLICY_HINT' | translate }}</p>
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary" (click)="back()" [disabled]="submitting()">
+          {{ 'RETURNS.BACK' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="submitting()" (click)="submit()">
+          {{ submitting() ? ('COMMON.LOADING' | translate) : ('RETURNS.SUBMIT' | translate) }}
+        </button>
+      </div>
+    </section>
+    }
+  </form>
+  }
+</div>

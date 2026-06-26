@@ -1,13 +1,15 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { map, of, switchMap } from 'rxjs';
 
+import { ProductShareInfoService } from '../../../features/catalog/services/product-share-info.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { ProductShareMenuComponent } from '../product-share-menu/product-share-menu.component';
 import { ProductCardData } from '../../models/product-card.model';
-import { buildProductShareUrl } from '../../utils/product-share.util';
 import {
   formatProductPrice,
   productCardHasDiscount,
@@ -27,6 +29,7 @@ export class ProductCardComponent {
   private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
   private readonly wishlist = inject(WishlistService);
+  private readonly productShareInfo = inject(ProductShareInfoService);
 
   readonly product = input.required<ProductCardData>();
   readonly compact = input(false);
@@ -69,14 +72,28 @@ export class ProductCardComponent {
   readonly wishlistLabelKey = computed(() =>
     this.inWishlist() ? 'PRODUCT_CARD.REMOVE_WISHLIST' : 'PRODUCT_CARD.ADD_WISHLIST',
   );
-  readonly shareUrl = computed(() => {
-    const product = this.product();
-    if (typeof window === 'undefined') {
-      return '';
-    }
-    return buildProductShareUrl(window.location.origin, product);
-  });
+
+  private readonly shareData = toSignal(
+    toObservable(this.product).pipe(
+      switchMap((product) =>
+        product.id > 0 ? this.productShareInfo.getShareInfo(product.id) : of(null),
+      ),
+      map((info) => info?.share ?? null),
+    ),
+    { initialValue: null },
+  );
+
+  readonly shareUrl = computed(() => this.shareData()?.url?.trim() ?? '');
+
   readonly shareMessage = computed(() => {
+    const share = this.shareData();
+    if (share) {
+      const title =
+        this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
+      if (title.trim()) {
+        return title.trim();
+      }
+    }
     const product = this.product();
     return `${this.displayTitle()} — ${formatProductPrice(product.price)} ${this.currencyLabel()}`;
   });
