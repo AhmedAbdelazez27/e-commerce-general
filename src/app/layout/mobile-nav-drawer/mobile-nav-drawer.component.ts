@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, input, output } from '@angular/core';
-// import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -20,7 +20,7 @@ import { currencyFromSelectValue, currencyOptionLabel } from '../utils/currency-
 
 @Component({
   selector: 'app-mobile-nav-drawer',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, FormsModule],
   templateUrl: './mobile-nav-drawer.component.html',
 })
 export class MobileNavDrawerComponent implements OnInit {
@@ -80,9 +80,11 @@ export class MobileNavDrawerComponent implements OnInit {
     this.toastr.info(this.translate.instant('LAYOUT.HEADER.CURRENCY_CHANGED'));
   }
 
-  onCurrencySelect(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
-    const next = currencyFromSelectValue(this.currencies(), value);
+  onCurrencyIdChange(id: number | null): void {
+    if (id == null) {
+      return;
+    }
+    const next = currencyFromSelectValue(this.currencies(), String(id));
     if (!next || next.id === this.selectedCurrency()?.id) {
       return;
     }

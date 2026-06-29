@@ -13,6 +13,8 @@ export interface EcReturnDto {
   returnStatusLkpId?: number;
   returnStatusNameAr?: string;
   returnStatusNameEn?: string;
+  refundStatus?: string | null;
+  ivReturnSaleHdId?: number | null;
   refundAmount?: number;
   requestedRefundAmount: number;
   approvedDate?: string | null;
@@ -33,4 +35,4 @@ export interface PagedReturnsResult {
   items: EcReturnDto[];
 }
 
-export type ReturnListFilter = 'active' | 'completed' | 'all';
+export type ReturnListFilter = 'under_review' | 'accepted' | 'rejected' | 'all';

@@ -102,8 +102,7 @@
       </div>
       <div class="orders-page__total text-end">
         <span class="orders-page__total-label">{{ 'ORDERS.TOTAL' | translate }}</span>
-        <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate
-          }}</strong>
+        <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} <app-currency-code /></strong>
       </div>
     </div>
 
@@ -137,7 +136,7 @@
               }
             </div>
             <span class="checkout-review-items__price">
-              {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+              {{ formatPrice(lineTotal(item)) }} <app-currency-code />
             </span>
           </a>
           } @else {
@@ -149,7 +148,7 @@
               }
             </div>
             <span class="checkout-review-items__price">
-              {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+              {{ formatPrice(lineTotal(item)) }} <app-currency-code />
             </span>
           </div>
           }

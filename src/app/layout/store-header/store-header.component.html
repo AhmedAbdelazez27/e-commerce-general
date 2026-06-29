@@ -60,18 +60,16 @@
           </div>
         </div>
 
-        <!-- Currency selector hidden temporarily-->
         @if (showCurrencySelector()) {
           <div class="store-header__currency-group">
             <select
               class="store-header__currency-select"
               [attr.aria-label]="'LAYOUT.HEADER.CURRENCY' | translate"
-              (change)="onCurrencySelect($event)"
+              [ngModel]="selectedCurrency()?.id"
+              (ngModelChange)="onCurrencyIdChange($event)"
             >
               @for (currency of currencies(); track currency.id) {
-                <option [value]="currency.id" [selected]="selectedCurrency()?.id === currency.id">
-                  {{ currencyLabel(currency) }}
-                </option>
+              <option [ngValue]="currency.id">{{ currency.code }}</option>
               }
             </select>
           </div>

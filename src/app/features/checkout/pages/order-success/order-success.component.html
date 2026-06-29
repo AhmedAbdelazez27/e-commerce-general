@@ -11,7 +11,7 @@
       @if (o.finalAmount != null) {
         <div class="checkout-success__row">
           <dt>{{ 'CHECKOUT.ORDER_TOTAL' | translate }}</dt>
-          <dd>{{ formatPrice(o.finalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(o.finalAmount) }} <app-currency-code /></dd>
         </div>
       }
     </dl>

@@ -48,12 +48,11 @@
           <span class="store-header__currency-field-label">{{ 'LAYOUT.HEADER.CURRENCY' | translate }}</span>
           <select
             class="store-header__currency-select store-header__currency-select--drawer"
-            (change)="onCurrencySelect($event)"
+            [ngModel]="selectedCurrency()?.id"
+            (ngModelChange)="onCurrencyIdChange($event)"
           >
             @for (currency of currencies(); track currency.id) {
-              <option [value]="currency.id" [selected]="selectedCurrency()?.id === currency.id">
-                {{ currencyLabel(currency) }}
-              </option>
+              <option [ngValue]="currency.id">{{ currency.code }}</option>
             }
           </select>
         </label>

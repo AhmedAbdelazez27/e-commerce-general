@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcOrderDto } from '../../../checkout/models/place-order.model';
 import { AccountOrdersApiService } from '../../services/account-orders-api.service';
 import {
@@ -21,7 +22,7 @@ import {
 
 @Component({
   selector: 'app-orders-page',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, CurrencyCodeComponent],
   templateUrl: './orders-page.component.html',
 })
 export class OrdersPageComponent {

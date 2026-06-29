@@ -4,6 +4,7 @@ import { firstValueFrom, Subject } from 'rxjs';
 import type { AppLang } from './language.service';
 import type { CurrencySelection, PublicCurrencyDto } from '../models/currency.model';
 import { EcPublicCatalogApiService } from '../../layout/services/ec-public-catalog-api.service';
+import { normalizePublicCurrencyDto } from '../../layout/utils/currency-api.mapper';
 
 const STORAGE_KEY = 'app_currency';
 
@@ -11,20 +12,6 @@ const ISO_CURRENCY_CODE = /^[A-Z]{3}$/;
 
 function isValidCurrencyCode(code: string): boolean {
   return ISO_CURRENCY_CODE.test(code.trim().toUpperCase());
-}
-
-function normalizeCurrency(raw: PublicCurrencyDto): PublicCurrencyDto | null {
-  const code = raw.code?.trim().toUpperCase();
-  if (!code || !isValidCurrencyCode(code) || !Number.isFinite(raw.id) || raw.id <= 0) {
-    return null;
-  }
-
-  return {
-    ...raw,
-    code,
-    descriptionAr: raw.descriptionAr?.trim() || code,
-    descriptionEn: raw.descriptionEn?.trim() || code,
-  };
 }
 
 function readStoredCurrency(): CurrencySelection | null {
@@ -79,7 +66,7 @@ export class CurrencyService {
 
   private async loadCurrenciesFromApi(): Promise<void> {
     const list = (await firstValueFrom(this.catalogApi.getCurrencies()))
-      .map(normalizeCurrency)
+      .map(normalizePublicCurrencyDto)
       .filter((c): c is PublicCurrencyDto => c != null);
 
     this.currenciesSignal.set(list);

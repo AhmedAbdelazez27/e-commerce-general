@@ -1,20 +1,23 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcReturnDto } from '../../models/return.model';
 import { ReturnsApiService } from '../../services/returns-api.service';
 import {
+  isAcceptedReturn,
+  returnStatusChipClass,
   returnStatusDisplayName,
   returnTrackingSteps,
 } from '../../utils/return.util';
 
 @Component({
   selector: 'app-return-detail-page',
-  imports: [RouterLink, TranslateModule, DatePipe],
+  imports: [RouterLink, TranslateModule, DatePipe, NgClass, CurrencyCodeComponent],
   templateUrl: './return-detail-page.component.html',
 })
 export class ReturnDetailPageComponent implements OnInit {
@@ -53,6 +56,14 @@ export class ReturnDetailPageComponent implements OnInit {
 
   statusName(ret: EcReturnDto): string {
     return returnStatusDisplayName(ret, this.isArabic());
+  }
+
+  statusChipClass(ret: EcReturnDto): string {
+    return returnStatusChipClass(ret);
+  }
+
+  isAccepted(ret: EcReturnDto): boolean {
+    return isAcceptedReturn(ret);
   }
 
   trackingSteps(ret: EcReturnDto) {

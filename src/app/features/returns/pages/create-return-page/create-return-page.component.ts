@@ -8,6 +8,7 @@ import { finalize } from 'rxjs/operators';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import { AccountOrdersApiService } from '../../../account/services/account-orders-api.service';
 import {
   lineItemName,
@@ -26,7 +27,7 @@ type WizardStep = 'order' | 'item' | 'reason' | 'details' | 'review' | 'success'
 
 @Component({
   selector: 'app-create-return-page',
-  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule, CurrencyCodeComponent],
   templateUrl: './create-return-page.component.html',
 })
 export class CreateReturnPageComponent implements OnInit {

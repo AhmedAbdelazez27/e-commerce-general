@@ -216,7 +216,7 @@ html[dir='rtl'] {
 }
 
 .store-header__currency-select {
-  display: none;
+  display: inline-block;
   min-width: 6.5rem;
   max-width: 11rem;
   padding: var(--ds-space-1) var(--ds-space-5) var(--ds-space-1) var(--ds-space-2);

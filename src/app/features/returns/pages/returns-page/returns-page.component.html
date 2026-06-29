@@ -33,25 +33,20 @@
   </div>
 
   <div class="orders-page__filters mb-3">
-    <button type="button" class="btn" [class.btn-primary]="filter() === 'active'"
-      [class.btn-outline-secondary]="filter() !== 'active'" (click)="setFilter('active')">
-      {{ 'RETURNS.ACTIVE' | translate }}
+    @for (status of statusFilters; track status.kind) {
+    <button type="button" class="btn" [class.btn-primary]="filter() === status.kind"
+      [class.btn-outline-secondary]="filter() !== status.kind" (click)="setFilter(status.kind)">
+      {{ status.labelKey | translate }}
       @if (!loading()) {
-      <span class="orders-page__count">({{ activeReturns().length }})</span>
+      <span class="orders-page__count">({{ filterCount(status.kind) }})</span>
       }
     </button>
-    <button type="button" class="btn" [class.btn-primary]="filter() === 'completed'"
-      [class.btn-outline-secondary]="filter() !== 'completed'" (click)="setFilter('completed')">
-      {{ 'RETURNS.COMPLETED' | translate }}
-      @if (!loading()) {
-      <span class="orders-page__count">({{ completedReturns().length }})</span>
-      }
-    </button>
+    }
     <button type="button" class="btn" [class.btn-primary]="filter() === 'all'"
       [class.btn-outline-secondary]="filter() !== 'all'" (click)="setFilter('all')">
       {{ 'RETURNS.ALL' | translate }}
       @if (!loading()) {
-      <span class="orders-page__count">({{ returns().length }})</span>
+      <span class="orders-page__count">({{ filterCount('all') }})</span>
       }
     </button>
   </div>
@@ -60,10 +55,7 @@
   <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
   } @else if (filteredReturns().length === 0) {
   <div class="orders-page__empty">
-    <p class="mb-3">
-      {{ filter() === 'active' ? ('RETURNS.EMPTY_ACTIVE' | translate) : filter() === 'completed' ?
-      ('RETURNS.EMPTY_COMPLETED' | translate) : ('RETURNS.EMPTY_ALL' | translate) }}
-    </p>
+    <p class="mb-3">{{ emptyMessageKey() | translate }}</p>
     <div class="d-flex flex-wrap gap-2 justify-content-center">
       <a routerLink="/account/returns/new" class="btn btn-primary">{{ 'RETURNS.START_RETURN' | translate }}</a>
       <a routerLink="/shop" class="btn btn-outline-secondary">{{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}</a>
@@ -80,8 +72,8 @@
           </a>
         </h4>
         <div class="orders-page__status-row">
-          <span class="orders-page__status-chip returns-page__status-chip">
-            {{ statusName(ret) || ('RETURNS.STATUS_PENDING' | translate) }}
+          <span class="orders-page__status-chip returns-page__status-chip" [ngClass]="statusChipClass(ret)">
+            {{ statusName(ret) }}
           </span>
           @if (ret.orderNumber) {
           <span class="orders-page__status-chip">
@@ -92,13 +84,13 @@
       </div>
       <div class="orders-page__total text-end">
         <span class="orders-page__total-label">{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</span>
-        <strong>{{ formatPrice(ret.requestedRefundAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</strong>
+        <strong>{{ formatPrice(ret.requestedRefundAmount) }} <app-currency-code /></strong>
       </div>
     </div>
 
     <div class="checkout-review-items__row returns-page__item-row">
-      <div class="checkout-review-items__info">
-        <span class="checkout-review-items__name">{{ ret.productNameSnapshot }}</span>
+      <div class="checkout-review-items__info d-flex gap-4">
+        <span class="checkout-review-items__name bold">{{ ret.productNameSnapshot }}</span>
         @if (ret.variantSkuSnapshot) {
         <span class="checkout-review-items__meta">
           {{ 'ORDERS.SKU' | translate }}: {{ ret.variantSkuSnapshot }}

@@ -108,7 +108,7 @@
               }
             </div>
             <span class="checkout-review-items__price">
-              {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+              {{ formatPrice(lineTotal(item)) }} <app-currency-code />
             </span>
           </a>
           @if (canReturnItem(item)) {
@@ -136,7 +136,7 @@
               }
             </div>
             <span class="checkout-review-items__price">
-              {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+              {{ formatPrice(lineTotal(item)) }} <app-currency-code />
             </span>
           </div>
           @if (canReturnItem(item)) {
@@ -159,30 +159,29 @@
       <dl class="order-detail-page__summary-list">
         <div class="order-detail-page__summary-row">
           <dt>{{ 'ORDERS.SUBTOTAL' | translate }}</dt>
-          <dd>{{ formatPrice(currentOrder.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(currentOrder.totalAmount) }} <app-currency-code /></dd>
         </div>
         @if ((currentOrder.discountAmount ?? 0) > 0) {
         <div class="order-detail-page__summary-row">
           <dt>{{ 'ORDERS.DISCOUNT' | translate }}</dt>
-          <dd>-{{ formatPrice(currentOrder.discountAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>-{{ formatPrice(currentOrder.discountAmount) }} <app-currency-code /></dd>
         </div>
         }
         @if ((currentOrder.taxAmount ?? 0) > 0) {
         <div class="order-detail-page__summary-row">
           <dt>{{ 'ORDERS.TAX' | translate }}</dt>
-          <dd>{{ formatPrice(currentOrder.taxAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(currentOrder.taxAmount) }} <app-currency-code /></dd>
         </div>
         }
         @if ((currentOrder.shippingAmount ?? 0) > 0) {
         <div class="order-detail-page__summary-row">
           <dt>{{ 'ORDERS.SHIPPING' | translate }}</dt>
-          <dd>{{ formatPrice(currentOrder.shippingAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(currentOrder.shippingAmount) }} <app-currency-code /></dd>
         </div>
         }
         <div class="order-detail-page__summary-row order-detail-page__summary-row--total">
           <dt>{{ 'ORDERS.TOTAL' | translate }}</dt>
-          <dd>{{ formatPrice(currentOrder.finalAmount ?? currentOrder.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' |
-            translate }}</dd>
+          <dd>{{ formatPrice(currentOrder.finalAmount ?? currentOrder.totalAmount) }} <app-currency-code /></dd>
         </div>
       </dl>
     </section>

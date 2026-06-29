@@ -3,12 +3,13 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcOrderDto } from '../../models/place-order.model';
 import { CheckoutStateService } from '../../services/checkout-state.service';
 
 @Component({
   selector: 'app-order-success',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, CurrencyCodeComponent],
   templateUrl: './order-success.component.html',
 })
 export class OrderSuccessComponent implements OnInit {

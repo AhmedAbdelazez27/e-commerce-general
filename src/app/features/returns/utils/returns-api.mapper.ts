@@ -63,6 +63,8 @@ export function normalizeEcReturnDto(raw: unknown): EcReturnDto | null {
     returnStatusLkpId: readNumber(o, 'returnStatusLkpId', 'ReturnStatusLkpId'),
     returnStatusNameAr: readString(o, 'returnStatusNameAr', 'ReturnStatusNameAr'),
     returnStatusNameEn: readString(o, 'returnStatusNameEn', 'ReturnStatusNameEn'),
+    refundStatus: readString(o, 'refundStatus', 'RefundStatus') ?? null,
+    ivReturnSaleHdId: readNumber(o, 'ivReturnSaleHdId', 'IvReturnSaleHdId') ?? null,
     refundAmount: readNumber(o, 'refundAmount', 'RefundAmount'),
     requestedRefundAmount,
     approvedDate: readString(o, 'approvedDate', 'ApprovedDate') ?? null,

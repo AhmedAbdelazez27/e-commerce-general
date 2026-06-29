@@ -7,6 +7,7 @@ import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcOrderDto, EcOrderStatusHistoryDto } from '../../../checkout/models/place-order.model';
 import type { EcReturnDto } from '../../../returns/models/return.model';
 import { ReturnsApiService } from '../../../returns/services/returns-api.service';
@@ -30,7 +31,7 @@ import {
 
 @Component({
   selector: 'app-order-detail-page',
-  imports: [RouterLink, TranslateModule, DatePipe],
+  imports: [RouterLink, TranslateModule, DatePipe, CurrencyCodeComponent],
   templateUrl: './order-detail-page.component.html',
 })
 export class OrderDetailPageComponent implements OnInit {

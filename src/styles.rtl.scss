@@ -978,6 +978,31 @@ app-profile-page{
     font-weight: 600;
 }
 
+.returns-page__status-chip--review {
+    color: #8a6d1d;
+    background: rgba(201, 162, 39, 0.12);
+}
+
+.returns-page__status-chip--accepted {
+    color: #1f6b3f;
+    background: rgba(31, 107, 63, 0.12);
+}
+
+.returns-page__status-chip--rejected {
+    color: #a12626;
+    background: rgba(161, 38, 38, 0.12);
+}
+
+.returns-page__tracker-step--success.orders-page__tracker-step--current .orders-page__tracker-dot {
+    border-color: #1f6b3f;
+    background-color: #1f6b3f;
+}
+
+.returns-page__tracker-step--danger.orders-page__tracker-step--current .orders-page__tracker-dot {
+    border-color: #a12626;
+    background-color: #a12626;
+}
+
 .order-detail-page__item-row--linkable{
     text-decoration: none;
     color: inherit;

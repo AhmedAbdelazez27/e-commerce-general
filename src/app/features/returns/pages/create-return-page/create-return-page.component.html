@@ -57,8 +57,7 @@
             {{ order.items?.length ?? 0 }} {{ 'ORDERS.ITEMS' | translate }}
           </div>
         </div>
-        <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate
-          }}</strong>
+        <strong>{{ formatPrice(order.finalAmount ?? order.totalAmount) }} <app-currency-code /></strong>
       </div>
     </button>
     }
@@ -81,10 +80,10 @@
     <ul class="checkout-review-items__list">
       @for (item of order.items ?? []; track item.id ?? $index) {
       <li>
-        <button type="button" class="checkout-review-items__row returns-page__select-card w-100 text-start"
+        <button type="button" class="checkout-review-items__row returns-page__select-card w-100 text-start btn-return"
           [disabled]="!canReturnItem(item)" (click)="selectItem(item)">
-          <div class="checkout-review-items__info">
-            <span class="checkout-review-items__name">{{ lineName(item) }}</span>
+          <div class="checkout-review-items__info d-flex flex-column">
+            <span class="checkout-review-items__name bold">{{ lineName(item) }}</span>
             @if (item.variantSkuSnapshot || item.variantSku) {
             <span class="checkout-review-items__meta">
               {{ 'ORDERS.SKU' | translate }}: {{ item.variantSkuSnapshot || item.variantSku }}
@@ -96,7 +95,7 @@
             }
           </div>
           <span class="checkout-review-items__price">
-            {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+            {{ formatPrice(lineTotal(item)) }} <app-currency-code />
           </span>
         </button>
       </li>
@@ -120,7 +119,7 @@
           }
         </div>
         <span class="checkout-review-items__price">
-          {{ formatPrice(lineTotal(item)) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+          {{ formatPrice(lineTotal(item)) }} <app-currency-code />
         </span>
       </div>
     </div>
@@ -194,7 +193,7 @@
         </div>
         <div class="order-detail-page__summary-row">
           <dt>{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</dt>
-          <dd>{{ formatPrice(form.controls.requestedRefundAmount.value) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}
+          <dd>{{ formatPrice(form.controls.requestedRefundAmount.value) }} <app-currency-code />
           </dd>
         </div>
         @if (form.controls.notes.value.trim()) {

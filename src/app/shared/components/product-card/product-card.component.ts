@@ -50,13 +50,13 @@ export class ProductCardComponent {
     () => this.product().rating != null || (this.product().reviewsCount ?? 0) > 0,
   );
   readonly currencyLabel = computed(() => {
-    const fromProduct = this.product().currency?.trim();
-    if (fromProduct) {
-      return fromProduct;
-    }
     const selected = this.currency.displayCode();
     if (selected) {
       return selected;
+    }
+    const fromProduct = this.product().currency?.trim();
+    if (fromProduct) {
+      return fromProduct;
     }
     return this.translate.instant('PRODUCT_CARD.CURRENCY');
   });

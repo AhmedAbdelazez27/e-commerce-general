@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, input, output } from '@angular/core';
-// import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -17,7 +17,7 @@ import { currencyFromSelectValue, currencyOptionLabel } from '../utils/currency-
 
 @Component({
   selector: 'app-store-header',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, FormsModule],
   templateUrl: './store-header.component.html',
 })
 export class StoreHeaderComponent implements OnInit {
@@ -85,8 +85,14 @@ export class StoreHeaderComponent implements OnInit {
     this.toastr.info(this.translate.instant('LAYOUT.HEADER.CURRENCY_CHANGED'));
   }
 
-  onCurrencySelect(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value;
+  onCurrencyIdChange(id: number | null): void {
+    if (id == null) {
+      return;
+    }
+    this.applyCurrencyId(String(id));
+  }
+
+  private applyCurrencyId(value: string): void {
     const next = currencyFromSelectValue(this.currencies(), value);
     if (!next || next.id === this.selectedCurrency()?.id) {
       return;

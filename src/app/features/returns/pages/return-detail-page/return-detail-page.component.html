@@ -36,8 +36,8 @@
 
   <article class="order-container">
     <div class="orders-page__status-row mb-3">
-      <span class="orders-page__status-chip returns-page__status-chip">
-        {{ statusName(current) || ('RETURNS.STATUS_PENDING' | translate) }}
+      <span class="orders-page__status-chip returns-page__status-chip" [ngClass]="statusChipClass(current)">
+        {{ statusName(current) }}
       </span>
       @if (current.orderNumber) {
       <span class="orders-page__status-chip">
@@ -50,7 +50,9 @@
     <div class="orders-page__tracker mb-4" aria-label="Return tracking">
       @for (step of trackingSteps(current); track step.id) {
       <div class="orders-page__tracker-step" [class.orders-page__tracker-step--done]="step.done"
-        [class.orders-page__tracker-step--current]="step.current">
+        [class.orders-page__tracker-step--current]="step.current"
+        [class.returns-page__tracker-step--success]="step.current && step.tone === 'success'"
+        [class.returns-page__tracker-step--danger]="step.current && step.tone === 'danger'">
         <span class="orders-page__tracker-dot">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M5 12L10 17L20 7" stroke="" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -90,12 +92,12 @@
         }
         <div class="order-detail-page__summary-row">
           <dt>{{ 'RETURNS.REQUESTED_AMOUNT' | translate }}</dt>
-          <dd>{{ formatPrice(current.requestedRefundAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(current.requestedRefundAmount) }} <app-currency-code /></dd>
         </div>
-        @if ((current.refundAmount ?? 0) > 0) {
+        @if (isAccepted(current) && (current.refundAmount ?? 0) > 0) {
         <div class="order-detail-page__summary-row order-detail-page__summary-row--total">
           <dt>{{ 'RETURNS.APPROVED_AMOUNT' | translate }}</dt>
-          <dd>{{ formatPrice(current.refundAmount) }} {{ 'PRODUCT_CARD.CURRENCY' | translate }}</dd>
+          <dd>{{ formatPrice(current.refundAmount) }} <app-currency-code /></dd>
         </div>
         }
       </dl>
