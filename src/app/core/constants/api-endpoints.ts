@@ -100,6 +100,15 @@ export class ApiEndpoints {
     create: '/api/services/app/EcReturns/Create',
   };
 
+  static readonly EcNotifications = {
+    getMyNotifications: '/api/services/app/EcNotifications/GetMyNotifications',
+    getUnreadCount: '/api/services/app/EcNotifications/GetUnreadCount',
+    markAsRead: '/api/services/app/EcNotifications/MarkAsRead',
+    markAllAsRead: '/api/services/app/EcNotifications/MarkAllAsRead',
+    registerDeviceToken: '/api/services/app/EcNotifications/RegisterDeviceToken',
+    deactivateDeviceToken: '/api/services/app/EcNotifications/DeactivateDeviceToken',
+  };
+
   /** @deprecated Use EcOrders.placeOrder */
   static readonly Checkout = {
     placeOrder: '/Orders/PlaceOrder',

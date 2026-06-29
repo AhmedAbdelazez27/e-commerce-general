@@ -15,7 +15,8 @@
     "FAQ": "الأسئلة الشائعة",
     "CONTACT": "اتصل بنا",
     "LOGIN": "تسجيل الدخول",
-    "REGISTER": "إنشاء حساب"
+    "REGISTER": "إنشاء حساب",
+    "NOTIFICATIONS": "الإشعارات"
   },
   "AUTH": {
     "EMAIL": "البريد الإلكتروني",
@@ -188,6 +189,26 @@
     "STATUS_HISTORY": "سجل الحالات",
     "STATUS_HISTORY_EMPTY": "لا توجد تحديثات للحالة بعد.",
     "OPEN_PRODUCT": "عرض المنتج: {{name}}"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "الإشعارات",
+    "SUBTITLE": "تابع تحديثات الطلبات والمدفوعات والمتجر.",
+    "BELL_LABEL": "الإشعارات",
+    "UNREAD_COUNT": "{{count}} إشعارات غير مقروءة",
+    "EMPTY": "لا توجد إشعارات حتى الآن.",
+    "ERROR": "تعذر تحميل الإشعارات. حاول مرة أخرى.",
+    "RETRY": "إعادة المحاولة",
+    "MARK_ALL_READ": "تعليم الكل كمقروء",
+    "VIEW_ALL": "عرض كل الإشعارات",
+    "FILTER_ALL": "الكل",
+    "FILTER_UNREAD": "غير مقروء",
+    "FILTER_READ": "مقروء",
+    "FILTER_TYPE": "نوع الإشعار",
+    "FILTER_TYPE_ALL": "كل الأنواع",
+    "PAGE_OF": "صفحة {{page}} من {{total}}",
+    "PREV": "السابق",
+    "NEXT": "التالي",
+    "PUSH_RECEIVED": "إشعار جديد"
   },
   "RETURNS": {
     "TITLE": "مرتجعاتي",

@@ -46,6 +46,7 @@ export interface StoreLayoutConfig {
     accountRoute: string;
     ordersRoute: string;
     returnsRoute: string;
+    notificationsRoute: string;
   };
   utilityNavLinks: LayoutLink[];
   footer: {

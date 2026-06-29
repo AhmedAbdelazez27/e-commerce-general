@@ -91,6 +91,8 @@
       </a>
 
       @if (isLoggedIn()) {
+        <app-notification-bell />
+
         <a class="store-header__action" [routerLink]="header.ordersRoute">
           <i class="fa-solid fa-box" aria-hidden="true"></i>
           <span class="store-header__action-label">{{ 'LAYOUT.HEADER.ORDERS' | translate }}</span>

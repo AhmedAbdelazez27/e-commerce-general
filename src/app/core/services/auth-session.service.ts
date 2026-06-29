@@ -7,6 +7,8 @@ import { ApiEndpoints } from '../constants/api-endpoints';
 import { AuthProfileService } from './auth-profile.service';
 import { AuthTokenService } from './auth-token.service';
 import { CartService } from './cart.service';
+import { EcNotificationsService } from './ec-notifications.service';
+import { FirebaseNotificationService } from './firebase-notification.service';
 import { ToastService } from './toast.service';
 import { WishlistService } from './wishlist.service';
 
@@ -16,6 +18,8 @@ export class AuthSessionService {
   private readonly profile = inject(AuthProfileService);
   private readonly cart = inject(CartService);
   private readonly wishlist = inject(WishlistService);
+  private readonly notifications = inject(EcNotificationsService);
+  private readonly firebaseNotifications = inject(FirebaseNotificationService);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -24,6 +28,8 @@ export class AuthSessionService {
 
   /** Clears auth state and restores guest cart/wishlist. */
   clearSession(): void {
+    this.firebaseNotifications.deactivate();
+    this.notifications.reset();
     this.auth.clearSession();
     this.profile.setProfile(null);
     clearCouponStorage();

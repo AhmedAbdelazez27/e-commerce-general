@@ -13,11 +13,12 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 import { currencyFromSelectValue, currencyOptionLabel } from '../utils/currency-selector.util';
 
 @Component({
   selector: 'app-store-header',
-  imports: [RouterLink, TranslateModule, FormsModule],
+  imports: [RouterLink, TranslateModule, FormsModule, NotificationBellComponent],
   templateUrl: './store-header.component.html',
 })
 export class StoreHeaderComponent implements OnInit {

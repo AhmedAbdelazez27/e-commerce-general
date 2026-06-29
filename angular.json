@@ -109,7 +109,10 @@
           "defaultConfiguration": "develop"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "CO.Ecommerce.Store:build:develop"
+          }
         }
       }
     }

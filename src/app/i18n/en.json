@@ -15,7 +15,8 @@
     "FAQ": "FAQ",
     "CONTACT": "Contact us",
     "LOGIN": "Sign in",
-    "REGISTER": "Register"
+    "REGISTER": "Register",
+    "NOTIFICATIONS": "Notifications"
   },
   "AUTH": {
     "EMAIL": "Email",
@@ -188,6 +189,26 @@
     "STATUS_HISTORY": "Status history",
     "STATUS_HISTORY_EMPTY": "No status updates yet.",
     "OPEN_PRODUCT": "View product: {{name}}"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "SUBTITLE": "Stay up to date with orders, payments, and store updates.",
+    "BELL_LABEL": "Notifications",
+    "UNREAD_COUNT": "{{count}} unread notifications",
+    "EMPTY": "You have no notifications yet.",
+    "ERROR": "Could not load notifications. Please try again.",
+    "RETRY": "Retry",
+    "MARK_ALL_READ": "Mark all as read",
+    "VIEW_ALL": "View all notifications",
+    "FILTER_ALL": "All",
+    "FILTER_UNREAD": "Unread",
+    "FILTER_READ": "Read",
+    "FILTER_TYPE": "Notification type",
+    "FILTER_TYPE_ALL": "All types",
+    "PAGE_OF": "Page {{page}} of {{total}}",
+    "PREV": "Previous",
+    "NEXT": "Next",
+    "PUSH_RECEIVED": "New notification"
   },
   "RETURNS": {
     "TITLE": "My returns",

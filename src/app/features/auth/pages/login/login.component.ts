@@ -18,6 +18,7 @@ import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { APP_ENVIRONMENT } from '../../../../core/tokens/app-environment.token';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
 import { CartService } from '../../../../core/services/cart.service';
+import { EcNotificationsService } from '../../../../core/services/ec-notifications.service';
 import { TenantService } from '../../../../core/services/tenant.service';
 import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
@@ -44,6 +45,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
   private readonly cart = inject(CartService);
+  private readonly notifications = inject(EcNotificationsService);
   private readonly tenants = inject(TenantService);
 
   readonly loading = signal(false);
@@ -167,6 +169,7 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
         next: () => {
           this.toastr.success(this.translate.instant('AUTH.LOGIN_SUCCESS'));
           this.cart.refresh();
+          this.notifications.initializeForAuthenticatedUser();
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           const target =
             returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('/auth')

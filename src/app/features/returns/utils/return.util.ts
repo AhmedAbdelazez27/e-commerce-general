@@ -17,6 +17,7 @@ export interface ReturnTrackingStep {
 }
 
 const ELIGIBLE_ORDER_STATUSES = new Set(['delivered', 'completed', 'closed']);
+const PAID_PAYMENT_STATUSES = new Set(['paid', 'captured', 'settled', 'completed']);
 
 const STATUS_TOKEN_MAP: Record<string, ReturnStatusKind> = {
   underreview: 'under_review',
@@ -37,7 +38,28 @@ export function canRequestReturnForOrder(order: EcOrderDto): boolean {
   if (tokens.some((status) => ['cancelled', 'canceled', 'refunded'].includes(status))) {
     return false;
   }
+  // Backend only allows returns for paid orders. Block when payment is known-unpaid;
+  // let unknown payment status through so the backend message can surface if rejected.
+  if (isOrderPaymentUnpaid(order)) {
+    return false;
+  }
   return tokens.some((status) => ELIGIBLE_ORDER_STATUSES.has(status));
+}
+
+function paymentStatusToken(order: EcOrderDto): string {
+  return normalizeStatusToken(
+    order.paymentStatus ?? order.paymentStatusNameEn ?? order.paymentStatusNameAr,
+  );
+}
+
+export function isOrderPaid(order: EcOrderDto): boolean {
+  return PAID_PAYMENT_STATUSES.has(paymentStatusToken(order));
+}
+
+/** True only when payment status is present and not in the paid set. */
+export function isOrderPaymentUnpaid(order: EcOrderDto): boolean {
+  const token = paymentStatusToken(order);
+  return token !== '' && !PAID_PAYMENT_STATUSES.has(token);
 }
 
 export function resolveReturnStatus(ret: EcReturnDto): ReturnStatusDefinition | null {

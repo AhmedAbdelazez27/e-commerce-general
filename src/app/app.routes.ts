@@ -46,6 +46,11 @@ export const routes: Routes = [
         path: 'account',
         loadChildren: () => import('./features/account/account.routes').then((m) => m.accountRoutes),
       },
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./features/notifications/notifications.routes').then((m) => m.notificationsRoutes),
+      },
     ],
   },
   { path: '**', redirectTo: 'home' },

@@ -2,6 +2,17 @@
  * Runtime configuration injected as `APP_ENVIRONMENT`.
  * Extend here when adding new env-driven settings (e.g. feature flags, extra API roots).
  */
+export interface FirebaseEnvironmentConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  measurementId?: string;
+  vapidKey: string;
+}
+
 export interface AppEnvironment {
   production: boolean;
   /** Logical environment name (development, develop, stage, production). */
@@ -17,4 +28,7 @@ export interface AppEnvironment {
   enableSocialLogin?: boolean;
   /** ERP attachments host when API returns relative `/appatt/...` paths. */
   attachmentsBaseUrl?: string;
+  /** Enable Firebase Cloud Messaging push notifications. */
+  enablePushNotifications?: boolean;
+  firebase?: FirebaseEnvironmentConfig;
 }

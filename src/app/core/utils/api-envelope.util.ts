@@ -42,3 +42,23 @@ export function resultArrayFromAbpEnvelope<T>(res: unknown): T[] {
   const payload = resultFromAbpEnvelope<T[]>(res);
   return Array.isArray(payload) ? payload : [];
 }
+
+/**
+ * Extracts an ABP error message from an HTTP-200 envelope (`{ success: false, error: { message } }`).
+ * This backend frequently returns business-rule failures with HTTP 200, so the global error
+ * interceptor never sees them — call this to surface the message to the user.
+ */
+export function abpEnvelopeErrorMessage(res: unknown): string | null {
+  if (res == null || typeof res !== 'object') {
+    return null;
+  }
+  const envelope = res as JsonRecord;
+  const error = (envelope['error'] ?? envelope['Error']) as JsonRecord | null | undefined;
+  if (error && typeof error === 'object') {
+    const message = error['message'] ?? error['Message'];
+    if (typeof message === 'string' && message.trim()) {
+      return message.trim();
+    }
+  }
+  return null;
+}

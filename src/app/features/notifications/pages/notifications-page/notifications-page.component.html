@@ -1,0 +1,127 @@
+<div class="container py-4 notifications-page">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 notifications-page__toolbar">
+    <div>
+      <h1 class="h2 mb-1">{{ 'NOTIFICATIONS.TITLE' | translate }}</h1>
+      <p class="text-muted mb-0">{{ 'NOTIFICATIONS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="reload()">
+        {{ 'COMMON.REFRESH' | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-primary btn-sm"
+        [disabled]="markingAll() || unreadCount() === 0"
+        (click)="markAllAsRead()"
+      >
+        {{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="notifications-page__filters mb-3">
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="readFilter() === 'all'"
+      [class.btn-outline-secondary]="readFilter() !== 'all'"
+      (click)="setReadFilter('all')"
+    >
+      {{ 'NOTIFICATIONS.FILTER_ALL' | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="readFilter() === 'unread'"
+      [class.btn-outline-secondary]="readFilter() !== 'unread'"
+      (click)="setReadFilter('unread')"
+    >
+      {{ 'NOTIFICATIONS.FILTER_UNREAD' | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="readFilter() === 'read'"
+      [class.btn-outline-secondary]="readFilter() !== 'read'"
+      (click)="setReadFilter('read')"
+    >
+      {{ 'NOTIFICATIONS.FILTER_READ' | translate }}
+    </button>
+  </div>
+
+  @if (typeOptions().length > 0) {
+    <div class="notifications-page__type-filter mb-3">
+      <label class="form-label" for="notification-type-filter">{{ 'NOTIFICATIONS.FILTER_TYPE' | translate }}</label>
+      <select
+        id="notification-type-filter"
+        class="form-select form-select-sm notifications-page__type-select"
+        [value]="typeFilter() ?? ''"
+        (change)="setTypeFilter($any($event.target).value ? +$any($event.target).value : null)"
+      >
+        <option value="">{{ 'NOTIFICATIONS.FILTER_TYPE_ALL' | translate }}</option>
+        @for (option of typeOptions(); track option.id) {
+          <option [value]="option.id">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  }
+
+  @if (pageState().loading) {
+    <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (pageState().error) {
+    <div class="notifications-page__empty">
+      <p class="mb-3">{{ 'NOTIFICATIONS.ERROR' | translate }}</p>
+      <button type="button" class="btn btn-outline-secondary" (click)="reload()">
+        {{ 'NOTIFICATIONS.RETRY' | translate }}
+      </button>
+    </div>
+  } @else if (pageState().items.length === 0) {
+    <div class="notifications-page__empty">
+      <p class="mb-0">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+    </div>
+  } @else {
+    <div class="notifications-page__list">
+      @for (item of pageState().items; track item.id) {
+        <article
+          class="notifications-page__item"
+          [class.notifications-page__item--unread]="!item.isRead"
+          [class.notifications-page__item--expanded]="expandedId() === item.id"
+        >
+          <button type="button" class="notifications-page__item-button" (click)="onItemClick(item)">
+            <span class="notifications-page__indicator" aria-hidden="true"></span>
+            <span class="notifications-page__content">
+              <span class="notifications-page__item-header">
+                <strong class="notifications-page__item-title">{{ item.title }}</strong>
+                <span class="notifications-page__item-type">{{ item.typeName }}</span>
+              </span>
+              <span class="notifications-page__item-body">{{ item.body }}</span>
+              <span class="notifications-page__item-meta">{{ formatDate(item.createdAt) }}</span>
+            </span>
+          </button>
+        </article>
+      }
+    </div>
+
+    <div class="notifications-page__pagination">
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="pageState().page <= 1"
+        (click)="previousPage()"
+      >
+        {{ 'NOTIFICATIONS.PREV' | translate }}
+      </button>
+      <span class="notifications-page__page-label">
+        {{ 'NOTIFICATIONS.PAGE_OF' | translate: { page: pageState().page, total: totalPages() } }}
+      </span>
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="pageState().page >= totalPages()"
+        (click)="nextPage()"
+      >
+        {{ 'NOTIFICATIONS.NEXT' | translate }}
+      </button>
+    </div>
+  }
+</div>

@@ -7,6 +7,7 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { AuthTokenService } from '../../../core/services/auth-token.service';
 import { CartService } from '../../../core/services/cart.service';
+import { EcNotificationsService } from '../../../core/services/ec-notifications.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
 import { ExternalAuthenticateRequest } from '../models/external-auth.models';
@@ -29,6 +30,7 @@ export class ExternalAuthService {
   private readonly socialSdk = inject(SocialAuthSdkService);
   private readonly tokens = inject(AuthTokenService);
   private readonly cart = inject(CartService);
+  private readonly notifications = inject(EcNotificationsService);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -109,7 +111,10 @@ export class ExternalAuthService {
         }
         return this.cart.syncGuestCartToServer();
       }),
-      tap(() => this.cart.refresh()),
+      tap(() => {
+        this.cart.refresh();
+        this.notifications.initializeForAuthenticatedUser();
+      }),
       map(() => ({
         requiresProfileCompletion: parsed.requiresProfileCompletion,
         targetUrl: this.resolveTargetUrl(returnUrl, parsed.requiresProfileCompletion),

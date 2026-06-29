@@ -48,6 +48,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     accountRoute: '/account/profile',
     ordersRoute: '/account/orders',
     returnsRoute: '/account/returns',
+    notificationsRoute: '/notifications',
   },
   utilityNavLinks: [
     {

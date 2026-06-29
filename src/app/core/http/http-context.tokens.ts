@@ -9,3 +9,6 @@ export const SKIP_UNAUTHORIZED_HANDLING = new HttpContextToken<boolean>(() => fa
 
 /** Skip Abp.TenantId header (e.g. while resolving tenant via IsTenantAvailable). */
 export const SKIP_TENANT_HEADER = new HttpContextToken<boolean>(() => false);
+
+/** Skip the global loader (e.g. silent background polls like the notification badge). */
+export const SKIP_LOADER = new HttpContextToken<boolean>(() => false);

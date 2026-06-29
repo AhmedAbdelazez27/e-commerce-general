@@ -35,6 +35,8 @@ describe('returns-api.mapper', () => {
       returnStatusNameAr: undefined,
       returnStatusNameEn: 'Pending',
       refundAmount: undefined,
+      refundStatus: null,
+      ivReturnSaleHdId: null,
       requestedRefundAmount: 25.5,
       approvedDate: null,
       creationTime: '2026-06-26T08:00:00Z',

@@ -1,0 +1,130 @@
+.notifications-page {
+  max-width: 48rem;
+}
+
+.notifications-page__toolbar {
+  padding: 0.5rem 0;
+}
+
+.notifications-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.notifications-page__type-filter {
+  max-width: 18rem;
+}
+
+.notifications-page__type-select {
+  border-radius: 10px;
+}
+
+.notifications-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  border-radius: 10px;
+  background: var(--portal-background);
+  text-align: center;
+}
+
+.notifications-page__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.notifications-page__item {
+  border-radius: 10px;
+  background: var(--portal-background);
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+}
+
+.notifications-page__item-button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.notifications-page__item-button:hover,
+.notifications-page__item-button:focus-visible {
+  background: color-mix(in srgb, var(--portal-primary) 6%, transparent);
+  outline: none;
+}
+
+.notifications-page__indicator {
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--portal-text) 20%, transparent);
+}
+
+.notifications-page__item--unread .notifications-page__indicator {
+  background: var(--portal-primary);
+}
+
+.notifications-page__item--unread .notifications-page__item-title {
+  font-weight: 700;
+}
+
+.notifications-page__content {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.notifications-page__item-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.notifications-page__item-title {
+  color: var(--portal-text);
+}
+
+.notifications-page__item-type {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--portal-text) 60%, transparent);
+}
+
+.notifications-page__item-body {
+  color: color-mix(in srgb, var(--portal-text) 75%, transparent);
+  line-height: 1.5;
+}
+
+.notifications-page__item-meta {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--portal-text) 55%, transparent);
+}
+
+.notifications-page__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.notifications-page__page-label {
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--portal-text) 70%, transparent);
+}
+
+@media (max-width: 767.98px) {
+  .notifications-page__item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

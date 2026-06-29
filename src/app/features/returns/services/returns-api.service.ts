@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
-import { resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import { abpEnvelopeErrorMessage, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
 import type { EcReturnCreateInput, EcReturnDto, PagedReturnsResult } from '../models/return.model';
 import { normalizeEcReturnDto, normalizePagedReturnsResult } from '../utils/returns-api.mapper';
 
@@ -46,10 +46,21 @@ export class ReturnsApiService {
     );
   }
 
-  createReturn(input: EcReturnCreateInput): Observable<EcReturnDto | null> {
+  createReturn(input: EcReturnCreateInput): Observable<EcReturnDto> {
     return this.http.post<unknown>(ApiEndpoints.EcReturns.create, input).pipe(
-      map((res) => normalizeEcReturnDto(resultFromAbpEnvelope(res))),
-      catchError(() => of(null)),
+      map((res) => {
+        // Backend returns HTTP 200 with `success: false` for business-rule failures.
+        const errorMessage = abpEnvelopeErrorMessage(res);
+        if (errorMessage) {
+          throw new Error(errorMessage);
+        }
+
+        const dto = normalizeEcReturnDto(resultFromAbpEnvelope(res));
+        if (!dto) {
+          throw new Error('RETURNS_CREATE_NO_RESULT');
+        }
+        return dto;
+      }),
     );
   }
 }

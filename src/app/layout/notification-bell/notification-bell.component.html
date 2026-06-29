@@ -1,0 +1,82 @@
+<div class="notification-bell">
+  <button
+    #trigger
+    type="button"
+    class="store-header__action notification-bell__trigger"
+    [attr.aria-label]="unreadLabel()"
+    [attr.aria-expanded]="open()"
+    aria-haspopup="true"
+    (click)="toggle()"
+  >
+    <i class="fa-regular fa-bell" aria-hidden="true"></i>
+    @if (unreadCount() > 0) {
+      <span class="store-header__cart-badge" aria-hidden="true">{{ badgeText() }}</span>
+    }
+    <span class="store-header__action-label">{{ 'NOTIFICATIONS.BELL_LABEL' | translate }}</span>
+  </button>
+
+  <span class="notification-bell__sr-only" aria-live="polite" aria-atomic="true">
+    @if (unreadCount() > 0) {
+      {{ unreadLabel() }}
+    }
+  </span>
+
+  @if (open()) {
+    <div #panel class="notification-bell__panel" role="menu" (click)="$event.stopPropagation()">
+      <div class="notification-bell__header">
+        <h2 class="notification-bell__title">{{ 'NOTIFICATIONS.TITLE' | translate }}</h2>
+        <button
+          type="button"
+          class="btn btn-link btn-sm notification-bell__mark-all"
+          [disabled]="markingAll() || unreadCount() === 0"
+          (click)="markAllAsRead($event)"
+        >
+          {{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}
+        </button>
+      </div>
+
+      @if (loading()) {
+        <p class="notification-bell__state">{{ 'COMMON.LOADING' | translate }}</p>
+      } @else if (error()) {
+        <div class="notification-bell__state">
+          <p class="mb-2">{{ 'NOTIFICATIONS.ERROR' | translate }}</p>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="retry()">
+            {{ 'NOTIFICATIONS.RETRY' | translate }}
+          </button>
+        </div>
+      } @else if (items().length === 0) {
+        <p class="notification-bell__state">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+      } @else {
+        <ul class="notification-bell__list">
+          @for (item of items(); track item.id) {
+            <li>
+              <button
+                type="button"
+                class="notification-bell__item"
+                [class.notification-bell__item--unread]="!item.isRead"
+                role="menuitem"
+                (click)="onItemClick(item, $event)"
+              >
+                <span class="notification-bell__item-indicator" aria-hidden="true"></span>
+                <span class="notification-bell__item-body">
+                  <span class="notification-bell__item-title">{{ item.title }}</span>
+                  <span class="notification-bell__item-text">{{ item.body }}</span>
+                  <span class="notification-bell__item-meta">
+                    <span>{{ item.typeName }}</span>
+                    <span>{{ formatDate(item.createdAt) }}</span>
+                  </span>
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="notification-bell__footer">
+        <a class="notification-bell__view-all" [routerLink]="notificationsRoute" (click)="close()">
+          {{ 'NOTIFICATIONS.VIEW_ALL' | translate }}
+        </a>
+      </div>
+    </div>
+  }
+</div>

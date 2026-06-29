@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,6 +7,8 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { EcNotificationsService } from '../../../../core/services/ec-notifications.service';
+import { abpErrorMessage } from '../../../auth/utils/auth-abp.util';
 import { ToastService } from '../../../../core/services/toast.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
@@ -39,6 +42,7 @@ export class CreateReturnPageComponent implements OnInit {
   private readonly auth = inject(AuthTokenService);
   private readonly translate = inject(TranslateService);
   private readonly toast = inject(ToastService);
+  private readonly notifications = inject(EcNotificationsService);
 
   readonly reasonOptions = RETURN_REASON_OPTIONS;
   readonly loading = signal(true);
@@ -200,16 +204,25 @@ export class CreateReturnPageComponent implements OnInit {
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
         next: (created) => {
-          if (!created) {
-            this.toast.error(this.translate.instant('RETURNS.CREATE_FAILED'));
-            return;
-          }
           this.createdReturn.set(created);
           this.step.set('success');
           this.toast.success(this.translate.instant('RETURNS.CREATE_SUCCESS'));
+          // This page stays put (no route change), so refresh the badge explicitly.
+          this.notifications.refreshUnreadCount();
         },
-        error: () => this.toast.error(this.translate.instant('RETURNS.CREATE_FAILED')),
+        error: (err) => this.toast.error(this.resolveCreateErrorMessage(err)),
       });
+  }
+
+  private resolveCreateErrorMessage(err: unknown): string {
+    const fallback = this.translate.instant('RETURNS.CREATE_FAILED');
+    if (err instanceof HttpErrorResponse) {
+      return abpErrorMessage(err, fallback);
+    }
+    if (err instanceof Error && err.message && err.message !== 'RETURNS_CREATE_NO_RESULT') {
+      return err.message;
+    }
+    return fallback;
   }
 
   viewCreatedReturn(): void {
