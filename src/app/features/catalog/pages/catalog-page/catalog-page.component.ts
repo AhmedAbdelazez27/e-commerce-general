@@ -10,7 +10,6 @@ import { CatalogSubcategoryRailComponent } from '../../components/catalog-subcat
 import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { CatalogEmptyStateComponent } from '../../components/catalog-empty-state/catalog-empty-state.component';
 import { CatalogFilterPanelComponent } from '../../components/catalog-filter-panel/catalog-filter-panel.component';
-import { CatalogListingHeaderComponent } from '../../components/catalog-listing-header/catalog-listing-header.component';
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -25,7 +24,6 @@ import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper'
     TranslateModule,
     CatalogBreadcrumbComponent,
     CatalogSubcategoryRailComponent,
-    CatalogListingHeaderComponent,
     CatalogListingToolbarComponent,
     CatalogFilterPanelComponent,
     CatalogEmptyStateComponent,
