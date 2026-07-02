@@ -12,6 +12,7 @@ import {
 import { EcNotificationsApiService } from '../../features/notifications/services/ec-notifications-api.service';
 import { ToastService } from './toast.service';
 import { TranslateService } from '@ngx-translate/core';
+import { resolveNotificationImageUrl } from '../../features/notifications/utils/notification-api.mapper';
 import { sanitizeNotificationUrl, resolveNotificationTarget } from '../../features/notifications/utils/notification-route.util';
 
 const SW_PATH = '/firebase-messaging-sw.js';
@@ -69,7 +70,11 @@ export class FirebaseNotificationService {
   }
 
   async initialize(): Promise<void> {
-    if (this.started || !(await this.isSupported())) {
+    const supported = await this.isSupported();
+    // #region agent log
+    fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'A,D',location:'firebase-notification.service.ts:initialize',message:'initialize entry',data:{alreadyStarted:this.started,supported,enablePush:this.env.enablePushNotifications,hasFirebaseConfig:!!this.env.firebase,hasVapid:!!this.env.firebase?.vapidKey,notifSupported:(typeof Notification!=='undefined'),notifPermission:(typeof Notification!=='undefined'?Notification.permission:'no-Notification')},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (this.started || !supported) {
       return;
     }
 
@@ -93,12 +98,18 @@ export class FirebaseNotificationService {
       this.bindRealtimeListeners();
 
       const permission = await this.requestPermission();
+      // #region agent log
+      fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'B',location:'firebase-notification.service.ts:initialize',message:'permission resolved',data:{permission},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if (permission !== 'granted') {
         return;
       }
 
       await this.refreshTokenIfNeeded();
-    } catch {
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'A,C',location:'firebase-notification.service.ts:initialize',message:'initialize threw',data:{error:String(err)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       // Push is optional — in-app notifications still work.
     }
   }
@@ -142,8 +153,14 @@ export class FirebaseNotificationService {
         serviceWorkerRegistration: registration,
       });
       this.currentToken = token || null;
+      // #region agent log
+      fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'C',location:'firebase-notification.service.ts:getToken',message:'getToken result',data:{hasToken:!!token,swScope:registration?.scope},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       return this.currentToken;
-    } catch {
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'C',location:'firebase-notification.service.ts:getToken',message:'getToken threw',data:{error:String(err)},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       return null;
     }
   }
@@ -215,12 +232,26 @@ export class FirebaseNotificationService {
   private async refreshTokenIfNeeded(): Promise<void> {
     const previousToken = this.currentToken;
     const token = await this.getToken();
+    // #region agent log
+    fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'C,E',location:'firebase-notification.service.ts:refreshTokenIfNeeded',message:'token check',data:{hasToken:!!token,hadPrevious:!!previousToken,willRegister:!!token&&(!previousToken||token!==previousToken)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (!token) {
       return;
     }
 
     if (!previousToken || token !== previousToken) {
-      this.registerWithBackend(token).pipe(take(1)).subscribe();
+      this.registerWithBackend(token).pipe(take(1)).subscribe({
+        next: (ok) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'E',location:'firebase-notification.service.ts:registerWithBackend',message:'register response',data:{ok},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        },
+        error: (err) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'E',location:'firebase-notification.service.ts:registerWithBackend',message:'register error',data:{error:String(err)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+        },
+      });
     }
   }
 
@@ -263,6 +294,10 @@ export class FirebaseNotificationService {
       referenceType: data['referenceType'] ?? data['ReferenceType'],
       referenceId: this.readNumber(data['referenceId'] ?? data['ReferenceId']),
       targetUrl: data['targetUrl'] ?? data['TargetUrl'],
+      imageUrl: resolveNotificationImageUrl(
+        data['imageUrl'] ?? data['ImageUrl'],
+        data['imagePath'] ?? data['ImagePath'],
+      ),
     };
   }
 

@@ -82,6 +82,19 @@
   transition: background-color 0.15s ease;
 }
 
+.notification-bell__item--with-image {
+  grid-template-columns: auto auto 1fr;
+}
+
+.notification-bell__item-image {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  align-self: start;
+}
+
 .notification-bell__item:hover,
 .notification-bell__item:focus-visible {
   background: color-mix(in srgb, var(--portal-primary) 8%, transparent);

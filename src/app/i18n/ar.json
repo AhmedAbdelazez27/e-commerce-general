@@ -16,6 +16,8 @@
     "CONTACT": "اتصل بنا",
     "LOGIN": "تسجيل الدخول",
     "REGISTER": "إنشاء حساب",
+    "FORGOT_PASSWORD": "نسيت كلمة المرور",
+    "RESET_PASSWORD": "إعادة تعيين كلمة المرور",
     "NOTIFICATIONS": "الإشعارات"
   },
   "AUTH": {
@@ -55,7 +57,20 @@
     "EXTERNAL_INVALID_GOOGLE": "فشل تسجيل Google. حاول مرة أخرى.",
     "EXTERNAL_EMAIL_REQUIRED": "البريد الإلكتروني مطلوب. اسمح بالبريد أو استخدم حساباً آخر.",
     "EXTERNAL_CREATE_USER_FAILED": "تعذر إنشاء الحساب. حاول مرة أخرى أو تواصل مع الدعم.",
-    "EXTERNAL_USER_INACTIVE": "هذا الحساب غير نشط. تواصل مع الدعم."
+    "EXTERNAL_USER_INACTIVE": "هذا الحساب غير نشط. تواصل مع الدعم.",
+    "FORGOT_PASSWORD": "نسيت كلمة المرور؟",
+    "FORGOT_PASSWORD_HINT": "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
+    "FORGOT_PASSWORD_SUCCESS": "إذا كان هناك حساب مرتبط بهذا البريد، ستصلك تعليمات إعادة التعيين قريباً.",
+    "FORGOT_PASSWORD_FAILED": "تعذر إرسال تعليمات إعادة التعيين. حاول مرة أخرى.",
+    "FORGOT_PASSWORD_CHECK_EMAIL": "تحقق من بريدك الإلكتروني لتعليمات إعادة التعيين. قد يستغرق وصول الرابط بضع دقائق.",
+    "SEND_RESET_LINK": "إرسال رابط إعادة التعيين",
+    "BACK_TO_LOGIN": "العودة لتسجيل الدخول",
+    "NEW_PASSWORD": "كلمة المرور الجديدة",
+    "RESET_PASSWORD_HINT": "اختر كلمة مرور جديدة لحسابك.",
+    "RESET_PASSWORD_SUBMIT": "تحديث كلمة المرور",
+    "RESET_PASSWORD_SUCCESS": "تم تحديث كلمة المرور. يمكنك تسجيل الدخول الآن.",
+    "RESET_PASSWORD_FAILED": "تعذر إعادة تعيين كلمة المرور. قد يكون الرابط منتهياً.",
+    "RESET_PASSWORD_INVALID_LINK": "رابط إعادة التعيين غير صالح أو غير مكتمل. اطلب رابطاً جديداً."
   },
   "COMMON": {
     "REFRESH": "تحديث",
@@ -602,6 +617,8 @@
     "SUMMARY_TITLE": "ملخص الطلب",
     "SUMMARY_SUBTOTAL": "المجموع الفرعي",
     "SUMMARY_DISCOUNT": "الخصم",
+    "SUMMARY_PRODUCT_DISCOUNT": "خصم المنتج",
+    "SUMMARY_COUPON_DISCOUNT": "خصم الكوبون",
     "SUMMARY_DELIVERY": "التوصيل",
     "SUMMARY_FREE_DELIVERY": "مجاني",
     "SUMMARY_TOTAL": "الإجمالي",
@@ -682,6 +699,8 @@
     "QUANTITY": "الكمية",
     "QTY_INCREASE": "زيادة الكمية",
     "QTY_DECREASE": "تقليل الكمية",
+    "STOCK_EXCEEDED": "الكمية المتاحة في المخزون {{count}} فقط.",
+    "STOCK_MAX_REACHED": "أقصى كمية متاحة هي {{count}}.",
     "ADD_TO_CART": "أضف إلى السلة",
     "BUY_NOW": "اشتر الآن",
     "SHIPPING_TITLE": "الشحن",

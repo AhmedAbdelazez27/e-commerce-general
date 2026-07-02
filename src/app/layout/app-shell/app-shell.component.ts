@@ -18,7 +18,8 @@ import { CartService } from '../../core/services/cart.service';
 import { EcNotificationsService } from '../../core/services/ec-notifications.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
-import { AnnouncementBarComponent } from '../announcement-bar/announcement-bar.component';
+// Announcement bar hidden per request
+// import { AnnouncementBarComponent } from '../announcement-bar/announcement-bar.component';
 import { MobileNavDrawerComponent } from '../mobile-nav-drawer/mobile-nav-drawer.component';
 import { StoreFooterComponent } from '../store-footer/store-footer.component';
 import { StoreHeaderComponent } from '../store-header/store-header.component';
@@ -28,7 +29,7 @@ import { StoreNavComponent } from '../store-nav/store-nav.component';
   selector: 'app-shell',
   imports: [
     RouterOutlet,
-    AnnouncementBarComponent,
+    // AnnouncementBarComponent,
     StoreHeaderComponent,
     StoreNavComponent,
     MobileNavDrawerComponent,

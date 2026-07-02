@@ -34,6 +34,30 @@ export function couponRejectMessageKey(reason: CouponRejectReason): string {
   return REASON_MESSAGE_KEYS[reason];
 }
 
+/**
+ * Coupon discount applies once per order (not per quantity).
+ * When the API returns a per-qty `discountAmount` higher than the order cap `usageLimit`,
+ * use `usageLimit` as the effective discount.
+ */
+export function resolveValidatedCouponDiscount(
+  result: ValidateCouponResultDto,
+  orderSubtotal?: number,
+): number {
+  const discountAmount = Math.max(0, result.discountAmount ?? 0);
+  const usageLimit = result.usageLimit;
+
+  let resolved = discountAmount;
+  if (usageLimit != null && usageLimit > 0 && usageLimit < discountAmount) {
+    resolved = usageLimit;
+  }
+
+  if (orderSubtotal != null && orderSubtotal > 0) {
+    resolved = Math.min(resolved, orderSubtotal);
+  }
+
+  return Math.max(0, resolved);
+}
+
 function isAbpYes(value: unknown): boolean {
   if (typeof value === 'string') {
     return value.trim().toLowerCase() === 'yes';
@@ -63,6 +87,7 @@ function isAbpActive(value: unknown): boolean {
 
 export function validateCouponApiResult(
   result: ValidateCouponResultDto | null | undefined,
+  orderSubtotal?: number,
 ): CouponApiValidationResult {
   if (!result) {
     return { valid: false, reason: 'not_found' };
@@ -90,7 +115,7 @@ export function validateCouponApiResult(
 
   return {
     valid: true,
-    discountAmount: Math.max(0, result.discountAmount ?? 0),
+    discountAmount: resolveValidatedCouponDiscount(result, orderSubtotal),
   };
 }
 

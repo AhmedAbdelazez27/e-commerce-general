@@ -4,6 +4,8 @@ export class ApiEndpoints {
     registerECommerceCustomer: '/api/TokenAuth/RegisterECommerceCustomer',
     getECommerceCustomerProfile: '/api/TokenAuth/GetECommerceCustomerProfile',
     externalAuthenticateECommerce: '/api/TokenAuth/ExternalAuthenticateECommerce',
+    forgetPassword: '/api/services/app/User/ForgetPasswordForPortal',
+    postForgetPassword: '/api/services/app/User/PostForgetPassword',
   };
 
   static readonly Catalog = {

@@ -9,6 +9,7 @@ export interface PushNotificationPayload {
   referenceType?: string;
   referenceId?: number;
   targetUrl?: string;
+  imageUrl?: string;
 }
 
 export interface NotificationRealtimeAdapter {

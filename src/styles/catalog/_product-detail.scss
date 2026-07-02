@@ -234,6 +234,12 @@
   }
 }
 
+.product-detail-main__quantity-error {
+  margin: var(--ds-space-2) 0 0;
+  font-size: var(--ds-font-size-sm);
+  color: var(--portal-danger);
+}
+
 .product-detail-main__actions {
   display: flex;
   flex-wrap: wrap;

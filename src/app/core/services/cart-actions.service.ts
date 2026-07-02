@@ -50,6 +50,15 @@ export class CartActionsService {
       return;
     }
 
+    if (quantity > product.stockQuantity) {
+      this.toast.warning(
+        this.translate.instant('PRODUCT_DETAIL.STOCK_EXCEEDED', {
+          count: product.stockQuantity,
+        }),
+      );
+      return;
+    }
+
     const qty = Math.min(Math.max(1, quantity), product.stockQuantity);
     const name =
       this.language.currentLang() === 'ar' ? product.nameAr : product.nameEn;
@@ -72,6 +81,15 @@ export class CartActionsService {
     const variantId = product.productVariantId;
     if (variantId == null || variantId < 1) {
       this.toast.warning(this.translate.instant('CART.VARIANT_REQUIRED'));
+      return;
+    }
+
+    if (quantity > product.stockQuantity) {
+      this.toast.warning(
+        this.translate.instant('PRODUCT_DETAIL.STOCK_EXCEEDED', {
+          count: product.stockQuantity,
+        }),
+      );
       return;
     }
 

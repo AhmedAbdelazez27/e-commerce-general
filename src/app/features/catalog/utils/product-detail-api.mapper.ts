@@ -123,6 +123,35 @@ function resolveDetailsPrice(dto: PublicProductDetailsDto): number {
   return dto.price?.customerPrice ?? dto.price?.basePrice ?? 0;
 }
 
+const UNAVAILABLE_STATUSES = new Set(['OutOfStock', 'SoldOut', 'Unavailable', 'out_of_stock']);
+const AVAILABLE_STATUSES = new Set(['InStock', 'Available', 'in_stock']);
+
+/** Maps API quantity + availabilityStatus into stock the UI can validate against. */
+export function resolveStockFromApi(
+  quantity: number | undefined,
+  availabilityStatus?: string | null,
+): { stockQuantity: number; isAvailable: boolean } {
+  const status = availabilityStatus?.trim();
+  const normalizedQty =
+    quantity != null && Number.isFinite(quantity) && quantity >= 0
+      ? Math.floor(quantity)
+      : 0;
+
+  if (status && UNAVAILABLE_STATUSES.has(status)) {
+    return { stockQuantity: 0, isAvailable: false };
+  }
+
+  const isAvailable =
+    status && AVAILABLE_STATUSES.has(status)
+      ? normalizedQty > 0
+      : normalizedQty > 0;
+
+  return {
+    stockQuantity: isAvailable ? normalizedQty : 0,
+    isAvailable,
+  };
+}
+
 function formatSpecificationValue(spec: PublicProductSpecificationDto): { en: string; ar: string } {
   if (spec.displayValue) {
     return { en: spec.displayValue, ar: spec.displayValue };
@@ -190,6 +219,7 @@ export function mapProductVariants(variants: PublicProductVariantDto[]): Product
       variant.price?.basePrice != null && variant.price.basePrice > price
         ? variant.price.basePrice
         : undefined;
+    const stock = resolveStockFromApi(variant.quantity, variant.availabilityStatus);
 
     return {
       id: variant.id,
@@ -198,7 +228,8 @@ export function mapProductVariants(variants: PublicProductVariantDto[]): Product
       sku: variant.variantSKU ?? `VAR-${variant.id}`,
       price,
       compareAtPrice,
-      isAvailable: variant.availabilityStatus === 'InStock',
+      isAvailable: stock.isAvailable,
+      stockQuantity: stock.stockQuantity,
     };
   });
 }
@@ -253,7 +284,7 @@ export function mapPublicProductDetailsToProductDetail(
   const categoryNameAr = dto.category?.nameAr || dto.categoryName || categoryNameEn;
   const price = resolveDetailsPrice(dto);
   const compareAtPrice = dto.oldPrice != null && dto.oldPrice > price ? dto.oldPrice : undefined;
-  const inStock = dto.availabilityStatus === 'InStock';
+  const stock = resolveStockFromApi(dto.quantity, dto.availabilityStatus);
   const { descriptionEn, descriptionAr } = resolveProductDescriptions(dto);
 
   const images =
@@ -288,8 +319,8 @@ export function mapPublicProductDetailsToProductDetail(
     price,
     compareAtPrice,
     discountPercent: dto.discountPercent ?? undefined,
-    isAvailable: inStock,
-    stockQuantity: inStock ? 99 : 0,
+    isAvailable: stock.isAvailable,
+    stockQuantity: stock.stockQuantity,
     sku: dto.sku ?? `SKU-${productId}`,
     images,
     descriptionEn,
@@ -314,6 +345,9 @@ export function applyVariantSelectionToProduct(
   const price = context.price > 0 ? context.price : (variant?.price ?? product.price);
   const compareAtPrice = context.compareAtPrice ?? variant?.compareAtPrice ?? product.compareAtPrice;
   const isAvailable = variant?.isAvailable ?? context.isAvailable ?? product.isAvailable;
+  const stockQuantity =
+    variant?.stockQuantity ??
+    (isAvailable ? product.stockQuantity : 0);
 
   return {
     ...product,
@@ -322,7 +356,7 @@ export function applyVariantSelectionToProduct(
     discountPercent: context.discountPercent ?? product.discountPercent,
     sku: variant?.sku || context.sku || product.sku,
     isAvailable,
-    stockQuantity: isAvailable ? product.stockQuantity || 99 : 0,
+    stockQuantity,
     images: context.images.length > 0 ? context.images : product.images,
     specifications:
       context.specifications.length > 0 ? context.specifications : product.specifications,

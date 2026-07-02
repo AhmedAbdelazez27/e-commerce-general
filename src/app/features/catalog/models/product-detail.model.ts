@@ -22,6 +22,7 @@ export interface ProductDetailVariant {
   price: number;
   compareAtPrice?: number;
   isAvailable: boolean;
+  stockQuantity: number;
 }
 
 export interface ProductDetail {

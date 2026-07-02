@@ -74,10 +74,7 @@ export class CartPageFacade {
       appliedDiscount,
     );
 
-    return buildOrderSummary(merchandise.subtotal, itemCount, {
-      discountAmount: merchandise.discount,
-      merchandiseTotal: merchandise.merchandiseTotal,
-    });
+    return buildOrderSummary(merchandise, itemCount);
   });
 
   constructor() {
@@ -179,7 +176,7 @@ export class CartPageFacade {
       .pipe(finalize(() => {}))
       .subscribe({
         next: (result) => {
-          const validation = validateCouponApiResult(result);
+          const validation = validateCouponApiResult(result, subtotal);
           if (!validation.valid) {
             this.couponState.set({
               status: 'invalid',
@@ -206,6 +203,7 @@ export class CartPageFacade {
 
           writeAppliedCouponCode(code);
           this.checkoutState.setCouponCode(code);
+          this.checkoutState.setCouponDiscountAmount(discountAmount);
           this.cartService.refresh(code);
         },
         error: () => {
@@ -224,6 +222,7 @@ export class CartPageFacade {
     this.appliedDiscountAmount.set(null);
     clearCouponStorage();
     this.checkoutState.setCouponCode(null);
+    this.checkoutState.setCouponDiscountAmount(0);
     if (refreshCart) {
       this.cartService.refresh(null);
     }
@@ -277,7 +276,7 @@ export class CartPageFacade {
       })
       .subscribe({
         next: (result) => {
-          const validation = validateCouponApiResult(result);
+          const validation = validateCouponApiResult(result, subtotal);
           if (!validation.valid) {
             if (validation.reason === 'min_order' || validation.reason === 'min_order_remaining') {
               this.toast.warning(
@@ -292,6 +291,7 @@ export class CartPageFacade {
           }
 
           this.appliedDiscountAmount.set(validation.discountAmount);
+          this.checkoutState.setCouponDiscountAmount(validation.discountAmount);
         },
         error: () => {
           this.removeCoupon();

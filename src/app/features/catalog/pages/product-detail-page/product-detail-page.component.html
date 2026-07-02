@@ -133,6 +133,11 @@
               +
             </button>
           </div>
+          @if (quantityValidationKey(); as validationKey) {
+            <p class="product-detail-main__quantity-error" role="alert">
+              {{ validationKey | translate: { count: maxQuantity() } }}
+            </p>
+          }
         </div>
 
         <div class="product-detail-main__actions ">

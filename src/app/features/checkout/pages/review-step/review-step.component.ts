@@ -43,11 +43,18 @@ export class ReviewStepComponent implements OnInit {
   readonly totals = computed(() => {
     const cart = this.cart.cart();
     const lines = this.lineItems();
-    const merchandise = resolveCartMerchandiseTotals(cart, lines, cart?.Items ?? [], null);
+    // Fall back to the coupon discount validated on the cart screen when the API
+    // cart payload doesn't echo CouponDiscountAmount back.
+    const appliedCoupon = this.checkoutState.couponCode().trim()
+      ? this.checkoutState.couponDiscountAmount()
+      : null;
+    const merchandise = resolveCartMerchandiseTotals(cart, lines, cart?.Items ?? [], appliedCoupon);
     const shippingAmount = this.checkoutState.shippingAmount();
     return {
       subtotal: merchandise.subtotal,
-      discount: merchandise.discount,
+      productDiscount: merchandise.productDiscount,
+      couponDiscount: merchandise.couponDiscount,
+      discount: merchandise.productDiscount + merchandise.couponDiscount,
       shippingAmount,
       total: merchandise.merchandiseTotal + shippingAmount,
     };

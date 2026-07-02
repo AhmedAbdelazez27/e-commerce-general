@@ -20,6 +20,20 @@ export const authRoutes: Routes = [
         loadComponent: () =>
           import('./pages/register/register-page.component').then((m) => m.RegisterPageComponent),
       },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./pages/forgot-password/forgot-password-page.component').then(
+            (m) => m.ForgotPasswordPageComponent,
+          ),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('./pages/reset-password/reset-password-page.component').then(
+            (m) => m.ResetPasswordPageComponent,
+          ),
+      },
     ],
   },
 ];

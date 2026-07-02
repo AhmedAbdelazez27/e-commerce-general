@@ -7,6 +7,11 @@ export const routes: Routes = [
   },
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   {
+    path: 'Login/ForgetPassword',
+    redirectTo: 'auth/reset-password',
+    pathMatch: 'full',
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/app-shell/app-shell.component').then((m) => m.AppShellComponent),
     children: [

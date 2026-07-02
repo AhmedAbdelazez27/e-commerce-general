@@ -20,6 +20,8 @@ export interface CartLineItemView {
 
 export interface CartOrderSummaryView {
   subtotal: number;
+  productDiscount: number;
+  couponDiscount: number;
   discount: number;
   deliveryFee: number;
   total: number;

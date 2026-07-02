@@ -50,21 +50,9 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     returnsRoute: '/account/returns',
     notificationsRoute: '/notifications',
   },
-  utilityNavLinks: [
-    {
-      id: 'faq',
-      labelKey: 'LAYOUT.NAV.FAQ',
-      route: '/faq',
-    },
-    {
-      id: 'contact',
-      labelKey: 'LAYOUT.NAV.CONTACT',
-      route: '/contact',
-    },
-  ],
+  utilityNavLinks: [],
   footer: {
     companyLinks: [
-      { id: 'about', labelKey: 'LAYOUT.FOOTER.ABOUT', route: '/home' },
       { id: 'brands', labelKey: 'LAYOUT.FOOTER.BRANDS', route: '/brands' },
       { id: 'shop', labelKey: 'LAYOUT.FOOTER.SHOP', route: '/shop' },
     ],

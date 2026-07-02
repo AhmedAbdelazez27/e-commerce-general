@@ -39,6 +39,9 @@
             @if (form.controls.password.touched && form.controls.password.invalid) {
               <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
             }
+            <div class="text-end mt-1">
+              <a routerLink="/auth/forgot-password">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</a>
+            </div>
           </div>
 
           <div class="form-check mb-3">

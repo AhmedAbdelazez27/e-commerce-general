@@ -7,6 +7,8 @@ import type { CartLineItemView } from '../../../cart/models/cart-view.model';
 
 export interface CheckoutSummaryTotals {
   subtotal: number;
+  productDiscount: number;
+  couponDiscount: number;
   discount: number;
   shippingAmount: number;
   total: number;

@@ -10,7 +10,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-outline-primary btn-sm"
+        class="btn btn-primary btn-sm"
         [disabled]="markingAll() || unreadCount() === 0"
         (click)="markAllAsRead()"
       >
@@ -49,23 +49,6 @@
     </button>
   </div>
 
-  @if (typeOptions().length > 0) {
-    <div class="notifications-page__type-filter mb-3">
-      <label class="form-label" for="notification-type-filter">{{ 'NOTIFICATIONS.FILTER_TYPE' | translate }}</label>
-      <select
-        id="notification-type-filter"
-        class="form-select form-select-sm notifications-page__type-select"
-        [value]="typeFilter() ?? ''"
-        (change)="setTypeFilter($any($event.target).value ? +$any($event.target).value : null)"
-      >
-        <option value="">{{ 'NOTIFICATIONS.FILTER_TYPE_ALL' | translate }}</option>
-        @for (option of typeOptions(); track option.id) {
-          <option [value]="option.id">{{ option.label }}</option>
-        }
-      </select>
-    </div>
-  }
-
   @if (pageState().loading) {
     <p class="text-muted">{{ 'COMMON.LOADING' | translate }}</p>
   } @else if (pageState().error) {
@@ -87,8 +70,21 @@
           [class.notifications-page__item--unread]="!item.isRead"
           [class.notifications-page__item--expanded]="expandedId() === item.id"
         >
-          <button type="button" class="notifications-page__item-button" (click)="onItemClick(item)">
+          <button
+            type="button"
+            class="notifications-page__item-button"
+            [class.notifications-page__item-button--with-image]="!!item.imageUrl"
+            (click)="onItemClick(item)"
+          >
             <span class="notifications-page__indicator" aria-hidden="true"></span>
+            @if (item.imageUrl) {
+              <img
+                class="notifications-page__item-image"
+                [src]="item.imageUrl"
+                alt=""
+                loading="lazy"
+              />
+            }
             <span class="notifications-page__content">
               <span class="notifications-page__item-header">
                 <strong class="notifications-page__item-title">{{ item.title }}</strong>

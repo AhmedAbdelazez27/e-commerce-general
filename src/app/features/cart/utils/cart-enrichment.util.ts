@@ -5,16 +5,67 @@ import { CartLineItemView } from '../models/cart-view.model';
 
 const productById = new Map(CATALOG_LISTING_PRODUCTS.map((p) => [p.id, p]));
 
-function resolveListUnitPrice(
+interface LineEconomics {
+  /** List / pre-discount price for a single unit. */
+  grossUnitPrice: number;
+  /** Price actually charged for a single unit (after per-unit discounts). */
+  netUnitPrice: number;
+  /** Net total for the whole line = netUnitPrice * quantity. */
+  lineTotal: number;
+}
+
+/**
+ * Resolves the per-unit economics for a cart line.
+ *
+ * The EcCart payload exposes prices in a quantity-aware shape:
+ *   - `UnitPrice`  -> gross price for ONE unit (e.g. 550)
+ *   - `FinalPrice` / `TotalPrice` (mapped to LineTotal) -> NET total for the WHOLE line (e.g. 2612.5)
+ *   - `DiscountAmount` -> discount applied to ONE unit (e.g. 27.5)
+ *
+ * We derive the net unit price from quantity-independent fields whenever possible so the line
+ * total stays correct the instant the quantity changes, even if the API's line totals lag a step.
+ */
+function resolveLineEconomics(
   item: CartItemDto,
-  catalog: CatalogListingProduct | undefined,
-  saleUnitPrice: number,
-): number | undefined {
-  if (item.FinalPrice != null && item.UnitPrice > item.FinalPrice) {
-    return item.UnitPrice;
+  catalogPrice: number,
+  quantity: number,
+): LineEconomics {
+  const qty = Math.max(0, quantity);
+  const grossUnitPrice =
+    item.UnitPrice != null && item.UnitPrice > 0 ? item.UnitPrice : Math.max(0, catalogPrice);
+
+  let netUnitPrice = grossUnitPrice;
+
+  if (item.DiscountAmount != null && item.DiscountAmount > 0 && grossUnitPrice - item.DiscountAmount >= 0) {
+    // Per-unit discount (quantity-independent) -> safest source for live +/- updates.
+    netUnitPrice = grossUnitPrice - item.DiscountAmount;
+  } else if (item.FinalPrice != null && item.FinalPrice > 0) {
+    // FinalPrice may be a per-unit sale price or a whole-line total.
+    netUnitPrice =
+      item.FinalPrice <= grossUnitPrice || qty <= 1 ? item.FinalPrice : item.FinalPrice / qty;
+  } else if (item.LineTotal != null && item.LineTotal > 0 && qty > 0) {
+    netUnitPrice = item.LineTotal / qty;
   }
 
-  if (catalog?.compareAtPrice != null && catalog.compareAtPrice > saleUnitPrice) {
+  netUnitPrice = Math.max(0, netUnitPrice);
+
+  return {
+    grossUnitPrice,
+    netUnitPrice,
+    lineTotal: netUnitPrice * qty,
+  };
+}
+
+function resolveListUnitPrice(
+  grossUnitPrice: number,
+  netUnitPrice: number,
+  catalog: CatalogListingProduct | undefined,
+): number | undefined {
+  if (grossUnitPrice > netUnitPrice) {
+    return grossUnitPrice;
+  }
+
+  if (catalog?.compareAtPrice != null && catalog.compareAtPrice > netUnitPrice) {
     return catalog.compareAtPrice;
   }
 
@@ -40,11 +91,15 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
 
   const catalog =
     item.ProductId > 0 ? productById.get(item.ProductId) : undefined;
-  const unitPrice = item.FinalPrice ?? item.UnitPrice ?? catalog?.price ?? 0;
-  const compareAtUnitPrice = resolveListUnitPrice(item, catalog, unitPrice);
-  const discountPercent = resolveLineDiscountPercent(compareAtUnitPrice, unitPrice);
   const quantity = Math.max(0, item.Quantity ?? 0);
-  const lineTotal = item.LineTotal ?? unitPrice * quantity;
+  const { grossUnitPrice, netUnitPrice, lineTotal } = resolveLineEconomics(
+    item,
+    catalog?.price ?? 0,
+    quantity,
+  );
+  const unitPrice = netUnitPrice;
+  const compareAtUnitPrice = resolveListUnitPrice(grossUnitPrice, netUnitPrice, catalog);
+  const discountPercent = resolveLineDiscountPercent(compareAtUnitPrice, unitPrice);
   const nameFromApi = item.ProductName?.trim();
   const nameEnFromApi = item.ProductNameEn?.trim() || item.VariantNameEn?.trim();
   const nameArFromApi = item.ProductNameAr?.trim() || item.VariantNameAr?.trim();

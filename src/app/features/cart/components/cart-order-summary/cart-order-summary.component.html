@@ -6,10 +6,16 @@
       <dt>{{ 'CART.SUMMARY_SUBTOTAL' | translate }}</dt>
       <dd>{{ formatPrice(summary().subtotal) }} {{ currencyLabel() }}</dd>
     </div>
-    @if (summary().discount > 0) {
+    @if (summary().productDiscount > 0) {
       <div class="cart-summary__row cart-summary__row--discount">
-        <dt>{{ 'CART.SUMMARY_DISCOUNT' | translate }}</dt>
-        <dd>−{{ formatPrice(summary().discount) }} {{ currencyLabel() }}</dd>
+        <dt>{{ 'CART.SUMMARY_PRODUCT_DISCOUNT' | translate }}</dt>
+        <dd>−{{ formatPrice(summary().productDiscount) }} {{ currencyLabel() }}</dd>
+      </div>
+    }
+    @if (summary().couponDiscount > 0) {
+      <div class="cart-summary__row cart-summary__row--discount">
+        <dt>{{ 'CART.SUMMARY_COUPON_DISCOUNT' | translate }}</dt>
+        <dd>−{{ formatPrice(summary().couponDiscount) }} {{ currencyLabel() }}</dd>
       </div>
     }
     <div class="cart-summary__row">

@@ -5,6 +5,7 @@ import {
   normalizeEcNotificationDto,
   normalizePagedNotificationsResult,
   normalizeUnreadCount,
+  resolveNotificationImageUrl,
 } from './notification-api.mapper';
 
 describe('notification-api.mapper', () => {
@@ -35,6 +36,7 @@ describe('notification-api.mapper', () => {
       notificationTypeNameEn: 'Order',
       referenceType: 'Order',
       referenceId: 55,
+      imagePath: undefined,
       imageUrl: undefined,
       isRead: false,
       readDate: undefined,
@@ -75,5 +77,39 @@ describe('notification-api.mapper', () => {
     expect(normalizeUnreadCount(4)).toBe(4);
     expect(normalizeUnreadCount({ Count: 7 })).toBe(7);
     expect(normalizeUnreadCount(null)).toBe(0);
+  });
+
+  it('maps imageUrl from imageUrl or imagePath', () => {
+    expect(
+      mapNotificationToViewModel(
+        {
+          ...normalizeEcNotificationDto(dto)!,
+          imageUrl: 'https://cdn.example.com/promo.png',
+        },
+        'en',
+      ).imageUrl,
+    ).toBe('https://cdn.example.com/promo.png');
+
+    expect(
+      mapNotificationToViewModel(
+        {
+          ...normalizeEcNotificationDto(dto)!,
+          imageUrl: undefined,
+          imagePath: '/appatt/notifications/promo.png',
+        },
+        'en',
+      ).imageUrl,
+    ).toBe('/appatt/notifications/promo.png');
+
+    expect(
+      mapNotificationToViewModel(normalizeEcNotificationDto(dto)!, 'en').imageUrl,
+    ).toBeUndefined();
+  });
+
+  it('resolveNotificationImageUrl prefers imageUrl over imagePath', () => {
+    expect(
+      resolveNotificationImageUrl('https://cdn.example.com/a.png', '/appatt/b.png'),
+    ).toBe('https://cdn.example.com/a.png');
+    expect(resolveNotificationImageUrl(undefined, undefined)).toBeUndefined();
   });
 });

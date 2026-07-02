@@ -8,6 +8,7 @@ import { combineLatest } from 'rxjs';
 import { ProductSeoService } from '../../../../core/portal-seo/product-seo.service';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -61,12 +62,14 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   private readonly cartActions = inject(CartActionsService);
   private readonly auth = inject(AuthTokenService);
   private readonly wishlistActions = inject(WishlistActionsService);
+  private readonly toast = inject(ToastService);
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
   readonly variants = signal<ProductDetailVariant[]>([]);
   readonly relatedProducts = signal<ProductCardData[]>([]);
   readonly quantity = signal(1);
+  readonly quantityValidationKey = signal<string | null>(null);
   readonly selectedImageIndex = signal(0);
   readonly shareData = signal<PublicProductShareDto | null>(null);
 
@@ -182,20 +185,22 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   decrementQuantity(): void {
-    this.quantity.update((q) => Math.max(1, q - 1));
-    this.refreshDisplayedPrice();
+    this.applyQuantity(this.quantity() - 1);
   }
 
   incrementQuantity(): void {
-    this.quantity.update((q) => Math.min(this.maxQuantity(), q + 1));
-    this.refreshDisplayedPrice();
+    const max = this.maxQuantity();
+    if (this.quantity() >= max) {
+      this.quantityValidationKey.set('PRODUCT_DETAIL.STOCK_MAX_REACHED');
+      return;
+    }
+    this.applyQuantity(this.quantity() + 1);
   }
 
   onQuantityInput(event: Event): void {
     const raw = Number((event.target as HTMLInputElement).value);
-    const next = Number.isFinite(raw) ? Math.floor(raw) : 1;
-    this.quantity.set(Math.min(this.maxQuantity(), Math.max(1, next)));
-    this.refreshDisplayedPrice();
+    const requested = Number.isFinite(raw) ? Math.floor(raw) : 1;
+    this.applyQuantity(requested, requested);
   }
 
   onVariantSelect(variantId: number): void {
@@ -210,6 +215,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
       .subscribe((updated) => {
         this.product.set(updated);
         this.selectedImageIndex.set(0);
+        this.clampQuantityToStock();
       });
   }
 
@@ -218,12 +224,18 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     if (!p) {
       return;
     }
+    if (!this.validateQuantityForAction()) {
+      return;
+    }
     this.cartActions.addProductDetail(p, this.quantity());
   }
 
   buyNow(): void {
     const p = this.product();
     if (!p) {
+      return;
+    }
+    if (!this.validateQuantityForAction()) {
       return;
     }
     const afterAdd = (): void => {
@@ -263,6 +275,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     this.product.set(null);
     this.variants.set([]);
     this.quantity.set(1);
+    this.quantityValidationKey.set(null);
     this.selectedImageIndex.set(0);
     this.shareData.set(null);
 
@@ -317,5 +330,40 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     this.productDetailService
       .refreshPrice(product, this.quantity())
       .subscribe((updated) => this.product.set(updated));
+  }
+
+  private applyQuantity(next: number, requested?: number): void {
+    const max = this.maxQuantity();
+    const clamped = Math.min(max, Math.max(1, Math.floor(next)));
+    this.quantity.set(clamped);
+
+    if (requested != null && requested > max) {
+      this.quantityValidationKey.set('PRODUCT_DETAIL.STOCK_EXCEEDED');
+    } else if (next > max) {
+      this.quantityValidationKey.set('PRODUCT_DETAIL.STOCK_MAX_REACHED');
+    } else {
+      this.quantityValidationKey.set(null);
+    }
+
+    this.refreshDisplayedPrice();
+  }
+
+  private clampQuantityToStock(): void {
+    const max = this.maxQuantity();
+    if (this.quantity() > max) {
+      this.applyQuantity(max, this.quantity());
+    }
+  }
+
+  private validateQuantityForAction(): boolean {
+    const max = this.maxQuantity();
+    if (this.quantity() > max) {
+      this.quantityValidationKey.set('PRODUCT_DETAIL.STOCK_EXCEEDED');
+      this.toast.warning(
+        this.translate.instant('PRODUCT_DETAIL.STOCK_EXCEEDED', { count: max }),
+      );
+      return false;
+    }
+    return true;
   }
 }

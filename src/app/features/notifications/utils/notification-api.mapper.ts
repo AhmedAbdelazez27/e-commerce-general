@@ -1,4 +1,5 @@
 import type { AppLang } from '../../../core/services/language.service';
+import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import type { EcNotificationDto } from '../models/ec-notification.dto';
 import type { PagedNotificationsResult } from '../models/paged-notifications.model';
 import type { NotificationViewModel } from '../models/notification-view.model';
@@ -36,6 +37,14 @@ function readBoolean(o: JsonRecord, ...keys: string[]): boolean | undefined {
   return undefined;
 }
 
+/** Prefer absolute imageUrl; fall back to relative imagePath from admin portal. */
+export function resolveNotificationImageUrl(
+  imageUrl?: string,
+  imagePath?: string,
+): string | undefined {
+  return resolveAttachmentUrlOptional(imageUrl) ?? resolveAttachmentUrlOptional(imagePath);
+}
+
 export function normalizeEcNotificationDto(raw: unknown): EcNotificationDto | null {
   if (raw == null || typeof raw !== 'object') {
     return null;
@@ -68,6 +77,7 @@ export function normalizeEcNotificationDto(raw: unknown): EcNotificationDto | nu
     notificationTypeNameEn,
     referenceType: readString(o, 'referenceType', 'ReferenceType'),
     referenceId: readNumber(o, 'referenceId', 'ReferenceId'),
+    imagePath: readString(o, 'imagePath', 'ImagePath'),
     imageUrl: readString(o, 'imageUrl', 'ImageUrl'),
     isRead,
     readDate: readString(o, 'readDate', 'ReadDate'),
@@ -128,7 +138,7 @@ export function mapNotificationToViewModel(
     notificationTypeLkpId: dto.notificationTypeLkpId,
     referenceType: dto.referenceType,
     referenceId: dto.referenceId,
-    imageUrl: dto.imageUrl,
+    imageUrl: resolveNotificationImageUrl(dto.imageUrl, dto.imagePath),
     isRead: dto.isRead,
     createdAt: new Date(dto.creationTime),
     targetUrl: target

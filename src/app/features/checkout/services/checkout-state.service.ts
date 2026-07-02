@@ -23,6 +23,7 @@ export class CheckoutStateService {
     CHECKOUT_CONFIG.shippingMethods[0]?.amount ?? 0,
   );
   private readonly couponCodeSignal = signal<string>('');
+  private readonly couponDiscountAmountSignal = signal<number>(0);
   private readonly notesSignal = signal<string>('');
   private readonly paymentMethodsSignal = signal<CheckoutPaymentOption[]>([]);
 
@@ -33,6 +34,7 @@ export class CheckoutStateService {
   readonly shippingMethod = this.shippingMethodSignal.asReadonly();
   readonly shippingAmount = this.shippingAmountSignal.asReadonly();
   readonly couponCode = this.couponCodeSignal.asReadonly();
+  readonly couponDiscountAmount = this.couponDiscountAmountSignal.asReadonly();
   readonly notes = this.notesSignal.asReadonly();
   readonly paymentMethods = this.paymentMethodsSignal.asReadonly();
 
@@ -81,6 +83,13 @@ export class CheckoutStateService {
 
   setCouponCode(code: string | null): void {
     this.couponCodeSignal.set(code?.trim() ?? '');
+    if (!code?.trim()) {
+      this.couponDiscountAmountSignal.set(0);
+    }
+  }
+
+  setCouponDiscountAmount(amount: number | null): void {
+    this.couponDiscountAmountSignal.set(amount != null && amount > 0 ? amount : 0);
   }
 
   setNotes(notes: string | null): void {
@@ -186,6 +195,7 @@ export class CheckoutStateService {
     this.shippingMethodSignal.set(CHECKOUT_CONFIG.shippingMethods[0]?.id ?? 'Standard');
     this.shippingAmountSignal.set(CHECKOUT_CONFIG.shippingMethods[0]?.amount ?? 0);
     this.couponCodeSignal.set('');
+    this.couponDiscountAmountSignal.set(0);
     this.notesSignal.set('');
     this.paymentMethodsSignal.set([]);
     this.lastPlacedOrder.set(null);

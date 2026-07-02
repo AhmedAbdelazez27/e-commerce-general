@@ -16,6 +16,8 @@
     "CONTACT": "Contact us",
     "LOGIN": "Sign in",
     "REGISTER": "Register",
+    "FORGOT_PASSWORD": "Forgot password",
+    "RESET_PASSWORD": "Reset password",
     "NOTIFICATIONS": "Notifications"
   },
   "AUTH": {
@@ -55,7 +57,20 @@
     "EXTERNAL_INVALID_GOOGLE": "Google sign-in failed. Please try again.",
     "EXTERNAL_EMAIL_REQUIRED": "An email address is required. Grant email permission or use another account.",
     "EXTERNAL_CREATE_USER_FAILED": "Could not create your account. Please try again or contact support.",
-    "EXTERNAL_USER_INACTIVE": "This account is inactive. Please contact support."
+    "EXTERNAL_USER_INACTIVE": "This account is inactive. Please contact support.",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "FORGOT_PASSWORD_HINT": "Enter your email address and we will send you a link to reset your password.",
+    "FORGOT_PASSWORD_SUCCESS": "If an account exists for this email, you will receive reset instructions shortly.",
+    "FORGOT_PASSWORD_FAILED": "Could not send reset instructions. Please try again.",
+    "FORGOT_PASSWORD_CHECK_EMAIL": "Check your inbox for password reset instructions. The link may expire after a short time.",
+    "SEND_RESET_LINK": "Send reset link",
+    "BACK_TO_LOGIN": "Back to sign in",
+    "NEW_PASSWORD": "New password",
+    "RESET_PASSWORD_HINT": "Choose a new password for your account.",
+    "RESET_PASSWORD_SUBMIT": "Update password",
+    "RESET_PASSWORD_SUCCESS": "Your password has been updated. You can sign in now.",
+    "RESET_PASSWORD_FAILED": "Could not reset your password. The link may have expired.",
+    "RESET_PASSWORD_INVALID_LINK": "This reset link is invalid or incomplete. Request a new one."
   },
   "COMMON": {
     "REFRESH": "Refresh",
@@ -602,6 +617,8 @@
     "SUMMARY_TITLE": "Order summary",
     "SUMMARY_SUBTOTAL": "Subtotal",
     "SUMMARY_DISCOUNT": "Discount",
+    "SUMMARY_PRODUCT_DISCOUNT": "Product discount",
+    "SUMMARY_COUPON_DISCOUNT": "Coupon discount",
     "SUMMARY_DELIVERY": "Delivery",
     "SUMMARY_FREE_DELIVERY": "Free",
     "SUMMARY_TOTAL": "Total",
@@ -682,6 +699,8 @@
     "QUANTITY": "Quantity",
     "QTY_INCREASE": "Increase quantity",
     "QTY_DECREASE": "Decrease quantity",
+    "STOCK_EXCEEDED": "Only {{count}} items are available in stock.",
+    "STOCK_MAX_REACHED": "Maximum available quantity is {{count}}.",
     "ADD_TO_CART": "Add to cart",
     "BUY_NOW": "Buy now",
     "SHIPPING_TITLE": "Shipping",

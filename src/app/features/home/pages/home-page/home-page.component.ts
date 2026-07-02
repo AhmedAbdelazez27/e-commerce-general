@@ -7,7 +7,8 @@ import { HomeBrandsComponent } from '../../components/home-brands/home-brands.co
 import { HomeCuratedCollectionsComponent } from '../../components/home-curated-collections/home-curated-collections.component';
 import { HomeCategoryShortcutsComponent } from '../../components/home-category-shortcuts/home-category-shortcuts.component';
 import { HomeHeroComponent } from '../../components/home-hero/home-hero.component';
-import { HomeOffersComponent } from '../../components/home-offers/home-offers.component';
+// Special offers section hidden per request
+// import { HomeOffersComponent } from '../../components/home-offers/home-offers.component';
 import { HomeProductSectionComponent } from '../../components/home-product-section/home-product-section.component';
 import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/home-trust-badges.component';
 
@@ -18,7 +19,7 @@ import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/hom
     HomeCuratedCollectionsComponent,
     HomeCategoryShortcutsComponent,
     HomeProductSectionComponent,
-    HomeOffersComponent,
+    // HomeOffersComponent,
     HomeBrandsComponent,
     HomeTrustBadgesComponent,
   ],

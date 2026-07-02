@@ -9,6 +9,7 @@ export interface EcNotificationDto {
   notificationTypeNameEn: string;
   referenceType?: string;
   referenceId?: number;
+  imagePath?: string;
   imageUrl?: string;
   isRead: boolean;
   readDate?: string;

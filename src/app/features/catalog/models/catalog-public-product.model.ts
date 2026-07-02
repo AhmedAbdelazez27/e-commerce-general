@@ -45,6 +45,7 @@ export interface PublicProductVariantDto {
   variantSKU?: string;
   variantName?: string;
   additionalPrice?: number;
+  quantity?: number;
   sortOrder?: number;
   availabilityStatus?: string;
   price?: PublicSearchProductPriceDto;
@@ -77,6 +78,7 @@ export interface PublicProductDetailsDto {
   oldPrice?: number | null;
   finalPrice?: number;
   discountPercent?: number | null;
+  quantity?: number;
   hasVariants?: boolean;
   availabilityStatus?: string;
   price?: PublicSearchProductPriceDto;

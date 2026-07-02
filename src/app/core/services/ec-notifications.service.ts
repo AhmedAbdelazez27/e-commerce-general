@@ -98,6 +98,9 @@ export class EcNotificationsService {
   }
 
   initializeForAuthenticatedUser(): void {
+    // #region agent log
+    fetch('http://127.0.0.1:7668/ingest/7d9961ce-efbb-4fcc-9ea1-ac710269f415',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c7e88e'},body:JSON.stringify({sessionId:'c7e88e',hypothesisId:'D',location:'ec-notifications.service.ts:initializeForAuthenticatedUser',message:'init for authenticated user',data:{isLoggedIn:this.auth.isLoggedIn()},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (!this.auth.isLoggedIn()) {
       return;
     }
@@ -270,6 +273,7 @@ export class EcNotificationsService {
       typeName: '',
       referenceType: payload.referenceType,
       referenceId: payload.referenceId,
+      imageUrl: payload.imageUrl,
       isRead: false,
       createdAt: new Date(),
       targetUrl: payload.targetUrl,

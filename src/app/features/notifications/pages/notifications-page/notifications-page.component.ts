@@ -26,7 +26,6 @@ export class NotificationsPageComponent {
   private readonly router = inject(Router);
 
   readonly readFilter = signal<NotificationReadFilter>('all');
-  readonly typeFilter = signal<number | null>(null);
   readonly markingAll = signal(false);
   readonly expandedId = signal<number | null>(null);
   readonly unreadCount = this.notifications.unreadCount;
@@ -38,20 +37,12 @@ export class NotificationsPageComponent {
     return Math.max(1, Math.ceil(state.totalCount / state.pageSize));
   });
 
-  readonly typeOptions = computed(() => this.notifications.distinctTypeOptions(this.pageState().items));
-
   constructor() {
     this.loadCurrentPage();
   }
 
   setReadFilter(filter: NotificationReadFilter): void {
     this.readFilter.set(filter);
-    this.typeFilter.set(null);
-    this.loadPage(1);
-  }
-
-  setTypeFilter(typeId: number | null): void {
-    this.typeFilter.set(typeId);
     this.loadPage(1);
   }
 
@@ -127,7 +118,6 @@ export class NotificationsPageComponent {
   private loadPage(page: number): void {
     this.notifications.loadPage(page, {
       readFilter: this.readFilter(),
-      notificationTypeLkpId: this.typeFilter(),
     }, PAGE_SIZE);
   }
 

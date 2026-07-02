@@ -8,7 +8,7 @@
     aria-haspopup="true"
     (click)="toggle()"
   >
-    <i class="fa-regular fa-bell" aria-hidden="true"></i>
+    <i class="fa-solid fa-bell" aria-hidden="true"></i>
     @if (unreadCount() > 0) {
       <span class="store-header__cart-badge" aria-hidden="true">{{ badgeText() }}</span>
     }
@@ -54,10 +54,19 @@
                 type="button"
                 class="notification-bell__item"
                 [class.notification-bell__item--unread]="!item.isRead"
+                [class.notification-bell__item--with-image]="!!item.imageUrl"
                 role="menuitem"
                 (click)="onItemClick(item, $event)"
               >
                 <span class="notification-bell__item-indicator" aria-hidden="true"></span>
+                @if (item.imageUrl) {
+                  <img
+                    class="notification-bell__item-image"
+                    [src]="item.imageUrl"
+                    alt=""
+                    loading="lazy"
+                  />
+                }
                 <span class="notification-bell__item-body">
                   <span class="notification-bell__item-title">{{ item.title }}</span>
                   <span class="notification-bell__item-text">{{ item.body }}</span>
