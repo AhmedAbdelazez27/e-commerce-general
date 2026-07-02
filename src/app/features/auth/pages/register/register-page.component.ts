@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -13,17 +13,9 @@ import { TenantService } from '../../../../core/services/tenant.service';
 import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
+import { passwordsMatch, passwordInputType } from '../../utils/password-form.util';
 import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
-
-function passwordsMatch(control: AbstractControl): { mismatch: true } | null {
-  const password = control.get('password')?.value;
-  const confirm = control.get('confirmPassword')?.value;
-  if (password && confirm && password !== confirm) {
-    return { mismatch: true };
-  }
-  return null;
-}
 
 @Component({
   selector: 'app-register-page',
@@ -42,6 +34,9 @@ export class RegisterPageComponent {
   private readonly tenants = inject(TenantService);
 
   readonly loading = signal(false);
+  readonly showPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
+  readonly passwordInputType = passwordInputType;
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -58,6 +53,18 @@ export class RegisterPageComponent {
 
   continueUrl(): string {
     return resolveAuthContinueUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+  }
+
+  togglePasswordVisibility(field: 'password' | 'confirm'): void {
+    if (field === 'password') {
+      this.showPassword.update((visible) => !visible);
+      return;
+    }
+    this.showConfirmPassword.update((visible) => !visible);
+  }
+
+  passwordToggleLabel(visible: boolean): string {
+    return this.translate.instant(visible ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD');
   }
 
   submit(): void {

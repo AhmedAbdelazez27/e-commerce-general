@@ -53,13 +53,26 @@
         <div class="col-lg-6">
           <div class="mb-3">
             <label class="form-label" for="reg-password">{{ 'AUTH.PASSWORD' | translate }}</label>
-            <input
-              id="reg-password"
-              type="password"
-              class="form-control"
-              formControlName="password"
-              autocomplete="new-password"
-            />
+            <div class="password-field">
+              <input
+                id="reg-password"
+                [type]="passwordInputType(showPassword())"
+                class="form-control"
+                formControlName="password"
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                class="password-field__toggle"
+                (click)="togglePasswordVisibility('password')"
+                [attr.aria-label]="passwordToggleLabel(showPassword())"
+              >
+                <i
+                  [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
             @if (form.controls.password.touched && form.controls.password.invalid) {
               <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
             }
@@ -68,13 +81,26 @@
         <div class="col-lg-6">
           <div class="mb-3">
             <label class="form-label" for="reg-confirm">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
-            <input
-              id="reg-confirm"
-              type="password"
-              class="form-control"
-              formControlName="confirmPassword"
-              autocomplete="new-password"
-            />
+            <div class="password-field">
+              <input
+                id="reg-confirm"
+                [type]="passwordInputType(showConfirmPassword())"
+                class="form-control"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                class="password-field__toggle"
+                (click)="togglePasswordVisibility('confirm')"
+                [attr.aria-label]="passwordToggleLabel(showConfirmPassword())"
+              >
+                <i
+                  [class]="showConfirmPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
             @if (form.touched && form.errors?.['mismatch']) {
               <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MISMATCH' | translate }}</div>
             }

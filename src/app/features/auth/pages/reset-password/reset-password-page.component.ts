@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -9,15 +9,7 @@ import { TenantService } from '../../../../core/services/tenant.service';
 import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-page-header.component';
 import { AuthApiService } from '../../services/auth-api.service';
 import { abpErrorMessage, abpRequestSucceeded } from '../../utils/auth-abp.util';
-
-function passwordsMatch(control: AbstractControl): { mismatch: true } | null {
-  const password = control.get('newPassword')?.value;
-  const confirm = control.get('confirmPassword')?.value;
-  if (password && confirm && password !== confirm) {
-    return { mismatch: true };
-  }
-  return null;
-}
+import { passwordsMatch, passwordInputType } from '../../utils/password-form.util';
 
 @Component({
   selector: 'app-reset-password-page',
@@ -35,6 +27,9 @@ export class ResetPasswordPageComponent implements OnInit {
 
   readonly loading = signal(false);
   readonly invalidLink = signal(false);
+  readonly showNewPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
+  readonly passwordInputType = passwordInputType;
 
   private email = '';
   private resetToken = '';
@@ -68,6 +63,18 @@ export class ResetPasswordPageComponent implements OnInit {
     if (!this.email || !this.resetToken) {
       this.invalidLink.set(true);
     }
+  }
+
+  togglePasswordVisibility(field: 'new' | 'confirm'): void {
+    if (field === 'new') {
+      this.showNewPassword.update((visible) => !visible);
+      return;
+    }
+    this.showConfirmPassword.update((visible) => !visible);
+  }
+
+  passwordToggleLabel(visible: boolean): string {
+    return this.translate.instant(visible ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD');
   }
 
   submit(): void {

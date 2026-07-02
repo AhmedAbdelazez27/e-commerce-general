@@ -198,6 +198,114 @@
               </div>
             </div>
           </div>
+
+          <form class="profile-info profile-info--edit mt-3" [formGroup]="passwordForm" novalidate>
+            <h5 class="profile-info__title">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h5>
+            <p class="text-muted mb-3">{{ 'PROFILE.CHANGE_PASSWORD_HINT' | translate }}</p>
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <label class="profile-info__label" for="profile-current-password">
+                  {{ 'PROFILE.CURRENT_PASSWORD' | translate }}
+                </label>
+                <div class="password-field">
+                  <input
+                    id="profile-current-password"
+                    [type]="passwordInputType(showCurrentPassword())"
+                    class="form-control"
+                    formControlName="currentPassword"
+                    autocomplete="current-password"
+                    [class.is-invalid]="passwordFieldError('currentPassword')"
+                  />
+                  <button
+                    type="button"
+                    class="password-field__toggle"
+                    (click)="togglePasswordVisibility('current')"
+                    [attr.aria-label]="passwordToggleLabel(showCurrentPassword())"
+                  >
+                    <i
+                      [class]="showCurrentPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </div>
+                @if (passwordFieldError('currentPassword'); as err) {
+                  <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                }
+              </div>
+
+              <div class="col-lg-6">
+                <label class="profile-info__label" for="profile-new-password">
+                  {{ 'AUTH.NEW_PASSWORD' | translate }}
+                </label>
+                <div class="password-field">
+                  <input
+                    id="profile-new-password"
+                    [type]="passwordInputType(showNewPassword())"
+                    class="form-control"
+                    formControlName="newPassword"
+                    autocomplete="new-password"
+                    [class.is-invalid]="passwordFieldError('newPassword')"
+                  />
+                  <button
+                    type="button"
+                    class="password-field__toggle"
+                    (click)="togglePasswordVisibility('new')"
+                    [attr.aria-label]="passwordToggleLabel(showNewPassword())"
+                  >
+                    <i
+                      [class]="showNewPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </div>
+                @if (passwordFieldError('newPassword'); as err) {
+                  <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                }
+              </div>
+
+              <div class="col-lg-6">
+                <label class="profile-info__label" for="profile-confirm-password">
+                  {{ 'AUTH.CONFIRM_PASSWORD' | translate }}
+                </label>
+                <div class="password-field">
+                  <input
+                    id="profile-confirm-password"
+                    [type]="passwordInputType(showConfirmPassword())"
+                    class="form-control"
+                    formControlName="confirmPassword"
+                    autocomplete="new-password"
+                    [class.is-invalid]="passwordFieldError('confirmPassword')"
+                  />
+                  <button
+                    type="button"
+                    class="password-field__toggle"
+                    (click)="togglePasswordVisibility('confirm')"
+                    [attr.aria-label]="passwordToggleLabel(showConfirmPassword())"
+                  >
+                    <i
+                      [class]="showConfirmPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
+                </div>
+                @if (passwordFieldError('confirmPassword'); as err) {
+                  <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                }
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-4">
+              <button type="button" class="btn btn-outline-secondary" (click)="resetPasswordForm()">
+                {{ 'COMMON.CANCEL' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary" (click)="changePassword()" [disabled]="passwordSaving()">
+                @if (passwordSaving()) {
+                  {{ 'COMMON.LOADING' | translate }}
+                } @else {
+                  {{ 'PROFILE.CHANGE_PASSWORD' | translate }}
+                }
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -369,7 +477,9 @@
           <p class="text-muted mb-3">{{ 'ORDERS.SUBTITLE' | translate }}</p>
           <div class="d-flex flex-wrap gap-2">
             <a routerLink="/account/orders" class="btn btn-primary">{{ 'ORDERS.TITLE' | translate }}</a>
+            @if (enableReturns()) {
             <a routerLink="/account/returns" class="btn btn-outline-primary">{{ 'RETURNS.TITLE' | translate }}</a>
+            }
           </div>
         </div>
       </div>

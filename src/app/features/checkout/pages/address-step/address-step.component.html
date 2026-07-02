@@ -154,6 +154,7 @@
       </form>
     }
 
+    @if (enableShipment()) {
     <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
     @if (showShippingError()) {
       <div class="alert alert-warning checkout-step__alert" role="alert">
@@ -187,6 +188,7 @@
         </label>
       }
     </div>
+    }
   }
 
   <div class="checkout-step__actions">

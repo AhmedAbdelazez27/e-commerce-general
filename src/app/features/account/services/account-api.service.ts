@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { dataArrayFromEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import type { ChangePasswordRequest } from '../models/change-password.model';
 import type { CustomerProfileDto, UpdateProfileInput } from '../models/customer-profile.model';
 import { OrderListItemDto } from '../models/order.model';
 import { normalizeCustomerProfile } from '../utils/account-profile.mapper';
@@ -31,5 +32,9 @@ export class AccountApiService {
     return this.http.put<unknown>(ApiEndpoints.EcCustomerProfile.updateProfile, body).pipe(
       map((res) => normalizeCustomerProfile(resultFromAbpEnvelope(res))),
     );
+  }
+
+  changePassword(body: ChangePasswordRequest): Observable<unknown> {
+    return this.http.post<unknown>(ApiEndpoints.Auth.changePassword, body);
   }
 }

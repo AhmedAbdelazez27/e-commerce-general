@@ -37,6 +37,15 @@ export interface PortalMobileSettings {
   minimumSupportedVersion: string;
 }
 
+export interface PortalWorkflowSettings {
+  enableShipment: boolean;
+  enableDeliveryTracking: boolean;
+  enableReturns: boolean;
+  enableRefunds: boolean;
+  enableCashOnDelivery: boolean;
+  enableOnlinePayment: boolean;
+}
+
 /** Runtime portal configuration (merged defaults + API). */
 export interface PortalConfiguration {
   portalNameAr: string;
@@ -78,14 +87,19 @@ export interface PortalConfiguration {
   socialMedia: PortalSocialMedia;
   seo: PortalSeoConfig;
   mobileSettings: PortalMobileSettings;
+  workflowSettings: PortalWorkflowSettings;
 }
 
 /** Raw API DTO — fields may be partial or omitted. */
 export type PortalConfigurationDto = Partial<
-  Omit<PortalConfiguration, 'contactInfo' | 'socialMedia' | 'seo' | 'mobileSettings'>
+  Omit<
+    PortalConfiguration,
+    'contactInfo' | 'socialMedia' | 'seo' | 'mobileSettings' | 'workflowSettings'
+  >
 > & {
   contactInfo?: Partial<PortalContactInfo>;
   socialMedia?: Partial<PortalSocialMedia>;
   seo?: Partial<PortalSeoConfig>;
   mobileSettings?: Partial<PortalMobileSettings>;
+  workflowSettings?: Partial<PortalWorkflowSettings>;
 };

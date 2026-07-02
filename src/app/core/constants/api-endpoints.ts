@@ -6,6 +6,7 @@ export class ApiEndpoints {
     externalAuthenticateECommerce: '/api/TokenAuth/ExternalAuthenticateECommerce',
     forgetPassword: '/api/services/app/User/ForgetPasswordForPortal',
     postForgetPassword: '/api/services/app/User/PostForgetPassword',
+    changePassword: '/api/services/app/User/ChangePassword',
   };
 
   static readonly Catalog = {

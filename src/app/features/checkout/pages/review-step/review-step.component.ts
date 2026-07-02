@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { enrichCartItems } from '../../../cart/utils/cart-enrichment.util';
 import { resolveCartMerchandiseTotals } from '../../../cart/utils/cart-summary.util';
@@ -29,8 +30,11 @@ export class ReviewStepComponent implements OnInit {
   private readonly auth = inject(AuthTokenService);
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
+  private readonly portal = inject(PortalConfigService);
   readonly placing = signal(false);
   readonly savedAddresses = signal<CustomerAddressDto[]>([]);
+
+  readonly enableShipment = this.portal.enableShipment;
 
   readonly lineItems = computed(() => {
     const cart = this.cart.cart();
@@ -49,7 +53,7 @@ export class ReviewStepComponent implements OnInit {
       ? this.checkoutState.couponDiscountAmount()
       : null;
     const merchandise = resolveCartMerchandiseTotals(cart, lines, cart?.Items ?? [], appliedCoupon);
-    const shippingAmount = this.checkoutState.shippingAmount();
+    const shippingAmount = this.enableShipment() ? this.checkoutState.shippingAmount() : 0;
     return {
       subtotal: merchandise.subtotal,
       productDiscount: merchandise.productDiscount,

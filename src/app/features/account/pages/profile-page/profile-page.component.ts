@@ -6,6 +6,9 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
+import { abpErrorMessage, abpRequestSucceeded } from '../../../auth/utils/auth-abp.util';
+import { passwordsMatch, passwordInputType } from '../../../auth/utils/password-form.util';
 import { CHECKOUT_CONFIG } from '../../../checkout/config/checkout.config';
 import type { CustomerAddressDto } from '../../../checkout/models/customer-address.model';
 import { CustomerAddressApiService } from '../../../checkout/services/customer-address-api.service';
@@ -20,6 +23,7 @@ import { AccountApiService } from '../../services/account-api.service';
 
 type AddressUiMode = 'list' | 'add' | 'edit';
 type ProfileUiMode = 'view' | 'edit';
+type PasswordVisibilityField = 'current' | 'new' | 'confirm';
 
 const PROFILE_GENDER_OPTIONS = ACCOUNT_CONFIG.genderOptions;
 
@@ -37,6 +41,9 @@ export class ProfilePageComponent {
   private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly portal = inject(PortalConfigService);
+
+  readonly enableReturns = this.portal.enableReturns;
 
   readonly completeProfileMode = signal(
     this.route.snapshot.queryParamMap.get('completeProfile') === '1',
@@ -47,6 +54,11 @@ export class ProfilePageComponent {
   readonly profileUiMode = signal<ProfileUiMode>('view');
   readonly profileSaving = signal(false);
   readonly showProfileFormErrors = signal(false);
+  readonly passwordSaving = signal(false);
+  readonly showPasswordFormErrors = signal(false);
+  readonly showCurrentPassword = signal(false);
+  readonly showNewPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
   readonly genderOptions = PROFILE_GENDER_OPTIONS;
 
   readonly addresses = signal<CustomerAddressDto[]>([]);
@@ -63,6 +75,15 @@ export class ProfilePageComponent {
     birthDate: [''],
     genderLkpId: [0],
   });
+
+  readonly passwordForm = this.fb.nonNullable.group(
+    {
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+    },
+    { validators: passwordsMatch },
+  );
 
   readonly addressForm = this.fb.nonNullable.group({
     city: ['', checkoutAddressValidators.city],
@@ -102,6 +123,7 @@ export class ProfilePageComponent {
   reload(): void {
     this.cancelAddressForm();
     this.cancelProfileEdit();
+    this.resetPasswordForm();
     this.load();
   }
 
@@ -126,6 +148,32 @@ export class ProfilePageComponent {
     this.profileUiMode.set('view');
     this.showProfileFormErrors.set(false);
     this.profileForm.reset({ genderLkpId: 0 });
+  }
+
+  resetPasswordForm(): void {
+    this.showPasswordFormErrors.set(false);
+    this.resetPasswordVisibility();
+    this.passwordForm.reset();
+  }
+
+  togglePasswordVisibility(field: PasswordVisibilityField): void {
+    switch (field) {
+      case 'current':
+        this.showCurrentPassword.update((visible) => !visible);
+        break;
+      case 'new':
+        this.showNewPassword.update((visible) => !visible);
+        break;
+      case 'confirm':
+        this.showConfirmPassword.update((visible) => !visible);
+        break;
+    }
+  }
+
+  readonly passwordInputType = passwordInputType;
+
+  passwordToggleLabel(visible: boolean): string {
+    return this.translate.instant(visible ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD');
   }
 
   saveProfile(): void {
@@ -186,6 +234,62 @@ export class ProfilePageComponent {
       return 'AUTH.EMAIL_REQUIRED';
     }
     return 'PROFILE.UPDATE_FORM_INVALID';
+  }
+
+  passwordFieldError(field: 'currentPassword' | 'newPassword' | 'confirmPassword'): string | null {
+    const control = this.passwordForm.get(field);
+    if (!this.showPasswordFormErrors()) {
+      return null;
+    }
+    if (field === 'confirmPassword' && this.passwordForm.errors?.['mismatch']) {
+      return 'AUTH.PASSWORD_MISMATCH';
+    }
+    if (!control?.errors) {
+      return null;
+    }
+    if (field === 'currentPassword' && control.errors['required']) {
+      return 'PROFILE.CURRENT_PASSWORD_REQUIRED';
+    }
+    if (field === 'newPassword' && (control.errors['required'] || control.errors['minlength'])) {
+      return 'AUTH.PASSWORD_MIN';
+    }
+    if (field === 'confirmPassword' && control.errors['required']) {
+      return 'AUTH.PASSWORD_MISMATCH';
+    }
+    return null;
+  }
+
+  changePassword(): void {
+    this.passwordForm.markAllAsTouched();
+    if (this.passwordForm.invalid) {
+      this.showPasswordFormErrors.set(true);
+      this.toastr.warning(this.translate.instant('PROFILE.CHANGE_PASSWORD_FAILED'));
+      return;
+    }
+
+    const raw = this.passwordForm.getRawValue();
+    this.passwordSaving.set(true);
+    this.accountApi
+      .changePassword({
+        currentPassword: raw.currentPassword,
+        newPassword: raw.newPassword,
+      })
+      .pipe(finalize(() => this.passwordSaving.set(false)))
+      .subscribe({
+        next: (res) => {
+          if (!abpRequestSucceeded(res)) {
+            this.toastr.error(this.translate.instant('PROFILE.CHANGE_PASSWORD_FAILED'));
+            return;
+          }
+          this.toastr.success(this.translate.instant('PROFILE.CHANGE_PASSWORD_SUCCESS'));
+          this.resetPasswordForm();
+        },
+        error: (err) => {
+          this.toastr.error(
+            abpErrorMessage(err, this.translate.instant('PROFILE.CHANGE_PASSWORD_FAILED')),
+          );
+        },
+      });
   }
 
   fieldError(field: 'city' | 'area' | 'street' | 'building'): string | null {
@@ -343,6 +447,12 @@ export class ProfilePageComponent {
     }
     const id = Number(raw);
     return Number.isFinite(id) ? id : 0;
+  }
+
+  private resetPasswordVisibility(): void {
+    this.showCurrentPassword.set(false);
+    this.showNewPassword.set(false);
+    this.showConfirmPassword.set(false);
   }
 
   private resolveCustomerId(): number {

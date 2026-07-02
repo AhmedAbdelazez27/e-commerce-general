@@ -25,6 +25,7 @@ import { AuthApiService } from '../../services/auth-api.service';
 import { ExternalAuthService } from '../../services/external-auth.service';
 import { SocialAuthSdkService } from '../../services/social-auth-sdk.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
+import { passwordInputType } from '../../utils/password-form.util';
 import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
 
@@ -50,6 +51,8 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
   readonly loading = signal(false);
   readonly socialLoading = signal(false);
+  readonly showPassword = signal(false);
+  readonly passwordInputType = passwordInputType;
   readonly showSocialLogin =
     !!this.env.enableSocialLogin &&
     (this.socialSdk.hasGoogle || this.socialSdk.hasFacebook);
@@ -67,6 +70,16 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
 
   continueUrl(): string {
     return resolveAuthContinueUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((visible) => !visible);
+  }
+
+  passwordToggleLabel(): string {
+    return this.translate.instant(
+      this.showPassword() ? 'COMMON.HIDE_PASSWORD' : 'COMMON.SHOW_PASSWORD',
+    );
   }
 
   ngAfterViewInit(): void {

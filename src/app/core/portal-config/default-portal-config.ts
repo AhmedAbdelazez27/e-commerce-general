@@ -75,4 +75,12 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
     forceUpdateVersion: '',
     minimumSupportedVersion: '',
   },
+  workflowSettings: {
+    enableShipment: true,
+    enableDeliveryTracking: true,
+    enableReturns: true,
+    enableRefunds: true,
+    enableCashOnDelivery: true,
+    enableOnlinePayment: true,
+  },
 };

@@ -2,6 +2,7 @@ import { Component, inject, input, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { ProductDetail, ProductDetailInfoTab, ProductDetailSpec } from '../../models/product-detail.model';
 
 @Component({
@@ -11,6 +12,9 @@ import { ProductDetail, ProductDetailInfoTab, ProductDetailSpec } from '../../mo
 })
 export class ProductDetailInfoComponent {
   private readonly language = inject(LanguageService);
+  private readonly portal = inject(PortalConfigService);
+
+  readonly enableReturns = this.portal.enableReturns;
 
   readonly product = input.required<ProductDetail>();
   readonly activeTab = signal<ProductDetailInfoTab>('description');

@@ -29,13 +29,26 @@
 
           <div class="mb-3">
             <label class="form-label" for="login-password">{{ 'AUTH.PASSWORD' | translate }}</label>
-            <input
-              id="login-password"
-              type="password"
-              class="form-control"
-              formControlName="password"
-              autocomplete="current-password"
-            />
+            <div class="password-field">
+              <input
+                id="login-password"
+                [type]="passwordInputType(showPassword())"
+                class="form-control"
+                formControlName="password"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="password-field__toggle"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="passwordToggleLabel()"
+              >
+                <i
+                  [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
             @if (form.controls.password.touched && form.controls.password.invalid) {
               <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
             }

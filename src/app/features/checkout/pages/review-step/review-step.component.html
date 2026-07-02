@@ -10,10 +10,12 @@
       <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_ADDRESS' | translate }}</h3>
       <p>{{ addressText() }}</p>
     </div>
+    @if (enableShipment()) {
     <div class="checkout-review-meta__block">
       <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
       <p>{{ shippingLabelKey() | translate }}</p>
     </div>
+    }
   </div>
 
   <div class="checkout-review-layout">
@@ -21,6 +23,7 @@
       [lineItems]="lineItems()"
       [totals]="totals()"
       [currencyLabel]="currencyLabel()"
+      [showDeliveryLine]="enableShipment()"
     />
   </div>
 

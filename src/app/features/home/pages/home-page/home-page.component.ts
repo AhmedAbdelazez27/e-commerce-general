@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 
 import { StorefrontProduct } from '../../../../shared/models/storefront-product.model';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { HOME_PAGE_CONFIG } from '../../config/home.config';
 import { HOME_MOCK_PRODUCTS } from '../../data/home-mock.data';
 import { HomeBrandsComponent } from '../../components/home-brands/home-brands.component';
@@ -26,8 +27,15 @@ import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/hom
   templateUrl: './home-page.component.html',
 })
 export class HomePageComponent {
+  private readonly portal = inject(PortalConfigService);
+
   readonly config = HOME_PAGE_CONFIG;
   readonly data = HOME_MOCK_PRODUCTS;
+  readonly trustBadges = computed(() =>
+    HOME_PAGE_CONFIG.trustBadges.filter(
+      (badge) => badge.id !== 'returns' || this.portal.enableReturns(),
+    ),
+  );
 
   productsForSection(sectionId: string): StorefrontProduct[] {
     switch (sectionId) {

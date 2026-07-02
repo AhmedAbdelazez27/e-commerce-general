@@ -5,6 +5,7 @@ import {
   PortalMobileSettings,
   PortalSeoConfig,
   PortalSocialMedia,
+  PortalWorkflowSettings,
 } from './portal-configuration.model';
 
 function mergeNested<T extends object>(base: T, patch: Partial<T> | undefined): T {
@@ -23,7 +24,7 @@ export function mergePortalConfig(
     return base;
   }
 
-  const { contactInfo, socialMedia, seo, mobileSettings, ...rest } = patch;
+  const { contactInfo, socialMedia, seo, mobileSettings, workflowSettings, ...rest } = patch;
 
   return {
     ...base,
@@ -32,5 +33,6 @@ export function mergePortalConfig(
     socialMedia: mergeNested<PortalSocialMedia>(base.socialMedia, socialMedia),
     seo: mergeNested<PortalSeoConfig>(base.seo, seo),
     mobileSettings: mergeNested<PortalMobileSettings>(base.mobileSettings, mobileSettings),
+    workflowSettings: mergeNested<PortalWorkflowSettings>(base.workflowSettings, workflowSettings),
   };
 }

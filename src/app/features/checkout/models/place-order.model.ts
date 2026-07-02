@@ -6,7 +6,7 @@ export interface EcPlaceOrderRequest {
   sessionId: string;
   addressId: number;
   newAddress: CustomerAddressInput | null;
-  shippingMethod: string;
+  shippingMethod: string | null;
   shippingAmount: number;
   paymentMethodLkpId: number;
   notes?: string;

@@ -32,6 +32,8 @@ export class StoreHeaderComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly toastr = inject(ToastrService);
 
+  readonly enableReturns = this.portal.enableReturns;
+
   readonly mobileMenuOpen = input(false);
   readonly openMobileMenu = output<void>();
 

@@ -37,7 +37,7 @@
       <div>
         <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CUSTOMER_SERVICE' | translate }}</h2>
         <ul class="store-footer__links">
-          @for (link of config.customerServiceLinks; track link.id) {
+          @for (link of customerServiceLinks(); track link.id) {
             <li>
               <a class="store-footer__link" [routerLink]="link.route">{{ link.labelKey | translate }}</a>
             </li>

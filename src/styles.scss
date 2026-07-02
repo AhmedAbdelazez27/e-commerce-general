@@ -369,6 +369,42 @@ main {
     background: var(--portal-background);
 }
 
+.password-field {
+    position: relative;
+}
+
+.password-field .form-control {
+    padding-inline-end: 2.75rem;
+}
+
+.password-field__toggle {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0.75rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    color: #6b7280;
+    background: transparent;
+    cursor: pointer;
+}
+
+.password-field__toggle:hover {
+    color: var(--portal-primary);
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.password-field__toggle:focus-visible {
+    outline: 2px solid var(--portal-primary);
+    outline-offset: 2px;
+}
+
 .auth-social-divider {
     display: flex;
     align-items: center;

@@ -55,6 +55,10 @@ export class PortalConfigService {
 
   readonly enableChatSupport = computed(() => this.configSignal().mobileSettings.enableChatSupport);
 
+  readonly enableReturns = computed(() => this.configSignal().workflowSettings.enableReturns);
+
+  readonly enableShipment = computed(() => this.configSignal().workflowSettings.enableShipment);
+
   async load(): Promise<void> {
     await this.storefrontConfig.load();
 

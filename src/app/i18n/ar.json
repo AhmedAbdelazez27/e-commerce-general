@@ -81,7 +81,9 @@
     "SAVE": "حفظ",
     "EDIT": "تعديل",
     "DELETE": "حذف",
-    "NOT_SET": "—"
+    "NOT_SET": "—",
+    "SHOW_PASSWORD": "إظهار كلمة المرور",
+    "HIDE_PASSWORD": "إخفاء كلمة المرور"
   },
   "CATEGORIES": {
     "LOAD_FAILED": "تعذر تحميل الفئات. حاول مرة أخرى.",
@@ -162,7 +164,13 @@
     "UPDATE_FAILED": "تعذر تحديث الملف الشخصي. حاول مرة أخرى.",
     "UPDATE_FORM_INVALID": "يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح.",
     "COMPLETE_PROFILE_BANNER": "أضف رقم جوالك لإكمال حسابك.",
-    "COMPLETE_PROFILE_SUCCESS": "اكتمل ملفك الشخصي. أهلاً بك!"
+    "COMPLETE_PROFILE_SUCCESS": "اكتمل ملفك الشخصي. أهلاً بك!",
+    "CHANGE_PASSWORD": "تغيير كلمة المرور",
+    "CURRENT_PASSWORD": "كلمة المرور الحالية",
+    "CHANGE_PASSWORD_HINT": "أدخل كلمة المرور الحالية واختر كلمة مرور جديدة.",
+    "CURRENT_PASSWORD_REQUIRED": "أدخل كلمة المرور الحالية",
+    "CHANGE_PASSWORD_SUCCESS": "تم تحديث كلمة المرور بنجاح.",
+    "CHANGE_PASSWORD_FAILED": "تعذر تغيير كلمة المرور. تحقق من كلمة المرور الحالية وحاول مرة أخرى."
   },
   "ORDERS": {
     "TITLE": "طلباتي",

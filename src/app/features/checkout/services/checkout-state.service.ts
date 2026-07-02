@@ -1,5 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
+import { PortalConfigService } from '../../../core/portal-config/portal-config.service';
 import { CHECKOUT_CONFIG, CheckoutPaymentOption } from '../config/checkout.config';
 import type { CustomerAddressInput } from '../models/customer-address.model';
 import type { EcPlaceOrderContext, EcPlaceOrderRequest } from '../models/place-order.model';
@@ -12,6 +13,8 @@ export interface CheckoutValidationResult {
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutStateService {
+  private readonly portalConfig = inject(PortalConfigService);
+
   private readonly paymentMethodSignal = signal<string | null>(null);
   private readonly useNewAddressSignal = signal(false);
   private readonly selectedAddressIdSignal = signal<number | null>(null);
@@ -44,11 +47,13 @@ export class CheckoutStateService {
       this.paymentMethodsSignal().map((method) => method.id),
     ),
   );
-  readonly hasShipping = computed(() => isAllowedShippingMethod(this.shippingMethodSignal()));
-  readonly hasAddress = computed(() => {
-    if (!this.hasShipping()) {
-      return false;
+  readonly hasShipping = computed(() => {
+    if (!this.portalConfig.enableShipment()) {
+      return true;
     }
+    return isAllowedShippingMethod(this.shippingMethodSignal());
+  });
+  readonly hasAddress = computed(() => {
     const id = this.selectedAddressIdSignal();
     return id != null && id > 0;
   });
@@ -139,7 +144,7 @@ export class CheckoutStateService {
     if (!this.hasPayment()) {
       return { valid: false, errorKey: 'CHECKOUT.PAYMENT_REQUIRED' };
     }
-    if (!this.hasShipping()) {
+    if (this.portalConfig.enableShipment() && !this.hasShipping()) {
       return { valid: false, errorKey: 'CHECKOUT.SHIPPING_REQUIRED' };
     }
     const id = this.selectedAddressIdSignal();
@@ -179,8 +184,8 @@ export class CheckoutStateService {
       sessionId: context.sessionId,
       addressId: this.selectedAddressIdSignal() ?? 0,
       newAddress: null,
-      shippingMethod: this.shippingMethodSignal(),
-      shippingAmount: this.shippingAmountSignal(),
+      shippingMethod: this.portalConfig.enableShipment() ? this.shippingMethodSignal() : null,
+      shippingAmount: this.portalConfig.enableShipment() ? this.shippingAmountSignal() : 0,
       paymentMethodLkpId: Number.isFinite(paymentMethodLkpId) ? paymentMethodLkpId : 0,
       notes: notes || undefined,
       couponCode,

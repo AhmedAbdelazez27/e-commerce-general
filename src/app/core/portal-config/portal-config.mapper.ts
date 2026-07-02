@@ -85,6 +85,7 @@ export function normalizePortalConfigurationDto(
         }
       : undefined,
     mobileSettings: dto.mobileSettings ?? undefined,
+    workflowSettings: dto.workflowSettings ?? undefined,
   };
 }
 

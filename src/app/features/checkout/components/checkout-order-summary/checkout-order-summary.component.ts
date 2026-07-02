@@ -25,6 +25,7 @@ export class CheckoutOrderSummaryComponent {
   readonly lineItems = input.required<CartLineItemView[]>();
   readonly totals = input.required<CheckoutSummaryTotals>();
   readonly currencyLabel = input.required<string>();
+  readonly showDeliveryLine = input(true);
 
   readonly itemCount = computed(() =>
     this.lineItems().reduce((sum, item) => sum + item.quantity, 0),

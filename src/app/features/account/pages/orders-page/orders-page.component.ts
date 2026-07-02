@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcOrderDto } from '../../../checkout/models/place-order.model';
@@ -29,6 +30,9 @@ export class OrdersPageComponent {
   private readonly ordersApi = inject(AccountOrdersApiService);
   private readonly auth = inject(AuthTokenService);
   private readonly translate = inject(TranslateService);
+  private readonly portal = inject(PortalConfigService);
+
+  readonly enableReturns = this.portal.enableReturns;
 
   readonly loading = signal(true);
   readonly orders = signal<EcOrderDto[]>([]);

@@ -34,6 +34,7 @@
         <dd>−{{ formatPrice(totals().couponDiscount) }} {{ currencyLabel() }}</dd>
       </div>
     }
+    @if (showDeliveryLine()) {
     <div class="cart-summary__row">
       <dt>{{ 'CART.SUMMARY_DELIVERY' | translate }}</dt>
       <dd>
@@ -44,6 +45,7 @@
         }
       </dd>
     </div>
+    }
     <div class="cart-summary__row cart-summary__row--total">
       <dt>{{ 'CART.SUMMARY_TOTAL' | translate }}</dt>
       <dd>{{ formatPrice(totals().total) }} {{ currencyLabel() }}</dd>

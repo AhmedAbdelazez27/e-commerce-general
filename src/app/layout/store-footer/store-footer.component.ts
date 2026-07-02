@@ -25,7 +25,12 @@ export class StoreFooterComponent {
   );
   readonly hasContactInfo = this.portal.hasContactInfo;
   readonly enableChatSupport = this.portal.enableChatSupport;
+  readonly enableReturns = this.portal.enableReturns;
   readonly chatSupportHref = this.portal.chatSupportHref;
+
+  readonly customerServiceLinks = computed(() =>
+    this.config.customerServiceLinks.filter((link) => link.id !== 'returns' || this.enableReturns()),
+  );
 
   onNewsletterSubmit(event: Event): void {
     event.preventDefault();

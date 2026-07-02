@@ -46,8 +46,10 @@
       <div class="product-detail-info__panel" role="tabpanel">
         <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.SHIPPING_TITLE' | translate }}</h3>
         <p class="product-detail-info__text">{{ shippingText() }}</p>
+        @if (enableReturns()) {
         <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.RETURNS_TITLE' | translate }}</h3>
         <p class="product-detail-info__text">{{ returnsText() }}</p>
+        }
       </div>
     }
   </div>
@@ -80,8 +82,10 @@
       <summary>{{ 'PRODUCT_DETAIL.TAB.shipping' | translate }}</summary>
       <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.SHIPPING_TITLE' | translate }}</h3>
       <p class="product-detail-info__text">{{ shippingText() }}</p>
+      @if (enableReturns()) {
       <h3 class="product-detail-info__subheading">{{ 'PRODUCT_DETAIL.RETURNS_TITLE' | translate }}</h3>
       <p class="product-detail-info__text">{{ returnsText() }}</p>
+      }
     </details>
   </div>
 </section>

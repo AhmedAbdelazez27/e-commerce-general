@@ -6,6 +6,7 @@ import { forkJoin, of } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
 import type { EcOrderDto, EcOrderStatusHistoryDto } from '../../../checkout/models/place-order.model';
@@ -40,6 +41,9 @@ export class OrderDetailPageComponent implements OnInit {
   private readonly returnsApi = inject(ReturnsApiService);
   private readonly auth = inject(AuthTokenService);
   private readonly translate = inject(TranslateService);
+  private readonly portal = inject(PortalConfigService);
+
+  readonly enableReturns = this.portal.enableReturns;
 
   readonly loading = signal(true);
   readonly loadFailed = signal(false);
@@ -109,6 +113,9 @@ export class OrderDetailPageComponent implements OnInit {
   }
 
   canRequestReturn(): boolean {
+    if (!this.enableReturns()) {
+      return false;
+    }
     const current = this.order();
     return current ? canRequestReturnForOrder(current) : false;
   }
@@ -131,7 +138,7 @@ export class OrderDetailPageComponent implements OnInit {
 
     const customerId = this.resolveCustomerId();
     const returns$ =
-      customerId > 0
+      this.enableReturns() && customerId > 0
         ? this.returnsApi.getCustomerReturns(customerId)
         : of({ totalCount: 0, items: [] });
 

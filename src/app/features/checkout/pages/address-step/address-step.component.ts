@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { CHECKOUT_CONFIG } from '../../config/checkout.config';
 import type { CustomerAddressDto } from '../../models/customer-address.model';
 import { CheckoutStateService } from '../../services/checkout-state.service';
@@ -32,7 +33,9 @@ export class AddressStepComponent implements OnInit {
   private readonly addressApi = inject(CustomerAddressApiService);
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
+  private readonly portal = inject(PortalConfigService);
 
+  readonly enableShipment = this.portal.enableShipment;
   readonly shippingOptions = CHECKOUT_CONFIG.shippingMethods;
   readonly addresses = signal<CustomerAddressDto[]>([]);
   readonly loading = signal(true);
@@ -57,12 +60,14 @@ export class AddressStepComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const shipping = CHECKOUT_CONFIG.shippingMethods.find(
-      (m) => m.id === this.checkoutState.shippingMethod(),
-    );
-    if (shipping) {
-      this.checkoutState.setShipping(shipping.id, shipping.amount);
-      this.selectedShippingId.set(shipping.id);
+    if (this.enableShipment()) {
+      const shipping = CHECKOUT_CONFIG.shippingMethods.find(
+        (m) => m.id === this.checkoutState.shippingMethod(),
+      );
+      if (shipping) {
+        this.checkoutState.setShipping(shipping.id, shipping.amount);
+        this.selectedShippingId.set(shipping.id);
+      }
     }
 
     const customerId = this.resolveCustomerId();
