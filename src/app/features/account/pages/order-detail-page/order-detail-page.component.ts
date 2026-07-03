@@ -44,6 +44,7 @@ export class OrderDetailPageComponent implements OnInit {
   private readonly portal = inject(PortalConfigService);
 
   readonly enableReturns = this.portal.enableReturns;
+  readonly enableShipment = this.portal.enableShipment;
 
   readonly loading = signal(true);
   readonly loadFailed = signal(false);
@@ -77,7 +78,7 @@ export class OrderDetailPageComponent implements OnInit {
   }
 
   trackingSteps(order: EcOrderDto) {
-    return orderTrackingSteps(order);
+    return orderTrackingSteps(order, this.enableShipment());
   }
 
   paymentMethodLabel(order: EcOrderDto): string {

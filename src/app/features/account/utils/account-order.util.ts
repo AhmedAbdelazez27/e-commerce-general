@@ -56,7 +56,7 @@ export function orderStatusLabelKey(value: string | null | undefined): string | 
   return token ? (STATUS_LABEL_KEYS[token] ?? null) : null;
 }
 
-export function orderTrackingSteps(order: EcOrderDto): OrderTrackingStep[] {
+export function orderTrackingSteps(order: EcOrderDto, enableShipment = true): OrderTrackingStep[] {
   const orderStatus = normalizeStatusToken(order.orderStatus);
   const shippingStatus = normalizeStatusToken(order.shippingStatus);
   const combined = [orderStatus, shippingStatus].filter(Boolean);
@@ -72,9 +72,9 @@ export function orderTrackingSteps(order: EcOrderDto): OrderTrackingStep[] {
   if (isCancelled) {
     currentIndex = 0;
   } else if (isDelivered) {
-    currentIndex = 3;
+    currentIndex = enableShipment ? 3 : 2;
   } else if (isShipped) {
-    currentIndex = 2;
+    currentIndex = enableShipment ? 2 : 1;
   } else if (isProcessing) {
     currentIndex = 1;
   }
@@ -82,7 +82,9 @@ export function orderTrackingSteps(order: EcOrderDto): OrderTrackingStep[] {
   const steps: OrderTrackingStep[] = [
     { id: 'placed', labelKey: 'ORDERS.STEP_PLACED', done: false, current: false },
     { id: 'processing', labelKey: 'ORDERS.STEP_PROCESSING', done: false, current: false },
-    { id: 'shipped', labelKey: 'ORDERS.STEP_SHIPPED', done: false, current: false },
+    ...(enableShipment
+      ? [{ id: 'shipped', labelKey: 'ORDERS.STEP_SHIPPED', done: false, current: false } satisfies OrderTrackingStep]
+      : []),
     { id: 'delivered', labelKey: 'ORDERS.STEP_DELIVERED', done: false, current: false },
   ];
 

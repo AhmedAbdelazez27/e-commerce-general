@@ -13,4 +13,6 @@ export interface RegisterECommerceCustomerRequest {
   mobile: string;
   password: string;
   sessionId: string | null;
+  birthDate?: string | null;
+  gender?: string | null;
 }

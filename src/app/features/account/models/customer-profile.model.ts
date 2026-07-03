@@ -33,6 +33,6 @@ export interface UpdateProfileInput {
   email: string;
   mobile: string;
   birthDate: string | null;
-  genderLkpId: number;
+  gender: string | null;
 }
 

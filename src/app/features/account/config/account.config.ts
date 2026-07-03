@@ -1,47 +1,76 @@
 import type { CustomerProfileDto } from '../models/customer-profile.model';
 
-/** Gender lookup ids — adjust if backend lookup values differ. */
+export const GENDER_OPTIONS = [
+  { value: 'Male', labelKey: 'AUTH.GENDER_MALE', matchValues: ['male', 'm', 'ذكر'] },
+  { value: 'Female', labelKey: 'AUTH.GENDER_FEMALE', matchValues: ['female', 'f', 'أنثى', 'انثى'] },
+  {
+    value: 'Unspecified',
+    labelKey: 'AUTH.GENDER_UNSPECIFIED',
+    matchValues: ['unspecified', 'غير محدد', 'غيرمحدد'],
+  },
+] as const;
+
+export type GenderValue = (typeof GENDER_OPTIONS)[number]['value'];
+
+/** @deprecated Use GENDER_OPTIONS */
 export const ACCOUNT_CONFIG = {
-  genderOptions: [
-    { id: 1, matchValues: ['male', 'm', 'ذكر'], labelKey: 'AUTH.GENDER_MALE' },
-    { id: 2, matchValues: ['female', 'f', 'أنثى', 'انثى'], labelKey: 'AUTH.GENDER_FEMALE' },
-  ],
+  genderOptions: GENDER_OPTIONS,
 } as const;
 
-function parseGenderLkpId(profile: Pick<CustomerProfileDto, 'gender' | 'genderLkpId'>): number | null {
-  if (profile.genderLkpId != null && profile.genderLkpId > 0) {
-    return profile.genderLkpId;
-  }
-
-  const gender = profile.gender?.trim();
-  if (!gender || !/^\d+$/.test(gender)) {
+function findGenderOption(raw: string | null | undefined) {
+  const gender = raw?.trim();
+  if (!gender) {
     return null;
   }
 
-  const id = Number(gender);
-  return Number.isFinite(id) && id > 0 ? id : null;
+  const normalized = gender.toLowerCase();
+  return (
+    GENDER_OPTIONS.find((option) => option.value.toLowerCase() === normalized) ??
+    GENDER_OPTIONS.find((option) =>
+      option.matchValues.some(
+        (value) => normalized === value.toLowerCase() || normalized.includes(value.toLowerCase()),
+      ),
+    ) ??
+    null
+  );
+}
+
+function genderFromLkpId(genderLkpId: number | null | undefined): GenderValue | null {
+  if (genderLkpId === 1) {
+    return 'Male';
+  }
+  if (genderLkpId === 2) {
+    return 'Female';
+  }
+  if (genderLkpId === 3) {
+    return 'Unspecified';
+  }
+  return null;
 }
 
 export function resolveGenderLabelKey(
   profile: Pick<CustomerProfileDto, 'gender' | 'genderLkpId'>,
 ): string | null {
-  const lkpId = parseGenderLkpId(profile);
-  if (lkpId != null) {
-    const byId = ACCOUNT_CONFIG.genderOptions.find((option) => option.id === lkpId);
-    return byId?.labelKey ?? null;
+  const fromGender = findGenderOption(profile.gender);
+  if (fromGender) {
+    return fromGender.labelKey;
   }
 
-  const gender = profile.gender?.trim().toLowerCase();
-  if (!gender) {
-    return null;
+  const fromLkpId = genderFromLkpId(profile.genderLkpId);
+  if (fromLkpId) {
+    return GENDER_OPTIONS.find((option) => option.value === fromLkpId)?.labelKey ?? null;
   }
 
-  const byValue = ACCOUNT_CONFIG.genderOptions.find((option) =>
-    option.matchValues.some((value) => gender === value.toLowerCase() || gender.includes(value.toLowerCase())),
-  );
-  return byValue?.labelKey ?? null;
+  return null;
 }
 
-export function resolveGenderLkpId(profile: Pick<CustomerProfileDto, 'gender' | 'genderLkpId'>): number {
-  return parseGenderLkpId(profile) ?? 0;
+export function resolveGenderFormValue(
+  profile: Pick<CustomerProfileDto, 'gender' | 'genderLkpId'>,
+): string {
+  const fromGender = findGenderOption(profile.gender);
+  if (fromGender) {
+    return fromGender.value;
+  }
+
+  return genderFromLkpId(profile.genderLkpId) ?? '';
 }

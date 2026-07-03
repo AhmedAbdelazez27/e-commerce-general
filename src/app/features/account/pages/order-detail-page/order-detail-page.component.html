@@ -49,9 +49,11 @@
       <span class="orders-page__status-chip">
         {{ 'ORDERS.STATUS_PAYMENT' | translate }}: {{ statusName(currentOrder, 'payment') }}
       </span>
+      @if (enableShipment()) {
       <span class="orders-page__status-chip">
         {{ 'ORDERS.STATUS_SHIPPING' | translate }}: {{ statusName(currentOrder, 'shipping') }}
       </span>
+      }
       <span class="orders-page__status-chip">
         {{ 'CHECKOUT.PAYMENT_METHOD' | translate }}: {{ paymentMethodLabel(currentOrder) }}
       </span>
@@ -64,7 +66,7 @@
         <span>{{ currentOrder.addressText }}</span>
       </div>
       }
-      @if (currentOrder.shippingMethod) {
+      @if (enableShipment() && currentOrder.shippingMethod) {
       <div class="order-detail-page__meta-row">
         <span class="order-detail-page__meta-label">{{ 'ORDERS.SHIPPING_METHOD_DETAIL' | translate }}</span>
         <span>{{ currentOrder.shippingMethod }}</span>
@@ -175,7 +177,7 @@
           <dd>{{ formatPrice(currentOrder.taxAmount) }} <app-currency-code /></dd>
         </div>
         }
-        @if ((currentOrder.shippingAmount ?? 0) > 0) {
+        @if (enableShipment() && (currentOrder.shippingAmount ?? 0) > 0) {
         <div class="order-detail-page__summary-row">
           <dt>{{ 'ORDERS.SHIPPING' | translate }}</dt>
           <dd>{{ formatPrice(currentOrder.shippingAmount) }} <app-currency-code /></dd>

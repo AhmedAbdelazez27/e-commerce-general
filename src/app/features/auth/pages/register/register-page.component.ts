@@ -14,6 +14,7 @@ import { AuthPageHeaderComponent } from '../../components/auth-page-header/auth-
 import { AuthApiService } from '../../services/auth-api.service';
 import { abpErrorMessage, parseTokenAuthEnvelopeDetailed } from '../../utils/auth-abp.util';
 import { passwordsMatch, passwordInputType } from '../../utils/password-form.util';
+import { GENDER_OPTIONS } from '../../../account/config/account.config';
 import { resolveAuthContinueUrl } from '../../utils/auth-navigation.util';
 import { resultFromAbpEnvelope } from '../../../../core/utils/api-envelope.util';
 
@@ -37,6 +38,7 @@ export class RegisterPageComponent {
   readonly showPassword = signal(false);
   readonly showConfirmPassword = signal(false);
   readonly passwordInputType = passwordInputType;
+  readonly genderOptions = GENDER_OPTIONS;
 
   readonly form = this.fb.nonNullable.group(
     {

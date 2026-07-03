@@ -114,10 +114,10 @@
 
                 <div class="col-lg-6">
                   <label class="profile-info__label" for="profile-gender">{{ 'PROFILE.GENDER' | translate }}</label>
-                  <select id="profile-gender" class="form-select" formControlName="genderLkpId">
-                    <option [value]="0">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
-                    @for (option of genderOptions; track option.id) {
-                      <option [value]="option.id">{{ option.labelKey | translate }}</option>
+                  <select id="profile-gender" class="form-select" formControlName="gender">
+                    <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
+                    @for (option of genderOptions; track option.value) {
+                      <option [value]="option.value">{{ option.labelKey | translate }}</option>
                     }
                   </select>
                 </div>

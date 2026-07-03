@@ -33,6 +33,7 @@ export class OrdersPageComponent {
   private readonly portal = inject(PortalConfigService);
 
   readonly enableReturns = this.portal.enableReturns;
+  readonly enableShipment = this.portal.enableShipment;
 
   readonly loading = signal(true);
   readonly orders = signal<EcOrderDto[]>([]);
@@ -60,7 +61,7 @@ export class OrdersPageComponent {
   }
 
   trackingSteps(order: EcOrderDto) {
-    return orderTrackingSteps(order);
+    return orderTrackingSteps(order, this.enableShipment());
   }
 
   statusLabelKey(value: string | null | undefined): string | null {

@@ -31,6 +31,7 @@
     "GENDER_OPTIONAL": "—",
     "GENDER_MALE": "ذكر",
     "GENDER_FEMALE": "أنثى",
+    "GENDER_UNSPECIFIED": "غير محدد",
     "REMEMBER_ME": "تذكرني",
     "CREATE_ACCOUNT": "إنشاء حساب جديد",
     "HAVE_ACCOUNT": "لديك حساب؟ سجّل الدخول",

@@ -90,7 +90,7 @@
             {{ paymentMethodLabel(order) }}
           </span>
           }
-          @if (order.shippingStatus) {
+          @if (enableShipment() && order.shippingStatus) {
           <span class="orders-page__status-chip">
             {{ 'ORDERS.STATUS_SHIPPING' | translate }}:
             @if (statusLabelKey(order.shippingStatus); as key) {

@@ -29,6 +29,8 @@ export class AuthApiService {
       mobile: form.mobile.trim(),
       password: form.password,
       sessionId: sessionId?.trim() ? sessionId.trim() : null,
+      birthDate: form.birthDate?.trim() ? form.birthDate.trim() : null,
+      gender: form.gender?.trim() ? form.gender.trim() : null,
     };
     return this.postAnonymous<unknown>(ApiEndpoints.Auth.registerECommerceCustomer, body);
   }

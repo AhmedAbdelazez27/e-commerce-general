@@ -17,7 +17,7 @@ import {
   checkoutAddressValidators,
   markAddressFormTouched,
 } from '../../../checkout/utils/checkout-validation.util';
-import { ACCOUNT_CONFIG, resolveGenderLabelKey, resolveGenderLkpId } from '../../config/account.config';
+import { ACCOUNT_CONFIG, resolveGenderLabelKey, resolveGenderFormValue } from '../../config/account.config';
 import { CustomerProfileDto } from '../../models/customer-profile.model';
 import { AccountApiService } from '../../services/account-api.service';
 
@@ -73,7 +73,7 @@ export class ProfilePageComponent {
     email: ['', [Validators.required, Validators.email]],
     mobile: ['', Validators.required],
     birthDate: [''],
-    genderLkpId: [0],
+    gender: [''],
   });
 
   readonly passwordForm = this.fb.nonNullable.group(
@@ -140,14 +140,14 @@ export class ProfilePageComponent {
       email: p.email,
       mobile: p.mobile,
       birthDate: this.toDateInputValue(p.birthDate),
-      genderLkpId: resolveGenderLkpId(p),
+      gender: resolveGenderFormValue(p),
     });
   }
 
   cancelProfileEdit(): void {
     this.profileUiMode.set('view');
     this.showProfileFormErrors.set(false);
-    this.profileForm.reset({ genderLkpId: 0 });
+    this.profileForm.reset({ gender: '' });
   }
 
   resetPasswordForm(): void {
@@ -202,7 +202,7 @@ export class ProfilePageComponent {
         email: raw.email.trim(),
         mobile: raw.mobile.trim(),
         birthDate: raw.birthDate ? new Date(`${raw.birthDate}T00:00:00`).toISOString() : null,
-        genderLkpId: Number(raw.genderLkpId) > 0 ? Number(raw.genderLkpId) : 0,
+        gender: raw.gender?.trim() ? raw.gender.trim() : null,
       })
       .pipe(finalize(() => this.profileSaving.set(false)))
       .subscribe({

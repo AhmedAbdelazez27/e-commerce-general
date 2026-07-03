@@ -41,8 +41,9 @@
             <label class="form-label" for="reg-gender">{{ 'AUTH.GENDER' | translate }}</label>
             <select id="reg-gender" class="form-select" formControlName="gender">
               <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
-              <option value="male">{{ 'AUTH.GENDER_MALE' | translate }}</option>
-              <option value="female">{{ 'AUTH.GENDER_FEMALE' | translate }}</option>
+              @for (option of genderOptions; track option.value) {
+                <option [value]="option.value">{{ option.labelKey | translate }}</option>
+              }
             </select>
           </div>
         </div>
