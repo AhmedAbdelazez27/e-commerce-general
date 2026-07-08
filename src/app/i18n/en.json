@@ -14,6 +14,7 @@
     "BRAND_DETAIL": "Brand",
     "FAQ": "FAQ",
     "CONTACT": "Contact us",
+    "POLICIES": "Policies",
     "LOGIN": "Sign in",
     "REGISTER": "Register",
     "FORGOT_PASSWORD": "Forgot password",
@@ -386,6 +387,9 @@
       "ABOUT": "About us",
       "BRANDS": "Brands",
       "SHOP": "Shop",
+      "TERMS": "Terms & conditions",
+      "PRIVACY": "Privacy policy",
+      "REFUND": "Refund policy",
       "ORDERS": "My orders",
       "RETURNS": "My returns",
       "CONTACT": "Contact us",
@@ -409,6 +413,13 @@
       "NEWSLETTER_BUTTON": "Sign up",
       "COPYRIGHT": "© {{year}} E-Commerce Store. All rights reserved."
     }
+  },
+  "POLICIES": {
+    "NAV_LABEL": "Store policies",
+    "TERMS": "Terms & conditions",
+    "PRIVACY": "Privacy policy",
+    "REFUND": "Refund policy",
+    "EMPTY": "This policy is not available yet."
   },
   "HOME": {
     "VIEW_ALL": "View all",

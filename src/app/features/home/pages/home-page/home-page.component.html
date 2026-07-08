@@ -1,13 +1,13 @@
 <div class="home-page home-page--viewport">
-  <app-home-hero [config]="config.hero" class="row"/>
+  <app-home-hero [config]="config().hero" class="row"/>
 
-  @if (config.curatedCollections; as curated) {
+  @if (config().curatedCollections; as curated) {
     <app-home-curated-collections [config]="curated" />
   }
 
   <app-home-category-shortcuts />
 
-  @for (section of config.productSections; track section.id) {
+  @for (section of config().productSections; track section.id) {
     <app-home-product-section
       [section]="section"
       [products]="productsForSection(section.id)"
@@ -15,11 +15,11 @@
   }
 
   <!-- Hidden per request — "عروض خاصة / وفّر أكثر على الباقات والعروض الموسمية"
-  <app-home-offers [offers]="config.offers" />
+  <app-home-offers [offers]="config().offers" />
   -->
 
 
-  <app-home-brands [config]="config.brands" />
+  <app-home-brands [config]="config().brands" />
 
   <app-home-trust-badges [badges]="trustBadges()" />
 </div>

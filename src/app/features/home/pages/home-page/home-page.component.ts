@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 
 import { StorefrontProduct } from '../../../../shared/models/storefront-product.model';
 import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
-import { HOME_PAGE_CONFIG } from '../../config/home.config';
+import { resolveHomePageConfig } from '../../../../core/portal-config/portal-home.util';
 import { HOME_MOCK_PRODUCTS } from '../../data/home-mock.data';
 import { HomeBrandsComponent } from '../../components/home-brands/home-brands.component';
 import { HomeCuratedCollectionsComponent } from '../../components/home-curated-collections/home-curated-collections.component';
@@ -29,10 +29,10 @@ import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/hom
 export class HomePageComponent {
   private readonly portal = inject(PortalConfigService);
 
-  readonly config = HOME_PAGE_CONFIG;
+  readonly config = computed(() => resolveHomePageConfig(this.portal.config()));
   readonly data = HOME_MOCK_PRODUCTS;
   readonly trustBadges = computed(() =>
-    HOME_PAGE_CONFIG.trustBadges.filter(
+    this.config().trustBadges.filter(
       (badge) => badge.id !== 'returns' || this.portal.enableReturns(),
     ),
   );

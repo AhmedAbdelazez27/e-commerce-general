@@ -15,6 +15,7 @@ import {
 import { PortalConfiguration } from './portal-configuration.model';
 import { portalHasContactInfo } from './portal-contact.util';
 import { PortalThemeService } from '../portal-theme/portal-theme.service';
+import { PortalSeoService } from '../portal-seo/portal-seo.service';
 import {
   pickPortalAttachmentBaseUrl,
   setAttachmentBaseUrl,
@@ -27,6 +28,7 @@ export class PortalConfigService {
   private readonly api = inject(EcPublicSettingsApiService);
   private readonly storefrontConfig = inject(StorefrontConfigService);
   private readonly portalTheme = inject(PortalThemeService);
+  private readonly portalSeo = inject(PortalSeoService);
   private readonly env = inject(APP_ENVIRONMENT);
 
   private readonly configSignal = signal<PortalConfiguration>(structuredClone(DEFAULT_PORTAL_CONFIG));
@@ -77,6 +79,7 @@ export class PortalConfigService {
     } finally {
       this.syncAttachmentBaseUrl();
       this.portalTheme.apply(this.configSignal());
+      this.portalSeo.apply(this.configSignal());
       this.loadedSignal.set(true);
     }
   }

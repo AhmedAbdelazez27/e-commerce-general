@@ -5,6 +5,7 @@ import {
 } from '../utils/attachment-url.util';
 import {
   PortalConfigurationDto,
+  PortalPolicies,
   PortalSocialMedia,
 } from './portal-configuration.model';
 
@@ -86,7 +87,29 @@ export function normalizePortalConfigurationDto(
       : undefined,
     mobileSettings: dto.mobileSettings ?? undefined,
     workflowSettings: dto.workflowSettings ?? undefined,
+    policies: normalizePolicies(dto),
   };
+}
+
+function normalizePolicies(dto: PortalConfigurationDto): Partial<PortalPolicies> | undefined {
+  const nested = dto.policies;
+  const policies: Partial<PortalPolicies> = {
+    termsAndConditionsAr:
+      pickPortalString(nested?.termsAndConditionsAr) ?? pickPortalString(dto.termsAndConditionsAr),
+    termsAndConditionsEn:
+      pickPortalString(nested?.termsAndConditionsEn) ?? pickPortalString(dto.termsAndConditionsEn),
+    privacyPolicyAr:
+      pickPortalString(nested?.privacyPolicyAr) ?? pickPortalString(dto.privacyPolicyAr),
+    privacyPolicyEn:
+      pickPortalString(nested?.privacyPolicyEn) ?? pickPortalString(dto.privacyPolicyEn),
+    refundPolicyAr:
+      pickPortalString(nested?.refundPolicyAr) ?? pickPortalString(dto.refundPolicyAr),
+    refundPolicyEn:
+      pickPortalString(nested?.refundPolicyEn) ?? pickPortalString(dto.refundPolicyEn),
+  };
+
+  const hasAny = Object.values(policies).some((value) => value?.trim());
+  return hasAny ? policies : undefined;
 }
 
 function normalizeSocialMedia(social: Partial<PortalSocialMedia>): Partial<PortalSocialMedia> {

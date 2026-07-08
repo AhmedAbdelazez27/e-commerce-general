@@ -83,4 +83,12 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
     enableCashOnDelivery: true,
     enableOnlinePayment: true,
   },
+  policies: {
+    termsAndConditionsAr: '',
+    termsAndConditionsEn: '',
+    privacyPolicyAr: '',
+    privacyPolicyEn: '',
+    refundPolicyAr: '',
+    refundPolicyEn: '',
+  },
 };

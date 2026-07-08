@@ -1,0 +1,31 @@
+<div class="container py-4 policies-page">
+  <app-catalog-breadcrumb [items]="breadcrumbs()" />
+
+  <header class="policies-page__header">
+    <h1 class="policies-page__title">{{ pageTitleKey() | translate }}</h1>
+  </header>
+
+  @if (tabs().length) {
+    <nav class="policies-page__tabs" [attr.aria-label]="'POLICIES.NAV_LABEL' | translate">
+      @for (tab of tabs(); track tab.id) {
+        <a
+          class="policies-page__tab"
+          [routerLink]="['/policies', tab.id]"
+          routerLinkActive="is-active active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [class.is-active]="isActiveTab(tab.id)"
+          [class.active]="isActiveTab(tab.id)"
+          [attr.aria-current]="isActiveTab(tab.id) ? 'page' : null"
+        >
+          {{ tab.labelKey | translate }}
+        </a>
+      }
+    </nav>
+  }
+
+  @if (policyText(); as content) {
+    <article class="policies-page__content">{{ content }}</article>
+  } @else {
+    <div class="alert alert-light mb-0">{{ 'POLICIES.EMPTY' | translate }}</div>
+  }
+</div>

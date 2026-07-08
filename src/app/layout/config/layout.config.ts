@@ -55,6 +55,9 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     companyLinks: [
       { id: 'brands', labelKey: 'LAYOUT.FOOTER.BRANDS', route: '/brands' },
       { id: 'shop', labelKey: 'LAYOUT.FOOTER.SHOP', route: '/shop' },
+      { id: 'terms', labelKey: 'LAYOUT.FOOTER.TERMS', route: '/policies/terms' },
+      { id: 'privacy', labelKey: 'LAYOUT.FOOTER.PRIVACY', route: '/policies/privacy' },
+      { id: 'refund', labelKey: 'LAYOUT.FOOTER.REFUND', route: '/policies/refund' },
     ],
     customerServiceLinks: [
       { id: 'orders', labelKey: 'LAYOUT.FOOTER.ORDERS', route: '/account/orders' },

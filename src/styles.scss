@@ -1673,6 +1673,64 @@ app-profile-page {
     }
 }
 
+// — Policies page (app-policies-page) —
+
+.policies-page__header {
+    margin-bottom: 1.5rem;
+}
+
+.policies-page__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--portal-text);
+}
+
+.policies-page__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.policies-page__tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--portal-secondary) 30%, transparent);
+    background: var(--portal-background);
+    color: var(--portal-text);
+    text-decoration: none;
+    font-size: var(--portal-font-size-small);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.policies-page__tab:hover:not(.is-active):not(.active) {
+    border-color: var(--portal-primary);
+    color: var(--portal-primary);
+}
+
+.policies-page__tab.is-active,
+.policies-page__tab.active,
+.policies-page__tab.is-active:hover,
+.policies-page__tab.active:hover {
+    background: var(--portal-primary);
+    border-color: var(--portal-primary);
+    color: #fff;
+}
+
+.policies-page__content {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: var(--portal-background);
+    border: 1px solid color-mix(in srgb, var(--portal-secondary) 20%, transparent);
+    color: var(--portal-text);
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
 // — Product share menu — portal theme vars —
 
 .product-share {

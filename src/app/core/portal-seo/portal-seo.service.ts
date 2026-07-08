@@ -13,36 +13,61 @@ export class PortalSeoService {
   private readonly language = inject(LanguageService);
   private readonly translate = inject(TranslateService);
 
-  private seoConfig: PortalConfiguration['seo'] | null = null;
+  private portalConfig: PortalConfiguration | null = null;
 
   constructor() {
     this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.seoConfig) {
-        this.applySeo(this.seoConfig);
+      if (this.portalConfig) {
+        this.applySeo(this.portalConfig);
       }
     });
   }
 
   apply(config: PortalConfiguration): void {
-    this.seoConfig = config.seo;
-    this.applySeo(config.seo);
+    this.portalConfig = config;
+    this.applySeo(config);
   }
 
-  private applySeo(seo: PortalConfiguration['seo']): void {
-    const lang = this.language.currentLang() as AppLang;
-    const pageTitle = lang === 'ar' ? seo.seoTitleAr : seo.seoTitleEn;
-    const description = lang === 'ar' ? seo.seoDescriptionAr : seo.seoDescriptionEn;
+  setPageTitle(pageTitle: string): void {
+    const baseTitle = this.resolveBaseTitle();
+    const trimmed = pageTitle.trim();
+    if (!trimmed) {
+      this.title.setTitle(baseTitle);
+      return;
+    }
+    this.title.setTitle(baseTitle ? `${trimmed} | ${baseTitle}` : trimmed);
+  }
 
-    if (pageTitle?.trim()) {
+  private applySeo(config: PortalConfiguration): void {
+    const lang = this.language.currentLang() as AppLang;
+    const seo = config.seo;
+    const pageTitle =
+      (lang === 'ar' ? seo.seoTitleAr : seo.seoTitleEn)?.trim() || this.portalName(config, lang);
+    const description =
+      (lang === 'ar' ? seo.seoDescriptionAr : seo.seoDescriptionEn)?.trim() ||
+      (lang === 'ar' ? config.portalDescriptionAr : config.portalDescriptionEn)?.trim();
+
+    if (pageTitle) {
       this.title.setTitle(pageTitle);
     }
 
-    if (description?.trim()) {
+    if (description) {
       this.meta.updateTag({ name: 'description', content: description });
     }
 
     if (seo.seoKeywords?.trim()) {
       this.meta.updateTag({ name: 'keywords', content: seo.seoKeywords });
     }
+  }
+
+  private resolveBaseTitle(): string {
+    if (!this.portalConfig) {
+      return '';
+    }
+    return this.portalName(this.portalConfig, this.language.currentLang() as AppLang);
+  }
+
+  private portalName(config: PortalConfiguration, lang: AppLang): string {
+    return (lang === 'ar' ? config.portalNameAr : config.portalNameEn)?.trim() ?? '';
   }
 }

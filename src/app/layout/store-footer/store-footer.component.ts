@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { PortalConfigService } from '../../core/portal-config/portal-config.service';
 import { resolvePortalAddress } from '../../core/portal-config/portal-contact.util';
+import { portalPolicyHasContent } from '../../core/portal-config/portal-policy.util';
 import { LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
 
@@ -30,6 +31,22 @@ export class StoreFooterComponent {
 
   readonly customerServiceLinks = computed(() =>
     this.config.customerServiceLinks.filter((link) => link.id !== 'returns' || this.enableReturns()),
+  );
+
+  readonly companyLinks = computed(() =>
+    this.config.companyLinks.filter((link) => {
+      const policies = this.portal.config().policies;
+      if (link.id === 'terms') {
+        return portalPolicyHasContent(policies, 'terms');
+      }
+      if (link.id === 'privacy') {
+        return portalPolicyHasContent(policies, 'privacy');
+      }
+      if (link.id === 'refund') {
+        return portalPolicyHasContent(policies, 'refund');
+      }
+      return true;
+    }),
   );
 
   onNewsletterSubmit(event: Event): void {

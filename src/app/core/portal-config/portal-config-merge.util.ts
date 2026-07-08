@@ -3,6 +3,7 @@ import {
   PortalConfigurationDto,
   PortalContactInfo,
   PortalMobileSettings,
+  PortalPolicies,
   PortalSeoConfig,
   PortalSocialMedia,
   PortalWorkflowSettings,
@@ -24,7 +25,7 @@ export function mergePortalConfig(
     return base;
   }
 
-  const { contactInfo, socialMedia, seo, mobileSettings, workflowSettings, ...rest } = patch;
+  const { contactInfo, socialMedia, seo, mobileSettings, workflowSettings, policies, ...rest } = patch;
 
   return {
     ...base,
@@ -34,5 +35,6 @@ export function mergePortalConfig(
     seo: mergeNested<PortalSeoConfig>(base.seo, seo),
     mobileSettings: mergeNested<PortalMobileSettings>(base.mobileSettings, mobileSettings),
     workflowSettings: mergeNested<PortalWorkflowSettings>(base.workflowSettings, workflowSettings),
+    policies: mergeNested<PortalPolicies>(base.policies, policies),
   };
 }

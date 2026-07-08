@@ -46,6 +46,17 @@ export interface PortalWorkflowSettings {
   enableOnlinePayment: boolean;
 }
 
+export interface PortalPolicies {
+  termsAndConditionsAr: string;
+  termsAndConditionsEn: string;
+  privacyPolicyAr: string;
+  privacyPolicyEn: string;
+  refundPolicyAr: string;
+  refundPolicyEn: string;
+}
+
+export type PortalPolicyType = 'terms' | 'privacy' | 'refund';
+
 /** Runtime portal configuration (merged defaults + API). */
 export interface PortalConfiguration {
   portalNameAr: string;
@@ -88,13 +99,14 @@ export interface PortalConfiguration {
   seo: PortalSeoConfig;
   mobileSettings: PortalMobileSettings;
   workflowSettings: PortalWorkflowSettings;
+  policies: PortalPolicies;
 }
 
 /** Raw API DTO — fields may be partial or omitted. */
 export type PortalConfigurationDto = Partial<
   Omit<
     PortalConfiguration,
-    'contactInfo' | 'socialMedia' | 'seo' | 'mobileSettings' | 'workflowSettings'
+    'contactInfo' | 'socialMedia' | 'seo' | 'mobileSettings' | 'workflowSettings' | 'policies'
   >
 > & {
   contactInfo?: Partial<PortalContactInfo>;
@@ -102,4 +114,11 @@ export type PortalConfigurationDto = Partial<
   seo?: Partial<PortalSeoConfig>;
   mobileSettings?: Partial<PortalMobileSettings>;
   workflowSettings?: Partial<PortalWorkflowSettings>;
+  policies?: Partial<PortalPolicies>;
+  termsAndConditionsAr?: string;
+  termsAndConditionsEn?: string;
+  privacyPolicyAr?: string;
+  privacyPolicyEn?: string;
+  refundPolicyAr?: string;
+  refundPolicyEn?: string;
 };
