@@ -1,6 +1,10 @@
 <header class="auth-page-header">
   <a class="auth-page-header__logo" [routerLink]="branding.homeRoute">
-    <img [src]="branding.logoSrc" [alt]="branding.logoAltKey | translate" width="160" height="40" />
+    @if (logoSrc()) {
+      <img [src]="logoSrc()" [alt]="logoAlt()" width="160" height="40" />
+    } @else if (logoAlt()) {
+      <span class="auth-page-header__logo-text">{{ logoAlt() }}</span>
+    }
   </a>
 
   <nav class="auth-page-header__nav" [attr.aria-label]="'AUTH.STORE_NAV' | translate">

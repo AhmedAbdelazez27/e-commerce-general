@@ -76,8 +76,11 @@ export class TenantService {
       return null;
     }
     const parts = host.split('.').filter(Boolean);
-    if (parts.length < 3) {
+    if (parts.length < 2) {
       return null;
+    }
+    if (parts[0] === 'www') {
+      return parts.length >= 3 ? parts[1] || null : null;
     }
     return parts[0] || null;
   }

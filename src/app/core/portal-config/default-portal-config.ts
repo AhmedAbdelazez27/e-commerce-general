@@ -1,7 +1,6 @@
 import { HOME_BRANDS_MAX_ITEMS } from '../../features/home/utils/home-brand.mapper';
 import { HOME_PRODUCT_SECTION_MAX_ITEMS } from '../../features/home/utils/home-product-search.util';
 import { PORTAL_THEME_COLOR_DEFAULTS } from '../portal-theme/portal-theme.defaults';
-import { LAYOUT_CONFIG } from '../../layout/config/layout.config';
 import { PortalConfiguration } from './portal-configuration.model';
 
 /** Defaults aligned with static layout/home config and storefront theme. */
@@ -11,9 +10,9 @@ export const DEFAULT_PORTAL_CONFIG: PortalConfiguration = {
   portalDescriptionAr: '',
   portalDescriptionEn: '',
   portalBaseUrl: '',
-  logoUrl: LAYOUT_CONFIG.branding.logoSrc,
-  darkLogoUrl: LAYOUT_CONFIG.branding.logoSrc,
-  mobileLogoUrl: LAYOUT_CONFIG.branding.logoSrc,
+  logoUrl: '',
+  darkLogoUrl: '',
+  mobileLogoUrl: '',
   faviconUrl: '',
   splashScreenImageUrl: '',
   primaryColor: PORTAL_THEME_COLOR_DEFAULTS.primary,

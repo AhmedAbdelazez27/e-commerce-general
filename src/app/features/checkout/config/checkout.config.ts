@@ -2,6 +2,8 @@ export interface CheckoutPaymentOption {
   id: string;
   label: string;
   description?: string;
+  /** Lookup code from backend (e.g. Cash). */
+  code?: string;
 }
 
 export interface CheckoutShippingOption {

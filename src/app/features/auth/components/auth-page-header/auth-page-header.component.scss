@@ -10,7 +10,19 @@
 .auth-page-header__logo {
   display: inline-flex;
   flex-shrink: 0;
+  align-items: center;
   text-decoration: none;
+}
+
+.auth-page-header__logo-text {
+  color: var(--portal-text, inherit);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .auth-page-header__nav {

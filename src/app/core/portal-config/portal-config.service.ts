@@ -61,6 +61,14 @@ export class PortalConfigService {
 
   readonly enableShipment = computed(() => this.configSignal().workflowSettings.enableShipment);
 
+  readonly enableCashOnDelivery = computed(
+    () => this.configSignal().workflowSettings.enableCashOnDelivery,
+  );
+
+  readonly enableOnlinePayment = computed(
+    () => this.configSignal().workflowSettings.enableOnlinePayment,
+  );
+
   async load(): Promise<void> {
     await this.storefrontConfig.load();
 
@@ -97,12 +105,12 @@ export class PortalConfigService {
   }
 
   logoSrc(): string {
-    return this.configSignal().logoUrl || LAYOUT_CONFIG.branding.logoSrc;
+    return this.configSignal().logoUrl?.trim() || '';
   }
 
   mobileLogoSrc(): string {
     const config = this.configSignal();
-    return config.mobileLogoUrl || config.logoUrl || LAYOUT_CONFIG.branding.logoSrc;
+    return config.mobileLogoUrl?.trim() || config.logoUrl?.trim() || '';
   }
 }
 

@@ -3,7 +3,6 @@ import { StoreLayoutConfig } from '../models/layout.model';
 /** Global storefront layout — edit here to change promos, footer links, and branding paths. */
 export const LAYOUT_CONFIG: StoreLayoutConfig = {
   branding: {
-    logoSrc: '/images/Logo.png',
     logoAltKey: 'LAYOUT.LOGO_ALT',
     homeRoute: '/home',
   },

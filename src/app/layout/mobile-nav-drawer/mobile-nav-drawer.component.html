@@ -10,7 +10,11 @@
   >
     <div class="store-drawer__head">
       <a class="store-header__logo" [routerLink]="branding.homeRoute" (click)="close()">
-        <img [src]="logoSrc()" [alt]="logoAlt()" width="120" height="32" />
+        @if (logoSrc()) {
+          <img [src]="logoSrc()" [alt]="logoAlt()" width="120" height="32" />
+        } @else if (logoAlt()) {
+          <span class="store-header__logo-text">{{ logoAlt() }}</span>
+        }
       </a>
       <button type="button" class="store-drawer__close" (click)="close()">
         <span class="ds-visually-hidden">{{ 'LAYOUT.MOBILE_MENU.CLOSE' | translate }}</span>

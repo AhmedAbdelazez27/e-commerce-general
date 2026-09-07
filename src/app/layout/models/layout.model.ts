@@ -28,7 +28,6 @@ export interface SocialLink {
 
 export interface StoreLayoutConfig {
   branding: {
-    logoSrc: string;
     logoAltKey: string;
     homeRoute: string;
   };

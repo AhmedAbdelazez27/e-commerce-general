@@ -40,6 +40,10 @@ export class FndLookupApiService {
     return this.getSelect2('PaymentMethod', lang).pipe(map((result) => result.results));
   }
 
+  getPaymentMethodDefinitions(): Observable<FndLookupValueDto[]> {
+    return this.getAllWithSearch('', 'PaymentMethod');
+  }
+
   getAllWithSearch(lookupCode: string, lookupType: string): Observable<FndLookupValueDto[]> {
     const params = new HttpParams().set('lookupCode', lookupCode).set('lookupType', lookupType);
 

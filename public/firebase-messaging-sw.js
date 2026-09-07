@@ -21,11 +21,11 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   const title = payload.notification?.title || payload.data?.title || 'Notification';
   const body = payload.notification?.body || payload.data?.body || '';
-  const icon = payload.notification?.icon || '/images/Logo.png';
+  const icon = payload.notification?.icon || payload.data?.icon;
 
   self.registration.showNotification(title, {
     body,
-    icon,
+    ...(icon ? { icon } : {}),
     data: payload.data || {},
   });
 
