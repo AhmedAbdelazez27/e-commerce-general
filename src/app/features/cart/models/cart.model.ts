@@ -12,6 +12,7 @@ export interface CartItemDto {
   ProductImageUrl?: string;
   ProductVariantImageUrl?: string;
   ImageUrl?: string;
+  HasModel3D?: boolean;
   Quantity: number;
   UnitPrice: number;
   FinalPrice?: number;
@@ -61,6 +62,7 @@ export interface GuestCartProductMeta {
   productNameEn: string;
   productNameAr: string;
   imageUrl?: string;
+  has3D?: boolean;
   unitPrice: number;
   isAvailable?: boolean;
 }

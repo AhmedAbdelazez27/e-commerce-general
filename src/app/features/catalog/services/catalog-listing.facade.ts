@@ -101,6 +101,8 @@ export class CatalogListingFacade {
       nameAr: node.nameAr,
       descriptionEn: node.description ?? undefined,
       descriptionAr: node.description ?? undefined,
+      seoTitle: node.seoTitle?.trim() || undefined,
+      seoDescription: node.seoDescription?.trim() || undefined,
     } satisfies CatalogCategoryOption;
   });
 

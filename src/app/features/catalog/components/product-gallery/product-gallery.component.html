@@ -1,12 +1,56 @@
 <div class="product-gallery">
   <div class="product-gallery__main">
     @if (activeImage(); as image) {
-      @if (image.url) {
-        <img [src]="image.url" [alt]="mainAlt()" />
-      } @else {
-        <div class="product-gallery__placeholder" aria-hidden="true">
-          <i class="fa-solid fa-image"></i>
-        </div>
+      @switch (image.mediaType) {
+        @case ('Video') {
+          @if (image.mediaUrl) {
+            <video
+              [src]="image.mediaUrl"
+              [poster]="image.url"
+              [attr.aria-label]="mainAlt()"
+              muted="muted"
+              [muted]="true"
+              autoplay
+              loop
+              playsinline
+              controls
+              preload="auto"
+              (loadeddata)="playVideo($event)"
+              (canplay)="playVideo($event)"
+            ></video>
+          } @else if (image.url) {
+            <img [src]="image.url" [alt]="mainAlt()" />
+          } @else {
+            <div class="product-gallery__placeholder" aria-hidden="true">
+              <i class="fa-solid fa-image"></i>
+            </div>
+          }
+        }
+        @case ('Model3D') {
+          @if (image.mediaUrl || image.iosMediaUrl) {
+            <app-model-3d-viewer
+              [src]="image.mediaUrl"
+              [iosSrc]="image.iosMediaUrl"
+              [poster]="image.url"
+              [alt]="mainAlt()"
+            />
+          } @else if (image.url) {
+            <img [src]="image.url" [alt]="mainAlt()" />
+          } @else {
+            <div class="product-gallery__placeholder" aria-hidden="true">
+              <i class="fa-solid fa-image"></i>
+            </div>
+          }
+        }
+        @default {
+          @if (image.url) {
+            <img [src]="image.url" [alt]="mainAlt()" />
+          } @else {
+            <div class="product-gallery__placeholder" aria-hidden="true">
+              <i class="fa-solid fa-image"></i>
+            </div>
+          }
+        }
       }
     } @else {
       <div class="product-gallery__placeholder" aria-hidden="true">
@@ -31,6 +75,16 @@
               <img [src]="image.url" alt="" />
             } @else {
               <span class="product-gallery__thumb-placeholder" aria-hidden="true"></span>
+            }
+            @if (mediaBadge(image); as badge) {
+              <span class="product-gallery__thumb-badge" aria-hidden="true">
+                <i
+                  class="fa-solid"
+                  [class.fa-play]="image.mediaType === 'Video'"
+                  [class.fa-cube]="image.mediaType === 'Model3D'"
+                ></i>
+                <span class="visually-hidden">{{ badge | translate }}</span>
+              </span>
             }
           </button>
         </li>

@@ -3,9 +3,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { firstValueFrom } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { ReverseGeocodeService } from '../../../../core/services/reverse-geocode.service';
 import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { abpErrorMessage, abpRequestSucceeded } from '../../../auth/utils/auth-abp.util';
 import { passwordsMatch, passwordInputType } from '../../../auth/utils/password-form.util';
@@ -42,6 +45,8 @@ export class ProfilePageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly portal = inject(PortalConfigService);
+  private readonly language = inject(LanguageService);
+  private readonly reverseGeocode = inject(ReverseGeocodeService);
 
   readonly enableReturns = this.portal.enableReturns;
 
@@ -64,6 +69,7 @@ export class ProfilePageComponent {
   readonly addresses = signal<CustomerAddressDto[]>([]);
   readonly addressesLoading = signal(false);
   readonly addressSaving = signal(false);
+  readonly locating = signal(false);
   readonly addressUiMode = signal<AddressUiMode>('list');
   readonly editingAddressId = signal<number | null>(null);
   readonly showFormErrors = signal(false);
@@ -90,6 +96,8 @@ export class ProfilePageComponent {
     area: ['', checkoutAddressValidators.area],
     street: ['', checkoutAddressValidators.street],
     building: ['', checkoutAddressValidators.building],
+    latitude: ['', checkoutAddressValidators.latitude],
+    longitude: ['', checkoutAddressValidators.longitude],
     isDefault: [false],
   });
 
@@ -292,7 +300,7 @@ export class ProfilePageComponent {
       });
   }
 
-  fieldError(field: 'city' | 'area' | 'street' | 'building'): string | null {
+  fieldError(field: 'city' | 'area' | 'street' | 'building' | 'latitude' | 'longitude'): string | null {
     return addressControlErrorKey(this.addressForm.get(field), field, this.showFormErrors());
   }
 
@@ -300,7 +308,7 @@ export class ProfilePageComponent {
     this.addressUiMode.set('add');
     this.editingAddressId.set(null);
     this.showFormErrors.set(false);
-    this.addressForm.reset({ isDefault: false });
+    this.addressForm.reset({ isDefault: false, latitude: '', longitude: '' });
   }
 
   startEdit(addr: CustomerAddressDto): void {
@@ -312,6 +320,8 @@ export class ProfilePageComponent {
       area: addr.area,
       street: addr.street,
       building: addr.building,
+      latitude: addr.latitude != null ? String(addr.latitude) : '',
+      longitude: addr.longitude != null ? String(addr.longitude) : '',
       isDefault: addr.isDefault,
     });
   }
@@ -320,7 +330,14 @@ export class ProfilePageComponent {
     this.addressUiMode.set('list');
     this.editingAddressId.set(null);
     this.showFormErrors.set(false);
-    this.addressForm.reset({ isDefault: false });
+    this.addressForm.reset({ isDefault: false, latitude: '', longitude: '' });
+  }
+
+  useCurrentLocation(): void {
+    if (this.locating()) {
+      return;
+    }
+    void this.fillFromCurrentLocation();
   }
 
   saveAddress(): void {
@@ -345,6 +362,8 @@ export class ProfilePageComponent {
       area: raw.area.trim(),
       street: raw.street.trim(),
       building: raw.building.trim(),
+      latitude: this.parseOptionalCoordinate(raw.latitude),
+      longitude: this.parseOptionalCoordinate(raw.longitude),
       isDefault: raw.isDefault,
     };
 
@@ -422,6 +441,57 @@ export class ProfilePageComponent {
         next: (items) => this.addresses.set(items),
         error: () => this.addresses.set([]),
       });
+  }
+
+  private async fillFromCurrentLocation(): Promise<void> {
+    this.locating.set(true);
+    try {
+      const coords = await this.reverseGeocode.getCurrentCoordinates();
+      const fields = await firstValueFrom(
+        this.reverseGeocode.reverseGeocode(
+          coords.latitude,
+          coords.longitude,
+          this.language.apiCulture(),
+        ),
+      );
+
+      this.addressForm.patchValue({
+        city: fields.city || this.addressForm.controls.city.value,
+        area: fields.area || this.addressForm.controls.area.value,
+        street: fields.street || this.addressForm.controls.street.value,
+        building: fields.building || this.addressForm.controls.building.value,
+        latitude: String(fields.latitude),
+        longitude: String(fields.longitude),
+      });
+      this.showFormErrors.set(false);
+
+      const requiredFilled = !!(fields.city && fields.area && fields.street && fields.building);
+      this.toastr.success(
+        this.translate.instant(
+          requiredFilled ? 'CHECKOUT.LOCATION_FILLED' : 'CHECKOUT.LOCATION_PARTIAL',
+        ),
+      );
+    } catch (error) {
+      const code = error instanceof Error ? error.message : 'failed';
+      if (code === 'unsupported') {
+        this.toastr.error(this.translate.instant('CHECKOUT.LOCATION_UNSUPPORTED'));
+      } else if (code === 'denied') {
+        this.toastr.warning(this.translate.instant('CHECKOUT.LOCATION_DENIED'));
+      } else {
+        this.toastr.error(this.translate.instant('CHECKOUT.LOCATION_FAILED'));
+      }
+    } finally {
+      this.locating.set(false);
+    }
+  }
+
+  private parseOptionalCoordinate(raw: string): number | null {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const value = Number(trimmed);
+    return Number.isFinite(value) ? value : null;
   }
 
   private toDateInputValue(raw: string | null | undefined): string {

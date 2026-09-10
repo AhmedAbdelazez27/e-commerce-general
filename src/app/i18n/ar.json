@@ -52,6 +52,7 @@
     "SIGN_IN_WITH_FACEBOOK": "المتابعة مع Facebook",
     "EXTERNAL_LOGIN_FAILED": "فشل تسجيل الدخول الخارجي. حاول مرة أخرى.",
     "EXTERNAL_LOGIN_CANCELLED": "تم إلغاء تسجيل الدخول.",
+    "EXTERNAL_FACEBOOK_REQUIRES_HTTPS": "تسجيل Facebook يتطلب HTTPS. افتح المتجر عبر https:// أو استخدم http://localhost للاختبار المحلي.",
     "EXTERNAL_GOOGLE_UNAVAILABLE": "تسجيل Google غير متاح. حاول مرة أخرى أو استخدم البريد.",
     "EXTERNAL_NOT_CONFIGURED": "تسجيل الدخول الاجتماعي غير مُعدّ لهذا المتجر.",
     "EXTERNAL_INVALID_PROVIDER": "مزود تسجيل غير صالح. تواصل مع الدعم.",
@@ -541,7 +542,8 @@
     "QUICK_VIEW": "معاينة سريعة",
     "SOLD_OUT": "نفدت الكمية",
     "BADGE_NEW": "جديد",
-    "BADGE_BESTSELLER": "الأكثر مبيعاً"
+    "BADGE_BESTSELLER": "الأكثر مبيعاً",
+    "BADGE_3D": "ثلاثي الأبعاد"
   },
   "CATALOG": {
     "BREADCRUMB": "مسار التنقل",
@@ -676,6 +678,13 @@
     "FIELD_BUILDING": "المبنى",
     "FIELD_LATITUDE": "خط العرض (اختياري)",
     "FIELD_LONGITUDE": "خط الطول (اختياري)",
+    "USE_CURRENT_LOCATION": "استخدم موقعي الحالي",
+    "LOCATION_FILLING": "جاري تحديد موقعك…",
+    "LOCATION_UNSUPPORTED": "المتصفح لا يدعم تحديد الموقع.",
+    "LOCATION_DENIED": "تم رفض إذن الموقع. اسمح بالوصول أو املأ العنوان يدوياً.",
+    "LOCATION_FAILED": "تعذر تحديد موقعك. حاول مرة أخرى أو املأ العنوان يدوياً.",
+    "LOCATION_FILLED": "تم تعبئة حقول العنوان من موقعك. يرجى مراجعتها.",
+    "LOCATION_PARTIAL": "تم تعبئة بعض الحقول. يرجى إكمال الحقول الناقصة.",
     "SET_DEFAULT": "تعيين كعنوان افتراضي",
     "PAYMENT_REQUIRED": "يرجى اختيار طريقة الدفع.",
     "SHIPPING_REQUIRED": "يرجى اختيار طريقة الشحن.",
@@ -699,6 +708,7 @@
     "CART_REQUIRED": "تعذر العثور على السلة. حدّث السلة وحاول مرة أخرى.",
     "SUCCESS_TITLE": "تم تقديم الطلب",
     "SUCCESS_MESSAGE": "شكراً لك. استلمنا طلبك.",
+    "SUCCESS_EMAIL": "أرسلنا رقم الطلب والتفاصيل الأساسية إلى بريدك الإلكتروني.",
     "ORDER_NUMBER": "رقم الطلب",
     "ORDER_TOTAL": "الإجمالي",
     "CONTINUE_SHOPPING": "متابعة التسوق",
@@ -726,6 +736,8 @@
     "SHIPPING_TITLE": "الشحن",
     "RETURNS_TITLE": "الإرجاع",
     "NO_DESCRIPTION": "وصف المنتج غير متوفر.",
+    "MEDIA_VIDEO": "فيديو المنتج",
+    "MEDIA_3D": "عرض ثلاثي الأبعاد",
     "TAB": {
       "description": "الوصف",
       "specifications": "المواصفات",

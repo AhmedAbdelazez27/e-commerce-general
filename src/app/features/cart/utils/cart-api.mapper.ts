@@ -1,5 +1,5 @@
 import type { CartDto, CartItemDto } from '../models/cart.model';
-import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
+import { resolveProductPosterUrl } from '../../../shared/utils/storefront-media.util';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -80,13 +80,14 @@ function normalizeCartItem(raw: unknown): CartItemDto | null {
     VariantNameAr: readString(o, 'VariantNameAr', 'variantNameAr'),
     VariantNameEn: readString(o, 'VariantNameEn', 'variantNameEn'),
     VariantSku: readString(o, 'VariantSku', 'variantSku', 'variantSKU', 'VariantSKU'),
-    ProductImageUrl: resolveAttachmentUrlOptional(
+    ProductImageUrl: resolveProductPosterUrl(
       readString(o, 'ProductImageUrl', 'productImageUrl'),
     ),
-    ProductVariantImageUrl: resolveAttachmentUrlOptional(
+    ProductVariantImageUrl: resolveProductPosterUrl(
       readString(o, 'ProductVariantImageUrl', 'productVariantImageUrl'),
     ),
-    ImageUrl: resolveAttachmentUrlOptional(readString(o, 'ImageUrl', 'imageUrl')),
+    ImageUrl: resolveProductPosterUrl(readString(o, 'ImageUrl', 'imageUrl')),
+    HasModel3D: readBool(o, 'HasModel3D', 'hasModel3D', 'has3D', 'Has3D'),
     Quantity: quantity,
     UnitPrice: unitPrice,
     FinalPrice: finalPrice ?? undefined,
@@ -112,6 +113,16 @@ function readString(o: JsonRecord, ...keys: string[]): string | undefined {
   for (const key of keys) {
     const v = o[key];
     if (typeof v === 'string' && v.trim()) {
+      return v.trim();
+    }
+  }
+  return undefined;
+}
+
+function readBool(o: JsonRecord, ...keys: string[]): boolean | undefined {
+  for (const key of keys) {
+    const v = o[key];
+    if (typeof v === 'boolean') {
       return v;
     }
   }

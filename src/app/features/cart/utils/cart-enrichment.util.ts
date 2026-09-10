@@ -1,5 +1,9 @@
 import { CATALOG_LISTING_PRODUCTS } from '../../catalog/data/catalog-listing.mock';
 import { CatalogListingProduct } from '../../catalog/models/catalog-listing.model';
+import {
+  isStorefront3DAssetUrl,
+  resolveProductPosterUrl,
+} from '../../../shared/utils/storefront-media.util';
 import { CartItemDto } from '../models/cart.model';
 import { CartLineItemView } from '../models/cart-view.model';
 
@@ -105,10 +109,16 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
   const nameArFromApi = item.ProductNameAr?.trim() || item.VariantNameAr?.trim();
 
   const imageUrl =
-    item.ImageUrl?.trim() ||
-    item.ProductVariantImageUrl?.trim() ||
-    item.ProductImageUrl?.trim() ||
+    resolveProductPosterUrl(item.ImageUrl) ||
+    resolveProductPosterUrl(item.ProductVariantImageUrl) ||
+    resolveProductPosterUrl(item.ProductImageUrl) ||
     catalog?.imageUrl;
+  const has3D =
+    item.HasModel3D === true ||
+    catalog?.has3D === true ||
+    isStorefront3DAssetUrl(item.ImageUrl) ||
+    isStorefront3DAssetUrl(item.ProductVariantImageUrl) ||
+    isStorefront3DAssetUrl(item.ProductImageUrl);
 
   const isAvailable = catalog?.isAvailable ?? true;
 
@@ -126,6 +136,7 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
     quantity,
     lineTotal,
     imageUrl: imageUrl || undefined,
+    has3D,
     isAvailable,
     // When catalog data is missing, default to a safe high ceiling.
     maxQuantity: isAvailable ? 99 : quantity,

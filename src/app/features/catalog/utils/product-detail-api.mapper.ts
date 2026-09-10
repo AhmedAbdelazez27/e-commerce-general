@@ -16,6 +16,17 @@ import {
   ProductDetailVariant,
   ProductDetailVariantContext,
 } from '../models/product-detail.model';
+import {
+  isStorefront3DAssetUrl,
+  normalizeStorefrontMediaType,
+  resolveModel3dViewerSources,
+  resolveProductPosterUrl,
+  resolveStorefrontMediaUrl,
+} from '../../../shared/utils/storefront-media.util';
+import {
+  normalizePublicProductImageDto,
+  resolveProductListingMedia,
+} from './catalog-media.util';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -85,6 +96,10 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
     description: readStringField(o, 'description', 'Description') ?? base.description ?? null,
     descriptionAr: readStringField(o, 'descriptionAr', 'DescriptionAr') ?? base.descriptionAr ?? null,
     descriptionEn: readStringField(o, 'descriptionEn', 'DescriptionEn') ?? base.descriptionEn ?? null,
+    metaTitle: readStringField(o, 'metaTitle', 'MetaTitle') ?? base.metaTitle ?? null,
+    metaKeywords: readStringField(o, 'metaKeywords', 'MetaKeywords') ?? base.metaKeywords ?? null,
+    metaDescription:
+      readStringField(o, 'metaDescription', 'MetaDescription') ?? base.metaDescription ?? null,
     mainImageUrl:
       resolveAttachmentUrlOptional(
         readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl,
@@ -199,17 +214,39 @@ export function mapProductImages(
   altAr: string,
 ): ProductDetailImage[] {
   return [...images]
-    .filter((image) => !!image.imageUrl)
+    .map((image) => normalizePublicProductImageDto(image))
+    .filter((image): image is PublicProductImageDto => image != null)
+    .filter((image) => !!(image.imageUrl || image.mediaUrl || image.videoUrl || image.iosMediaUrl))
     .sort((a, b) => {
       const primaryDiff = Number(b.isPrimary ?? false) - Number(a.isPrimary ?? false);
       return primaryDiff !== 0 ? primaryDiff : (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
     })
-    .map((image) => ({
-      id: String(image.id),
-      url: resolveAttachmentUrlOptional(image.imageUrl),
-      altEn: image.altText ?? altEn,
-      altAr: image.altText ?? altAr,
-    }));
+    .map((image) => {
+      let mediaType = normalizeStorefrontMediaType(image.mediaType);
+      const model3d = resolveModel3dViewerSources(image);
+      if (model3d.src || model3d.iosSrc) {
+        mediaType = 'Model3D';
+      } else if (mediaType === 'Image' && isStorefront3DAssetUrl(image.imageUrl)) {
+        mediaType = 'Model3D';
+      }
+
+      const mediaUrl =
+        mediaType === 'Model3D'
+          ? model3d.src
+          : resolveAttachmentUrlOptional(
+              resolveStorefrontMediaUrl(mediaType, image.mediaUrl, image.videoUrl),
+            );
+
+      return {
+        id: String(image.id),
+        url: resolveProductPosterUrl(image.imageUrl),
+        altEn: image.altText ?? altEn,
+        altAr: image.altText ?? altAr,
+        mediaType,
+        mediaUrl,
+        iosMediaUrl: model3d.iosSrc,
+      };
+    });
 }
 
 export function mapProductVariants(variants: PublicProductVariantDto[]): ProductDetailVariant[] {
@@ -294,7 +331,7 @@ export function mapPublicProductDetailsToProductDetail(
       ? [
           {
             id: 'main',
-            url: resolveAttachmentUrlOptional(dto.mainImageUrl),
+            url: resolveProductPosterUrl(dto.mainImageUrl),
             altEn: nameEn,
             altAr: nameAr,
           },
@@ -325,6 +362,9 @@ export function mapPublicProductDetailsToProductDetail(
     images,
     descriptionEn,
     descriptionAr,
+    metaTitle: dto.metaTitle?.trim() || undefined,
+    metaKeywords: dto.metaKeywords?.trim() || undefined,
+    metaDescription: dto.metaDescription?.trim() || undefined,
     specifications,
     shippingInfoEn: 'Standard delivery within 3–5 business days.',
     shippingInfoAr: 'التوصيل القياسي خلال 3–5 أيام عمل.',
@@ -390,6 +430,12 @@ export function mapRelatedProductToListingProduct(
 ): CatalogListingProduct {
   const inStock = item.availabilityStatus === 'InStock';
   const brandName = item.brandName ?? '';
+  const media = resolveProductListingMedia({
+    mainImageUrl: item.mainImageUrl,
+    mainMediaType: item.mainMediaType,
+    hasModel3D: item.hasModel3D,
+    images: item.images,
+  });
 
   return {
     id: item.productId ?? item.id,
@@ -412,7 +458,8 @@ export function mapRelatedProductToListingProduct(
       (item.discountPercent != null && item.discountPercent > 0) ||
       (item.oldPrice != null && item.oldPrice > item.finalPrice),
     discountPercent: item.discountPercent ?? undefined,
-    imageUrl: resolveAttachmentUrlOptional(item.mainImageUrl),
+    imageUrl: media.posterUrl,
+    has3D: media.has3D,
     createdAt: '',
   };
 }

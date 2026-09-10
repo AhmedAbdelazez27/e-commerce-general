@@ -25,6 +25,7 @@ export function mapCatalogProductToCardData(
     isAvailable: product.isAvailable,
     isNew: product.isNew,
     isBestSeller: product.isBestSeller,
+    has3D: product.has3D,
     currency: product.currencyCode,
   };
 }

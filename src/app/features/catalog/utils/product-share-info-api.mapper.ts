@@ -42,6 +42,10 @@ function normalizeShare(raw: unknown): PublicProductShareDto | null {
     return null;
   }
 
+  const metaTitle = readString(o, 'metaTitle', 'MetaTitle');
+  const metaKeywords = readString(o, 'metaKeywords', 'MetaKeywords');
+  const metaDescription = readString(o, 'metaDescription', 'MetaDescription');
+
   return {
     url,
     titleAr: readString(o, 'titleAr', 'TitleAr') ?? '',
@@ -49,6 +53,9 @@ function normalizeShare(raw: unknown): PublicProductShareDto | null {
     descriptionAr: readString(o, 'descriptionAr', 'DescriptionAr') ?? '',
     descriptionEn: readString(o, 'descriptionEn', 'DescriptionEn') ?? '',
     imageUrl: readString(o, 'imageUrl', 'ImageUrl'),
+    ...(metaTitle ? { metaTitle } : {}),
+    ...(metaKeywords ? { metaKeywords } : {}),
+    ...(metaDescription ? { metaDescription } : {}),
   };
 }
 

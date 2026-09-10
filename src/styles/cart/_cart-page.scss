@@ -68,6 +68,7 @@
 }
 
 .cart-item__media {
+  position: relative;
   display: block;
   width: 5.5rem;
   height: 5.5rem;
@@ -81,6 +82,22 @@
     height: 100%;
     object-fit: cover;
   }
+}
+
+.cart-item__media-badge {
+  position: absolute;
+  inset-inline-end: 0.25rem;
+  bottom: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--ds-radius-full);
+  background: var(--ds-color-background-elevated);
+  color: var(--portal-text);
+  font-size: 0.65rem;
+  box-shadow: var(--ds-shadow-xs);
 }
 
 .cart-item__placeholder {

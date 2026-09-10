@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
 import { APP_ENVIRONMENT } from '../../../core/tokens/app-environment.token';
+import { isFacebookLoginOriginAllowed } from '../utils/social-auth-origin.util';
 
 type GoogleCredentialResponse = { credential: string };
 
@@ -130,6 +131,10 @@ export class SocialAuthSdkService {
     const appId = this.env.facebookAppId?.trim();
     if (!appId) {
       return Promise.reject(new Error('FACEBOOK_NOT_CONFIGURED'));
+    }
+
+    if (!isFacebookLoginOriginAllowed()) {
+      return Promise.reject(new Error('FACEBOOK_REQUIRES_HTTPS'));
     }
 
     return this.loadFacebookSdk(appId).then(

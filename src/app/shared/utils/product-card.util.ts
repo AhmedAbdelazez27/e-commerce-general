@@ -44,6 +44,7 @@ export function mapStorefrontProductToCardData(
     titleAr: product.nameAr,
     brand: product.brandName,
     image: product.imageUrl,
+    has3D: product.has3D,
     price: product.price,
     oldPrice: product.compareAtPrice,
     discountPercentage: product.discountPercent ?? discountFromCompare,

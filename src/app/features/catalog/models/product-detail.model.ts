@@ -1,8 +1,17 @@
+import {
+  StorefrontMediaType,
+} from '../../../shared/utils/storefront-media.util';
+
 export interface ProductDetailImage {
   id: string;
   url?: string;
   altEn: string;
   altAr: string;
+  mediaType?: StorefrontMediaType;
+  /** `.glb` / `.gltf` for the 3D viewer. */
+  mediaUrl?: string;
+  /** `.usdz` for iOS AR. */
+  iosMediaUrl?: string;
 }
 
 export interface ProductDetailSpec {
@@ -48,6 +57,9 @@ export interface ProductDetail {
   images: ProductDetailImage[];
   descriptionEn: string;
   descriptionAr: string;
+  metaTitle?: string;
+  metaKeywords?: string;
+  metaDescription?: string;
   specifications: ProductDetailSpec[];
   shippingInfoEn: string;
   shippingInfoAr: string;

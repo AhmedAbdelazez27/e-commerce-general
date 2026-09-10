@@ -11,6 +11,7 @@ export interface StorefrontProduct {
   price: number;
   compareAtPrice?: number;
   imageUrl?: string;
+  has3D?: boolean;
   reviewCount?: number;
   rating?: number;
   discountPercent?: number;

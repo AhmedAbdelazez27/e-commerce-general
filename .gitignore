@@ -20,7 +20,8 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
+# Visual Studio Code  
+.vs/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -28,9 +29,6 @@ yarn-error.log
 !.vscode/extensions.json
 !.vscode/mcp.json
 .history/*
-
-# Cursor (local plans only)
-.cursor/plans/
 
 # Miscellaneous
 /.angular/cache

@@ -14,6 +14,7 @@ export interface CartLineItemView {
   quantity: number;
   lineTotal: number;
   imageUrl?: string;
+  has3D?: boolean;
   isAvailable: boolean;
   maxQuantity: number;
 }

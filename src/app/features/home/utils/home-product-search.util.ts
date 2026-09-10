@@ -60,6 +60,7 @@ export function mapSearchProductToStorefrontProduct(
     price: listing.price,
     compareAtPrice: listing.compareAtPrice,
     imageUrl: listing.imageUrl,
+    has3D: listing.has3D,
     discountPercent: listing.discountPercent,
     brandName: listing.brandNameEn,
     isAvailable: listing.isAvailable,

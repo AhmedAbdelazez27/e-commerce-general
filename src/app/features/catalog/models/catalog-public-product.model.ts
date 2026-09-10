@@ -17,8 +17,11 @@ export interface PublicProductImageDto {
   sortOrder?: number;
   isPrimary?: boolean;
   isMain?: boolean;
+  mediaTypeLkpId?: number | null;
   mediaType?: string | null;
   videoUrl?: string | null;
+  mediaUrl?: string | null;
+  iosMediaUrl?: string | null;
 }
 
 export interface PublicProductSpecificationDto {
@@ -67,6 +70,9 @@ export interface PublicProductDetailsDto {
   description?: string | null;
   descriptionAr?: string | null;
   descriptionEn?: string | null;
+  metaTitle?: string | null;
+  metaKeywords?: string | null;
+  metaDescription?: string | null;
   categoryId: number;
   categoryName?: string;
   brandId?: number | null;
@@ -114,6 +120,9 @@ export interface PublicRelatedProductDto {
   brandId?: number | null;
   brandName?: string | null;
   mainImageUrl?: string | null;
+  mainMediaType?: string | null;
+  hasModel3D?: boolean;
+  images?: PublicProductImageDto[];
   isFeatured?: boolean;
   isNewArrival?: boolean;
   isBestSeller?: boolean;

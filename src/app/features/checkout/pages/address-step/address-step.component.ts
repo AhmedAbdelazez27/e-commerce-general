@@ -5,8 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 
 import { AuthTokenService } from '../../../../core/services/auth-token.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { ReverseGeocodeService } from '../../../../core/services/reverse-geocode.service';
 import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
 import { CHECKOUT_CONFIG } from '../../config/checkout.config';
 import type { CustomerAddressDto } from '../../models/customer-address.model';
@@ -34,11 +37,14 @@ export class AddressStepComponent implements OnInit {
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
   private readonly portal = inject(PortalConfigService);
+  private readonly language = inject(LanguageService);
+  private readonly reverseGeocode = inject(ReverseGeocodeService);
 
   readonly enableShipment = this.portal.enableShipment;
   readonly shippingOptions = CHECKOUT_CONFIG.shippingMethods;
   readonly addresses = signal<CustomerAddressDto[]>([]);
   readonly loading = signal(true);
+  readonly locating = signal(false);
   readonly mode = signal<'saved' | 'new'>(
     this.checkoutState.useNewAddress() ? 'new' : 'saved',
   );
@@ -141,6 +147,56 @@ export class AddressStepComponent implements OnInit {
       this.checkoutState.setShipping(option.id, option.amount);
     }
     this.showShippingError.set(false);
+  }
+
+  useCurrentLocation(): void {
+    if (this.locating()) {
+      return;
+    }
+    void this.fillFromCurrentLocation();
+  }
+
+  private async fillFromCurrentLocation(): Promise<void> {
+    this.locating.set(true);
+    try {
+      const coords = await this.reverseGeocode.getCurrentCoordinates();
+      const fields = await firstValueFrom(
+        this.reverseGeocode.reverseGeocode(
+          coords.latitude,
+          coords.longitude,
+          this.language.apiCulture(),
+        ),
+      );
+
+      this.addressForm.patchValue({
+        city: fields.city || this.addressForm.controls.city.value,
+        area: fields.area || this.addressForm.controls.area.value,
+        street: fields.street || this.addressForm.controls.street.value,
+        building: fields.building || this.addressForm.controls.building.value,
+        latitude: String(fields.latitude),
+        longitude: String(fields.longitude),
+      });
+      this.syncFormToState();
+      this.showFormErrors.set(false);
+
+      const requiredFilled = !!(fields.city && fields.area && fields.street && fields.building);
+      this.toastr.success(
+        this.translate.instant(
+          requiredFilled ? 'CHECKOUT.LOCATION_FILLED' : 'CHECKOUT.LOCATION_PARTIAL',
+        ),
+      );
+    } catch (error) {
+      const code = error instanceof Error ? error.message : 'failed';
+      if (code === 'unsupported') {
+        this.toastr.error(this.translate.instant('CHECKOUT.LOCATION_UNSUPPORTED'));
+      } else if (code === 'denied') {
+        this.toastr.warning(this.translate.instant('CHECKOUT.LOCATION_DENIED'));
+      } else {
+        this.toastr.error(this.translate.instant('CHECKOUT.LOCATION_FAILED'));
+      }
+    } finally {
+      this.locating.set(false);
+    }
   }
 
   continue(): void {

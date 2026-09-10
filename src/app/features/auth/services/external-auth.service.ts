@@ -39,11 +39,21 @@ export class ExternalAuthService {
     idToken: string,
     returnUrl?: string | null,
   ): Observable<ExternalAuthLoginResult> {
-    return this.fromToken(idToken, 'Google', returnUrl);
+    return this.fromToken(idToken, 'Google', returnUrl).pipe(
+      catchError((err) => {
+        this.toast.error(this.resolveErrorMessage(err));
+        return throwError(() => err);
+      }),
+    );
   }
 
   loginWithFacebook(returnUrl?: string | null): Observable<ExternalAuthLoginResult> {
     return this.fromSdkPromise(this.socialSdk.signInWithFacebook(), 'Facebook', returnUrl);
+  }
+
+  /** Toast SDK / config failures that happen before the backend call (e.g. Google button mount). */
+  toastSdkError(err: unknown): void {
+    this.toast.error(this.resolveErrorMessage(err));
   }
 
   private fromSdkPromise(
@@ -59,7 +69,13 @@ export class ExternalAuthService {
         },
         (err) => subscriber.error(err),
       );
-    }).pipe(switchMap((token) => this.fromToken(token, provider, returnUrl)));
+    }).pipe(
+      switchMap((token) => this.fromToken(token, provider, returnUrl)),
+      catchError((err) => {
+        this.toast.error(this.resolveErrorMessage(err));
+        return throwError(() => err);
+      }),
+    );
   }
 
   private fromToken(
@@ -72,10 +88,6 @@ export class ExternalAuthService {
 
     return this.authApi.externalAuthenticate(body).pipe(
       switchMap((res) => this.completeExternalSession(res, returnUrl)),
-      catchError((err) => {
-        this.toast.error(this.resolveErrorMessage(err));
-        throw err;
-      }),
     );
   }
 
@@ -142,8 +154,24 @@ export class ExternalAuthService {
       if (code === 'GOOGLE_LOGIN_CANCELLED' || code === 'FACEBOOK_LOGIN_CANCELLED') {
         return this.translate.instant('AUTH.EXTERNAL_LOGIN_CANCELLED');
       }
-      if (code === 'GOOGLE_PROMPT_UNAVAILABLE') {
+      if (code === 'FACEBOOK_REQUIRES_HTTPS') {
+        return this.translate.instant('AUTH.EXTERNAL_FACEBOOK_REQUIRES_HTTPS');
+      }
+      if (
+        code === 'GOOGLE_PROMPT_UNAVAILABLE' ||
+        code === 'GOOGLE_SDK_UNAVAILABLE' ||
+        code === 'GOOGLE_TOKEN_MISSING'
+      ) {
         return this.translate.instant('AUTH.EXTERNAL_GOOGLE_UNAVAILABLE');
+      }
+      if (
+        code === 'FACEBOOK_SDK_UNAVAILABLE' ||
+        code === 'FACEBOOK_TOKEN_MISSING'
+      ) {
+        return this.translate.instant('AUTH.EXTERNAL_INVALID_FACEBOOK');
+      }
+      if (code === 'SCRIPT_LOAD_FAILED') {
+        return this.translate.instant('AUTH.EXTERNAL_LOGIN_FAILED');
       }
       if (code === 'GOOGLE_NOT_CONFIGURED' || code === 'FACEBOOK_NOT_CONFIGURED') {
         return this.translate.instant('AUTH.EXTERNAL_NOT_CONFIGURED');

@@ -1,11 +1,16 @@
 import { StorefrontProduct } from '../../../shared/models/storefront-product.model';
 
+import { StorefrontMediaType } from '../../../shared/utils/storefront-media.util';
+
 export interface HomeHeroSlide {
   id: string;
   imageSrc: string;
   /** i18n key — used when `imageAlt` is not set. */
   imageAltKey?: string;
   imageAlt?: string;
+  mediaType?: StorefrontMediaType;
+  mediaUrl?: string;
+  iosMediaUrl?: string;
   eyebrowKey?: string;
   /** i18n key — used when `headline` is not set. */
   headlineKey?: string;

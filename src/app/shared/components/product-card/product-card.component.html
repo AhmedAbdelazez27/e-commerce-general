@@ -26,6 +26,12 @@
           {{ 'PRODUCT_CARD.BADGE_BESTSELLER' | translate }}
         </span>
       }
+      @if (product().has3D) {
+        <span class="product-card__badge product-card__badge--3d">
+          <i class="fa-solid fa-cube" aria-hidden="true"></i>
+          {{ 'PRODUCT_CARD.BADGE_3D' | translate }}
+        </span>
+      }
     </div>
 
     @if (!isAvailable()) {

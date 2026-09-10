@@ -5,6 +5,7 @@ import { ProductDetail } from '../models/product-detail.model';
 import { mapCatalogProductToCardData } from './catalog-product.mapper';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
 import { productHasOffer } from './catalog-listing-filter.util';
+import { pickProductDetailPosterUrl, productDetailHas3D } from './catalog-media.util';
 
 export function localizedProductName(product: ProductDetail, lang: AppLang): string {
   return lang === 'ar' ? product.nameAr : product.nameEn;
@@ -65,7 +66,8 @@ export function mapProductDetailToCardData(product: ProductDetail): ProductCardD
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: product.brandNameEn,
-    image: product.images[0]?.url,
+    image: pickProductDetailPosterUrl(product.images),
+    has3D: productDetailHas3D(product.images),
     price: product.price,
     oldPrice: product.compareAtPrice,
     discountPercentage: discount ?? undefined,

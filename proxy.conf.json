@@ -1,0 +1,7 @@
+{
+  "/ERPAttachments": {
+    "target": "http://compassint.ddns.net:2042",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

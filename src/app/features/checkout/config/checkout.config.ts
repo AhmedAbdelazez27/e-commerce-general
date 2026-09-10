@@ -16,6 +16,7 @@ export const CHECKOUT_CONFIG = {
   defaultCountryId: 1,
   shippingMethods: [
     { id: 'Standard', labelKey: 'CHECKOUT.SHIPPING_STANDARD', amount: 0 },
-    { id: 'Express', labelKey: 'CHECKOUT.SHIPPING_EXPRESS', amount: 25 },
+    // Temporarily hidden
+    // { id: 'Express', labelKey: 'CHECKOUT.SHIPPING_EXPRESS', amount: 25 },
   ] satisfies CheckoutShippingOption[],
 } as const;

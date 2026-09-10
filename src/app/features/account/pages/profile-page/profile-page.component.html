@@ -329,6 +329,21 @@
           } @else if (addressUiMode() === 'add' || addressUiMode() === 'edit') {
             <div class="add-address mt-3">
               <form [formGroup]="addressForm" novalidate>
+                <div class="mb-3">
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    [disabled]="locating()"
+                    (click)="useCurrentLocation()"
+                  >
+                    @if (locating()) {
+                      {{ 'CHECKOUT.LOCATION_FILLING' | translate }}
+                    } @else {
+                      <i class="fa-solid fa-location-crosshairs me-2" aria-hidden="true"></i>
+                      {{ 'CHECKOUT.USE_CURRENT_LOCATION' | translate }}
+                    }
+                  </button>
+                </div>
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="mb-3">
@@ -388,6 +403,38 @@
                         autocomplete="address-level2"
                       />
                       @if (fieldError('city'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-lat" class="form-label">{{ 'CHECKOUT.FIELD_LATITUDE' | translate }}</label>
+                      <input
+                        id="profile-lat"
+                        type="text"
+                        inputmode="decimal"
+                        class="form-control"
+                        formControlName="latitude"
+                        [class.is-invalid]="fieldError('latitude')"
+                      />
+                      @if (fieldError('latitude'); as err) {
+                        <div class="invalid-feedback d-block">{{ err | translate }}</div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="mb-3">
+                      <label for="profile-lng" class="form-label">{{ 'CHECKOUT.FIELD_LONGITUDE' | translate }}</label>
+                      <input
+                        id="profile-lng"
+                        type="text"
+                        inputmode="decimal"
+                        class="form-control"
+                        formControlName="longitude"
+                        [class.is-invalid]="fieldError('longitude')"
+                      />
+                      @if (fieldError('longitude'); as err) {
                         <div class="invalid-feedback d-block">{{ err | translate }}</div>
                       }
                     </div>

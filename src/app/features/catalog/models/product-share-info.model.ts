@@ -5,6 +5,9 @@ export interface PublicProductShareDto {
   descriptionAr: string;
   descriptionEn: string;
   imageUrl?: string;
+  metaTitle?: string;
+  metaKeywords?: string;
+  metaDescription?: string;
 }
 
 export interface PublicProductShareInfoDto {

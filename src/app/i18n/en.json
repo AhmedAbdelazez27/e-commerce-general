@@ -52,6 +52,7 @@
     "SIGN_IN_WITH_FACEBOOK": "Continue with Facebook",
     "EXTERNAL_LOGIN_FAILED": "External sign-in failed. Please try again.",
     "EXTERNAL_LOGIN_CANCELLED": "Sign-in was cancelled.",
+    "EXTERNAL_FACEBOOK_REQUIRES_HTTPS": "Facebook sign-in requires HTTPS. Open the store over https:// or use http://localhost for local testing.",
     "EXTERNAL_GOOGLE_UNAVAILABLE": "Google sign-in is unavailable. Try again or use email.",
     "EXTERNAL_NOT_CONFIGURED": "Social sign-in is not configured for this store.",
     "EXTERNAL_INVALID_PROVIDER": "Invalid sign-in provider. Please contact support.",
@@ -541,7 +542,8 @@
     "QUICK_VIEW": "Quick view",
     "SOLD_OUT": "Sold out",
     "BADGE_NEW": "New",
-    "BADGE_BESTSELLER": "Best seller"
+    "BADGE_BESTSELLER": "Best seller",
+    "BADGE_3D": "3D"
   },
   "CATALOG": {
     "BREADCRUMB": "Breadcrumb",
@@ -676,6 +678,13 @@
     "FIELD_BUILDING": "Building",
     "FIELD_LATITUDE": "Latitude (optional)",
     "FIELD_LONGITUDE": "Longitude (optional)",
+    "USE_CURRENT_LOCATION": "Use my current location",
+    "LOCATION_FILLING": "Detecting your location…",
+    "LOCATION_UNSUPPORTED": "Location is not supported in this browser.",
+    "LOCATION_DENIED": "Location permission was denied. Please allow access or fill the address manually.",
+    "LOCATION_FAILED": "Could not detect your location. Please try again or fill the address manually.",
+    "LOCATION_FILLED": "Address fields were filled from your location. Please review them.",
+    "LOCATION_PARTIAL": "Some address fields were filled. Please complete the missing ones.",
     "SET_DEFAULT": "Set as default address",
     "PAYMENT_REQUIRED": "Please select a payment method.",
     "SHIPPING_REQUIRED": "Please select a shipping method.",
@@ -699,6 +708,7 @@
     "CART_REQUIRED": "Your cart could not be found. Refresh the cart and try again.",
     "SUCCESS_TITLE": "Order placed",
     "SUCCESS_MESSAGE": "Thank you. We have received your order.",
+    "SUCCESS_EMAIL": "We have sent the order number and basic details to your email.",
     "ORDER_NUMBER": "Order number",
     "ORDER_TOTAL": "Total",
     "CONTINUE_SHOPPING": "Continue shopping",
@@ -726,6 +736,8 @@
     "SHIPPING_TITLE": "Shipping",
     "RETURNS_TITLE": "Returns",
     "NO_DESCRIPTION": "Product description is not available.",
+    "MEDIA_VIDEO": "Product video",
+    "MEDIA_3D": "3D product view",
     "TAB": {
       "description": "Description",
       "specifications": "Specifications",

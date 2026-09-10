@@ -95,7 +95,7 @@ export class PortalConfigService {
   private syncAttachmentBaseUrl(): void {
     const config = this.configSignal();
     setAttachmentBaseUrl(
-      pickPortalAttachmentBaseUrl(config.portalBaseUrl) || this.env.attachmentsBaseUrl || '',
+      this.env.attachmentsBaseUrl || pickPortalAttachmentBaseUrl(config.portalBaseUrl) || '',
     );
   }
 

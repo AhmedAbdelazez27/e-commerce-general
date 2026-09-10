@@ -51,6 +51,8 @@ export interface PublicFilterCategoryDto {
   name: string;
   slug: string;
   count: number;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
 }
 
 export interface PublicFilterBrandDto {
@@ -132,6 +134,14 @@ export interface PublicSearchProductDto {
   brandNameAr?: string | null;
   brandNameEn?: string | null;
   mainImageUrl?: string | null;
+  mainMediaType?: string | null;
+  hasModel3D?: boolean;
+  images?: Array<{
+    imageUrl?: string | null;
+    mediaType?: string | null;
+    mediaUrl?: string | null;
+    videoUrl?: string | null;
+  }>;
   isFeatured: boolean;
   isNewArrival: boolean;
   isBestSeller: boolean;

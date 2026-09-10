@@ -1,5 +1,8 @@
 import type { EcWishlistDto, EcWishlistItem } from '../models/ec-wishlist.model';
-import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
+import {
+  isStorefront3DAssetUrl,
+  resolveProductPosterUrl,
+} from '../../../shared/utils/storefront-media.util';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -77,7 +80,7 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     0;
   const compareAtPrice = readNumber(o, 'compareAtPrice', 'CompareAtPrice', 'oldPrice', 'OldPrice');
 
-  const imageUrl = resolveAttachmentUrlOptional(
+  const imageUrl = resolveProductPosterUrl(
     readString(
       o,
       'imageUrl',
@@ -92,6 +95,11 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
       'ThumbnailUrl',
     ),
   );
+  const has3D =
+    readBool(o, 'has3D', 'Has3D', 'hasModel3D', 'HasModel3D') === true ||
+    isStorefront3DAssetUrl(
+      readString(o, 'imageUrl', 'ImageUrl', 'mediaUrl', 'MediaUrl', 'mainImageUrl', 'MainImageUrl'),
+    );
 
   const slug = readString(o, 'slug', 'Slug') ?? undefined;
   const brandName = readString(o, 'brandName', 'BrandName') ?? undefined;
@@ -115,6 +123,7 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     price: priceValue,
     compareAtPrice: compareAtPrice ?? undefined,
     imageUrl,
+    has3D,
     brandName,
     rating,
     reviewCount,

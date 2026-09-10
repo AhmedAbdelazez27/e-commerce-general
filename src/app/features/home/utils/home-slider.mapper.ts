@@ -2,6 +2,11 @@ import type { AppLang } from '../../../core/services/language.service';
 import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import { PublicHomeSliderDto } from '../../../layout/models/catalog-public.model';
 import { SHOP_ROUTE } from '../../../shared/utils/category-shop-link.util';
+import {
+  normalizeStorefrontMediaType,
+  resolveModel3dViewerSources,
+  resolveStorefrontMediaUrl,
+} from '../../../shared/utils/storefront-media.util';
 import { HomeHeroSlide } from '../models/home.model';
 
 const SLIDER_PLACEHOLDER_IMAGE = '/images/HomeCover.png';
@@ -112,11 +117,25 @@ export function mapHomeSliderToHeroSlide(
     fallback: dto.buttonText,
   });
   const { route, queryParams } = resolveSliderLink(dto);
+  const mediaType = normalizeStorefrontMediaType(dto.mediaType);
+  const model3d = resolveModel3dViewerSources({
+    mediaUrl: dto.mediaUrl ?? dto.mobileMediaUrl,
+    iosMediaUrl: dto.iosMediaUrl,
+    imageUrl: dto.imageUrl,
+  });
 
   return {
     id: String(dto.id),
     imageSrc: resolveSliderImageUrl(dto.imageUrl, dto.mobileImageUrl, apiBaseUrl),
     imageAlt: title,
+    mediaType: model3d.src || model3d.iosSrc ? 'Model3D' : mediaType,
+    mediaUrl:
+      mediaType === 'Video'
+        ? (resolveAttachmentUrl(
+            resolveStorefrontMediaUrl(mediaType, dto.mediaUrl ?? dto.mobileMediaUrl, null),
+          ) ?? undefined)
+        : model3d.src,
+    iosMediaUrl: model3d.iosSrc,
     headline: title,
     subtitle,
     ctaLabel,

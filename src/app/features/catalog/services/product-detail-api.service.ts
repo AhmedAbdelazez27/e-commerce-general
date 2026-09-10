@@ -18,6 +18,7 @@ import {
 } from '../models/catalog-public-product.model';
 import type { PublicProductShareInfoDto } from '../models/product-share-info.model';
 import { normalizePublicProductDetailsDto } from '../utils/product-detail-api.mapper';
+import { normalizePublicProductImageList } from '../utils/catalog-media.util';
 import { normalizeProductShareInfoDto } from '../utils/product-share-info-api.mapper';
 
 @Injectable({ providedIn: 'root' })
@@ -86,7 +87,9 @@ export class ProductDetailApiService {
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.productImages, { params })
       .pipe(
-        map((res) => resultArrayFromAbpEnvelope<PublicProductImageDto>(res)),
+        map((res) =>
+          normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res)),
+        ),
         catchError(() => of([])),
       );
   }
@@ -96,7 +99,9 @@ export class ProductDetailApiService {
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.variantImages, { params })
       .pipe(
-        map((res) => resultArrayFromAbpEnvelope<PublicProductImageDto>(res)),
+        map((res) =>
+          normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res)),
+        ),
         catchError(() => of([])),
       );
   }

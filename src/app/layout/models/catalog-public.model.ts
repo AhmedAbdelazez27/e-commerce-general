@@ -7,6 +7,8 @@ export interface PublicCategoryDto {
   nameEn: string;
   slug: string;
   description?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
   imageUrl?: string | null;
   iconUrl?: string | null;
   isFeatured: boolean;
@@ -26,6 +28,10 @@ export interface PublicHomeSliderDto {
   subtitleEn: string;
   imageUrl: string | null;
   mobileImageUrl: string | null;
+  mediaType?: string | null;
+  mediaUrl?: string | null;
+  mobileMediaUrl?: string | null;
+  iosMediaUrl?: string | null;
   buttonText: string;
   buttonTextAr: string;
   buttonTextEn: string;

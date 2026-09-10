@@ -21,15 +21,40 @@
             [attr.aria-label]="'HOME.HERO.SLIDE_LABEL' | translate: { current: i + 1, total: slideCount() }"
           >
             <div class="home-hero__banner">
-              <img
-                class="home-hero__image"
-                [src]="slide.imageSrc"
-                [alt]="imageAlt(slide)"
-                width="1400"
-                height="560"
-                [attr.fetchpriority]="i === 0 ? 'high' : null"
-                [attr.loading]="i === 0 ? 'eager' : 'lazy'"
-              />
+              @if (slide.mediaType === 'Video' && slide.mediaUrl && activeIndex() === i) {
+                <video
+                  class="home-hero__image"
+                  [src]="slide.mediaUrl"
+                  [poster]="slide.imageSrc"
+                  [attr.aria-label]="imageAlt(slide)"
+                  muted="muted"
+                  [muted]="true"
+                  autoplay
+                  loop
+                  playsinline
+                  preload="auto"
+                  (loadeddata)="playHeroVideo($event)"
+                  (canplay)="playHeroVideo($event)"
+                ></video>
+              } @else if (slide.mediaType === 'Model3D' && (slide.mediaUrl || slide.iosMediaUrl) && activeIndex() === i) {
+                <app-model-3d-viewer
+                  class="home-hero__image"
+                  [src]="slide.mediaUrl"
+                  [iosSrc]="slide.iosMediaUrl"
+                  [poster]="slide.imageSrc"
+                  [alt]="imageAlt(slide)"
+                />
+              } @else {
+                <img
+                  class="home-hero__image"
+                  [src]="slide.imageSrc"
+                  [alt]="imageAlt(slide)"
+                  width="1400"
+                  height="560"
+                  [attr.fetchpriority]="i === 0 ? 'high' : null"
+                  [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+                />
+              }
               <div class="home-hero__overlay">
                 <div class="home-hero__content">
                   @if (eyebrow(slide)) {

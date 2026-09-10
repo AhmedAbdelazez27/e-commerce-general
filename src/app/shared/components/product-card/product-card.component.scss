@@ -98,6 +98,14 @@
   background: var(--portal-primary);
 }
 
+.product-card__badge--3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--portal-text);
+  background: var(--ds-color-background-elevated);
+}
+
 .product-card__sold-out {
   position: absolute;
   inset: 0;

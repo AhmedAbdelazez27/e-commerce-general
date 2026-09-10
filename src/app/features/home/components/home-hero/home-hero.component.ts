@@ -16,6 +16,7 @@ import { finalize } from 'rxjs/operators';
 import { LanguageService } from '../../../../core/services/language.service';
 import { APP_ENVIRONMENT } from '../../../../core/tokens/app-environment.token';
 import { EcPublicCatalogApiService } from '../../../../layout/services/ec-public-catalog-api.service';
+import { Model3dViewerComponent } from '../../../../shared/components/model-3d-viewer/model-3d-viewer.component';
 import { HomeHeroConfig, HomeHeroSlide } from '../../models/home.model';
 import { mapHomeSlidersToHeroSlides } from '../../utils/home-slider.mapper';
 
@@ -23,7 +24,7 @@ const DEFAULT_AUTO_PLAY_MS = 6000;
 
 @Component({
   selector: 'app-home-hero',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, Model3dViewerComponent],
   templateUrl: './home-hero.component.html',
   host: {
     '(mouseenter)': 'pauseAutoPlay()',
@@ -83,6 +84,12 @@ export class HomeHeroComponent {
     }
     const next = ((index % count) + count) % count;
     this.activeIndex.set(next);
+    const cfg = this.config();
+    const intervalMs =
+      cfg.autoPlay === false || this.prefersReducedMotion()
+        ? null
+        : (cfg.autoPlayIntervalMs ?? DEFAULT_AUTO_PLAY_MS);
+    this.restartAutoPlay(intervalMs);
   }
 
   next(): void {
@@ -161,6 +168,12 @@ export class HomeHeroComponent {
     return '';
   }
 
+  playHeroVideo(event: Event): void {
+    const video = event.target as HTMLVideoElement;
+    video.muted = true;
+    void video.play().catch(() => undefined);
+  }
+
   onHostFocusOut(event: FocusEvent): void {
     const host = event.currentTarget as HTMLElement | null;
     if (host?.contains(event.relatedTarget as Node)) {
@@ -172,6 +185,9 @@ export class HomeHeroComponent {
   private restartAutoPlay(intervalMs: number | null): void {
     this.clearAutoPlay();
     if (intervalMs == null || this.autoPlayPaused || this.slideCount() < 2) {
+      return;
+    }
+    if (this.slides()[this.activeIndex()]?.mediaType === 'Model3D') {
       return;
     }
     this.autoPlayTimer = setInterval(() => this.next(), intervalMs);

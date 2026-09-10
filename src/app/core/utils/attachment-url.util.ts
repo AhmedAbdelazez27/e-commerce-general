@@ -1,6 +1,6 @@
 let attachmentBaseUrl = '';
 
-const ATTACHMENT_PATH_MARKERS = ['/appatt/', '/erpattachments/'];
+const ATTACHMENT_PATH_MARKERS = ['/appatt/', '/erpattachments/', '/appattachments/'];
 
 /** ERP / portal host for relative attachment paths (no trailing slash). */
 export function setAttachmentBaseUrl(url: string | null | undefined): void {
@@ -53,6 +53,13 @@ function resolveAttachmentBaseUrl(baseUrl?: string | null): string {
   return candidate && !isLocalDevHost(candidate) ? candidate : '';
 }
 
+function hostedAttachmentPath(pathname: string, search = '', base = ''): string {
+  const needsErpPrefix =
+    /^\/appattachments\//i.test(pathname) && !/\/erpattachments\/?$/i.test(base);
+  const path = needsErpPrefix ? `/ERPAttachments${pathname}${search}` : `${pathname}${search}`;
+  return normalizeAttachmentPath(path);
+}
+
 function rewriteAbsoluteAttachmentUrl(url: string, baseUrl?: string | null): string {
   const base = resolveAttachmentBaseUrl(baseUrl);
   if (!base) {
@@ -66,7 +73,7 @@ function rewriteAbsoluteAttachmentUrl(url: string, baseUrl?: string | null): str
     }
 
     if (isLocalDevHost(parsed.hostname)) {
-      return normalizeAttachmentPath(`${base}${parsed.pathname}${parsed.search}`);
+      return `${base}${hostedAttachmentPath(parsed.pathname, parsed.search, base)}`;
     }
   } catch {
     return url;
@@ -100,7 +107,7 @@ export function resolveAttachmentUrl(
 
   const base = resolveAttachmentBaseUrl(baseUrl);
   if (normalized.startsWith('/') && base) {
-    return normalizeAttachmentPath(`${base}${normalized}`);
+    return `${base}${hostedAttachmentPath(normalized, '', base)}`;
   }
 
   return normalized;

@@ -2,6 +2,10 @@ import { AppLang } from '../../../core/services/language.service';
 import type { CurrencySelection } from '../../../core/models/currency.model';
 import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import {
+  normalizePublicProductImageList,
+  resolveProductListingMedia,
+} from './catalog-media.util';
+import {
   CatalogBrandOption,
   CatalogCategoryOption,
   CatalogListingFilters,
@@ -183,6 +187,8 @@ export function mapFilterCategoriesToOptions(
     nameEn: category.name,
     nameAr: category.name,
     count: category.count,
+    seoTitle: category.seoTitle?.trim() || undefined,
+    seoDescription: category.seoDescription?.trim() || undefined,
   }));
 }
 
@@ -206,7 +212,12 @@ export function mapSearchProductToListingProduct(
   const nameEn = item.nameEn?.trim() || item.name;
   const nameAr = item.nameAr?.trim() || item.name;
   const finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0;
-  const imageUrl = resolveAttachmentUrlOptional(item.mainImageUrl);
+  const media = resolveProductListingMedia({
+    mainImageUrl: item.mainImageUrl,
+    mainMediaType: item.mainMediaType,
+    hasModel3D: item.hasModel3D,
+    images: item.images,
+  });
 
   return {
     id: item.productId ?? item.id,
@@ -230,7 +241,8 @@ export function mapSearchProductToListingProduct(
       (item.discountPercent != null && item.discountPercent > 0) ||
       (item.oldPrice != null && item.oldPrice > finalPrice),
     discountPercent: item.discountPercent ?? undefined,
-    imageUrl,
+    imageUrl: media.posterUrl,
+    has3D: media.has3D,
     createdAt: item.createdDate?.trim() ?? '',
     currencyCode: item.price?.currencyCode,
   };
@@ -344,6 +356,9 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
       resolveAttachmentUrlOptional(
         readStringField(o, 'mainImageUrl', 'MainImageUrl', 'imageUrl', 'ImageUrl'),
       ) ?? null,
+    mainMediaType: readStringField(o, 'mainMediaType', 'MainMediaType'),
+    hasModel3D: readBoolField(o, 'hasModel3D', 'HasModel3D'),
+    images: normalizePublicProductImageList(o['images'] ?? o['Images']),
     isFeatured: readBoolField(o, 'isFeatured', 'IsFeatured'),
     isNewArrival: readBoolField(o, 'isNewArrival', 'IsNewArrival'),
     isBestSeller: readBoolField(o, 'isBestSeller', 'IsBestSeller'),

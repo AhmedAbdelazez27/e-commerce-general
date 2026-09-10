@@ -64,6 +64,7 @@ export class WishlistActionsService {
       productNameEn: product.title,
       productNameAr: product.titleAr ?? product.title,
       imageUrl: product.image,
+      has3D: product.has3D,
       unitPrice: product.price,
       isAvailable: product.isAvailable,
     };

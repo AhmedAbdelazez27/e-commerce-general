@@ -2,6 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ProductDetail } from '../../features/catalog/models/product-detail.model';
+import {
+  pickProductDetailPosterUrl,
+  productDetailHas3D,
+} from '../../features/catalog/utils/catalog-media.util';
 import { GuestCartProductMeta } from '../../features/cart/models/cart.model';
 import { ProductCardData } from '../../shared/models/product-card.model';
 import { resolveProductCardTitle } from '../../shared/utils/product-card.util';
@@ -113,6 +117,7 @@ export class CartActionsService {
       productNameEn: product.title,
       productNameAr: product.titleAr ?? product.title,
       imageUrl: product.image,
+      has3D: product.has3D,
       unitPrice: product.price,
       isAvailable: product.isAvailable,
     };
@@ -123,7 +128,8 @@ export class CartActionsService {
       productId: product.id,
       productNameEn: product.nameEn,
       productNameAr: product.nameAr,
-      imageUrl: product.images[0]?.url,
+      imageUrl: pickProductDetailPosterUrl(product.images),
+      has3D: productDetailHas3D(product.images),
       unitPrice: product.price,
       isAvailable: product.isAvailable,
     };

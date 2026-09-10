@@ -295,6 +295,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
           this.variants.set(variants);
           this.relatedProducts.set(mapRelatedToCardData(related));
           this.loadState.set('loaded');
+          this.applyShareSeo();
           this.loadShareInfo(product.id);
         },
         error: () => {
@@ -314,11 +315,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   private applyShareSeo(): void {
-    const share = this.shareData();
-    if (!share) {
+    const product = this.product();
+    if (!product && !this.shareData()) {
       return;
     }
-    this.productSeo.applyProductShare(share, this.language.currentLang());
+    this.productSeo.applyProductPage(this.shareData(), this.language.currentLang(), product);
   }
 
   private refreshDisplayedPrice(): void {

@@ -1,6 +1,6 @@
 import type { AppLang } from '../../../core/services/language.service';
-import { resolveAttachmentUrl } from '../../../core/utils/attachment-url.util';
 import { PublicSearchProductDto } from '../../catalog/models/catalog-public-listing.model';
+import { resolveProductListingMedia } from '../../catalog/utils/catalog-media.util';
 import { HomeCuratedCollection } from '../models/home.model';
 
 const CURATED_IMAGE_PLACEHOLDER = '/images/category-placeholder.svg';
@@ -34,12 +34,14 @@ export function mapFeaturedProductToCuratedCollection(
   const productId = item.productId ?? item.id;
   const eyebrow = localizedBrand(item, lang) || localizedCategory(item, lang);
 
+  const { posterUrl } = resolveProductListingMedia(item);
+
   return {
     id: String(productId),
     eyebrow,
     title: name,
     hoverCtaKey: 'HOME.CURATED.CTA',
-    imageUrl: resolveAttachmentUrl(item.mainImageUrl) ?? CURATED_IMAGE_PLACEHOLDER,
+    imageUrl: posterUrl ?? CURATED_IMAGE_PLACEHOLDER,
     imageAlt: name,
     route: `/shop/${productId}`,
   };

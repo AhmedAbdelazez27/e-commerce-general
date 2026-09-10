@@ -9,6 +9,7 @@ export interface ProductCardData {
   titleAr?: string;
   brand?: string;
   image?: string;
+  has3D?: boolean;
   price: number;
   oldPrice?: number;
   discountPercentage?: number;

@@ -43,6 +43,7 @@ export function buildGuestCartItem(
     ProductNameAr: meta.productNameAr,
     ImageUrl: meta.imageUrl,
     ProductImageUrl: meta.imageUrl,
+    HasModel3D: meta.has3D,
     Quantity: quantity,
     UnitPrice: unitPrice,
     FinalPrice: unitPrice,

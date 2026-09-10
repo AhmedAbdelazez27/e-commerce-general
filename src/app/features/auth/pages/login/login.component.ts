@@ -104,8 +104,9 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
               error: () => undefined,
             });
         },
-        onError: () => {
+        onError: (err) => {
           this.socialLoading.set(false);
+          this.externalAuth.toastSdkError(err);
         },
       },
     );
@@ -123,7 +124,9 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     this.externalAuth
       .loginWithFacebook(this.route.snapshot.queryParamMap.get('returnUrl'))
       .pipe(finalize(() => this.socialLoading.set(false)))
-      .subscribe();
+      .subscribe({
+        error: () => undefined,
+      });
   }
 
   submit(): void {

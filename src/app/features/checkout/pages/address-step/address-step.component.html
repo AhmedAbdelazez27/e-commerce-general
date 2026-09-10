@@ -60,6 +60,21 @@
       </div>
     } @else {
       <form class="checkout-address-form" [formGroup]="addressForm" novalidate>
+        <div class="checkout-address-form__location mb-3">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            [disabled]="locating()"
+            (click)="useCurrentLocation()"
+          >
+            @if (locating()) {
+              {{ 'CHECKOUT.LOCATION_FILLING' | translate }}
+            } @else {
+              <i class="fa-solid fa-location-crosshairs me-2" aria-hidden="true"></i>
+              {{ 'CHECKOUT.USE_CURRENT_LOCATION' | translate }}
+            }
+          </button>
+        </div>
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label" for="checkout-city">{{ 'CHECKOUT.FIELD_CITY' | translate }}</label>

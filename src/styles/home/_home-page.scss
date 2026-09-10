@@ -200,6 +200,10 @@ html[dir='rtl'] .home-hero__nav i {
   object-position: center;
 }
 
+.home-hero__banner app-model-3d-viewer.home-hero__image {
+  display: block;
+}
+
 .home-hero__overlay {
   position: absolute;
   inset: 0;

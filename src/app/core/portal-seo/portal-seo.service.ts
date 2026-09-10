@@ -38,6 +38,14 @@ export class PortalSeoService {
     this.title.setTitle(baseTitle ? `${trimmed} | ${baseTitle}` : trimmed);
   }
 
+  applyPageMeta(pageTitle: string, description?: string | null): void {
+    this.setPageTitle(pageTitle);
+    const trimmedDescription = description?.trim();
+    if (trimmedDescription) {
+      this.meta.updateTag({ name: 'description', content: trimmedDescription });
+    }
+  }
+
   private applySeo(config: PortalConfiguration): void {
     const lang = this.language.currentLang() as AppLang;
     const seo = config.seo;

@@ -46,6 +46,8 @@ export interface CatalogCategoryOption {
   count?: number;
   descriptionEn?: string;
   descriptionAr?: string;
+  seoTitle?: string;
+  seoDescription?: string;
   parentId?: string;
   parentNameEn?: string;
   parentNameAr?: string;
@@ -81,6 +83,7 @@ export interface CatalogListingProduct {
   hasOffer?: boolean;
   discountPercent?: number;
   imageUrl?: string;
+  has3D?: boolean;
   createdAt: string;
   currencyCode?: string;
 }
