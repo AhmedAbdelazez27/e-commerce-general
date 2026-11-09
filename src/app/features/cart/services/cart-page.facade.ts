@@ -1,3 +1,4 @@
+import { selectionKey } from '../../../shared/utils/product-stock.util';
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,10 +18,7 @@ import {
   writeAppliedCouponCode,
   writePendingCouponCode,
 } from '../utils/coupon-storage.util';
-import {
-  couponRejectMessageKey,
-  validateCouponApiResult,
-} from '../utils/coupon-validation.util';
+import { couponRejectMessageKey, validateCouponApiResult } from '../utils/coupon-validation.util';
 import {
   buildOrderSummary,
   cartItemsHaveEmbeddedProductDiscount,
@@ -47,19 +45,34 @@ export class CartPageFacade {
     if (!cart?.Items?.length) {
       return [];
     }
-    return enrichCartItems(cart.Items);
+    const rewardVariantIds = new Set(
+      (cart.OfferGuidance ?? [])
+        .filter((offer) => offer.rewardSelectionCode === 'CustomerChoice')
+        .flatMap((offer) => offer.rewardCandidateVariantIdsInCart),
+    );
+    return enrichCartItems(cart.Items, cart.SupportsPromotionPricing === true).map((item) => ({
+      ...item,
+      ...this.lineAvailability(item),
+      canSelectReward: item.productVariantId != null && rewardVariantIds.has(item.productVariantId),
+    }));
   });
 
   readonly isEmpty = computed(() => this.lineItems().length === 0);
   readonly isLoading = computed(() => this.cartService.loading());
 
-  readonly hasUnavailableItems = computed(() =>
-    this.lineItems().some((item) => !item.isAvailable),
-  );
+  readonly hasUnavailableItems = computed(() => this.lineItems().some((item) => !item.isAvailable));
 
   readonly canCheckout = computed(
-    () => !this.isEmpty() && !this.hasUnavailableItems() && !this.isLoading(),
+    () =>
+      !this.isEmpty() &&
+      !this.hasUnavailableItems() &&
+      !this.isLoading() &&
+      !this.cartService.reconciliationRequired() &&
+      !(this.cartService.cart()?.OfferGuidance ?? []).some((offer) => offer.blocksCheckout),
   );
+
+  readonly promotionWarnings = computed(() => this.cartService.cart()?.PromotionWarnings ?? []);
+  readonly offerGuidance = computed(() => this.cartService.cart()?.OfferGuidance ?? []);
 
   readonly orderSummary = computed((): CartOrderSummaryView => {
     const cart = this.cartService.cart();
@@ -89,6 +102,20 @@ export class CartPageFacade {
     });
   }
 
+  private lineAvailability(item: CartLineItemView): Partial<CartLineItemView> {
+    const availability =
+      this.cartService.availability()[selectionKey(item.productId, item.productVariantId)];
+    if (!availability) return {};
+    return {
+      isAvailable: availability.isAvailable,
+      availabilityStatus: availability.availabilityStatus,
+      serialQuantity: availability.stock?.controlType === 1,
+      maxQuantity: availability.stock?.allowOnlineBackorder
+        ? Number.MAX_SAFE_INTEGER
+        : Math.max(item.quantity, availability.stock?.available ?? item.quantity),
+    };
+  }
+
   initPage(): void {
     const queryCode = this.route.snapshot.queryParamMap.get('coupon')?.trim();
     if (queryCode) {
@@ -114,26 +141,26 @@ export class CartPageFacade {
       }
     }
 
-    const coupon =
-      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    const coupon = this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
     this.cartService.refresh(coupon ?? stored);
   }
 
   updateQuantity(cartDetailId: number, quantity: number): void {
-    const coupon =
-      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    const coupon = this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
     this.cartService.updateQuantity(cartDetailId, quantity, coupon);
   }
 
   removeItem(cartDetailId: number): void {
-    const coupon =
-      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    const coupon = this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
     this.cartService.removeItem(cartDetailId, coupon);
   }
 
+  setRewardSelection(cartDetailId: number, selectedReward: boolean): void {
+    this.cartService.setRewardSelection(cartDetailId, selectedReward).subscribe();
+  }
+
   clearCart(): void {
-    const coupon =
-      this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
+    const coupon = this.couponState().status === 'applied' ? this.couponState().appliedCode : null;
     this.cartService.clearCart(coupon).subscribe();
     this.removeCoupon(false);
   }
@@ -187,24 +214,30 @@ export class CartPageFacade {
             return;
           }
 
-          const discountAmount = validation.discountAmount;
-          this.appliedDiscountAmount.set(discountAmount);
+          this.cartService.repriceWithCoupon(code).subscribe((cart) => {
+            const appliedCode = cart?.CouponCode?.trim();
+            if (!cart || !appliedCode || appliedCode.toUpperCase() !== code) {
+              this.couponState.set({
+                status: 'invalid',
+                code,
+                messageKey: 'CART.COUPON.NOT_APPLIED',
+              });
+              return;
+            }
 
-          this.couponState.set({
-            status: 'applied',
-            code,
-            appliedCode: code,
-            messageKey: 'CART.COUPON.APPLIED',
-            messageParams: {
+            const discountAmount = cart.CouponDiscountAmount ?? validation.discountAmount;
+            this.appliedDiscountAmount.set(discountAmount);
+            this.couponState.set({
+              status: 'applied',
               code,
-              savings: discountAmount,
-            },
+              appliedCode,
+              messageKey: 'CART.COUPON.APPLIED',
+              messageParams: { code: appliedCode, savings: discountAmount },
+            });
+            writeAppliedCouponCode(appliedCode);
+            this.checkoutState.setCouponCode(appliedCode);
+            this.checkoutState.setCouponDiscountAmount(discountAmount);
           });
-
-          writeAppliedCouponCode(code);
-          this.checkoutState.setCouponCode(code);
-          this.checkoutState.setCouponDiscountAmount(discountAmount);
-          this.cartService.refresh(code);
         },
         error: () => {
           this.couponState.set({
@@ -224,7 +257,7 @@ export class CartPageFacade {
     this.checkoutState.setCouponCode(null);
     this.checkoutState.setCouponDiscountAmount(0);
     if (refreshCart) {
-      this.cartService.refresh(null);
+      this.cartService.repriceWithCoupon(null).subscribe();
     }
   }
 
@@ -257,6 +290,9 @@ export class CartPageFacade {
   private revalidateAppliedCoupon(): void {
     const state = this.couponState();
     if (state.status !== 'applied' || !state.appliedCode) {
+      return;
+    }
+    if (this.cartService.cart()?.SupportsPromotionPricing) {
       return;
     }
 

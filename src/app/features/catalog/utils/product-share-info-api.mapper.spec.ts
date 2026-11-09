@@ -31,6 +31,29 @@ describe('product-share-info-api.mapper', () => {
     });
   });
 
+  it('preserves embedded offer badges when the updated API returns them', () => {
+    const result = normalizeProductShareInfoDto({
+      productId: 4419,
+      share: { url: '/shop/4419' },
+      offers: [
+        {
+          offerId: 7,
+          code: 'B2G1',
+          nameEn: 'Buy 2 get 1 free',
+          nameAr: 'اشتر قطعتين واحصل على الثالثة مجاناً',
+          roles: ['Qualify', 'Reward'],
+          matchingVariantIds: [81],
+        },
+      ],
+    });
+
+    expect(result?.offers?.[0]).toMatchObject({
+      offerId: 7,
+      code: 'B2G1',
+      matchingVariantIds: [81],
+    });
+  });
+
   it('supports PascalCase fields', () => {
     const result = normalizeProductShareInfoDto({
       ProductId: 10,

@@ -61,7 +61,10 @@ export function mapProductDetailToCardData(product: ProductDetail): ProductCardD
 
   return {
     id: product.id,
-    productVariantId: product.productVariantId ?? undefined,
+    productVariantId: product.productVariantId ?? null,
+    variantName: product.variantName,
+    variantSku: product.sku,
+    stock: product.stock,
     slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
@@ -74,6 +77,7 @@ export function mapProductDetailToCardData(product: ProductDetail): ProductCardD
     rating: product.rating,
     reviewsCount: product.reviewCount,
     isAvailable: product.isAvailable,
+    offers: product.offers ?? [],
   };
 }
 

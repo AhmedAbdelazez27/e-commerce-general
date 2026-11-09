@@ -8,8 +8,7 @@ import {
   resolveStorefrontMediaUrl,
 } from '../../../shared/utils/storefront-media.util';
 import { HomeHeroSlide } from '../models/home.model';
-
-const SLIDER_PLACEHOLDER_IMAGE = '/images/HomeCover.png';
+import { normalizeOfferBadges } from '../../../shared/utils/promotion-api.mapper';
 
 /** Collapse API line breaks so hero subtitles clamp cleanly in CSS. */
 export function compactHeroSubtitle(text: string): string {
@@ -27,7 +26,7 @@ export function resolveSliderImageUrl(
     ? mobileImageUrl?.trim() || imageUrl?.trim()
     : imageUrl?.trim() || mobileImageUrl?.trim();
   if (!raw) {
-    return SLIDER_PLACEHOLDER_IMAGE;
+    return '';
   }
 
   if (/^https?:\/\/localhost(\/|$)/i.test(raw)) {
@@ -36,11 +35,11 @@ export function resolveSliderImageUrl(
       const path = raw.replace(/^https?:\/\/localhost/i, '');
       return `${api.protocol}//${api.hostname}:2042/ERPAttachments${path}`;
     } catch {
-      return SLIDER_PLACEHOLDER_IMAGE;
+      return '';
     }
   }
 
-  return resolveAttachmentUrl(raw) ?? SLIDER_PLACEHOLDER_IMAGE;
+  return resolveAttachmentUrl(raw) ?? '';
 }
 
 function localizedField(
@@ -141,6 +140,7 @@ export function mapHomeSliderToHeroSlide(
     ctaLabel,
     ctaRoute: route,
     ctaQuery: queryParams,
+    offers: normalizeOfferBadges(dto.offers),
   };
 }
 

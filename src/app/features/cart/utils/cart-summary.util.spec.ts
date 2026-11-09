@@ -21,14 +21,16 @@ function lineItem(lineTotal: number, unitPrice = lineTotal): CartLineItemView {
     lineTotal,
     isAvailable: true,
     maxQuantity: 99,
+    selectedReward: false,
+    productDiscountTotal: 0,
+    offerDiscountTotal: 0,
+    couponDiscountTotal: 0,
+    bundleUsedQuantity: 0,
+    rewardQuantity: 0,
   };
 }
 
-function rawItem(
-  unitPrice: number,
-  finalPrice?: number,
-  quantity = 1,
-): CartItemDto {
+function rawItem(unitPrice: number, finalPrice?: number, quantity = 1): CartItemDto {
   const price = finalPrice ?? unitPrice;
   return {
     CartDetailId: 1,
@@ -61,16 +63,14 @@ describe('cart-summary.util', () => {
         Total: 80,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(80)],
-        cart.Items,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(80)], cart.Items);
 
       expect(totals).toEqual({
-        subtotal: 100,
+        subtotal: 80,
         productDiscount: 20,
+        offerDiscount: 0,
         couponDiscount: 0,
+        taxAmount: 0,
         merchandiseTotal: 80,
       });
     });
@@ -84,21 +84,19 @@ describe('cart-summary.util', () => {
         Total: 70,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(80)],
-        cart.Items,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(80)], cart.Items);
 
       expect(totals).toEqual({
-        subtotal: 100,
+        subtotal: 80,
         productDiscount: 20,
+        offerDiscount: 0,
         couponDiscount: 10,
+        taxAmount: 0,
         merchandiseTotal: 70,
       });
     });
 
-    it('subtracts pending coupon before cart refresh when embedded', () => {
+    it('does not subtract a pending coupon from authoritative totals', () => {
       const cart: CartDto = {
         Items: [rawItem(100, 80)],
         SubTotal: 80,
@@ -106,18 +104,15 @@ describe('cart-summary.util', () => {
         Total: 80,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(80)],
-        cart.Items,
-        15,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(80)], cart.Items, 15);
 
       expect(totals).toEqual({
-        subtotal: 100,
+        subtotal: 80,
         productDiscount: 20,
-        couponDiscount: 15,
-        merchandiseTotal: 65,
+        offerDiscount: 0,
+        couponDiscount: 0,
+        taxAmount: 0,
+        merchandiseTotal: 80,
       });
     });
 
@@ -129,16 +124,14 @@ describe('cart-summary.util', () => {
         Total: 80,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(100)],
-        cart.Items,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(100)], cart.Items);
 
       expect(totals).toEqual({
         subtotal: 100,
         productDiscount: 20,
+        offerDiscount: 0,
         couponDiscount: 0,
+        taxAmount: 0,
         merchandiseTotal: 80,
       });
     });
@@ -152,16 +145,14 @@ describe('cart-summary.util', () => {
         Total: 70,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(100)],
-        cart.Items,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(100)], cart.Items);
 
       expect(totals).toEqual({
         subtotal: 100,
         productDiscount: 20,
+        offerDiscount: 0,
         couponDiscount: 10,
+        taxAmount: 0,
         merchandiseTotal: 70,
       });
     });
@@ -178,13 +169,13 @@ describe('cart-summary.util', () => {
 
       const totals = resolveCartMerchandiseTotals(cart, [lineItem(2612.5, 522.5)], cart.Items);
 
-      expect(totals.subtotal).toBe(2750);
-      expect(totals.couponDiscount).toBe(137.5);
+      expect(totals.subtotal).toBe(2612.5);
+      expect(totals.couponDiscount).toBe(27.5);
       expect(totals.productDiscount).toBe(0);
       expect(totals.merchandiseTotal).toBe(2612.5);
     });
 
-    it('prefers client-validated coupon over multiplied cart API discount', () => {
+    it('preserves returned coupon and total even when the preview differs', () => {
       const cart: CartDto = {
         Items: [rawItem(100, 80, 100)],
         SubTotal: 8000,
@@ -192,15 +183,47 @@ describe('cart-summary.util', () => {
         Total: 3000,
       };
 
-      const totals = resolveCartMerchandiseTotals(
-        cart,
-        [lineItem(8000)],
-        cart.Items,
-        50,
-      );
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(8000)], cart.Items, 50);
 
-      expect(totals.couponDiscount).toBe(50);
-      expect(totals.merchandiseTotal).toBe(7950);
+      expect(totals.couponDiscount).toBe(5000);
+      expect(totals.merchandiseTotal).toBe(3000);
+    });
+
+    it('trusts the additive promotion totals without subtracting discounts twice', () => {
+      const cart: CartDto = {
+        Items: [rawItem(100, 270, 3)],
+        ProductDiscountAmount: 30,
+        BundleDiscountAmount: 0,
+        CouponDiscountAmount: 50,
+        TaxAmount: 0,
+        TotalAmount: 220,
+        SupportsPromotionPricing: true,
+      };
+
+      expect(resolveCartMerchandiseTotals(cart, [lineItem(270)], cart.Items)).toEqual({
+        subtotal: 300,
+        productDiscount: 30,
+        offerDiscount: 0,
+        couponDiscount: 50,
+        taxAmount: 0,
+        merchandiseTotal: 220,
+      });
+    });
+
+    it('uses the explicit bundle saving for buy-two-get-one pricing', () => {
+      const cart: CartDto = {
+        Items: [rawItem(50, 100, 3)],
+        ProductDiscountAmount: 0,
+        BundleDiscountAmount: 50,
+        CouponDiscountAmount: 0,
+        TaxAmount: 0,
+        TotalAmount: 100,
+        SupportsPromotionPricing: true,
+      };
+
+      const totals = resolveCartMerchandiseTotals(cart, [lineItem(100)], cart.Items);
+      expect(totals.offerDiscount).toBe(50);
+      expect(totals.merchandiseTotal).toBe(100);
     });
   });
 
@@ -210,7 +233,9 @@ describe('cart-summary.util', () => {
         {
           subtotal: 100,
           productDiscount: 20,
+          offerDiscount: 0,
           couponDiscount: 0,
+          taxAmount: 0,
           merchandiseTotal: 80,
         },
         1,
@@ -227,7 +252,9 @@ describe('cart-summary.util', () => {
         {
           subtotal: 100,
           productDiscount: 20,
+          offerDiscount: 0,
           couponDiscount: 10,
+          taxAmount: 0,
           merchandiseTotal: 70,
         },
         1,

@@ -1,3 +1,10 @@
+import type { ProductAvailability } from '../../../shared/models/product-stock.model';
+import {
+  modelId,
+  normalizeStock,
+  canPurchase,
+  stockStatus,
+} from '../../../shared/utils/product-stock.util';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -6,7 +13,10 @@ import { catchError, map } from 'rxjs/operators';
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import type { CurrencySelection } from '../../../core/models/currency.model';
 import { appendCurrencyToHttpParams } from '../../../core/utils/currency-http-params.util';
-import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import {
+  resultArrayFromAbpEnvelope,
+  resultFromAbpEnvelope,
+} from '../../../core/utils/api-envelope.util';
 import {
   GetProductDetailsParams,
   PublicFinalPriceDto,
@@ -17,7 +27,12 @@ import {
   PublicRelatedProductDto,
 } from '../models/catalog-public-product.model';
 import type { PublicProductShareInfoDto } from '../models/product-share-info.model';
-import { normalizePublicProductDetailsDto } from '../utils/product-detail-api.mapper';
+import {
+  normalizePublicFinalPriceDto,
+  normalizePublicProductDetailsDto,
+  normalizePublicProductVariantDto,
+  normalizePublicRelatedProductDto,
+} from '../utils/product-detail-api.mapper';
 import { normalizePublicProductImageList } from '../utils/catalog-media.util';
 import { normalizeProductShareInfoDto } from '../utils/product-share-info-api.mapper';
 
@@ -56,15 +71,13 @@ export class ProductDetailApiService {
 
   getProductShareInfo(productId: number): Observable<PublicProductShareInfoDto | null> {
     const params = new HttpParams().set('ProductId', String(productId));
-    return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.productShareInfo, { params })
-      .pipe(
-        map((res) => {
-          const raw = resultFromAbpEnvelope<unknown>(res);
-          return raw ? normalizeProductShareInfoDto(raw) : null;
-        }),
-        catchError(() => of(null)),
-      );
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.productShareInfo, { params }).pipe(
+      map((res) => {
+        const raw = resultFromAbpEnvelope<unknown>(res);
+        return raw ? normalizeProductShareInfoDto(raw) : null;
+      }),
+      catchError(() => of(null)),
+    );
   }
 
   getProductVariants(
@@ -74,36 +87,30 @@ export class ProductDetailApiService {
   ): Observable<PublicProductVariantDto[]> {
     let params = new HttpParams().set('productId', String(productId)).set('lang', lang);
     params = appendCurrencyToHttpParams(params, currency);
-    return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.productVariants, { params })
-      .pipe(
-        map((res) => resultArrayFromAbpEnvelope<PublicProductVariantDto>(res)),
-        catchError(() => of([])),
-      );
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.productVariants, { params }).pipe(
+      map((res) =>
+        resultArrayFromAbpEnvelope<unknown>(res)
+          .map(normalizePublicProductVariantDto)
+          .filter((item): item is PublicProductVariantDto => item != null),
+      ),
+      catchError(() => of([])),
+    );
   }
 
   getProductImages(productId: number): Observable<PublicProductImageDto[]> {
     const params = new HttpParams().set('productId', String(productId));
-    return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.productImages, { params })
-      .pipe(
-        map((res) =>
-          normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res)),
-        ),
-        catchError(() => of([])),
-      );
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.productImages, { params }).pipe(
+      map((res) => normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res))),
+      catchError(() => of([])),
+    );
   }
 
   getVariantImages(productVariantId: number): Observable<PublicProductImageDto[]> {
     const params = new HttpParams().set('productVariantId', String(productVariantId));
-    return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.variantImages, { params })
-      .pipe(
-        map((res) =>
-          normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res)),
-        ),
-        catchError(() => of([])),
-      );
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.variantImages, { params }).pipe(
+      map((res) => normalizePublicProductImageList(resultArrayFromAbpEnvelope<unknown>(res))),
+      catchError(() => of([])),
+    );
   }
 
   getProductSpecifications(
@@ -135,35 +142,64 @@ export class ProductDetailApiService {
       .set('maxResultCount', String(maxResultCount > 0 ? maxResultCount : 8));
     params = appendCurrencyToHttpParams(params, currency);
 
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.relatedProducts, { params }).pipe(
+      map((res) =>
+        resultArrayFromAbpEnvelope<unknown>(res)
+          .map(normalizePublicRelatedProductDto)
+          .filter((item): item is PublicRelatedProductDto => item != null),
+      ),
+      catchError(() => of([])),
+    );
+  }
+
+  getProductAvailability(
+    productId: number,
+    productVariantId: number | null = null,
+  ): Observable<ProductAvailability> {
+    let params = new HttpParams().set('productId', String(productId));
+    if (modelId(productVariantId))
+      params = params.set('productVariantId', String(productVariantId));
     return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.relatedProducts, { params })
+      .get<unknown>(ApiEndpoints.EcPublicCatalog.productAvailability, { params })
       .pipe(
-        map((res) => resultArrayFromAbpEnvelope<PublicRelatedProductDto>(res)),
-        catchError(() => of([])),
+        map((res) => {
+          const raw = resultFromAbpEnvelope<Record<string, unknown>>(res);
+          if (!raw) throw new Error('Availability unavailable');
+          const stock = normalizeStock(raw['stock'] ?? raw['Stock']);
+          const status = (raw['availabilityStatus'] ?? raw['AvailabilityStatus']) as string;
+          return {
+            productId,
+            productVariantId: modelId(productVariantId),
+            stock,
+            isAvailable: canPurchase(stock, status),
+            availabilityStatus: stockStatus(stock, status),
+          };
+        }),
       );
   }
 
   getFinalPrice(
-    productVariantId: number,
+    productId: number,
+    productVariantId: number | null,
     lang: string,
     currency: CurrencySelection,
     quantity = 1,
     couponCode?: string,
   ): Observable<PublicFinalPriceDto | null> {
     let params = new HttpParams()
-      .set('ProductVariantId', String(productVariantId))
+      .set('ProductId', String(productId))
       .set('Quantity', String(quantity))
       .set('Lang', lang);
+    if (modelId(productVariantId) != null)
+      params = params.set('ProductVariantId', String(productVariantId));
     if (couponCode?.trim()) {
       params = params.set('CouponCode', couponCode.trim());
     }
     params = appendCurrencyToHttpParams(params, currency);
 
-    return this.http
-      .get<unknown>(ApiEndpoints.EcPublicCatalog.finalPrice, { params })
-      .pipe(
-        map((res) => resultFromAbpEnvelope<PublicFinalPriceDto>(res)),
-        catchError(() => of(null)),
-      );
+    return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.finalPrice, { params }).pipe(
+      map((res) => normalizePublicFinalPriceDto(resultFromAbpEnvelope<unknown>(res))),
+      catchError(() => of(null)),
+    );
   }
 }

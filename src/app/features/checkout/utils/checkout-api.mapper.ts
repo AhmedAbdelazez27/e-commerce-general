@@ -1,5 +1,10 @@
+import { modelId } from '../../../shared/utils/product-stock.util';
 import type { CustomerAddressDto, PagedAddressesResult } from '../models/customer-address.model';
-import type { EcOrderDto, EcOrderStatusHistoryDto } from '../models/place-order.model';
+import type {
+  EcOrderDto,
+  EcOrderStatusHistoryDto,
+  PlaceOrderOutputDto,
+} from '../models/place-order.model';
 import type { ValidateCouponResultDto } from '../models/validate-coupon.model';
 
 type JsonRecord = Record<string, unknown>;
@@ -54,6 +59,9 @@ export function normalizeOrder(raw: unknown): EcOrderDto | null {
     id,
     orderNumber,
     customerId: readNumber(o, 'customerId', 'CustomerId'),
+    cartId: readNumber(o, 'cartId', 'CartId'),
+    currencyId: readNumber(o, 'currencyId', 'CurrencyId'),
+    currencyCode: readString(o, 'currencyCode', 'CurrencyCode'),
     customerName: readString(o, 'customerName', 'CustomerName'),
     addressId: readNumber(o, 'addressId', 'AddressId'),
     addressText: readString(o, 'addressText', 'AddressText'),
@@ -76,6 +84,9 @@ export function normalizeOrder(raw: unknown): EcOrderDto | null {
     paymentMethodNameEn: readString(o, 'paymentMethodNameEn', 'PaymentMethodNameEn'),
     totalAmount: readNumber(o, 'totalAmount', 'TotalAmount'),
     discountAmount: readNumber(o, 'discountAmount', 'DiscountAmount'),
+    productDiscountAmount: readNumber(o, 'productDiscountAmount', 'ProductDiscountAmount'),
+    bundleDiscountAmount: readNumber(o, 'bundleDiscountAmount', 'BundleDiscountAmount'),
+    couponDiscountAmount: readNumber(o, 'couponDiscountAmount', 'CouponDiscountAmount'),
     taxAmount: readNumber(o, 'taxAmount', 'TaxAmount'),
     shippingAmount: readNumber(o, 'shippingAmount', 'ShippingAmount'),
     finalAmount: readNumber(o, 'finalAmount', 'FinalAmount'),
@@ -132,8 +143,14 @@ function normalizeOrderItems(raw: unknown): EcOrderDto['items'] {
     const o = line as JsonRecord;
     return {
       id: readNumber(o, 'id', 'Id'),
-      productId: readNumber(o, 'productId', 'ProductId'),
-      productVariantId: readNumber(o, 'productVariantId', 'ProductVariantId'),
+      orderDetailId: readNumber(o, 'id', 'Id'),
+      productId: readNumber(o, 'productId', 'ProductId', 'ivItemId', 'IvItemId'),
+      ivItemId: readNumber(o, 'ivItemId', 'IvItemId', 'productId', 'ProductId'),
+      variantName: readString(o, 'variantName', 'VariantName'),
+      reservedQuantity: readNumber(o, 'reservedQuantity', 'ReservedQuantity'),
+      backorderQuantity: readNumber(o, 'backorderQuantity', 'BackorderQuantity'),
+      fulfilledQuantity: readNumber(o, 'fulfilledQuantity', 'FulfilledQuantity'),
+      productVariantId: modelId(readNumber(o, 'productVariantId', 'ProductVariantId')),
       productName:
         readString(o, 'productName', 'ProductName') ??
         readString(o, 'productNameSnapshot', 'ProductNameSnapshot'),
@@ -146,14 +163,41 @@ function normalizeOrderItems(raw: unknown): EcOrderDto['items'] {
       quantity: readNumber(o, 'quantity', 'Quantity'),
       unitPrice: readNumber(o, 'unitPrice', 'UnitPrice'),
       discount: readNumber(o, 'discount', 'Discount'),
+      discountAmount: readNumber(o, 'discountAmount', 'DiscountAmount'),
       tax: readNumber(o, 'tax', 'Tax'),
+      taxAmount: readNumber(o, 'taxAmount', 'TaxAmount'),
       lineTotal:
         readNumber(o, 'lineTotal', 'LineTotal') ??
         readNumber(o, 'total', 'Total') ??
+        readNumber(o, 'totalAmount', 'TotalAmount') ??
         readNumber(o, 'totalPrice', 'TotalPrice'),
       total: readNumber(o, 'total', 'Total'),
+      totalAmount: readNumber(o, 'totalAmount', 'TotalAmount'),
     };
   });
+}
+
+export function normalizePlaceOrderOutput(raw: unknown): PlaceOrderOutputDto | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as JsonRecord;
+  // Current PlaceOrder returns orderId. Keep accepting the legacy full-order
+  // response (`id`) so the UI remains compatible during a staggered rollout.
+  const orderId = readNumber(o, 'orderId', 'OrderId', 'id', 'Id');
+  const orderNumber = readString(o, 'orderNumber', 'OrderNumber') ?? '';
+  if (!orderId || !orderNumber) return null;
+  return {
+    orderId,
+    paymentId: readNumber(o, 'paymentId', 'PaymentId'),
+    cartId: readNumber(o, 'cartId', 'CartId'),
+    orderNumber,
+    finalAmount: readNumber(o, 'finalAmount', 'FinalAmount') ?? 0,
+    finalAmountLocal: readNumber(o, 'finalAmountLocal', 'FinalAmountLocal'),
+    currencyId: readNumber(o, 'currencyId', 'CurrencyId'),
+    currencyCode: readString(o, 'currencyCode', 'CurrencyCode'),
+    orderStatus: readString(o, 'orderStatus', 'OrderStatus'),
+    paymentStatus: readString(o, 'paymentStatus', 'PaymentStatus'),
+    shippingStatus: readString(o, 'shippingStatus', 'ShippingStatus'),
+  };
 }
 
 function readNumber(o: JsonRecord, ...keys: string[]): number | undefined {

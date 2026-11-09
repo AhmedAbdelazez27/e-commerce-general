@@ -1,4 +1,5 @@
 import { StorefrontProduct } from '../../../shared/models/storefront-product.model';
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';
 
 import { StorefrontMediaType } from '../../../shared/utils/storefront-media.util';
 
@@ -26,6 +27,7 @@ export interface HomeHeroSlide {
   secondaryCtaLabelKey?: string;
   secondaryCtaRoute?: string;
   secondaryCtaQuery?: Record<string, string>;
+  offers?: PublicOfferBadge[];
 }
 
 export interface HomeHeroConfig {

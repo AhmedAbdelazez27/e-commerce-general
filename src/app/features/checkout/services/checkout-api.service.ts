@@ -4,27 +4,39 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
-import { resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
-import type { EcOrderDto, EcPlaceOrderRequest } from '../models/place-order.model';
+import {
+  abpEnvelopeErrorMessage,
+  resultFromAbpEnvelope,
+} from '../../../core/utils/api-envelope.util';
+import type { EcPlaceOrderRequest, PlaceOrderOutputDto } from '../models/place-order.model';
 import type {
   ValidateCouponRequest,
   ValidateCouponResultDto,
 } from '../models/validate-coupon.model';
-import { normalizeOrder, normalizeValidateCouponResult } from '../utils/checkout-api.mapper';
+import {
+  normalizePlaceOrderOutput,
+  normalizeValidateCouponResult,
+} from '../utils/checkout-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutApiService {
   private readonly http = inject(HttpClient);
 
-  placeOrder(body: EcPlaceOrderRequest): Observable<EcOrderDto | null> {
-    return this.http.post<unknown>(ApiEndpoints.EcCheckout.placeOrder, body).pipe(
-      map((res) => normalizeOrder(resultFromAbpEnvelope(res))),
+  placeOrder(body: EcPlaceOrderRequest): Observable<PlaceOrderOutputDto | null> {
+    return this.http.post<unknown>(ApiEndpoints.EcOrders.placeOrder, body).pipe(
+      map((res) => {
+        const error = abpEnvelopeErrorMessage(res);
+        if (error) throw new Error(error);
+        const order = normalizePlaceOrderOutput(resultFromAbpEnvelope(res));
+        if (!order) throw new Error('CHECKOUT_UNCERTAIN');
+        return order;
+      }),
     );
   }
 
   validateCoupon(body: ValidateCouponRequest): Observable<ValidateCouponResultDto | null> {
-    return this.http.post<unknown>(ApiEndpoints.EcCheckout.validateCoupon, body).pipe(
-      map((res) => normalizeValidateCouponResult(resultFromAbpEnvelope(res))),
-    );
+    return this.http
+      .post<unknown>(ApiEndpoints.EcCheckout.validateCoupon, body)
+      .pipe(map((res) => normalizeValidateCouponResult(resultFromAbpEnvelope(res))));
   }
 }

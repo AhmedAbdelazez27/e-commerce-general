@@ -1,10 +1,13 @@
+import {
+  canPurchase,
+  modelId,
+  normalizeStock,
+  requiresModel,
+} from '../../../shared/utils/product-stock.util';
 import { AppLang } from '../../../core/services/language.service';
 import type { CurrencySelection } from '../../../core/models/currency.model';
 import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
-import {
-  normalizePublicProductImageList,
-  resolveProductListingMedia,
-} from './catalog-media.util';
+import { normalizePublicProductImageList, resolveProductListingMedia } from './catalog-media.util';
 import {
   CatalogBrandOption,
   CatalogCategoryOption,
@@ -21,6 +24,7 @@ import {
   PublicSpecificationFilterDto,
   SearchProductsRequest,
 } from '../models/catalog-public-listing.model';
+import { normalizeOfferBadges } from '../../../shared/utils/promotion-api.mapper';
 
 export const CATALOG_PAGE_SIZE = 20;
 
@@ -181,15 +185,17 @@ export function mapFilterSpecificationsToGroups(
 export function mapFilterCategoriesToOptions(
   categories: GetProductFiltersResult['categories'],
 ): CatalogCategoryOption[] {
-  return categories.map((category) => ({
-    id: String(category.id),
-    slug: category.slug,
-    nameEn: category.name,
-    nameAr: category.name,
-    count: category.count,
-    seoTitle: category.seoTitle?.trim() || undefined,
-    seoDescription: category.seoDescription?.trim() || undefined,
-  }));
+  return categories
+    .filter((category) => category.count == null || category.count > 0)
+    .map((category) => ({
+      id: String(category.id),
+      slug: category.slug,
+      nameEn: category.name,
+      nameAr: category.name,
+      count: category.count,
+      seoTitle: category.seoTitle?.trim() || undefined,
+      seoDescription: category.seoDescription?.trim() || undefined,
+    }));
 }
 
 export function mapFilterBrandsToOptions(
@@ -208,10 +214,11 @@ export function mapSearchProductToListingProduct(
   lang: AppLang,
 ): CatalogListingProduct {
   const availability = item.availabilityStatus?.trim() || item.availableStatus?.trim();
-  const inStock = availability === 'InStock';
+  const inStock = canPurchase(item.stock, availability);
   const nameEn = item.nameEn?.trim() || item.name;
   const nameAr = item.nameAr?.trim() || item.name;
   const finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0;
+  const compareAtPrice = resolveSearchProductCompareAtPrice(item, finalPrice);
   const media = resolveProductListingMedia({
     mainImageUrl: item.mainImageUrl,
     mainMediaType: item.mainMediaType,
@@ -221,12 +228,13 @@ export function mapSearchProductToListingProduct(
 
   return {
     id: item.productId ?? item.id,
-    productVariantId: item.price?.productVariantId,
+    productVariantId: null,
+    stock: item.stock,
     slug: item.slug,
     nameEn,
     nameAr,
     price: finalPrice,
-    compareAtPrice: item.oldPrice ?? undefined,
+    compareAtPrice,
     categoryId: String(item.categoryId),
     categoryNameEn: item.categoryNameEn?.trim() || item.categoryName,
     categoryNameAr: item.categoryNameAr?.trim() || item.categoryName,
@@ -238,13 +246,15 @@ export function mapSearchProductToListingProduct(
     isBestSeller: item.isBestSeller,
     isFeatured: item.isFeatured,
     hasOffer:
+      (item.offers?.length ?? 0) > 0 ||
       (item.discountPercent != null && item.discountPercent > 0) ||
-      (item.oldPrice != null && item.oldPrice > finalPrice),
+      (compareAtPrice != null && compareAtPrice > finalPrice),
     discountPercent: item.discountPercent ?? undefined,
     imageUrl: media.posterUrl,
     has3D: media.has3D,
     createdAt: item.createdDate?.trim() ?? '',
     currencyCode: item.price?.currencyCode,
+    offers: item.offers ?? [],
   };
 }
 
@@ -287,7 +297,7 @@ function readBoolField(o: JsonRecord, ...keys: string[]): boolean {
   return false;
 }
 
-function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto | undefined {
+export function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto | undefined {
   if (raw == null || typeof raw !== 'object') {
     return undefined;
   }
@@ -298,12 +308,12 @@ function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto 
   }
 
   return {
-    productVariantId,
+    productVariantId: modelId(productVariantId),
+    productId: readNumberField(o, 'productId', 'ProductId'),
     basePrice: readNumberField(o, 'basePrice', 'BasePrice') ?? 0,
     customerPrice: readNumberField(o, 'customerPrice', 'CustomerPrice') ?? 0,
     discountAmount: readNumberField(o, 'discountAmount', 'DiscountAmount') ?? 0,
-    couponDiscountAmount:
-      readNumberField(o, 'couponDiscountAmount', 'CouponDiscountAmount') ?? 0,
+    couponDiscountAmount: readNumberField(o, 'couponDiscountAmount', 'CouponDiscountAmount') ?? 0,
     taxAmount: readNumberField(o, 'taxAmount', 'TaxAmount') ?? 0,
     finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
     currencyId: readNumberField(o, 'currencyId', 'CurrencyId'),
@@ -316,6 +326,7 @@ function normalizeSearchProductPrice(raw: unknown): PublicSearchProductPriceDto 
     localCurrencyCode: readStringField(o, 'localCurrencyCode', 'LocalCurrencyCode'),
     basePriceLocal: readNumberField(o, 'basePriceLocal', 'BasePriceLocal'),
     finalPriceLocal: readNumberField(o, 'finalPriceLocal', 'FinalPriceLocal'),
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
   };
 }
 
@@ -333,8 +344,7 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
   }
 
   const price = normalizeSearchProductPrice(o['price'] ?? o['Price']);
-  const finalPrice =
-    readNumberField(o, 'finalPrice', 'FinalPrice') ?? price?.finalPrice ?? 0;
+  const finalPrice = readNumberField(o, 'finalPrice', 'FinalPrice') ?? price?.finalPrice ?? 0;
 
   return {
     id: id ?? productId!,
@@ -376,9 +386,26 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
     discountPercent: readNumberField(o, 'discountPercent', 'DiscountPercent') ?? null,
     hasVariants: readBoolField(o, 'hasVariants', 'HasVariants'),
     createdDate: readStringField(o, 'createdDate', 'CreatedDate'),
+    stock: normalizeStock(o['stock'] ?? o['Stock']),
     availabilityStatus: readStringField(o, 'availabilityStatus', 'AvailabilityStatus'),
     availableStatus: readStringField(o, 'availableStatus', 'AvailableStatus'),
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
   };
+}
+
+/**
+ * Resolves the server-provided price immediately before a product discount.
+ * Explicit OldPrice remains authoritative; current pricing fields are only a
+ * fallback and are never derived from an offer badge or a percentage.
+ */
+export function resolveSearchProductCompareAtPrice(
+  item: PublicSearchProductDto,
+  finalPrice = item.finalPrice ?? item.price?.finalPrice ?? 0,
+): number | undefined {
+  const candidates = [item.oldPrice, item.price?.customerPrice, item.price?.basePrice];
+  return candidates.find(
+    (value): value is number => value != null && Number.isFinite(value) && value > finalPrice,
+  );
 }
 
 export function normalizeSearchProductsResultItems(items: unknown[]): PublicSearchProductDto[] {

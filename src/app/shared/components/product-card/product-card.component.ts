@@ -1,3 +1,4 @@
+import { stockStatus } from '../../utils/product-stock.util';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, output } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -10,6 +11,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { ProductShareMenuComponent } from '../product-share-menu/product-share-menu.component';
 import { ProductCardData } from '../../models/product-card.model';
+import { OfferBadgeListComponent } from '../offer-badge-list/offer-badge-list.component';
 import {
   formatProductPrice,
   productCardHasDiscount,
@@ -20,7 +22,7 @@ import {
 
 @Component({
   selector: 'app-product-card',
-  imports: [DecimalPipe, TranslateModule, ProductShareMenuComponent],
+  imports: [DecimalPipe, TranslateModule, ProductShareMenuComponent, OfferBadgeListComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
 })
@@ -33,6 +35,9 @@ export class ProductCardComponent {
 
   readonly product = input.required<ProductCardData>();
   readonly compact = input(false);
+  readonly stockStatus = stockStatus;
+  readonly showOfferBadges = input(true);
+  readonly alwaysShowCartButton = input(false);
 
   readonly addToCart = output<ProductCardData>();
   readonly addToWishlist = output<ProductCardData>();
@@ -41,6 +46,11 @@ export class ProductCardComponent {
 
   readonly displayTitle = computed(() =>
     resolveProductCardTitle(this.product(), this.language.currentLang()),
+  );
+  readonly displayVariantName = computed(() =>
+    this.language.currentLang() === 'ar'
+      ? this.product().variantNameAr || this.product().variantName
+      : this.product().variantName,
   );
   readonly isAvailable = computed(() => this.product().isAvailable !== false);
   readonly hasDiscount = computed(() => productCardHasDiscount(this.product()));
@@ -63,11 +73,7 @@ export class ProductCardComponent {
   readonly inWishlist = computed(() => {
     this.wishlist.items();
     const product = this.product();
-    const variantId = product.productVariantId;
-    if (variantId != null && variantId > 0) {
-      return this.wishlist.isInWishlistVariant(variantId);
-    }
-    return this.wishlist.isInWishlist(product.id);
+    return this.wishlist.isInWishlist(product.id, product.productVariantId);
   });
   readonly wishlistLabelKey = computed(() =>
     this.inWishlist() ? 'PRODUCT_CARD.REMOVE_WISHLIST' : 'PRODUCT_CARD.ADD_WISHLIST',
@@ -88,8 +94,7 @@ export class ProductCardComponent {
   readonly shareMessage = computed(() => {
     const share = this.shareData();
     if (share) {
-      const title =
-        this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
+      const title = this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
       if (title.trim()) {
         return title.trim();
       }

@@ -1,0 +1,102 @@
+<dialog
+  #dialog
+  class="model-picker"
+  aria-labelledby="model-picker-title"
+  (cancel)="close($event)"
+  (click)="backdrop($event)"
+>
+  <header class="model-picker__header">
+    <h2 id="model-picker-title">{{ 'MODEL_PICKER.TITLE' | translate }}</h2>
+    <button
+      type="button"
+      class="model-picker__close"
+      autofocus
+      [disabled]="submitting()"
+      (click)="close()"
+      [attr.aria-label]="'MODEL_PICKER.CLOSE' | translate"
+    >
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </header>
+  <div class="model-picker__body" [attr.aria-busy]="loading() || selecting()">
+    @if (loading()) {
+      <p role="status">{{ 'MODEL_PICKER.LOADING' | translate }}</p>
+    } @else {
+      @if (product(); as p) {
+        <div class="model-picker__product">
+          @if (image(); as poster) {
+            <img [src]="poster" [alt]="name()" />
+          }
+          <div>
+            <h3>{{ name() }}</h3>
+            <p class="text-muted mb-0">{{ 'MODEL_PICKER.PROMPT' | translate }}</p>
+          </div>
+        </div>
+        <fieldset [disabled]="submitting()" class="model-picker__options">
+          <legend class="visually-hidden">{{ 'MODEL_PICKER.TITLE' | translate }}</legend>
+          @for (variant of variants(); track variant.id) {
+            <label
+              class="model-picker__option"
+              [class.model-picker__option--selected]="selectedId() === variant.id"
+            >
+              <input
+                type="radio"
+                name="cart-model"
+                [value]="variant.id"
+                [checked]="selectedId() === variant.id"
+                (change)="select(variant)"
+              />
+              <span
+                ><strong>{{ variant.name }}</strong>
+                @if (variant.sku) {
+                  <small dir="ltr">{{ variant.sku }}</small>
+                }
+              </span>
+              @if (variant.stock) {
+                <small class="model-picker__stock">{{
+                  'INVENTORY.' + stockStatus(variant.stock) | translate
+                }}</small>
+              }
+            </label>
+          } @empty {
+            <p>{{ 'MODEL_PICKER.NO_MODELS' | translate }}</p>
+          }
+        </fieldset>
+        <div class="model-picker__selection" aria-live="polite">
+          @if (selecting()) {
+            <span>{{ 'MODEL_PICKER.LOADING' | translate }}</span>
+          } @else if (selectedId() && !error()) {
+            <div>
+              <strong>{{ p.price | number: '1.2-3' }} <app-currency-code /></strong>
+              @if (request().quantity !== 1) {
+                <small>{{
+                  'MODEL_PICKER.QUANTITY_PRICE' | translate: { quantity: request().quantity }
+                }}</small>
+              }
+            </div>
+            <span>{{ 'INVENTORY.' + stockStatus(p.stock) | translate }}</span>
+          }
+        </div>
+      }
+      @if (error()) {
+        <p class="text-danger" role="alert">{{ 'MODEL_PICKER.ERROR' | translate }}</p>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="load()">
+          {{ 'MODEL_PICKER.RETRY' | translate }}
+        </button>
+      }
+    }
+  </div>
+  <footer class="model-picker__footer">
+    @if (!submitting()) {
+      <a
+        class="btn btn-outline-secondary"
+        [routerLink]="['/shop', request().productId]"
+        (click)="close()"
+        >{{ 'MODEL_PICKER.VIEW_PRODUCT' | translate }}</a
+      >
+    }
+    <button type="button" class="btn btn-primary" [disabled]="!canAdd()" (click)="add()">
+      {{ (submitting() ? 'MODEL_PICKER.ADDING' : 'MODEL_PICKER.ADD') | translate }}
+    </button>
+  </footer>
+</dialog>

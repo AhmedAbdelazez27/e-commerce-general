@@ -1,152 +1,208 @@
 <div class="container">
   <div class="product-detail-page">
     @if (loadState() === 'loading') {
-    <div class="product-detail-skeleton" aria-busy="true" [attr.aria-label]="'PRODUCT_DETAIL.LOADING' | translate">
-      <div class="product-detail-skeleton__breadcrumb"></div>
-      <div class="product-detail-skeleton__main">
-        <div class="product-detail-skeleton__gallery"></div>
-        <div class="product-detail-skeleton__info">
-          <div class="product-detail-skeleton__line product-detail-skeleton__line--lg"></div>
-          <div class="product-detail-skeleton__line"></div>
-          <div class="product-detail-skeleton__line product-detail-skeleton__line--sm"></div>
-          <div class="product-detail-skeleton__line product-detail-skeleton__line--price"></div>
-          <div class="product-detail-skeleton__btn"></div>
+      <div
+        class="product-detail-skeleton"
+        aria-busy="true"
+        [attr.aria-label]="'PRODUCT_DETAIL.LOADING' | translate"
+      >
+        <div class="product-detail-skeleton__breadcrumb"></div>
+        <div class="product-detail-skeleton__main">
+          <div class="product-detail-skeleton__gallery"></div>
+          <div class="product-detail-skeleton__info">
+            <div class="product-detail-skeleton__line product-detail-skeleton__line--lg"></div>
+            <div class="product-detail-skeleton__line"></div>
+            <div class="product-detail-skeleton__line product-detail-skeleton__line--sm"></div>
+            <div class="product-detail-skeleton__line product-detail-skeleton__line--price"></div>
+            <div class="product-detail-skeleton__btn"></div>
+          </div>
         </div>
       </div>
-    </div>
     } @else if (loadState() === 'not-found') {
-    <div class="product-detail-not-found">
-      <div class="product-detail-not-found__icon" aria-hidden="true">
-        <i class="fa-solid fa-box-open"></i>
+      <div class="product-detail-not-found">
+        <div class="product-detail-not-found__icon" aria-hidden="true">
+          <i class="fa-solid fa-box-open"></i>
+        </div>
+        <h1 class="product-detail-not-found__title">
+          {{ 'PRODUCT_DETAIL.NOT_FOUND_TITLE' | translate }}
+        </h1>
+        <p class="product-detail-not-found__text">
+          {{ 'PRODUCT_DETAIL.NOT_FOUND_TEXT' | translate }}
+        </p>
+        <a routerLink="/shop" class="btn btn-primary">{{
+          'PRODUCT_DETAIL.BACK_TO_SHOP' | translate
+        }}</a>
       </div>
-      <h1 class="product-detail-not-found__title">{{ 'PRODUCT_DETAIL.NOT_FOUND_TITLE' | translate }}</h1>
-      <p class="product-detail-not-found__text">{{ 'PRODUCT_DETAIL.NOT_FOUND_TEXT' | translate }}</p>
-      <a routerLink="/shop" class="btn btn-primary">{{ 'PRODUCT_DETAIL.BACK_TO_SHOP' | translate }}</a>
-    </div>
     } @else if (product(); as p) {
-    <div class="px-4">
-      <app-catalog-breadcrumb [items]="breadcrumbs()" />
-    </div>
-
-
-    <section class="product-detail-main" [class.product-detail-main--sold-out]="!p.isAvailable"
-      style="width: 100% !important;">
-      <div class="product-detail-main__gallery">
-        <app-product-gallery [images]="p.images" [selectedIndex]="selectedImageIndex()"
-          (selectedIndexChange)="selectedImageIndex.set($event)" [mainAlt]="displayName()" />
+      <div class="px-4">
+        <app-catalog-breadcrumb [items]="breadcrumbs()" />
       </div>
 
-      <div class="product-detail-main__buy">
-        <p class="product-detail-main__brand">
-          <a [routerLink]="['/shop']" [queryParams]="brandQueryParams()">{{ displayBrand() }}</a>
-        </p>
-
-        <h1 class="product-detail-main__title">{{ displayName() }}</h1>
-
-        @if (p.rating != null || p.reviewCount != null) {
-        <div class="product-detail-main__rating">
-          <span class="product-detail-main__stars" aria-hidden="true">
-            @for (i of [0, 1, 2, 3, 4]; track i) {
-            <i class="fa-solid fa-star" [class.is-filled]="(p.rating ?? 0) >= i + 0.75"></i>
-            }
-          </span>
-          @if (p.rating != null) {
-          <span class="product-detail-main__rating-value">{{ p.rating | number: '1.1-1' }}</span>
-          }
-          @if (p.reviewCount != null) {
-          <span class="product-detail-main__reviews">
-            ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
-          </span>
-          }
-        </div>
-        }
-
-        <div class="product-detail-main__prices">
-          <span class="product-detail-main__price" [class.product-detail-main__price--sale]="discountPercent()">
-            {{ formatPrice(p.price) }} {{ currencyLabel() }}
-          </span>
-          @if (p.compareAtPrice; as oldPrice) {
-          @if (oldPrice > p.price) {
-          <span class="product-detail-main__compare">
-            {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
-          </span>
-          }
-          }
-          @if (discountPercent(); as pct) {
-          <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
-          }
+      <section
+        class="product-detail-main"
+        [class.product-detail-main--sold-out]="!p.isAvailable"
+        style="width: 100% !important"
+      >
+        <div class="product-detail-main__gallery">
+          <app-product-gallery
+            [images]="p.images"
+            [selectedIndex]="selectedImageIndex()"
+            (selectedIndexChange)="selectedImageIndex.set($event)"
+            [mainAlt]="displayName()"
+          />
         </div>
 
-        <p class="product-detail-main__availability" [class.product-detail-main__availability--out]="!p.isAvailable">
-          @if (p.isAvailable) {
-          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-          {{ 'PRODUCT_DETAIL.IN_STOCK' | translate }}
-          @if (p.stockQuantity <= 5) { <span class="product-detail-main__stock-low">
-            — {{ 'PRODUCT_DETAIL.LOW_STOCK' | translate: { count: p.stockQuantity } }}
-            </span>
-            }
-            } @else {
-            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-            {{ 'PRODUCT_DETAIL.SOLD_OUT' | translate }}
-            }
-        </p>
+        <div class="product-detail-main__buy">
+          <p class="product-detail-main__brand">
+            <a [routerLink]="['/shop']" [queryParams]="brandQueryParams()">{{ displayBrand() }}</a>
+          </p>
 
-        <div class="product-detail-main__sku">
-          {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
-        </div>
+          <h1 class="product-detail-main__title">{{ displayName() }}</h1>
 
-        @if (variants().length > 1) {
-          <div class="product-detail-main__variants">
-            <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.VARIANT' | translate }}</span>
-            <div class="product-detail-main__variant-list" role="listbox">
-              @for (variant of variants(); track variant.id) {
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  role="option"
-                  [class.btn-primary]="p.selectedVariantId === variant.id"
-                  [class.btn-outline-secondary]="p.selectedVariantId !== variant.id"
-                  [disabled]="!variant.isAvailable"
-                  (click)="onVariantSelect(variant.id)"
-                >
-                  {{ variant.name }}
-                </button>
+          <p class="product-detail-main__sku">{{ p.variantName }}</p>
+          <app-offer-badge-list [offers]="p.offers ?? []" [maxVisible]="4" />
+
+          @if (p.rating != null || p.reviewCount != null) {
+            <div class="product-detail-main__rating">
+              <span class="product-detail-main__stars" aria-hidden="true">
+                @for (i of [0, 1, 2, 3, 4]; track i) {
+                  <i class="fa-solid fa-star" [class.is-filled]="(p.rating ?? 0) >= i + 0.75"></i>
+                }
+              </span>
+              @if (p.rating != null) {
+                <span class="product-detail-main__rating-value">{{
+                  p.rating | number: '1.1-1'
+                }}</span>
+              }
+              @if (p.reviewCount != null) {
+                <span class="product-detail-main__reviews">
+                  ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
+                </span>
               }
             </div>
-          </div>
-        }
-
-        <div class="product-detail-main__quantity">
-          <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.QUANTITY' | translate }}</span>
-          <div class="product-detail-main__quantity-control">
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="decrementQuantity()"
-              [disabled]="!p.isAvailable || quantity() <= 1"
-              [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate">
-              −
-            </button>
-            <input type="number" class="form-control form-control-sm" [value]="quantity()" [min]="1"
-              [max]="maxQuantity()" [disabled]="!p.isAvailable" (input)="onQuantityInput($event)"
-              [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate" />
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="incrementQuantity()"
-              [disabled]="!p.isAvailable || quantity() >= maxQuantity()"
-              [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate">
-              +
-            </button>
-          </div>
-          @if (quantityValidationKey(); as validationKey) {
-            <p class="product-detail-main__quantity-error" role="alert">
-              {{ validationKey | translate: { count: maxQuantity() } }}
-            </p>
           }
-        </div>
 
-        <div class="product-detail-main__actions ">
-          <button type="button" class="btn btn-primary btn-lg btn-black" [disabled]="!p.isAvailable"
-            (click)="addToCart()">
-            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-            {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
-          </button>
-          <!-- <button
+          <div class="product-detail-main__prices">
+            <span
+              class="product-detail-main__price"
+              [class.product-detail-main__price--sale]="discountPercent()"
+            >
+              {{ formatPrice(p.price) }} {{ currencyLabel() }}
+            </span>
+            @if (p.compareAtPrice; as oldPrice) {
+              @if (oldPrice > p.price) {
+                <span class="product-detail-main__compare">
+                  {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
+                </span>
+              }
+            }
+            @if (discountPercent(); as pct) {
+              <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
+            }
+          </div>
+
+          <p
+            class="product-detail-main__availability"
+            [class.product-detail-main__availability--out]="!p.isAvailable"
+          >
+            {{
+              'INVENTORY.' + stockStatus(p.stock, p.isAvailable ? 'InStock' : 'OutOfStock')
+                | translate
+            }}
+            @if (p.stock?.backorderMessage) {
+              <span>{{ p.stock?.backorderMessage }}</span>
+            }
+          </p>
+
+          <div class="product-detail-main__sku">
+            {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
+          </div>
+
+          @if (requiresModel(p.stock)) {
+            <div class="product-detail-main__variants">
+              <span class="product-detail-main__quantity-label">{{
+                'PRODUCT_DETAIL.VARIANT' | translate
+              }}</span>
+              <div class="product-detail-main__variant-list" role="listbox">
+                @for (variant of variants(); track variant.id) {
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    role="option"
+                    [class.btn-primary]="p.selectedVariantId === variant.id"
+                    [class.btn-outline-secondary]="p.selectedVariantId !== variant.id"
+                    [attr.aria-selected]="p.selectedVariantId === variant.id"
+                    (click)="onVariantSelect(variant.id)"
+                  >
+                    {{ variant.name }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (requiresModel(p.stock) && !p.productVariantId) {
+            <p>{{ 'CART.VARIANT_REQUIRED' | translate }}</p>
+          }
+          @if (p.stock?.allowOnlineBackorder && quantity() > p.stockQuantity) {
+            <p>{{ 'INVENTORY.EXCESS_BACKORDER' | translate }}</p>
+          }
+          @if ((p.priceQuantity ?? 1) > 1) {
+            <p>{{ 'INVENTORY.PRICE_QUANTITY' | translate: { count: p.priceQuantity } }}</p>
+          }
+          <div class="product-detail-main__quantity">
+            <span class="product-detail-main__quantity-label">{{
+              'PRODUCT_DETAIL.QUANTITY' | translate
+            }}</span>
+            <div class="product-detail-main__quantity-control">
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                (click)="decrementQuantity()"
+                [disabled]="!p.isAvailable || selectionBusy() || quantity() <= 1"
+                [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                [value]="quantity()"
+                [min]="p.stock?.controlType === 1 ? 1 : 0.01"
+                [step]="p.stock?.controlType === 1 ? 1 : 0.01"
+                [max]="maxQuantity()"
+                [disabled]="!p.isAvailable || selectionBusy()"
+                (input)="onQuantityInput($event)"
+                [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                (click)="incrementQuantity()"
+                [disabled]="!p.isAvailable || selectionBusy() || quantity() >= maxQuantity()"
+                [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate"
+              >
+                +
+              </button>
+            </div>
+            @if (quantityValidationKey(); as validationKey) {
+              <p class="product-detail-main__quantity-error" role="alert">
+                {{ validationKey | translate: { count: maxQuantity() } }}
+              </p>
+            }
+          </div>
+
+          <div class="product-detail-main__actions">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg btn-black"
+              [disabled]="!canBuy()"
+              (click)="addToCart()"
+            >
+              <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+              {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
+            </button>
+            <!-- <button
             type="button"
             class="btn btn-outline-primary btn-lg"
             [disabled]="!p.isAvailable"
@@ -154,26 +210,35 @@
           >
             {{ 'PRODUCT_DETAIL.BUY_NOW' | translate }}
           </button> -->
-          <button type="button" class="btn btn-outline-secondary btn-outline-black"
-            [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate" (click)="onWishlist()">
-            <i class="fa-regular fa-heart" aria-hidden="true"></i>
-            Add to Wishlist
-          </button>
-          @if (shareUrl()) {
-            <app-product-share-menu
-              [title]="shareTitle()"
-              [url]="shareUrl()"
-              [shareText]="shareMessage()"
-            />
-          }
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-outline-black"
+              [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
+              (click)="onWishlist()"
+            >
+              <i class="fa-regular fa-heart" aria-hidden="true"></i>
+              Add to Wishlist
+            </button>
+            @if (shareUrl()) {
+              <app-product-share-menu
+                [title]="shareTitle()"
+                [url]="shareUrl()"
+                [shareText]="shareMessage()"
+              />
+            }
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <app-product-detail-info [product]="p" />
+      <app-product-detail-info [product]="p" />
 
-    <app-product-detail-related [products]="relatedProducts()" (productClick)="onRelatedClick($event)"
-      (addToCart)="onRelatedAddToCart($event)" (addToWishlist)="onRelatedWishlist($event)" (quickView)="onRelatedClick($event)" />
+      <app-product-detail-related
+        [products]="relatedProducts()"
+        (productClick)="onRelatedClick($event)"
+        (addToCart)="onRelatedAddToCart($event)"
+        (addToWishlist)="onRelatedWishlist($event)"
+        (quickView)="onRelatedClick($event)"
+      />
     }
   </div>
 </div>

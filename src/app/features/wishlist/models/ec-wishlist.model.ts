@@ -2,13 +2,15 @@ import type { StorefrontProduct } from '../../../shared/models/storefront-produc
 
 /** Shared customer/currency context for EcWishlist operations. */
 export interface EcWishlistContextRequest {
-  customerId: number;
+  customerId?: number;
   currencyId?: number;
   currencyCode?: string;
 }
 
 export interface EcWishlistCommand extends EcWishlistContextRequest {
-  productVariantId: number;
+  productId?: number;
+  productVariantId?: number | null;
+  variantId?: number | null;
 }
 
 export interface EcWishlistDto {
@@ -25,5 +27,11 @@ export interface EcWishlistDto {
 /** Best-effort normalized item for UI. */
 export type EcWishlistItem = StorefrontProduct & {
   /** Variant id used by wishlist/cart endpoints. */
-  productVariantId: number;
+  productVariantId: number | null;
+  wishlistItemId?: number;
+  variantName?: string;
+  variantNameAr?: string;
+  variantSku?: string;
+  quantity?: number;
+  availabilityStatus?: import('../../../shared/models/product-stock.model').AvailabilityStatus;
 };

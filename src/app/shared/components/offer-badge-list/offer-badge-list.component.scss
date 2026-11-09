@@ -1,0 +1,65 @@
+.offer-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-1);
+}
+
+.offer-badge-list__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--portal-primary) 35%, var(--ds-color-border));
+  border-radius: 999px;
+  color: var(--portal-primary);
+  background: color-mix(in srgb, var(--portal-primary) 7%, white);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+  line-height: 1.25;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--portal-text-on-primary);
+    background: var(--portal-primary);
+  }
+}
+
+.offer-badge-list__role {
+  overflow-wrap: anywhere;
+}
+
+.offer-badge-list__badge--reward {
+  border-color: color-mix(in srgb, var(--portal-success) 42%, var(--ds-color-border));
+  color: color-mix(in srgb, var(--portal-success) 75%, black);
+  background: color-mix(in srgb, var(--portal-success) 9%, white);
+}
+
+.offer-badge-list__badge--component {
+  border-color: color-mix(in srgb, var(--portal-accent) 42%, var(--ds-color-border));
+  color: color-mix(in srgb, var(--portal-accent) 75%, black);
+  background: color-mix(in srgb, var(--portal-accent) 9%, white);
+}
+
+.offer-badge-list__badge--mixed {
+  border-color: color-mix(in srgb, var(--portal-warning) 45%, var(--ds-color-border));
+  color: color-mix(in srgb, var(--portal-warning) 70%, black);
+  background: color-mix(in srgb, var(--portal-warning) 10%, white);
+}
+
+.offer-badge-list__more {
+  padding: 0.2rem 0.35rem;
+  border: 0;
+  border-radius: var(--ds-radius-sm);
+  background: transparent;
+  color: var(--portal-text-muted);
+  font-size: var(--ds-font-size-xs);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--portal-primary);
+    outline-offset: 2px;
+  }
+}

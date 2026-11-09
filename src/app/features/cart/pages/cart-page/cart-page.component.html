@@ -22,6 +22,28 @@
   } @else {
     <div class="cart-page__layout">
       <div class="cart-page__items">
+        @if (facade.promotionWarnings().length > 0) {
+          <div class="alert alert-warning" role="alert">
+            <strong>{{ 'OFFERS.WARNINGS_TITLE' | translate }}</strong>
+            <ul class="mb-0 mt-2">
+              @for (warning of facade.promotionWarnings(); track warning) {
+                <li>{{ warning }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (facade.offerGuidance().length > 0) {
+          <section class="cart-offer-guidance" [attr.aria-label]="'OFFERS.CART_GUIDANCE' | translate">
+            @for (offer of facade.offerGuidance(); track offer.offerId) {
+              <article class="alert" [class.alert-success]="offer.isApplied" [class.alert-info]="!offer.isApplied">
+                <strong>{{ offer.nameEn || offer.nameAr || offer.code }}</strong>
+                <span class="d-block">{{ 'OFFERS.STATUS.' + offer.statusCode | translate }}</span>
+              </article>
+            }
+          </section>
+        }
+
         <ul class="cart-page__list">
           @for (item of facade.lineItems(); track item.cartDetailId) {
             <li>
@@ -31,6 +53,7 @@
                 [currencyLabel]="currencyLabel()"
                 (quantityChange)="onQuantityChange($event)"
                 (remove)="onRemove($event)"
+                (rewardSelectionChange)="onRewardSelectionChange($event)"
               />
             </li>
           }

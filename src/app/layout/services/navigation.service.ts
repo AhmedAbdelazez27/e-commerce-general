@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 import { LanguageService } from '../../core/services/language.service';
+import { featuredCategoryPreview } from '../../shared/utils/category-visibility.util';
 import { NavCategory } from '../models/layout.model';
 import {
   buildBrandsNavItem,
@@ -39,9 +40,13 @@ export class NavigationService {
     })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe(({ tree, brands }) => {
-        const categories = mapCategoriesTreeToNav(tree);
+        const categories = mapCategoriesTreeToNav(featuredCategoryPreview(tree));
         const brandsItem = buildBrandsNavItem(brands);
-        this.categories.set([...categories, brandsItem]);
+        this.categories.set([
+          { id: 'all-categories', labelKey: 'LAYOUT.NAV.ALL_CATEGORIES', route: '/categories' },
+          ...categories,
+          brandsItem,
+        ]);
       });
   }
 }

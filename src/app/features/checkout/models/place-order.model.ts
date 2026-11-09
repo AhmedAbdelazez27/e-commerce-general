@@ -11,12 +11,30 @@ export interface EcPlaceOrderRequest {
   paymentMethodLkpId: number;
   notes?: string;
   couponCode: string;
+  currencyId?: number;
+  currencyCode?: string;
 }
 
 export interface EcPlaceOrderContext {
   cartId: number;
   customerId: number;
   sessionId: string;
+  currencyId?: number;
+  currencyCode?: string;
+}
+
+export interface PlaceOrderOutputDto {
+  orderId: number;
+  paymentId?: number;
+  cartId?: number;
+  orderNumber: string;
+  finalAmount: number;
+  finalAmountLocal?: number;
+  currencyId?: number;
+  currencyCode?: string;
+  orderStatus?: string;
+  paymentStatus?: string;
+  shippingStatus?: string;
 }
 
 export interface EcOrderStatusHistoryDto {
@@ -40,9 +58,15 @@ export interface EcOrderStatusHistoryDto {
 }
 
 export interface EcOrderDetailDto {
+  orderDetailId?: number;
+  ivItemId?: number;
+  variantName?: string;
+  reservedQuantity?: number;
+  backorderQuantity?: number;
+  fulfilledQuantity?: number;
   id?: number;
   productId?: number;
-  productVariantId?: number;
+  productVariantId?: number | null;
   productName?: string;
   productNameSnapshot?: string;
   variantSku?: string;
@@ -55,9 +79,15 @@ export interface EcOrderDetailDto {
   lineTotal?: number;
   total?: number;
   totalPrice?: number;
+  discountAmount?: number;
+  taxAmount?: number;
+  totalAmount?: number;
 }
 
 export interface EcOrderDto {
+  cartId?: number;
+  currencyId?: number;
+  currencyCode?: string;
   id: number;
   orderNumber: string;
   customerId?: number;
@@ -83,6 +113,9 @@ export interface EcOrderDto {
   paymentMethodNameEn?: string;
   totalAmount?: number;
   discountAmount?: number;
+  productDiscountAmount?: number;
+  bundleDiscountAmount?: number;
+  couponDiscountAmount?: number;
   taxAmount?: number;
   shippingAmount?: number;
   finalAmount?: number;

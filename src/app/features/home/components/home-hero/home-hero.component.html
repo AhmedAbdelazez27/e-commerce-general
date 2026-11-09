@@ -5,132 +5,140 @@
   [style.--home-hero-height]="config().fillViewport ? null : config().height"
   [style.--home-hero-height-md]="config().fillViewport ? null : config().heightMd"
 >
-  <div
-    class="home-hero__slider"
-    [class.home-hero__slider--multi]="hasMultipleSlides()"
-  >
-      <div class="home-hero__track">
-        @for (slide of slides(); track slide.id; let i = $index) {
-          <article
-            class="home-hero__slide"
-            [class.home-hero__slide--active]="activeIndex() === i"
-            [attr.aria-hidden]="activeIndex() !== i"
-            [attr.id]="'home-hero-slide-' + slide.id"
-            role="group"
-            aria-roledescription="slide"
-            [attr.aria-label]="'HOME.HERO.SLIDE_LABEL' | translate: { current: i + 1, total: slideCount() }"
-          >
-            <div class="home-hero__banner">
-              @if (slide.mediaType === 'Video' && slide.mediaUrl && activeIndex() === i) {
-                <video
-                  class="home-hero__image"
-                  [src]="slide.mediaUrl"
-                  [poster]="slide.imageSrc"
-                  [attr.aria-label]="imageAlt(slide)"
-                  muted="muted"
-                  [muted]="true"
-                  autoplay
-                  loop
-                  playsinline
-                  preload="auto"
-                  (loadeddata)="playHeroVideo($event)"
-                  (canplay)="playHeroVideo($event)"
-                ></video>
-              } @else if (slide.mediaType === 'Model3D' && (slide.mediaUrl || slide.iosMediaUrl) && activeIndex() === i) {
-                <app-model-3d-viewer
-                  class="home-hero__image"
-                  [src]="slide.mediaUrl"
-                  [iosSrc]="slide.iosMediaUrl"
-                  [poster]="slide.imageSrc"
-                  [alt]="imageAlt(slide)"
-                />
-              } @else {
-                <img
-                  class="home-hero__image"
-                  [src]="slide.imageSrc"
-                  [alt]="imageAlt(slide)"
-                  width="1400"
-                  height="560"
-                  [attr.fetchpriority]="i === 0 ? 'high' : null"
-                  [attr.loading]="i === 0 ? 'eager' : 'lazy'"
-                />
-              }
-              <div class="home-hero__overlay">
-                <div class="home-hero__content">
-                  @if (eyebrow(slide)) {
-                    <span class="home-hero__eyebrow">{{ eyebrow(slide) }}</span>
-                  }
-                  @if (i === 0) {
-                    <h1 class="home-hero__headline">
-                      {{ headline(slide) }}
-                    </h1>
-                  } @else {
-                    <h2 class="home-hero__headline">
-                      {{ headline(slide) }}
-                    </h2>
-                  }
-                  @if (subtitle(slide)) {
-                    <p class="home-hero__subtitle">{{ subtitle(slide) }}</p>
-                  }
-                  <div class="home-hero__actions">
+  <div class="home-hero__slider" [class.home-hero__slider--multi]="hasMultipleSlides()">
+    <div class="home-hero__track">
+      @for (slide of slides(); track slide.id; let i = $index) {
+        <article
+          class="home-hero__slide"
+          [class.home-hero__slide--active]="activeIndex() === i"
+          [attr.aria-hidden]="activeIndex() !== i"
+          [attr.id]="'home-hero-slide-' + slide.id"
+          role="group"
+          aria-roledescription="slide"
+          [attr.aria-label]="
+            'HOME.HERO.SLIDE_LABEL' | translate: { current: i + 1, total: slideCount() }
+          "
+        >
+          <div class="home-hero__banner">
+            @if (slide.mediaType === 'Video' && slide.mediaUrl && activeIndex() === i) {
+              <video
+                class="home-hero__image"
+                [src]="slide.mediaUrl"
+                [poster]="slide.imageSrc"
+                [attr.aria-label]="imageAlt(slide)"
+                muted="muted"
+                [muted]="true"
+                autoplay
+                loop
+                playsinline
+                preload="auto"
+                (loadeddata)="playHeroVideo($event)"
+                (canplay)="playHeroVideo($event)"
+              ></video>
+            } @else if (
+              slide.mediaType === 'Model3D' &&
+              (slide.mediaUrl || slide.iosMediaUrl) &&
+              activeIndex() === i
+            ) {
+              <app-model-3d-viewer
+                class="home-hero__image"
+                [src]="slide.mediaUrl"
+                [iosSrc]="slide.iosMediaUrl"
+                [poster]="slide.imageSrc"
+                [alt]="imageAlt(slide)"
+              />
+            } @else if (slide.imageSrc && !failedImages().has(slide.imageSrc)) {
+              <img
+                class="home-hero__image"
+                [src]="slide.imageSrc"
+                [alt]="imageAlt(slide)"
+                (error)="imageFailed(slide.imageSrc)"
+                width="1400"
+                height="560"
+                [attr.fetchpriority]="i === 0 ? 'high' : null"
+                [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+              />
+            }
+            <div class="home-hero__overlay">
+              <div class="home-hero__content">
+                @if (eyebrow(slide)) {
+                  <span class="home-hero__eyebrow">{{ eyebrow(slide) }}</span>
+                }
+                @if (i === 0) {
+                  <h1 class="home-hero__headline">
+                    {{ headline(slide) }}
+                  </h1>
+                } @else {
+                  <h2 class="home-hero__headline">
+                    {{ headline(slide) }}
+                  </h2>
+                }
+                @if (subtitle(slide)) {
+                  <p class="home-hero__subtitle">{{ subtitle(slide) }}</p>
+                }
+                <div class="home-hero__actions">
+                  <a
+                    class="btn btn-primary btn-lg home-hero__cta"
+                    [routerLink]="slide.ctaRoute"
+                    [queryParams]="slide.ctaQuery"
+                    [attr.tabindex]="activeIndex() === i ? null : -1"
+                  >
+                    {{ ctaLabel(slide) }}
+                  </a>
+                  @if (slide.secondaryCtaLabelKey && slide.secondaryCtaRoute) {
                     <a
-                      class="btn btn-primary btn-lg home-hero__cta"
-                      [routerLink]="slide.ctaRoute"
-                      [queryParams]="slide.ctaQuery"
+                      class="home-hero__secondary-cta"
+                      [routerLink]="slide.secondaryCtaRoute"
+                      [queryParams]="slide.secondaryCtaQuery"
                       [attr.tabindex]="activeIndex() === i ? null : -1"
                     >
-                      {{ ctaLabel(slide) }}
+                      {{ secondaryCtaLabel(slide) }}
+                      <span class="home-hero__secondary-line" aria-hidden="true"></span>
                     </a>
-                    @if (slide.secondaryCtaLabelKey && slide.secondaryCtaRoute) {
-                      <a
-                        class="home-hero__secondary-cta"
-                        [routerLink]="slide.secondaryCtaRoute"
-                        [queryParams]="slide.secondaryCtaQuery"
-                        [attr.tabindex]="activeIndex() === i ? null : -1"
-                      >
-                        {{ secondaryCtaLabel(slide) }}
-                        <span class="home-hero__secondary-line" aria-hidden="true"></span>
-                      </a>
-                    }
-                  </div>
+                  }
                 </div>
               </div>
             </div>
-          </article>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (hasMultipleSlides()) {
+      <button
+        type="button"
+        class="home-hero__nav home-hero__nav--prev"
+        (click)="prev()"
+        [attr.aria-label]="'HOME.HERO.PREV' | translate"
+      >
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="home-hero__nav home-hero__nav--next"
+        (click)="next()"
+        [attr.aria-label]="'HOME.HERO.NEXT' | translate"
+      >
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
+      <div
+        class="home-hero__dots"
+        role="tablist"
+        [attr.aria-label]="'HOME.HERO.DOTS_LABEL' | translate"
+      >
+        @for (slide of slides(); track slide.id; let i = $index) {
+          <button
+            type="button"
+            class="home-hero__dot"
+            role="tab"
+            [class.home-hero__dot--active]="activeIndex() === i"
+            [attr.aria-selected]="activeIndex() === i"
+            [attr.aria-controls]="'home-hero-slide-' + slide.id"
+            (click)="goTo(i)"
+            [attr.aria-label]="'HOME.HERO.GO_TO_SLIDE' | translate: { index: i + 1 }"
+          ></button>
         }
       </div>
-
-      @if (hasMultipleSlides()) {
-        <button
-          type="button"
-          class="home-hero__nav home-hero__nav--prev"
-          (click)="prev()"
-          [attr.aria-label]="'HOME.HERO.PREV' | translate"
-        >
-          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-        </button>
-        <button
-          type="button"
-          class="home-hero__nav home-hero__nav--next"
-          (click)="next()"
-          [attr.aria-label]="'HOME.HERO.NEXT' | translate"
-        >
-          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-        </button>
-        <div class="home-hero__dots" role="tablist" [attr.aria-label]="'HOME.HERO.DOTS_LABEL' | translate">
-          @for (slide of slides(); track slide.id; let i = $index) {
-            <button
-              type="button"
-              class="home-hero__dot"
-              role="tab"
-              [class.home-hero__dot--active]="activeIndex() === i"
-              [attr.aria-selected]="activeIndex() === i"
-              [attr.aria-controls]="'home-hero-slide-' + slide.id"
-              (click)="goTo(i)"
-              [attr.aria-label]="'HOME.HERO.GO_TO_SLIDE' | translate: { index: i + 1 }"
-            ></button>
-          }
-        </div>
-      }
+    }
   </div>
 </section>

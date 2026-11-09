@@ -12,11 +12,24 @@
     }
   </header>
 
+  @if (recoveryNeeded()) {
+    <div class="alert alert-warning" role="status">
+      {{ 'WISHLIST.RECONCILE_REQUIRED' | translate }}
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="busy()"
+        (click)="refresh()"
+      >
+        {{ 'WISHLIST.REFRESH' | translate }}
+      </button>
+    </div>
+  }
   @if (isEmpty()) {
     <app-wishlist-empty-state />
   } @else {
     <div class="wishlist-page__grid">
-      @for (product of items(); track product.id) {
+      @for (product of items(); track selectionKey(product.id, product.productVariantId)) {
         <app-product-card
           [product]="productForCard(product)"
           (productClick)="onProductClick($event)"

@@ -1,40 +1,31 @@
 import { HttpParams } from '@angular/common/http';
-
-import { appendCurrencyToHttpParams } from '../../../core/utils/currency-http-params.util';
+import { modelId } from '../../../shared/utils/product-stock.util';
 import type { EcWishlistCommand, EcWishlistContextRequest } from '../models/ec-wishlist.model';
 
-/** JSON body for EcWishlist POST operations (`SaveProduct`, `MoveToCart`, etc.). */
+/** Preserve legacy positive-model-only callers; canonical requests retain the product. */
 export function toEcWishlistCommandBody(command: EcWishlistCommand): EcWishlistCommand {
-  const body: EcWishlistCommand = {
-    productVariantId: command.productVariantId,
-    customerId: command.customerId,
+  const variant = modelId(command.productVariantId);
+  const alias = modelId(command.variantId);
+  if (variant && alias && variant !== alias) throw new Error('WISHLIST_INVALID_SELECTION');
+  if (!(command.productId && command.productId > 0) && !variant && !alias)
+    throw new Error('WISHLIST_INVALID_SELECTION');
+  return {
+    ...(command.productId && command.productId > 0 ? { productId: command.productId } : {}),
+    productVariantId: variant ?? alias,
+    ...(command.customerId && command.customerId > 0 ? { customerId: command.customerId } : {}),
+    ...(command.currencyId && command.currencyId > 0 ? { currencyId: command.currencyId } : {}),
+    ...(command.currencyCode?.trim() ? { currencyCode: command.currencyCode.trim() } : {}),
   };
-
-  if (command.currencyId != null && command.currencyId > 0 && command.currencyCode?.trim()) {
-    body.currencyId = command.currencyId;
-    body.currencyCode = command.currencyCode.trim();
-  }
-
-  return body;
 }
-
-/** Query params for EcWishlist GET/DELETE operations (PascalCase per Swagger). */
 export function buildEcWishlistQueryParams(
   context: EcWishlistContextRequest,
-  extra?: { productVariantId?: number },
+  selection?: EcWishlistCommand,
 ): HttpParams {
-  let params = new HttpParams().set('CustomerId', String(context.customerId));
-
-  if (extra?.productVariantId != null && extra.productVariantId > 0) {
-    params = params.set('ProductVariantId', String(extra.productVariantId));
+  const values = selection ? toEcWishlistCommandBody({ ...context, ...selection }) : context;
+  let params = new HttpParams();
+  for (const [key, value] of Object.entries(values)) {
+    if (value == null || value === '' || value === 0) continue;
+    params = params.set(key[0].toUpperCase() + key.slice(1), String(value));
   }
-
-  if (context.currencyId != null && context.currencyId > 0 && context.currencyCode?.trim()) {
-    params = appendCurrencyToHttpParams(params, {
-      id: context.currencyId,
-      code: context.currencyCode.trim(),
-    });
-  }
-
   return params;
 }

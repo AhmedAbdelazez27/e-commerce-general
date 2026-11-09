@@ -1,3 +1,4 @@
+import { modelId } from '../../../shared/utils/product-stock.util';
 import type { EcReturnDto, PagedReturnsResult } from '../models/return.model';
 
 type JsonRecord = Record<string, unknown>;
@@ -54,7 +55,9 @@ export function normalizeEcReturnDto(raw: unknown): EcReturnDto | null {
     orderId,
     orderNumber: readString(o, 'orderNumber', 'OrderNumber') ?? '',
     orderDetailId,
-    productVariantId: readNumber(o, 'productVariantId', 'ProductVariantId'),
+    productId: readNumber(o, 'productId', 'ProductId'),
+    quantity: readNumber(o, 'quantity', 'Quantity'),
+    productVariantId: modelId(readNumber(o, 'productVariantId', 'ProductVariantId')),
     productNameSnapshot,
     variantSkuSnapshot: readString(o, 'variantSkuSnapshot', 'VariantSkuSnapshot'),
     customerId: readNumber(o, 'customerId', 'CustomerId'),

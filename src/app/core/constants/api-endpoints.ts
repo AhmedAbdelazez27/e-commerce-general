@@ -22,6 +22,7 @@ export class ApiEndpoints {
   };
 
   static readonly EcPublicCatalog = {
+    productAvailability: '/api/services/app/EcPublicCatalog/GetProductAvailability',
     categoriesTree: '/api/services/app/EcPublicCatalog/GetCategoriesTree',
     homeSliders: '/api/services/app/EcPublicCatalog/GetHomeSliders',
     brands: '/api/services/app/EcPublicCatalog/GetBrands',
@@ -52,6 +53,16 @@ export class ApiEndpoints {
     updateCart: '/api/services/app/EcCart/UpdateCart',
     removeCartItem: '/api/services/app/EcCart/RemoveCartItem',
     clearCart: '/api/services/app/EcCart/ClearCart',
+    getOfferRewards: '/api/services/app/EcCart/GetOfferRewards',
+    applyOfferSelection: '/api/services/app/EcCart/ApplyOfferSelection',
+  };
+
+  static readonly EcPromotions = {
+    getLookups: '/api/services/app/EcPromotions/GetLookups',
+    getOffers: '/api/services/app/EcPromotions/GetOffers',
+    getOffer: '/api/services/app/EcPromotions/GetOffer',
+    getProductOffers: '/api/services/app/EcPromotions/GetProductOffers',
+    getOfferProducts: '/api/services/app/EcPromotions/GetOfferProducts',
   };
 
   static readonly Cart = {
@@ -100,6 +111,8 @@ export class ApiEndpoints {
   };
 
   static readonly EcReturns = {
+    getMyReturns: '/api/services/app/EcReturns/GetMyReturns',
+    getMyReturn: '/api/services/app/EcReturns/GetMyReturn',
     getAll: '/api/services/app/EcReturns/GetAll',
     getSingle: '/api/services/app/EcReturns/GetSingle',
     create: '/api/services/app/EcReturns/Create',

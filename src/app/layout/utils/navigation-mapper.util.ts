@@ -42,7 +42,7 @@ function mapCategoryNode(node: PublicCategoryDto): NavCategory {
 }
 
 export function mapCategoriesTreeToNav(tree: PublicCategoryDto[]): NavCategory[] {
-  return [...tree].sort((a, b) => a.sortOrder - b.sortOrder).map(mapCategoryNode);
+  return tree.map(mapCategoryNode);
 }
 
 export function buildBrandsNavItem(brands: PublicBrandDto[]): NavCategory {

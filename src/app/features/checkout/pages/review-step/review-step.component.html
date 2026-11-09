@@ -1,6 +1,17 @@
 <section class="checkout-step">
   <h2 class="checkout-step__title">{{ 'CHECKOUT.STEP_REVIEW' | translate }}</h2>
 
+  @if (promotionWarnings().length > 0) {
+    <div class="alert alert-warning" role="alert">
+      <strong>{{ 'OFFERS.WARNINGS_TITLE' | translate }}</strong>
+      <ul class="mb-0 mt-2">
+        @for (warning of promotionWarnings(); track warning) {
+          <li>{{ warning }}</li>
+        }
+      </ul>
+    </div>
+  }
+
   <div class="checkout-review-meta">
     <div class="checkout-review-meta__block">
       <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</h3>
@@ -11,10 +22,10 @@
       <p>{{ addressText() }}</p>
     </div>
     @if (enableShipment()) {
-    <div class="checkout-review-meta__block">
-      <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
-      <p>{{ shippingLabelKey() | translate }}</p>
-    </div>
+      <div class="checkout-review-meta__block">
+        <h3 class="checkout-step__subtitle">{{ 'CHECKOUT.SHIPPING_TITLE' | translate }}</h3>
+        <p>{{ shippingLabelKey() | translate }}</p>
+      </div>
     }
   </div>
 
@@ -27,9 +38,30 @@
     />
   </div>
 
+  @if (uncertain()) {
+    <p role="alert">
+      {{ 'CHECKOUT.UNCERTAIN' | translate }}
+      <a routerLink="/account/orders">{{ 'ORDERS.TITLE' | translate }}</a>
+    </p>
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      [disabled]="placing()"
+      (click)="recheckOrder()"
+    >
+      {{ 'COMMON.REFRESH' | translate }}
+    </button>
+  }
   <div class="checkout-step__actions">
-    <a routerLink="/checkout/address" class="btn btn-outline-secondary">{{ 'CHECKOUT.BACK' | translate }}</a>
-    <button type="button" class="btn btn-primary btn-lg" [disabled]="placing() || lineItems().length === 0" (click)="placeOrder()">
+    <a routerLink="/checkout/address" class="btn btn-outline-secondary">{{
+      'CHECKOUT.BACK' | translate
+    }}</a>
+    <button
+      type="button"
+      class="btn btn-primary btn-lg"
+      [disabled]="!canConfirm()"
+      (click)="placeOrder()"
+    >
       @if (placing()) {
         {{ 'COMMON.LOADING' | translate }}
       } @else {

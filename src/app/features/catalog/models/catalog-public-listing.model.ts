@@ -1,3 +1,4 @@
+import type { ProductStock } from '../../../shared/models/product-stock.model';
 /** Selected specification filter for EcPublicCatalog listing endpoints. */
 export interface PublicSpecificationFilterDto {
   specificationTypeId: number;
@@ -98,7 +99,8 @@ export interface GetProductFiltersResult {
 }
 
 export interface PublicSearchProductPriceDto {
-  productVariantId: number;
+  productId?: number;
+  productVariantId: number | null;
   basePrice: number;
   customerPrice: number;
   discountAmount: number;
@@ -115,9 +117,11 @@ export interface PublicSearchProductPriceDto {
   localCurrencyCode?: string;
   basePriceLocal?: number;
   finalPriceLocal?: number;
+  offers?: PublicOfferBadge[];
 }
 
 export interface PublicSearchProductDto {
+  stock?: ProductStock;
   id: number;
   productId?: number;
   slug: string;
@@ -153,9 +157,11 @@ export interface PublicSearchProductDto {
   createdDate?: string | null;
   availabilityStatus?: string;
   availableStatus?: string;
+  offers?: PublicOfferBadge[];
 }
 
 export interface SearchProductsResult {
   totalCount: number;
   items: PublicSearchProductDto[];
 }
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';

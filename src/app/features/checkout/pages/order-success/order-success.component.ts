@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import { CurrencyCodeComponent } from '../../../../shared/components/currency-code/currency-code.component';
-import type { EcOrderDto } from '../../models/place-order.model';
+import type { PlaceOrderOutputDto } from '../../models/place-order.model';
 import { CheckoutStateService } from '../../services/checkout-state.service';
 
 @Component({
@@ -16,11 +16,13 @@ export class OrderSuccessComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly checkoutState = inject(CheckoutStateService);
 
-  readonly order = signal<EcOrderDto | null>(null);
+  readonly order = signal<PlaceOrderOutputDto | null>(null);
 
   ngOnInit(): void {
     const nav = this.router.getCurrentNavigation();
-    const fromState = (nav?.extras.state?.['order'] ?? history.state?.['order']) as EcOrderDto | undefined;
+    const fromState = (nav?.extras.state?.['order'] ?? history.state?.['order']) as
+      | PlaceOrderOutputDto
+      | undefined;
     const order = fromState ?? this.checkoutState.lastPlacedOrder();
     if (!order?.orderNumber) {
       void this.router.navigate(['/home']);

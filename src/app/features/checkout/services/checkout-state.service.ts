@@ -58,7 +58,7 @@ export class CheckoutStateService {
     return id != null && id > 0;
   });
 
-  readonly lastPlacedOrder = signal<import('../models/place-order.model').EcOrderDto | null>(null);
+  readonly lastPlacedOrder = signal<import('../models/place-order.model').PlaceOrderOutputDto | null>(null);
 
   setPaymentMethods(methods: CheckoutPaymentOption[]): void {
     this.paymentMethodsSignal.set(methods);
@@ -189,6 +189,8 @@ export class CheckoutStateService {
       paymentMethodLkpId: Number.isFinite(paymentMethodLkpId) ? paymentMethodLkpId : 0,
       notes: notes || undefined,
       couponCode,
+      currencyId: context.currencyId,
+      currencyCode: context.currencyCode,
     };
   }
 

@@ -12,6 +12,7 @@ export function mapCatalogProductToCardData(
   return {
     id: product.id,
     productVariantId: product.productVariantId,
+    stock: product.stock,
     slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
@@ -27,6 +28,7 @@ export function mapCatalogProductToCardData(
     isBestSeller: product.isBestSeller,
     has3D: product.has3D,
     currency: product.currencyCode,
+    offers: product.offers ?? [],
   };
 }
 

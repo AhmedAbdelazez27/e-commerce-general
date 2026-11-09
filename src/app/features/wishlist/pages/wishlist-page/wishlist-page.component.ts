@@ -1,3 +1,4 @@
+import { selectionKey } from '../../../../shared/utils/product-stock.util';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -29,6 +30,12 @@ export class WishlistPageComponent implements OnInit {
   private readonly cartActions = inject(CartActionsService);
   private readonly translate = inject(TranslateService);
 
+  readonly selectionKey = selectionKey;
+  readonly recoveryNeeded = this.wishlist.recoveryNeeded;
+  readonly busy = this.wishlist.busy;
+  refresh(): void {
+    this.wishlist.refresh();
+  }
   readonly items = this.wishlist.items;
   readonly itemCount = this.wishlist.itemCount;
 

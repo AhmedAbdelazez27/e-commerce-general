@@ -4,7 +4,10 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
-import { abpEnvelopeErrorMessage, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import {
+  abpEnvelopeErrorMessage,
+  resultFromAbpEnvelope,
+} from '../../../core/utils/api-envelope.util';
 import type { EcReturnCreateInput, EcReturnDto, PagedReturnsResult } from '../models/return.model';
 import { normalizeEcReturnDto, normalizePagedReturnsResult } from '../utils/returns-api.mapper';
 
@@ -23,15 +26,14 @@ export class ReturnsApiService {
     options: GetCustomerReturnsOptions = {},
   ): Observable<PagedReturnsResult> {
     let params = new HttpParams()
-      .set('Params.CustomerId', String(customerId))
       .set('SkipCount', String(options.skipCount ?? 0))
-      .set('MaxResultCount', String(options.maxResultCount ?? 50));
+      .set('MaxResultCount', String(Math.min(100, Math.max(1, options.maxResultCount ?? 50))));
 
     if (options.sorting?.trim()) {
       params = params.set('Sorting', options.sorting.trim());
     }
 
-    return this.http.get<unknown>(ApiEndpoints.EcReturns.getAll, { params }).pipe(
+    return this.http.get<unknown>(ApiEndpoints.EcReturns.getMyReturns, { params }).pipe(
       map((res) => normalizePagedReturnsResult(resultFromAbpEnvelope(res))),
       catchError(() => of({ totalCount: 0, items: [] })),
     );
@@ -40,7 +42,7 @@ export class ReturnsApiService {
   getReturn(id: number): Observable<EcReturnDto | null> {
     const params = new HttpParams().set('Id', String(id));
 
-    return this.http.get<unknown>(ApiEndpoints.EcReturns.getSingle, { params }).pipe(
+    return this.http.get<unknown>(ApiEndpoints.EcReturns.getMyReturn, { params }).pipe(
       map((res) => normalizeEcReturnDto(resultFromAbpEnvelope(res))),
       catchError(() => of(null)),
     );

@@ -14,6 +14,7 @@ import {
   SHOP_ROUTE,
 } from '../../../../shared/utils/category-shop-link.util';
 import { flattenCategoriesTree } from '../../utils/category-tree.util';
+import { visibleCategoryTree } from '../../../../shared/utils/category-visibility.util';
 
 @Component({
   selector: 'app-categories-page',
@@ -71,9 +72,8 @@ export class CategoriesPageComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (nodes) => {
-          const flat = flattenCategoriesTree(nodes);
+          const flat = flattenCategoriesTree(visibleCategoryTree(nodes));
           this.categories.set(flat);
-          this.loadFailed.set(flat.length === 0);
         },
         error: () => {
           this.categories.set([]);

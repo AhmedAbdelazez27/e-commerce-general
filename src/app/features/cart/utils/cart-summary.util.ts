@@ -10,6 +10,8 @@ export interface CartMerchandiseTotals {
   subtotal: number;
   productDiscount: number;
   couponDiscount: number;
+  offerDiscount: number;
+  taxAmount: number;
   merchandiseTotal: number;
 }
 
@@ -45,13 +47,23 @@ function resolveLineNetTotal(lineItems: CartLineItemView[]): number {
   return lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
 }
 
-
 export function resolveCartMerchandiseTotals(
   cart: CartDto | null | undefined,
   lineItems: CartLineItemView[],
   rawItems: CartItemDto[],
   appliedCouponDiscount?: number | null,
 ): CartMerchandiseTotals {
+  if (cart?.TotalAmount != null || cart?.Total != null) {
+    return {
+      subtotal: cart.SubTotal ?? resolveGrossSubtotal(rawItems),
+      productDiscount: cart.ProductDiscountAmount ?? cart.DiscountAmount ?? 0,
+      offerDiscount: cart.BundleDiscountAmount ?? 0,
+      couponDiscount: cart.CouponDiscountAmount ?? 0,
+      taxAmount: cart.TaxAmount ?? 0,
+      merchandiseTotal: cart.TotalAmount ?? cart.Total!,
+    };
+  }
+
   // Net total actually charged for the merchandise, derived from the LIVE line items so it tracks
   // a quantity +/- instantly. Each line total is netUnitPrice * quantity (see cart-enrichment),
   // which means it never lags the way the API's cart-level Total/SubTotal fields can.
@@ -79,7 +91,9 @@ export function resolveCartMerchandiseTotals(
     return {
       subtotal: grossSubtotal,
       productDiscount: embeddedDiscount,
+      offerDiscount: 0,
       couponDiscount,
+      taxAmount: 0,
       merchandiseTotal: Math.max(0, lineNet - couponDiscount),
     };
   }
@@ -104,7 +118,9 @@ export function resolveCartMerchandiseTotals(
   return {
     subtotal: grossSubtotal,
     productDiscount,
+    offerDiscount: 0,
     couponDiscount,
+    taxAmount: 0,
     merchandiseTotal: Math.max(0, lineNet - cartLevelDiscount),
   };
 }
@@ -114,18 +130,20 @@ export function buildOrderSummary(
   itemCount: number,
   options: OrderSummaryOptions = {},
 ): CartOrderSummaryView {
-  const { subtotal, productDiscount, couponDiscount, merchandiseTotal } = merchandise;
+  const { subtotal, productDiscount, offerDiscount, couponDiscount, taxAmount, merchandiseTotal } =
+    merchandise;
   const isFreeDelivery = merchandiseTotal >= CART_CONFIG.freeDeliveryThreshold;
   const deliveryFee =
-    options.deliveryFee ??
-    (itemCount > 0 && !isFreeDelivery ? CART_CONFIG.deliveryFee : 0);
+    options.deliveryFee ?? (itemCount > 0 && !isFreeDelivery ? CART_CONFIG.deliveryFee : 0);
   const total = merchandiseTotal + deliveryFee;
 
   return {
     subtotal,
     productDiscount,
     couponDiscount,
-    discount: productDiscount + couponDiscount,
+    offerDiscount,
+    taxAmount,
+    discount: productDiscount + offerDiscount + couponDiscount,
     deliveryFee,
     total,
     itemCount,

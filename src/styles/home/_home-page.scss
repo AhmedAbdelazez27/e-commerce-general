@@ -64,9 +64,15 @@
 
 .home-hero__slider {
   position: relative;
+  isolation: isolate;
   height: var(--home-hero-height);
   overflow: hidden;
   border-radius: var(--ds-radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--portal-primary) 0%,
+    color-mix(in srgb, var(--portal-primary) 35%, var(--portal-secondary)) 100%
+  );
 
   &--multi .home-hero__content {
     padding-bottom: var(--ds-space-6);
@@ -182,6 +188,7 @@ html[dir='rtl'] .home-hero__nav i {
 
 .home-hero__banner {
   position: relative;
+  isolation: isolate;
   height: 100%;
   overflow: hidden;
   background: linear-gradient(
@@ -198,6 +205,17 @@ html[dir='rtl'] .home-hero__nav i {
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+.home-hero__slider::before,
+.home-hero__banner::before {
+  content: '';
+  position: absolute;
+  inset: -48px;
+  z-index: -1;
+  background: inherit;
+  filter: blur(24px);
+  pointer-events: none;
 }
 
 .home-hero__banner app-model-3d-viewer.home-hero__image {

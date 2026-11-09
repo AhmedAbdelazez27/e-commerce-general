@@ -103,9 +103,13 @@
     "DELETE": "Delete",
     "NOT_SET": "—",
     "SHOW_PASSWORD": "Show password",
-    "HIDE_PASSWORD": "Hide password"
+    "HIDE_PASSWORD": "Hide password",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "SEARCH": "Search"
   },
   "CATEGORIES": {
+    "EMPTY": "No categories with products are available yet.",
     "LOAD_FAILED": "Could not load categories. Please try again.",
     "SUBCATEGORIES": "Subcategories",
     "PAGE_SUBTITLE": "Browse all categories",
@@ -319,6 +323,139 @@
     "REASON_WRONG_ITEM": "Received wrong item",
     "REASON_OTHER": "Other"
   },
+  "OFFERS": {
+    "NAV": "Offers",
+    "TITLE": "Bundles and offers",
+    "SUBTITLE": "Explore current offers. Final eligibility and savings are confirmed in your cart.",
+    "BADGES_REGION": "Available offers",
+    "BADGE_ACCESSIBLE": "{{role}} in {{offer}}",
+    "SHOW_MORE": "Show {{count}} more",
+    "SHOW_FEWER": "Show fewer",
+    "SELECTED_VARIANTS": "Selected variants",
+    "REWARD_ONLY_HINT": "This product may be available as a reward; it is not automatically free.",
+    "LOAD_FAILED": "Offers could not be loaded. The updated store API may not be available yet.",
+    "EMPTY": "There are no active offers right now.",
+    "VIEW_DETAILS": "View offer",
+    "PAGINATION": "Offers pages",
+    "PAGE_NUMBER": "Page {{page}}",
+    "BACK": "Back to offers",
+    "NOT_FOUND": "This offer is unavailable or has changed.",
+    "CART_EVALUATION_NOTE": "Offer conditions are shown for guidance. Add the required products and the server will confirm the best saving in your cart.",
+    "CONDITIONS": "Offer conditions",
+    "ELIGIBLE_PRODUCTS": "Participating products",
+    "NO_PRODUCTS": "No public products are currently available for this offer.",
+    "VIEW_PRODUCT": "View product",
+    "CHOOSE_REWARD": "Choose a reward",
+    "LOGIN_FOR_REWARDS": "Sign in to preview and select rewards for your cart.",
+    "NO_REWARD_CANDIDATES": "No reward candidates are available for the current cart.",
+    "ADDITIONAL_QUANTITY": "Additional quantity needed: {{count}}",
+    "SELECT_REWARD": "Select reward",
+    "SELECT_AS_REWARD": "Use this item as my selected reward",
+    "REWARD_QUANTITY": "Reward quantity applied: {{count}}",
+    "SELECTION_APPLIED": "Your offer selection was added and the cart was recalculated.",
+    "COMPLETE_BEFORE_CHECKOUT": "Complete the required offer selection before checkout.",
+    "WARNINGS_TITLE": "Offer action required",
+    "CART_GUIDANCE": "Offer progress",
+    "STATUS_PENDING": "Complete the listed offer requirements",
+    "PRODUCT_COUNT": "{{count}} products",
+    "SEARCH_PRODUCTS": "Search these products",
+    "PRODUCTS_LOAD_FAILED": "Could not load these products. Please try again.",
+    "PRODUCT_PRICES_LOAD_FAILED": "These products are available for the offer, but their current prices could not be loaded.",
+    "SOME_PRODUCT_PRICES_LOAD_FAILED": "Some participating products are temporarily hidden because their current prices could not be loaded.",
+    "PRODUCT_PAGINATION": "Product pages",
+    "IN_STOCK": "In stock",
+    "OUT_OF_STOCK": "Out of stock",
+    "BREADCRUMB": "Offer navigation",
+    "LIMITED_OFFER": "Limited-time offer",
+    "VALID_FROM_TO": "Valid from {{from}} to {{to}}",
+    "VALID_UNTIL": "Valid until {{date}}",
+    "VALID_FROM": "Valid from {{date}}",
+    "CART_CONFIRMATION_NOTE": "Final eligibility and savings are confirmed in your cart.",
+    "MISSING_QUANTITY": "Add {{count}} more qualifying item(s).",
+    "GENERIC_PRODUCTS": "Participating products",
+    "COMPONENT_QUANTITY": "Add {{count}} item(s) from this package group.",
+    "COMPONENT_DESCRIPTION": "Choose from the products in this package group.",
+    "ALL_GROUP_REQUIREMENT": "Add {{count}} item(s) from this group.",
+    "ALL_GROUP_REQUIREMENT_NEUTRAL": "Meet the requirement for this qualifying group.",
+    "QUALIFYING_DESCRIPTION": "Add the qualifying products shown below.",
+    "REWARD_ALL_DESCRIPTION": "The reward can be selected from all eligible products.",
+    "CHEAPEST_REWARD_DESCRIPTION": "The eligible product with the lowest price is used as the reward.",
+    "REWARD_DESCRIPTION": "Choose from the eligible reward products below.",
+    "HOW_IT_WORKS": "How this offer works",
+    "PACKAGE_PRODUCTS": "Build the package",
+    "PACKAGE_PRODUCTS_DESCRIPTION": "Add the required quantity from each package group.",
+    "QUANTITY_DISCOUNTS": "Quantity discounts",
+    "QUANTITY_DISCOUNTS_DESCRIPTION": "The discount changes with the qualifying quantity in your cart.",
+    "QUANTITY": "Quantity",
+    "DISCOUNT": "Discount",
+    "PERCENT_OFF": "{{percent}}% off",
+    "BUY_QUALIFYING": "Add qualifying products",
+    "QUALIFYING_PRODUCTS": "Qualifying products",
+    "ADD_REWARD": "Add a reward product",
+    "REWARD_PRODUCTS": "Reward products",
+    "REWARD_PREVIEW_NOTE": "Your current cart determines which reward choices can apply.",
+    "REWARDS_LOAD_FAILED": "Could not check reward choices for the current cart. Please try again.",
+    "APPLY_AND_RECALCULATE": "Add reward and recalculate",
+    "ROLES": {
+      "QUALIFY": "Buy to qualify",
+      "REWARD": "Available as a reward",
+      "COMPONENT": "Part of a package",
+      "QUALIFY_REWARD": "Buy or receive as a reward",
+      "COMPONENT_REWARD": "Package item or reward",
+      "QUALIFY_COMPONENT": "Qualifying package item",
+      "QUALIFY_COMPONENT_REWARD": "Qualifying package item or reward"
+    },
+    "BENEFIT": {
+      "FIXED_PACKAGE": "Get this package for {{amount}} {{currency}}.",
+      "FIXED_PACKAGE_NEUTRAL": "Get the complete package for a special price.",
+      "PACKAGE_PERCENT": "Save {{percent}}% when you complete this package.",
+      "PACKAGE_PERCENT_NEUTRAL": "Complete the package to receive a percentage discount.",
+      "BUY_X_GET_Y_SAME": "Buy {{buy}} eligible item(s) and get {{reward}} of the same item free.",
+      "BUY_X_GET_Y": "Buy {{buy}} qualifying item(s) and get {{reward}} eligible reward item(s) free.",
+      "BUY_X_GET_Y_DISCOUNT": "Buy {{buy}} qualifying item(s) and get {{reward}} reward item(s) at {{percent}}% off.",
+      "REWARD_NEUTRAL": "Meet the purchase requirement to receive an eligible reward.",
+      "REWARD_DISCOUNT_NEUTRAL": "Meet the purchase requirement to receive a discount on an eligible reward.",
+      "MIX_FIXED": "Choose {{quantity}} eligible item(s) for {{amount}} {{currency}}.",
+      "MIX_FIXED_NEUTRAL": "Choose the required eligible items for a special total price.",
+      "MIX_CHEAPEST": "Choose {{quantity}} eligible item(s) and get the cheapest {{reward}} item(s) free.",
+      "MIX_CHEAPEST_NEUTRAL": "Choose the required eligible items and receive the cheapest item as the reward.",
+      "QUANTITY_TIER": "Buy more qualifying items to unlock a larger discount.",
+      "SPEND_GIFT": "Spend {{amount}} {{currency}} on qualifying products and receive {{reward}} reward item(s).",
+      "SPEND_GIFT_NEUTRAL": "Reach the required spend and receive an eligible reward.",
+      "GENERIC": "Special savings are available when the listed requirements are met."
+    },
+    "QUALIFICATION": {
+      "POOLED": "Add {{quantity}} qualifying item(s) in total, using any combination of the listed products.",
+      "POOLED_NEUTRAL": "Use any combination of the listed products to meet the total qualifying quantity.",
+      "ALL_GROUPS": "Meet the listed quantity separately for every qualifying group."
+    },
+    "TERMS": {
+      "TITLE": "Terms",
+      "ONCE": "This offer can be applied once per cart.",
+      "REPEAT_LIMITED": "This offer can be applied up to {{count}} times per cart.",
+      "REPEAT": "This offer may repeat when the requirements are met again.",
+      "COUPON_ALLOWED": "A coupon may also be used when the server confirms it is compatible.",
+      "COUPON_EXCLUSIVE": "This offer cannot be combined with another offer or coupon.",
+      "CUSTOMER_CHOICE": "You can choose an eligible reward for your cart.",
+      "CHEAPEST": "The lowest-priced eligible product is selected as the reward.",
+      "REWARD_REQUIRED": "The order cannot continue if the required reward is unavailable."
+    },
+    "REWARD_STATE": {
+      "INSUFFICIENT_STOCK": "Not enough stock for this reward",
+      "WOULD_APPLY": "Adding this reward would apply the offer",
+      "ELIGIBLE_NOT_WINNING": "Eligible, but another pricing option is currently better or equal",
+      "REQUIREMENTS_MISSING": "More qualifying products or spend are still needed"
+    },
+    "STATUS": {
+      "Applied": "Offer applied",
+      "EligibleNotApplied": "Another pricing option is better or equal",
+      "MissingQuantity": "Add the required participating quantities",
+      "MissingReward": "Add or choose a reward",
+      "RewardSelectionRequired": "Choose a reward already in your cart",
+      "MissingSpend": "Add more qualifying products to reach the required spend",
+      "NoPriceBenefit": "This offer does not currently reduce the cart price"
+    }
+  },
   "TOAST": {
     "SUCCESS": "Success",
     "ERROR": "Error"
@@ -357,6 +494,7 @@
     },
     "NAV": {
       "REGION": "Shop by category",
+      "ALL_CATEGORIES": "Show all categories",
       "ORDERS": "My orders",
       "FAQ": "FAQ",
       "CONTACT": "Contact us",
@@ -616,7 +754,10 @@
       "TITLE": "Your wishlist is empty",
       "TEXT": "Tap the heart on any product to save it here.",
       "CTA": "Browse shop"
-    }
+    },
+    "REQUEST_FAILED": "The wishlist change could not be confirmed. Your saved items are retained. Please refresh before retrying.",
+    "RECONCILE_REQUIRED": "Refresh your wishlist and cart to confirm the previous move before trying again.",
+    "REFRESH": "Refresh"
   },
   "CART": {
     "TITLE": "Shopping cart",
@@ -633,7 +774,7 @@
     "VIEW_CART": "View cart",
     "ADDED_ERROR": "Could not add this item to your cart. Please try again.",
     "ADD_UNAVAILABLE": "This product is currently unavailable",
-    "VARIANT_REQUIRED": "Select a product option before adding to cart",
+    "VARIANT_REQUIRED": "Please select a model.",
     "CHECKOUT_UNAVAILABLE": "Remove unavailable items before checkout",
     "CHECKOUT_EMPTY": "Your cart is empty",
     "COUPON": {
@@ -650,7 +791,8 @@
       "MIN_ORDER": "Minimum order of {{amount}} required for this coupon.",
       "MIN_ORDER_REMAINING": "Add {{amount}} more to your order to use this coupon.",
       "LOGIN_REQUIRED": "Sign in to apply your coupon code.",
-      "APPLIED": "{{code}} applied — you save {{savings}}."
+      "APPLIED": "{{code}} applied — you save {{savings}}.",
+      "NOT_APPLIED": "This coupon could not be applied with the current cart and offers."
     },
     "SUMMARY_REGION": "Order summary",
     "SUMMARY_TITLE": "Order summary",
@@ -658,6 +800,8 @@
     "SUMMARY_DISCOUNT": "Discount",
     "SUMMARY_PRODUCT_DISCOUNT": "Product discount",
     "SUMMARY_COUPON_DISCOUNT": "Coupon discount",
+    "SUMMARY_OFFER_DISCOUNT": "Offers discount",
+    "SUMMARY_TAX": "Tax",
     "SUMMARY_DELIVERY": "Delivery",
     "SUMMARY_FREE_DELIVERY": "Free",
     "SUMMARY_TOTAL": "Total",
@@ -667,7 +811,8 @@
       "TITLE": "Your cart is empty",
       "TEXT": "Looks like you have not added anything yet. Explore the shop and find something you love.",
       "CTA": "Continue shopping"
-    }
+    },
+    "RECONCILE_FAILED": "We could not confirm the cart change. Your cart is retained; refresh it before trying again."
   },
   "CHECKOUT": {
     "TITLE": "Checkout",
@@ -729,7 +874,8 @@
     "ORDER_NUMBER": "Order number",
     "ORDER_TOTAL": "Total",
     "CONTINUE_SHOPPING": "Continue shopping",
-    "VIEW_ORDERS": "View my orders"
+    "VIEW_ORDERS": "View my orders",
+    "UNCERTAIN": "The order result could not be confirmed. Check your orders before placing another order."
   },
   "PRODUCT_DETAIL": {
     "LOADING": "Loading product",
@@ -742,7 +888,7 @@
     "LOW_STOCK": "Only {{count}} left",
     "SOLD_OUT": "Sold out",
     "SKU": "SKU",
-    "VARIANT": "Variant",
+    "VARIANT": "Model",
     "QUANTITY": "Quantity",
     "QTY_INCREASE": "Increase quantity",
     "QTY_DECREASE": "Decrease quantity",
@@ -769,5 +915,29 @@
     "COPIED": "Link copied",
     "COPY_FAILED": "Could not copy link",
     "SHARE_FAILED": "Could not share"
+  },
+  "INVENTORY": {
+    "InStock": "In stock",
+    "Backorder": "Available to backorder",
+    "OutOfStock": "Out of stock",
+    "EXCESS_BACKORDER": "The quantity above available stock may wait for replenishment.",
+    "INVALID_QUANTITY": "Enter a positive quantity with up to two decimal places. Serial items require whole units.",
+    "PRICE_QUANTITY": "Price for {{count}} units",
+    "RESERVED": "Reserved",
+    "BACKORDERED": "Backordered",
+    "FULFILLED": "Fulfilled"
+  },
+  "MODEL_PICKER": {
+    "TITLE": "Choose a model",
+    "CLOSE": "Close",
+    "LOADING": "Loading model details…",
+    "PROMPT": "Select the model you would like to add.",
+    "NO_MODELS": "No models are currently available.",
+    "QUANTITY_PRICE": "Price for {{quantity}} units",
+    "ERROR": "We could not load the model details. Please try again.",
+    "RETRY": "Try again",
+    "VIEW_PRODUCT": "View product",
+    "ADD": "Add to cart",
+    "ADDING": "Adding…"
   }
 }

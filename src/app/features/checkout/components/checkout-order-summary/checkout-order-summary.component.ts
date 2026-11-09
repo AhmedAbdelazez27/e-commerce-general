@@ -9,6 +9,8 @@ export interface CheckoutSummaryTotals {
   subtotal: number;
   productDiscount: number;
   couponDiscount: number;
+  offerDiscount: number;
+  taxAmount: number;
   discount: number;
   shippingAmount: number;
   total: number;

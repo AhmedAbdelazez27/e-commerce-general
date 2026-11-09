@@ -9,6 +9,7 @@ import { SectionHeaderComponent } from '../../../../shared/components/section-he
 import { categoryDisplayName } from '../../../../shared/utils/category-shop-link.util';
 import { HomeCategoryShortcut } from '../../models/home.model';
 import { mapCategoryToHomeShortcut } from '../../utils/home-category.mapper';
+import { visibleCategoryTree } from '../../../../shared/utils/category-visibility.util';
 import { rootCategoriesFromTree } from '../../../categories/utils/category-tree.util';
 
 @Component({
@@ -65,7 +66,7 @@ export class HomeCategoryShortcutsComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (tree) => {
-          const roots = rootCategoriesFromTree(tree);
+          const roots = rootCategoriesFromTree(visibleCategoryTree(tree));
           this.categories.set(roots.map(mapCategoryToHomeShortcut));
         },
         error: () => {

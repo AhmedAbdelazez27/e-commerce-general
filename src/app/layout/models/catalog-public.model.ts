@@ -1,3 +1,5 @@
+import type { PublicOfferBadge } from '../../shared/models/promotion.model';
+
 /** EcPublicCatalog category tree node (ABP `result` item). */
 export interface PublicCategoryDto {
   id: number;
@@ -40,6 +42,7 @@ export interface PublicHomeSliderDto {
   targetSlug: string | null;
   linkUrl: string | null;
   sortOrder: number;
+  offers?: PublicOfferBadge[];
 }
 
 /** EcPublicCatalog brand (ABP `result` item). */

@@ -38,6 +38,7 @@ import {
   mapSearchProductsToListingProducts,
 } from '../utils/catalog-listing-api.mapper';
 import { sortCatalogProducts } from '../utils/catalog-listing-filter.util';
+import { visibleCategoryTree } from '../../../shared/utils/category-visibility.util';
 
 @Injectable()
 export class CatalogListingFacade {
@@ -117,7 +118,7 @@ export class CatalogListingFacade {
       return [];
     }
 
-    return [...children]
+    return visibleCategoryTree(children)
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((child) => ({
         id: String(child.id),

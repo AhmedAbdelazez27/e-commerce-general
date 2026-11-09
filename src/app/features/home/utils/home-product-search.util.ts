@@ -54,6 +54,7 @@ export function mapSearchProductToStorefrontProduct(
   return {
     id: listing.id,
     productVariantId: listing.productVariantId,
+    stock: listing.stock,
     slug: listing.slug,
     nameEn: listing.nameEn,
     nameAr: listing.nameAr,
@@ -67,5 +68,6 @@ export function mapSearchProductToStorefrontProduct(
     isNew: listing.isNew,
     isBestSeller: listing.isBestSeller,
     currencyCode: listing.currencyCode,
+    offers: listing.offers ?? [],
   };
 }

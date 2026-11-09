@@ -2,6 +2,7 @@
   class="product-card"
   [class.product-card--compact]="compact()"
   [class.product-card--sold-out]="!isAvailable()"
+  [class.product-card--always-show-cart]="alwaysShowCartButton()"
 >
   <div class="product-card__media">
     <button type="button" class="product-card__media-btn" (click)="onProductClick()">
@@ -19,7 +20,9 @@
         <span class="product-card__badge product-card__badge--sale">-{{ pct }}%</span>
       }
       @if (product().isNew) {
-        <span class="product-card__badge product-card__badge--new">{{ 'PRODUCT_CARD.BADGE_NEW' | translate }}</span>
+        <span class="product-card__badge product-card__badge--new">{{
+          'PRODUCT_CARD.BADGE_NEW' | translate
+        }}</span>
       }
       @if (product().isBestSeller) {
         <span class="product-card__badge product-card__badge--bestseller">
@@ -34,6 +37,9 @@
       }
     </div>
 
+    @if (product().stock; as stock) {
+      <span class="product-card__badge">{{ 'INVENTORY.' + stockStatus(stock) | translate }}</span>
+    }
     @if (!isAvailable()) {
       <div class="product-card__sold-out" aria-hidden="true">
         <span>{{ 'PRODUCT_CARD.SOLD_OUT' | translate }}</span>
@@ -85,6 +91,21 @@
         {{ displayTitle() }}
       </button>
     </h3>
+
+    @if (displayVariantName() || product().variantSku) {
+      <p class="product-card__variant">
+        @if (displayVariantName()) {
+          <span>{{ 'PRODUCT_DETAIL.VARIANT' | translate }}: {{ displayVariantName() }}</span>
+        }
+        @if (product().variantSku) {
+          <span>{{ 'PRODUCT_DETAIL.SKU' | translate }}: {{ product().variantSku }}</span>
+        }
+      </p>
+    }
+
+    @if (showOfferBadges()) {
+      <app-offer-badge-list [offers]="product().offers ?? []" />
+    }
 
     @if (showRating()) {
       <div class="product-card__rating">

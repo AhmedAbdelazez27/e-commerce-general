@@ -1,4 +1,6 @@
+import type { ProductStock } from '../../../shared/models/product-stock.model';
 import { PublicSearchProductPriceDto } from './catalog-public-listing.model';
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';
 
 export interface GetProductDetailsParams {
   productId?: number;
@@ -25,8 +27,10 @@ export interface PublicProductImageDto {
 }
 
 export interface PublicProductSpecificationDto {
+  productId?: number;
+  isItemSpecification?: boolean;
   id: number;
-  productVariantId?: number;
+  productVariantId?: number | null;
   productVariantName?: string | null;
   specificationTypeId: number;
   specificationName?: string;
@@ -43,6 +47,7 @@ export interface PublicProductSpecificationDto {
 }
 
 export interface PublicProductVariantDto {
+  stock?: ProductStock;
   id: number;
   productId: number;
   variantSKU?: string;
@@ -54,9 +59,11 @@ export interface PublicProductVariantDto {
   price?: PublicSearchProductPriceDto;
   images?: PublicProductImageDto[];
   specifications?: PublicProductSpecificationDto[];
+  offers?: PublicOfferBadge[];
 }
 
 export interface PublicProductDetailsDto {
+  stock?: ProductStock;
   id: number;
   productId?: number;
   slug?: string | null;
@@ -105,9 +112,11 @@ export interface PublicProductDetailsDto {
   images?: PublicProductImageDto[];
   variants?: PublicProductVariantDto[];
   specifications?: PublicProductSpecificationDto[];
+  offers?: PublicOfferBadge[];
 }
 
 export interface PublicRelatedProductDto {
+  stock?: ProductStock;
   id: number;
   productId: number;
   slug?: string;
@@ -130,6 +139,7 @@ export interface PublicRelatedProductDto {
   finalPrice: number;
   discountPercent?: number | null;
   availabilityStatus?: string;
+  offers?: PublicOfferBadge[];
 }
 
 export interface ProductDetailLoadRef {
@@ -138,7 +148,8 @@ export interface ProductDetailLoadRef {
 }
 
 export interface PublicFinalPriceDto {
-  productVariantId: number;
+  productId?: number;
+  productVariantId: number | null;
   basePrice: number;
   customerPrice: number;
   discountAmount: number;
@@ -147,4 +158,5 @@ export interface PublicFinalPriceDto {
   finalPrice: number;
   appliedDiscountName?: string | null;
   appliedCouponCode?: string | null;
+  offers?: PublicOfferBadge[];
 }

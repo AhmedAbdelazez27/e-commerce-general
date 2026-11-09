@@ -1,3 +1,7 @@
+import { apiErrorMessage } from '../../../../core/utils/api-error-message.util';
+import { AccountOrdersApiService } from '../../../account/services/account-orders-api.service';
+import { readPendingCheckout, writePendingCheckout } from '../../utils/pending-checkout.util';
+import { forkJoin } from 'rxjs';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -31,8 +35,23 @@ export class ReviewStepComponent implements OnInit {
   private readonly toastr = inject(ToastrService);
   private readonly translate = inject(TranslateService);
   private readonly portal = inject(PortalConfigService);
+  private readonly ordersApi = inject(AccountOrdersApiService);
+  readonly uncertain = signal(false);
   readonly placing = signal(false);
   readonly savedAddresses = signal<CustomerAddressDto[]>([]);
+  readonly promotionWarnings = computed(() => this.cart.cart()?.PromotionWarnings ?? []);
+  readonly blocksCheckout = computed(() =>
+    (this.cart.cart()?.OfferGuidance ?? []).some((offer) => offer.blocksCheckout),
+  );
+  readonly canConfirm = computed(
+    () =>
+      !this.placing() &&
+      !this.uncertain() &&
+      !this.cart.reconciliationRequired() &&
+      !this.cart.loading() &&
+      this.lineItems().length > 0 &&
+      !this.blocksCheckout(),
+  );
 
   readonly enableShipment = this.portal.enableShipment;
 
@@ -41,7 +60,7 @@ export class ReviewStepComponent implements OnInit {
     if (!cart?.Items?.length) {
       return [];
     }
-    return enrichCartItems(cart.Items);
+    return enrichCartItems(cart.Items, cart.SupportsPromotionPricing === true);
   });
 
   readonly totals = computed(() => {
@@ -58,7 +77,10 @@ export class ReviewStepComponent implements OnInit {
       subtotal: merchandise.subtotal,
       productDiscount: merchandise.productDiscount,
       couponDiscount: merchandise.couponDiscount,
-      discount: merchandise.productDiscount + merchandise.couponDiscount,
+      offerDiscount: merchandise.offerDiscount,
+      taxAmount: merchandise.taxAmount,
+      discount:
+        merchandise.productDiscount + merchandise.offerDiscount + merchandise.couponDiscount,
       shippingAmount,
       total: merchandise.merchandiseTotal + shippingAmount,
     };
@@ -85,6 +107,11 @@ export class ReviewStepComponent implements OnInit {
 
   ngOnInit(): void {
     this.cart.refresh(this.checkoutState.couponCode() || null);
+    const pending = readPendingCheckout();
+    if (pending?.customerId === this.resolveCustomerId()) {
+      this.uncertain.set(true);
+      this.recheckOrder();
+    }
     const customerId = this.resolveCustomerId();
     if (customerId > 0) {
       this.addressApi.getAddresses(customerId).subscribe({
@@ -94,6 +121,11 @@ export class ReviewStepComponent implements OnInit {
   }
 
   placeOrder(): void {
+    if (!this.canConfirm()) return;
+    if (this.blocksCheckout()) {
+      this.toastr.warning(this.translate.instant('OFFERS.COMPLETE_BEFORE_CHECKOUT'));
+      return;
+    }
     const orderContext = this.cart.getPlaceOrderContext();
 
     const validation = this.checkoutState.validateReviewStep(orderContext);
@@ -113,6 +145,7 @@ export class ReviewStepComponent implements OnInit {
 
     this.placing.set(true);
     const body = this.checkoutState.toPlaceOrderRequest(orderContext);
+    writePendingCheckout({ customerId: orderContext.customerId, cartId: orderContext.cartId });
     this.checkoutApi.placeOrder(body).subscribe({
       next: (order) => {
         this.placing.set(false);
@@ -121,20 +154,56 @@ export class ReviewStepComponent implements OnInit {
           return;
         }
         this.checkoutState.lastPlacedOrder.set(order);
-        this.cart.clearCart().subscribe({
-          next: () => {
-            void this.router.navigate(['/checkout/success'], {
-              state: { order },
-            });
-          },
-          error: () => {
-            void this.router.navigate(['/checkout/success'], { state: { order } });
-          },
-        });
+        writePendingCheckout(null);
+        this.cart.refresh();
+        void this.router.navigate(['/checkout/success'], { state: { order } });
+      },
+      error: (error) => {
+        this.placing.set(false);
+        this.cart.reconcileAfterFailure(error);
+        // Transport failure or an invalid success envelope can occur after order creation.
+        const status = (error as { status?: number })?.status;
+        const uncertain = status === 0 || status == null || status >= 500;
+        this.uncertain.set(uncertain);
+        this.toastr.error(
+          apiErrorMessage(
+            error,
+            this.translate.instant(
+              uncertain ? 'CHECKOUT.UNCERTAIN' : 'CHECKOUT.PLACE_ORDER_FAILED',
+            ),
+          ),
+        );
+        if (uncertain) this.recheckOrder();
+        else writePendingCheckout(null);
+      },
+    });
+  }
+
+  recheckOrder(): void {
+    const pending = readPendingCheckout();
+    if (!pending || pending.customerId !== this.resolveCustomerId() || this.placing()) return;
+    this.placing.set(true);
+    forkJoin({
+      cart: this.cart.reloadConfirmedCart(),
+      orders: this.ordersApi.getCustomerOrders(pending.customerId, true),
+    }).subscribe({
+      next: ({ cart, orders }) => {
+        this.placing.set(false);
+        const found = orders.find((order) => order.cartId === pending.cartId);
+        if (found) {
+          writePendingCheckout(null);
+          void this.router.navigate(['/account/orders', found.id]);
+          return;
+        }
+        // A retry is possible only after both authoritative reads succeed.
+        if (cart.CartId === pending.cartId && cart.Items.length > 0) {
+          writePendingCheckout(null);
+          this.uncertain.set(false);
+        }
       },
       error: () => {
         this.placing.set(false);
-        this.toastr.error(this.translate.instant('CHECKOUT.PLACE_ORDER_FAILED'));
+        this.uncertain.set(true);
       },
     });
   }
@@ -144,10 +213,7 @@ export class ReviewStepComponent implements OnInit {
       void this.router.navigate(['/cart']);
       return;
     }
-    if (
-      errorKey === 'CHECKOUT.PAYMENT_REQUIRED' ||
-      !this.checkoutState.hasPayment()
-    ) {
+    if (errorKey === 'CHECKOUT.PAYMENT_REQUIRED' || !this.checkoutState.hasPayment()) {
       void this.router.navigate(['/checkout/payment']);
       return;
     }

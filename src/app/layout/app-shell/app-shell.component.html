@@ -8,10 +8,7 @@
   <!-- <app-announcement-bar /> -->
 
   <div class="store-chrome">
-    <app-store-header
-      [mobileMenuOpen]="mobileDrawerOpen()"
-      (openMobileMenu)="openMobileDrawer()"
-    />
+    <app-store-header [mobileMenuOpen]="mobileDrawerOpen()" (openMobileMenu)="openMobileDrawer()" />
 
     <app-store-nav />
   </div>
@@ -25,4 +22,7 @@
   </main>
 
   <app-store-footer />
+  @if (cartActions.modelSelection(); as request) {
+    <app-product-model-picker [request]="request" />
+  }
 </div>

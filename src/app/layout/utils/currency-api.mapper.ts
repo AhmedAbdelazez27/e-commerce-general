@@ -1,8 +1,7 @@
 import type { PublicCurrencyDto } from '../../core/models/currency.model';
+import { isValidCurrencyCode } from '../../core/utils/currency-code.util';
 
 type JsonRecord = Record<string, unknown>;
-
-const ISO_CURRENCY_CODE = /^[A-Z]{3}$/;
 
 function readString(o: JsonRecord, ...keys: string[]): string | undefined {
   for (const key of keys) {
@@ -43,7 +42,7 @@ export function normalizePublicCurrencyDto(raw: unknown): PublicCurrencyDto | nu
   const id = readNumber(o, 'id', 'Id');
   const code = readString(o, 'code', 'Code')?.toUpperCase();
 
-  if (id == null || id <= 0 || !code || !ISO_CURRENCY_CODE.test(code)) {
+  if (id == null || id <= 0 || !code || !isValidCurrencyCode(code)) {
     return null;
   }
 

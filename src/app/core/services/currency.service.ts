@@ -5,14 +5,9 @@ import type { AppLang } from './language.service';
 import type { CurrencySelection, PublicCurrencyDto } from '../models/currency.model';
 import { EcPublicCatalogApiService } from '../../layout/services/ec-public-catalog-api.service';
 import { normalizePublicCurrencyDto } from '../../layout/utils/currency-api.mapper';
+import { isValidCurrencyCode } from '../utils/currency-code.util';
 
 const STORAGE_KEY = 'app_currency';
-
-const ISO_CURRENCY_CODE = /^[A-Z]{3}$/;
-
-function isValidCurrencyCode(code: string): boolean {
-  return ISO_CURRENCY_CODE.test(code.trim().toUpperCase());
-}
 
 function readStoredCurrency(): CurrencySelection | null {
   try {

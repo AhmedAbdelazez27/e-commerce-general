@@ -20,6 +20,7 @@ export class CartItemRowComponent {
 
   readonly quantityChange = output<{ cartDetailId: number; quantity: number }>();
   readonly remove = output<number>();
+  readonly rewardSelectionChange = output<{ cartDetailId: number; selectedReward: boolean }>();
 
   displayTitle(): string {
     const i = this.item();
@@ -64,15 +65,22 @@ export class CartItemRowComponent {
 
   onQuantityInput(event: Event): void {
     const raw = Number((event.target as HTMLInputElement).value);
-    const qty = Number.isFinite(raw) ? Math.floor(raw) : 1;
+    const qty = Number.isFinite(raw) ? raw : 1;
     const i = this.item();
     this.quantityChange.emit({
       cartDetailId: i.cartDetailId,
-      quantity: Math.min(i.maxQuantity, Math.max(1, qty)),
+      quantity: Math.min(i.maxQuantity, Math.max(this.item().serialQuantity ? 1 : 0.01, qty)),
     });
   }
 
   onRemove(): void {
     this.remove.emit(this.item().cartDetailId);
+  }
+
+  onRewardSelectionChange(event: Event): void {
+    this.rewardSelectionChange.emit({
+      cartDetailId: this.item().cartDetailId,
+      selectedReward: (event.target as HTMLInputElement).checked,
+    });
   }
 }

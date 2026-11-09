@@ -46,6 +46,7 @@ export class HomeHeroComponent {
   readonly activeIndex = signal(0);
   readonly apiSlides = signal<HomeHeroSlide[]>([]);
   readonly loading = signal(true);
+  readonly failedImages = signal<ReadonlySet<string>>(new Set());
 
   readonly slides = computed(() => {
     const fromApi = this.apiSlides();
@@ -71,7 +72,10 @@ export class HomeHeroComponent {
 
       untracked(() => {
         this.activeIndex.update((index) => (index >= count ? 0 : index));
-        const intervalMs = cfg.autoPlay === false || this.prefersReducedMotion() ? null : (cfg.autoPlayIntervalMs ?? DEFAULT_AUTO_PLAY_MS);
+        const intervalMs =
+          cfg.autoPlay === false || this.prefersReducedMotion()
+            ? null
+            : (cfg.autoPlayIntervalMs ?? DEFAULT_AUTO_PLAY_MS);
         this.restartAutoPlay(intervalMs);
       });
     });
@@ -122,6 +126,10 @@ export class HomeHeroComponent {
       return this.translate.instant(slide.imageAltKey);
     }
     return '';
+  }
+
+  imageFailed(src: string): void {
+    this.failedImages.update((images) => new Set([...images, src]));
   }
 
   headline(slide: HomeHeroSlide): string {
@@ -201,7 +209,9 @@ export class HomeHeroComponent {
   }
 
   private prefersReducedMotion(): boolean {
-    return this.document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false;
+    return (
+      this.document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false
+    );
   }
 
   private loadSlides(): void {

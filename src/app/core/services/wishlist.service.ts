@@ -1,189 +1,235 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { map } from 'rxjs/operators';
-
+import { Observable, defer, firstValueFrom } from 'rxjs';
 import { AuthTokenService } from './auth-token.service';
 import { CurrencyService } from './currency.service';
+import { CartService } from './cart.service';
 import { EcWishlistApiService } from '../../features/wishlist/services/ec-wishlist-api.service';
-import type { EcWishlistContextRequest, EcWishlistDto } from '../../features/wishlist/models/ec-wishlist.model';
+import type {
+  EcWishlistContextRequest,
+  EcWishlistDto,
+} from '../../features/wishlist/models/ec-wishlist.model';
 import { ProductCardData } from '../../shared/models/product-card.model';
 import { mapStorefrontProductToCardData } from '../../shared/utils/product-card.util';
+import { modelId, requiresModel, selectionKey } from '../../shared/utils/product-stock.util';
 
 const WISHLIST_STORAGE_KEY = 'ecommerce_wishlist';
+const PENDING_MOVE_KEY = 'ecommerce_wishlist_pending_move';
+type Action = 'added' | 'removed' | null;
 
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
   private readonly auth = inject(AuthTokenService);
   private readonly api = inject(EcWishlistApiService);
   private readonly currency = inject(CurrencyService);
+  private readonly cart = inject(CartService);
   private readonly itemsSignal = signal<ProductCardData[]>([]);
   private readonly wishlistMetaSignal = signal<Pick<EcWishlistDto, 'CurrencyCode'> | null>(null);
-
-  constructor() {
-    this.currency.currencyChanged$.subscribe(() => {
-      if (this.auth.isLoggedIn()) {
-        this.refresh();
-      }
-    });
-  }
-
+  private refreshSequence = 0;
+  readonly busy = signal(false);
+  readonly recoveryNeeded = signal(false);
   readonly items = this.itemsSignal.asReadonly();
   readonly itemCount = computed(() => this.itemsSignal().length);
 
+  constructor() {
+    this.currency.currencyChanged$.subscribe(() => {
+      if (this.auth.isLoggedIn()) this.refresh();
+    });
+  }
   displayCurrencyCode(): string {
-    const fromWishlist = this.wishlistMetaSignal()?.CurrencyCode?.trim();
-    if (fromWishlist) {
-      return fromWishlist;
-    }
-    return this.currency.displayCode();
+    return this.wishlistMetaSignal()?.CurrencyCode?.trim() || this.currency.displayCode();
   }
-
   refresh(): void {
-    const context = this.buildEcWishlistContext();
-    if (context.customerId > 0) {
-      this.api.getWishlist(context).subscribe((dto) => {
-        this.wishlistMetaSignal.set(dto.CurrencyCode ? { CurrencyCode: dto.CurrencyCode } : null);
-        this.itemsSignal.set(this.mapWishlistItems(dto));
-      });
+    if (!this.auth.isLoggedIn()) {
+      ++this.refreshSequence;
+      this.wishlistMetaSignal.set(null);
+      this.itemsSignal.set(this.readFromStorage());
+      this.recoveryNeeded.set(false);
       return;
     }
-
-    this.wishlistMetaSignal.set(null);
-    this.itemsSignal.set(this.readFromStorage());
+    void this.reload().catch(() => {
+      /* Retain last confirmed entries on failure. */
+    });
   }
-
-  isInWishlist(productId: number): boolean {
-    return this.itemsSignal().some((item) => item.id === productId);
+  private async reload(): Promise<void> {
+    const sequence = ++this.refreshSequence;
+    const owner = this.owner();
+    const pending = this.hasPendingMove();
+    this.recoveryNeeded.set(pending);
+    const [dto] = await Promise.all([
+      firstValueFrom(this.api.getWishlist(this.context())),
+      pending ? firstValueFrom(this.cart.reloadConfirmedCart()) : Promise.resolve(),
+    ]);
+    if (owner !== this.owner() || sequence !== this.refreshSequence) return;
+    this.accept(dto);
+    if (pending) this.setPendingMove(false);
   }
-
-  isInWishlistVariant(productVariantId: number): boolean {
-    return this.itemsSignal().some((item) => item.productVariantId === productVariantId);
+  isInWishlist(productId: number, productVariantId?: number | null): boolean {
+    const key = selectionKey(productId, productVariantId);
+    return this.itemsSignal().some((item) => selectionKey(item.id, item.productVariantId) === key);
   }
-
-  add(product: ProductCardData): boolean {
-    if (this.isInWishlist(product.id)) {
-      return false;
-    }
-    const next = [...this.itemsSignal(), product];
-    this.persist(next);
-    return true;
-  }
-
-  remove(productId: number): void {
-    const next = this.itemsSignal().filter((item) => item.id !== productId);
-    this.persist(next);
-  }
-
-  removeVariant(productVariantId: number): void {
-    const next = this.itemsSignal().filter((item) => item.productVariantId !== productVariantId);
-    this.persist(next);
-  }
-
-  toggle(product: ProductCardData): 'added' | 'removed' {
-    const context = this.buildEcWishlistContext();
-    const variantId = product.productVariantId ?? 0;
-
-    if (context.customerId > 0 && variantId > 0) {
-      const exists = this.isInWishlistVariant(variantId);
-      if (exists) {
-        this.api
-          .remove(variantId, context)
-          .pipe(map((ok) => (ok ? 'removed' : 'removed' as const)))
-          .subscribe(() => this.removeVariant(variantId));
-        return 'removed';
-      }
-
-      this.api
-        .saveProduct({ productVariantId: variantId, ...context })
-        .subscribe((ok) => {
-          if (ok) {
-            this.persist([...this.itemsSignal(), product]);
-          }
-        });
-      return 'added';
-    }
-
-    // Guest / fallback local-only.
-    if (this.isInWishlist(product.id)) {
-      this.remove(product.id);
-      return 'removed';
-    }
-    this.add(product);
-    return 'added';
-  }
-
-  moveToCart(product: ProductCardData): void {
-    const context = this.buildEcWishlistContext();
-    const variantId = product.productVariantId ?? 0;
-    if (context.customerId > 0 && variantId > 0) {
-      this.api.moveToCart({ productVariantId: variantId, ...context }).subscribe((ok) => {
-        if (ok) {
-          this.removeVariant(variantId);
-        }
-      });
-      return;
-    }
-
-    this.remove(product.id);
-  }
-
-  private mapWishlistItems(dto: EcWishlistDto): ProductCardData[] {
-    const wishlistCurrency = dto.CurrencyCode?.trim();
-    return dto.Items.map((item) =>
-      mapStorefrontProductToCardData(item, {
-        currency: item.currencyCode ?? wishlistCurrency,
-      }),
+  removeLocal(product: ProductCardData): void {
+    const key = selectionKey(product.id, product.productVariantId);
+    this.persist(
+      this.itemsSignal().filter((item) => selectionKey(item.id, item.productVariantId) !== key),
     );
   }
-
-  private buildEcWishlistContext(): EcWishlistContextRequest {
+  toggle(product: ProductCardData): Observable<Action> {
+    return defer(async () => {
+      if (this.busy() || this.hasPendingMove()) return null;
+      const variant = modelId(product.productVariantId);
+      const exists = this.isInWishlist(product.id, variant);
+      // Removal is allowed even when a previously saved selection is no longer purchasable.
+      if (!exists && requiresModel(product.stock) && !variant)
+        throw new Error('WISHLIST_MODEL_REQUIRED');
+      this.busy.set(true);
+      ++this.refreshSequence;
+      const owner = this.owner();
+      try {
+        if (!this.auth.isLoggedIn()) {
+          if (exists) this.removeLocal(product);
+          else this.persist([...this.itemsSignal(), { ...product, productVariantId: variant }]);
+        } else {
+          const command = { ...this.context(), productId: product.id, productVariantId: variant };
+          if (exists) {
+            await firstValueFrom(this.api.remove(command));
+            if (owner !== this.owner()) return null;
+            await this.reload(); // Remove has no DTO.
+          } else {
+            const dto = await firstValueFrom(this.api.saveProduct(command));
+            if (owner === this.owner()) this.accept(dto);
+          }
+        }
+        return owner === this.owner() ? (exists ? 'removed' : 'added') : null;
+      } finally {
+        this.busy.set(false);
+      }
+    });
+  }
+  moveToCart(product: ProductCardData): Observable<boolean> {
+    return defer(async () => {
+      if (this.busy() || this.cart.loading()) return false;
+      if (this.hasPendingMove()) {
+        await this.reload(); // Reconcile first; this click never retries an uncertain add.
+        return false;
+      }
+      if (requiresModel(product.stock) && !modelId(product.productVariantId))
+        throw new Error('WISHLIST_MODEL_REQUIRED');
+      this.busy.set(true);
+      ++this.refreshSequence;
+      const owner = this.owner();
+      try {
+        if (!this.auth.isLoggedIn()) {
+          const ok = await firstValueFrom(
+            this.cart.addItem(modelId(product.productVariantId), 1, null, {
+              productId: product.id,
+              productNameEn: product.title,
+              productNameAr: product.titleAr ?? product.title,
+              variantName: product.variantName,
+              variantSku: product.variantSku,
+              imageUrl: product.image,
+              has3D: product.has3D,
+              unitPrice: product.price,
+              isAvailable: product.isAvailable,
+            }),
+          );
+          if (ok) this.removeLocal(product);
+          return ok;
+        }
+        this.setPendingMove(true); // Survives reload after a lost response.
+        const cart = await firstValueFrom(
+          this.api.moveToCart({
+            ...this.context(),
+            productId: product.id,
+            productVariantId: modelId(product.productVariantId),
+          }),
+        );
+        if (owner !== this.owner()) return false;
+        this.cart.acceptWishlistCart(cart);
+        await this.reload(); // Reload both authoritative cart and wishlist after success.
+        return true;
+      } catch (error) {
+        if (owner === this.owner() && this.auth.isLoggedIn()) {
+          // No optimistic removal, and no automatic retry of MoveToCart.
+          await this.reload().catch(() => undefined);
+        }
+        throw error;
+      } finally {
+        this.busy.set(false);
+      }
+    });
+  }
+  private accept(dto: EcWishlistDto): void {
+    ++this.refreshSequence;
+    this.wishlistMetaSignal.set(dto.CurrencyCode ? { CurrencyCode: dto.CurrencyCode } : null);
+    this.itemsSignal.set(
+      dto.Items.map((item) => ({
+        ...mapStorefrontProductToCardData(item, {
+          currency: item.currencyCode ?? dto.CurrencyCode,
+        }),
+        wishlistItemId: item.wishlistItemId,
+        variantName: item.variantName,
+        variantNameAr: item.variantNameAr,
+        variantSku: item.variantSku,
+        quantity: item.quantity,
+        availabilityStatus: item.availabilityStatus,
+      })),
+    );
+  }
+  private owner(): string {
+    return this.auth.isLoggedIn() ? (this.auth.getCustomerId() ?? 'current') : 'guest';
+  }
+  private context(): EcWishlistContextRequest {
     const selection = this.currency.selection();
-
+    const id = Number(this.auth.getCustomerId());
     return {
-      customerId: this.resolveCustomerId(),
+      customerId: id > 0 ? id : undefined,
       currencyId: selection.id > 0 ? selection.id : undefined,
       currencyCode: selection.code || undefined,
     };
   }
-
+  private hasPendingMove(): boolean {
+    if (!this.auth.isLoggedIn()) return false;
+    try {
+      return sessionStorage.getItem(PENDING_MOVE_KEY + ':' + this.owner()) === 'pending';
+    } catch {
+      return this.recoveryNeeded();
+    }
+  }
+  private setPendingMove(pending: boolean): void {
+    this.recoveryNeeded.set(pending);
+    try {
+      const key = PENDING_MOVE_KEY + ':' + this.owner();
+      if (pending) sessionStorage.setItem(key, 'pending');
+      else sessionStorage.removeItem(key);
+    } catch {
+      /* in-memory guard remains active */
+    }
+  }
   private persist(items: ProductCardData[]): void {
     try {
       localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
     } catch {
-      // ignore quota / private mode
+      /* private mode */
     }
     this.itemsSignal.set(items);
   }
-
-  private resolveCustomerId(): number {
-    if (!this.auth.isLoggedIn()) {
-      return 0;
-    }
-    const raw = this.auth.getCustomerId();
-    if (!raw?.trim()) {
-      return 0;
-    }
-    const id = Number(raw);
-    return Number.isFinite(id) ? id : 0;
-  }
-
   private readFromStorage(): ProductCardData[] {
     try {
-      const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
-      if (!raw?.trim()) {
-        return [];
+      const parsed: unknown = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) ?? '[]');
+      if (!Array.isArray(parsed)) return [];
+      const selections = new Map<string, ProductCardData>();
+      for (const item of parsed) {
+        if (
+          !item ||
+          !(item.id > 0) ||
+          typeof item.title !== 'string' ||
+          typeof item.price !== 'number'
+        )
+          continue;
+        const normalized = { ...item, productVariantId: modelId(item.productVariantId) };
+        selections.set(selectionKey(item.id, normalized.productVariantId), normalized);
       }
-      const parsed = JSON.parse(raw) as unknown;
-      if (!Array.isArray(parsed)) {
-        return [];
-      }
-      return parsed.filter(
-        (item): item is ProductCardData =>
-          !!item &&
-          typeof item === 'object' &&
-          typeof (item as ProductCardData).id === 'number' &&
-          typeof (item as ProductCardData).title === 'string' &&
-          typeof (item as ProductCardData).price === 'number',
-      );
+      return [...selections.values()];
     } catch {
       return [];
     }

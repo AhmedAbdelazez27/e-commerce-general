@@ -1,3 +1,9 @@
+import {
+  canPurchase,
+  modelId,
+  normalizeStock,
+  requiresModel,
+} from '../../../shared/utils/product-stock.util';
 import { AppLang } from '../../../core/services/language.service';
 import { resolveAttachmentUrlOptional } from '../../../core/utils/attachment-url.util';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
@@ -23,10 +29,9 @@ import {
   resolveProductPosterUrl,
   resolveStorefrontMediaUrl,
 } from '../../../shared/utils/storefront-media.util';
-import {
-  normalizePublicProductImageDto,
-  resolveProductListingMedia,
-} from './catalog-media.util';
+import { normalizePublicProductImageDto, resolveProductListingMedia } from './catalog-media.util';
+import { normalizeSearchProductPrice } from './catalog-listing-api.mapper';
+import { normalizeOfferBadges } from '../../../shared/utils/promotion-api.mapper';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -73,9 +78,12 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
   }
 
   const base = raw as PublicProductDetailsDto;
+  const variantsRaw = o['variants'] ?? o['Variants'];
+  const price = normalizeSearchProductPrice(o['price'] ?? o['Price']) ?? base.price;
 
   return {
     ...base,
+    stock: normalizeStock(o['stock'] ?? o['Stock']),
     id,
     productId: readNumberField(o, 'productId', 'ProductId') ?? base.productId ?? id,
     slug: readStringField(o, 'slug', 'Slug') ?? base.slug ?? null,
@@ -94,8 +102,10 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
       base.shortDescriptionEn ??
       null,
     description: readStringField(o, 'description', 'Description') ?? base.description ?? null,
-    descriptionAr: readStringField(o, 'descriptionAr', 'DescriptionAr') ?? base.descriptionAr ?? null,
-    descriptionEn: readStringField(o, 'descriptionEn', 'DescriptionEn') ?? base.descriptionEn ?? null,
+    descriptionAr:
+      readStringField(o, 'descriptionAr', 'DescriptionAr') ?? base.descriptionAr ?? null,
+    descriptionEn:
+      readStringField(o, 'descriptionEn', 'DescriptionEn') ?? base.descriptionEn ?? null,
     metaTitle: readStringField(o, 'metaTitle', 'MetaTitle') ?? base.metaTitle ?? null,
     metaKeywords: readStringField(o, 'metaKeywords', 'MetaKeywords') ?? base.metaKeywords ?? null,
     metaDescription:
@@ -104,12 +114,83 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
       resolveAttachmentUrlOptional(
         readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl,
       ) ?? null,
+    price,
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
+    variants: Array.isArray(variantsRaw)
+      ? variantsRaw
+          .map(normalizePublicProductVariantDto)
+          .filter((item): item is PublicProductVariantDto => item != null)
+      : base.variants,
   };
 }
 
-function resolveProductDescriptions(
-  dto: PublicProductDetailsDto,
-): { descriptionEn: string; descriptionAr: string } {
+export function normalizePublicProductVariantDto(raw: unknown): PublicProductVariantDto | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  const productId = readNumberField(o, 'productId', 'ProductId');
+  if (!id || !productId) return null;
+  const base = raw as PublicProductVariantDto;
+  return {
+    ...base,
+    stock: normalizeStock(o['stock'] ?? o['Stock']),
+    id,
+    productId,
+    variantSKU: readStringField(o, 'variantSKU', 'variantSku', 'VariantSKU', 'VariantSku'),
+    variantName: readStringField(o, 'variantName', 'VariantName'),
+    additionalPrice: readNumberField(o, 'additionalPrice', 'AdditionalPrice'),
+    quantity: readNumberField(o, 'quantity', 'Quantity'),
+    sortOrder: readNumberField(o, 'sortOrder', 'SortOrder'),
+    availabilityStatus: readStringField(o, 'availabilityStatus', 'AvailabilityStatus'),
+    price: normalizeSearchProductPrice(o['price'] ?? o['Price']) ?? base.price,
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
+  };
+}
+
+export function normalizePublicFinalPriceDto(raw: unknown): PublicFinalPriceDto | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as JsonRecord;
+  const productVariantId = readNumberField(o, 'productVariantId', 'ProductVariantId');
+  if (readNumberField(o, 'finalPrice', 'FinalPrice') == null) return null;
+  return {
+    productVariantId: modelId(productVariantId),
+    productId: readNumberField(o, 'productId', 'ProductId'),
+    basePrice: readNumberField(o, 'basePrice', 'BasePrice') ?? 0,
+    customerPrice: readNumberField(o, 'customerPrice', 'CustomerPrice') ?? 0,
+    discountAmount: readNumberField(o, 'discountAmount', 'DiscountAmount') ?? 0,
+    couponDiscountAmount: readNumberField(o, 'couponDiscountAmount', 'CouponDiscountAmount') ?? 0,
+    taxAmount: readNumberField(o, 'taxAmount', 'TaxAmount') ?? 0,
+    finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
+    appliedDiscountName: readStringField(o, 'appliedDiscountName', 'AppliedDiscountName') ?? null,
+    appliedCouponCode: readStringField(o, 'appliedCouponCode', 'AppliedCouponCode') ?? null,
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
+  };
+}
+
+export function normalizePublicRelatedProductDto(raw: unknown): PublicRelatedProductDto | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  const productId = readNumberField(o, 'productId', 'ProductId') ?? id;
+  if (!id || !productId) return null;
+  const base = raw as PublicRelatedProductDto;
+  return {
+    ...base,
+    stock: normalizeStock(o['stock'] ?? o['Stock']),
+    id,
+    productId,
+    name: readStringField(o, 'name', 'Name') ?? base.name,
+    nameAr: readStringField(o, 'nameAr', 'NameAr'),
+    nameEn: readStringField(o, 'nameEn', 'NameEn'),
+    finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
+    offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
+  };
+}
+
+function resolveProductDescriptions(dto: PublicProductDetailsDto): {
+  descriptionEn: string;
+  descriptionAr: string;
+} {
   const descriptionEn = pickDescription(
     dto.descriptionEn,
     dto.description,
@@ -136,35 +217,6 @@ function resolveDetailsPrice(dto: PublicProductDetailsDto): number {
     return dto.finalPrice;
   }
   return dto.price?.customerPrice ?? dto.price?.basePrice ?? 0;
-}
-
-const UNAVAILABLE_STATUSES = new Set(['OutOfStock', 'SoldOut', 'Unavailable', 'out_of_stock']);
-const AVAILABLE_STATUSES = new Set(['InStock', 'Available', 'in_stock']);
-
-/** Maps API quantity + availabilityStatus into stock the UI can validate against. */
-export function resolveStockFromApi(
-  quantity: number | undefined,
-  availabilityStatus?: string | null,
-): { stockQuantity: number; isAvailable: boolean } {
-  const status = availabilityStatus?.trim();
-  const normalizedQty =
-    quantity != null && Number.isFinite(quantity) && quantity >= 0
-      ? Math.floor(quantity)
-      : 0;
-
-  if (status && UNAVAILABLE_STATUSES.has(status)) {
-    return { stockQuantity: 0, isAvailable: false };
-  }
-
-  const isAvailable =
-    status && AVAILABLE_STATUSES.has(status)
-      ? normalizedQty > 0
-      : normalizedQty > 0;
-
-  return {
-    stockQuantity: isAvailable ? normalizedQty : 0,
-    isAvailable,
-  };
 }
 
 function formatSpecificationValue(spec: PublicProductSpecificationDto): { en: string; ar: string } {
@@ -256,10 +308,14 @@ export function mapProductVariants(variants: PublicProductVariantDto[]): Product
       variant.price?.basePrice != null && variant.price.basePrice > price
         ? variant.price.basePrice
         : undefined;
-    const stock = resolveStockFromApi(variant.quantity, variant.availabilityStatus);
+    const stock = {
+      isAvailable: canPurchase(variant.stock, variant.availabilityStatus),
+      stockQuantity: variant.stock?.available ?? 0,
+    };
 
     return {
       id: variant.id,
+      stock: variant.stock,
       productId: variant.productId,
       name: variant.variantName?.trim() || variant.variantSKU || `Variant ${variant.id}`,
       sku: variant.variantSKU ?? `VAR-${variant.id}`,
@@ -267,40 +323,9 @@ export function mapProductVariants(variants: PublicProductVariantDto[]): Product
       compareAtPrice,
       isAvailable: stock.isAvailable,
       stockQuantity: stock.stockQuantity,
+      offers: variant.offers ?? variant.price?.offers ?? [],
     };
   });
-}
-
-export function pickDefaultVariant(
-  variants: ProductDetailVariant[],
-  details: PublicProductDetailsDto,
-): ProductDetailVariant | null {
-  if (variants.length === 0) {
-    return null;
-  }
-  if (variants.length === 1) {
-    return variants[0];
-  }
-
-  const detailsVariantId = details.price?.productVariantId;
-  if (detailsVariantId != null) {
-    const matched = variants.find((variant) => variant.id === detailsVariantId);
-    if (matched) {
-      return matched;
-    }
-  }
-
-  return variants.find((variant) => variant.isAvailable) ?? variants[0];
-}
-
-export function resolveProductVariantId(
-  variant: ProductDetailVariant | null,
-  details: PublicProductDetailsDto,
-): number | null {
-  if (variant) {
-    return variant.id;
-  }
-  return details.price?.productVariantId ?? null;
 }
 
 export interface ProductDetailMapOverrides {
@@ -312,7 +337,7 @@ export function mapPublicProductDetailsToProductDetail(
   dto: PublicProductDetailsDto,
   overrides?: ProductDetailMapOverrides,
 ): ProductDetail {
-  const productId = dto.id || dto.productId || 0;
+  const productId = dto.productId || dto.id || 0;
   const nameEn = dto.nameEn?.trim() || dto.name;
   const nameAr = dto.nameAr?.trim() || dto.name;
   const brandNameEn = dto.brand?.nameEn || dto.brandName || '';
@@ -321,7 +346,10 @@ export function mapPublicProductDetailsToProductDetail(
   const categoryNameAr = dto.category?.nameAr || dto.categoryName || categoryNameEn;
   const price = resolveDetailsPrice(dto);
   const compareAtPrice = dto.oldPrice != null && dto.oldPrice > price ? dto.oldPrice : undefined;
-  const stock = resolveStockFromApi(dto.quantity, dto.availabilityStatus);
+  const stock = {
+    isAvailable: canPurchase(dto.stock, dto.availabilityStatus),
+    stockQuantity: dto.stock?.available ?? 0,
+  };
   const { descriptionEn, descriptionAr } = resolveProductDescriptions(dto);
 
   const images =
@@ -339,10 +367,14 @@ export function mapPublicProductDetailsToProductDetail(
       : [{ id: 'placeholder', altEn: nameEn, altAr: nameAr }]);
 
   const specifications =
-    overrides?.specifications ?? mapProductSpecifications(dto.specifications ?? []);
+    overrides?.specifications ??
+    mapProductSpecifications(
+      (dto.specifications ?? []).filter((s) => s.isItemSpecification === true),
+    );
 
   return {
     id: productId,
+    stock: dto.stock,
     slug: dto.slug ?? undefined,
     nameEn,
     nameAr,
@@ -366,14 +398,15 @@ export function mapPublicProductDetailsToProductDetail(
     metaKeywords: dto.metaKeywords?.trim() || undefined,
     metaDescription: dto.metaDescription?.trim() || undefined,
     specifications,
-    shippingInfoEn: 'Standard delivery within 3–5 business days.',
-    shippingInfoAr: 'التوصيل القياسي خلال 3–5 أيام عمل.',
+    shippingInfoEn: 'Delivery timing is confirmed after order validation.',
+    shippingInfoAr: 'يتم تأكيد موعد التوصيل بعد التحقق من الطلب.',
     returnsInfoEn: 'Free returns within 14 days of delivery.',
     returnsInfoAr: 'إرجاع مجاني خلال 14 يوماً من الاستلام.',
     isNew: dto.isNewArrival,
     isBestSeller: dto.isBestSeller,
-    hasVariants: (dto.hasVariants ?? false) || (dto.variants?.length ?? 0) > 1,
-    productVariantId: dto.price?.productVariantId ?? null,
+    hasVariants: requiresModel(dto.stock),
+    productVariantId: null,
+    offers: dto.offers ?? dto.price?.offers ?? [],
   };
 }
 
@@ -382,26 +415,21 @@ export function applyVariantSelectionToProduct(
   variant: ProductDetailVariant | null,
   context: ProductDetailVariantContext,
 ): ProductDetail {
-  const price = context.price > 0 ? context.price : (variant?.price ?? product.price);
-  const compareAtPrice = context.compareAtPrice ?? variant?.compareAtPrice ?? product.compareAtPrice;
-  const isAvailable = variant?.isAvailable ?? context.isAvailable ?? product.isAvailable;
-  const stockQuantity =
-    variant?.stockQuantity ??
-    (isAvailable ? product.stockQuantity : 0);
-
   return {
     ...product,
-    price,
-    compareAtPrice,
-    discountPercent: context.discountPercent ?? product.discountPercent,
-    sku: variant?.sku || context.sku || product.sku,
-    isAvailable,
-    stockQuantity,
-    images: context.images.length > 0 ? context.images : product.images,
-    specifications:
-      context.specifications.length > 0 ? context.specifications : product.specifications,
-    selectedVariantId: variant?.id ?? product.selectedVariantId ?? null,
-    productVariantId: context.productVariantId ?? variant?.id ?? product.productVariantId ?? null,
+    price: context.price,
+    compareAtPrice: context.compareAtPrice,
+    discountPercent: context.discountPercent,
+    variantName: variant?.name,
+    sku: context.sku,
+    stock: context.stock,
+    isAvailable: context.isAvailable,
+    stockQuantity: context.stock?.available ?? 0,
+    images: context.images,
+    specifications: context.specifications,
+    selectedVariantId: context.productVariantId,
+    productVariantId: context.productVariantId,
+    offers: context.offers,
   };
 }
 
@@ -410,7 +438,9 @@ export function applyFinalPriceToProduct(
   finalPrice: PublicFinalPriceDto,
 ): ProductDetail {
   const compareAtPrice =
-    finalPrice.basePrice > finalPrice.finalPrice ? finalPrice.basePrice : product.compareAtPrice;
+    (product.priceQuantity ?? 1) === 1 && finalPrice.basePrice > finalPrice.finalPrice
+      ? finalPrice.basePrice
+      : undefined;
 
   return {
     ...product,
@@ -419,8 +449,9 @@ export function applyFinalPriceToProduct(
     discountPercent:
       compareAtPrice != null
         ? Math.round(((compareAtPrice - finalPrice.finalPrice) / compareAtPrice) * 100)
-        : product.discountPercent,
+        : undefined,
     productVariantId: finalPrice.productVariantId,
+    offers: finalPrice.offers ?? product.offers,
   };
 }
 
@@ -428,7 +459,7 @@ export function mapRelatedProductToListingProduct(
   item: PublicRelatedProductDto,
   _lang: AppLang,
 ): CatalogListingProduct {
-  const inStock = item.availabilityStatus === 'InStock';
+  const inStock = canPurchase(item.stock, item.availabilityStatus);
   const brandName = item.brandName ?? '';
   const media = resolveProductListingMedia({
     mainImageUrl: item.mainImageUrl,
@@ -439,6 +470,8 @@ export function mapRelatedProductToListingProduct(
 
   return {
     id: item.productId ?? item.id,
+    stock: item.stock,
+    productVariantId: null,
     slug: item.slug,
     nameEn: item.nameEn?.trim() || item.name,
     nameAr: item.nameAr?.trim() || item.name,
@@ -455,12 +488,14 @@ export function mapRelatedProductToListingProduct(
     isBestSeller: item.isBestSeller,
     isFeatured: item.isFeatured,
     hasOffer:
+      (item.offers?.length ?? 0) > 0 ||
       (item.discountPercent != null && item.discountPercent > 0) ||
       (item.oldPrice != null && item.oldPrice > item.finalPrice),
     discountPercent: item.discountPercent ?? undefined,
     imageUrl: media.posterUrl,
     has3D: media.has3D,
     createdAt: '',
+    offers: item.offers ?? [],
   };
 }
 
@@ -471,7 +506,10 @@ export function mapRelatedProductsToListingProducts(
   return items.map((item) => mapRelatedProductToListingProduct(item, lang));
 }
 
-export function parseProductRouteParam(param: string | null): { productId?: number; slug?: string } {
+export function parseProductRouteParam(param: string | null): {
+  productId?: number;
+  slug?: string;
+} {
   if (!param?.trim()) {
     return {};
   }

@@ -2,6 +2,7 @@ import type {
   PublicProductShareDto,
   PublicProductShareInfoDto,
 } from '../models/product-share-info.model';
+import { normalizeOfferBadges } from '../../../shared/utils/promotion-api.mapper';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -68,6 +69,7 @@ export function normalizeProductShareInfoDto(raw: unknown): PublicProductShareIn
   const productId = readNumber(o, 'productId', 'ProductId');
   const shareRaw = o['share'] ?? o['Share'];
   const share = normalizeShare(shareRaw);
+  const offersRaw = o['offers'] ?? o['Offers'];
 
   if (productId == null || productId < 1 || !share) {
     return null;
@@ -77,5 +79,6 @@ export function normalizeProductShareInfoDto(raw: unknown): PublicProductShareIn
     productId,
     slug: readString(o, 'slug', 'Slug'),
     share,
+    ...(Array.isArray(offersRaw) ? { offers: normalizeOfferBadges(offersRaw) } : {}),
   };
 }

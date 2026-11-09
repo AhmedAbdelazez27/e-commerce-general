@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -9,10 +9,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
   template: `{{ label() }}`,
 })
 export class CurrencyCodeComponent {
+  readonly code = input<string | undefined>();
   private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
 
   readonly label = computed(
-    () => this.currency.displayCode() || this.translate.instant('PRODUCT_CARD.CURRENCY'),
+    () =>
+      this.code()?.trim() ||
+      this.currency.displayCode() ||
+      this.translate.instant('PRODUCT_CARD.CURRENCY'),
   );
 }

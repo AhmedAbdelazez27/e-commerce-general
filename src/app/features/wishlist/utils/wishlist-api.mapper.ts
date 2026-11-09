@@ -1,4 +1,5 @@
 import type { EcWishlistDto, EcWishlistItem } from '../models/ec-wishlist.model';
+import { modelId, normalizeStock, stockStatus } from '../../../shared/utils/product-stock.util';
 import {
   isStorefront3DAssetUrl,
   resolveProductPosterUrl,
@@ -40,9 +41,7 @@ export function normalizeWishlistItems(raw: unknown): EcWishlistItem[] {
   if (!Array.isArray(raw)) {
     return [];
   }
-  return raw
-    .map(normalizeWishlistItem)
-    .filter((item): item is EcWishlistItem => item != null);
+  return raw.map(normalizeWishlistItem).filter((item): item is EcWishlistItem => item != null);
 }
 
 function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
@@ -53,19 +52,21 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   const o = raw as JsonRecord;
   const price = normalizeWishlistItemPrice(o['price'] ?? o['Price']);
 
-  const productVariantId =
-    readNumber(o, 'productVariantId', 'ProductVariantId') ?? price?.productVariantId ?? 0;
-  if (productVariantId <= 0) {
-    return null;
-  }
-
-  const id =
-    readNumber(o, 'productId', 'ProductId') ??
-    readNumber(o, 'id', 'Id') ??
-    productVariantId;
+  const productVariantId = modelId(readNumber(o, 'productVariantId', 'ProductVariantId'));
+  const id = readNumber(o, 'productId', 'ProductId');
+  if (!id || id <= 0) return null; // Entry IDs and model IDs are never product IDs.
+  const stock = normalizeStock(o['stock'] ?? o['Stock']);
 
   const nameEn =
-    readString(o, 'nameEn', 'NameEn', 'productNameEn', 'ProductNameEn', 'productName', 'ProductName') ??
+    readString(
+      o,
+      'nameEn',
+      'NameEn',
+      'productNameEn',
+      'ProductNameEn',
+      'productName',
+      'ProductName',
+    ) ??
     readString(o, 'title', 'Title') ??
     '';
   const nameAr =
@@ -83,6 +84,8 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   const imageUrl = resolveProductPosterUrl(
     readString(
       o,
+      'productVariantImageUrl',
+      'ProductVariantImageUrl',
       'imageUrl',
       'ImageUrl',
       'productImageUrl',
@@ -117,6 +120,16 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   return {
     id,
     productVariantId,
+    wishlistItemId: readNumber(o, 'id', 'Id'),
+    stock,
+    quantity: readNumber(o, 'quantity', 'Quantity'),
+    availabilityStatus: stockStatus(
+      stock,
+      readString(o, 'availabilityStatus', 'AvailabilityStatus'),
+    ),
+    variantName: readString(o, 'variantNameEn', 'VariantNameEn', 'variantName', 'VariantName'),
+    variantNameAr: readString(o, 'variantNameAr', 'VariantNameAr'),
+    variantSku: readString(o, 'variantSku', 'VariantSku', 'variantSKU', 'VariantSKU'),
     slug,
     nameEn: nameEn || String(id),
     nameAr: nameAr || nameEn || String(id),
@@ -135,11 +148,13 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
   };
 }
 
-function normalizeWishlistItemPrice(raw: unknown): {
-  productVariantId?: number;
-  finalPrice?: number;
-  currencyCode?: string;
-} | undefined {
+function normalizeWishlistItemPrice(raw: unknown):
+  | {
+      productVariantId?: number;
+      finalPrice?: number;
+      currencyCode?: string;
+    }
+  | undefined {
   if (raw == null || typeof raw !== 'object') {
     return undefined;
   }

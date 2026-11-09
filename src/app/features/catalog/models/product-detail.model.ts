@@ -1,6 +1,6 @@
-import {
-  StorefrontMediaType,
-} from '../../../shared/utils/storefront-media.util';
+import type { ProductStock } from '../../../shared/models/product-stock.model';
+import { StorefrontMediaType } from '../../../shared/utils/storefront-media.util';
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';
 
 export interface ProductDetailImage {
   id: string;
@@ -24,6 +24,7 @@ export interface ProductDetailSpec {
 export type ProductDetailInfoTab = 'description' | 'specifications' | 'shipping';
 
 export interface ProductDetailVariant {
+  stock?: ProductStock;
   id: number;
   productId: number;
   name: string;
@@ -32,9 +33,14 @@ export interface ProductDetailVariant {
   compareAtPrice?: number;
   isAvailable: boolean;
   stockQuantity: number;
+  offers?: PublicOfferBadge[];
 }
 
 export interface ProductDetail {
+  variantName?: string;
+  baseImages?: ProductDetailImage[];
+  priceQuantity?: number;
+  stock?: ProductStock;
   id: number;
   slug?: string;
   nameEn: string;
@@ -70,11 +76,13 @@ export interface ProductDetail {
   hasVariants?: boolean;
   selectedVariantId?: number | null;
   productVariantId?: number | null;
+  offers?: PublicOfferBadge[];
 }
 
 export type ProductDetailLoadState = 'idle' | 'loading' | 'loaded' | 'not-found';
 
 export interface ProductDetailVariantContext {
+  stock?: ProductStock;
   images: ProductDetailImage[];
   specifications: ProductDetailSpec[];
   price: number;
@@ -83,4 +91,5 @@ export interface ProductDetailVariantContext {
   sku: string;
   isAvailable: boolean;
   productVariantId: number | null;
+  offers: PublicOfferBadge[];
 }

@@ -1,13 +1,9 @@
-import { CATALOG_LISTING_PRODUCTS } from '../../catalog/data/catalog-listing.mock';
-import { CatalogListingProduct } from '../../catalog/models/catalog-listing.model';
 import {
   isStorefront3DAssetUrl,
   resolveProductPosterUrl,
 } from '../../../shared/utils/storefront-media.util';
 import { CartItemDto } from '../models/cart.model';
 import { CartLineItemView } from '../models/cart-view.model';
-
-const productById = new Map(CATALOG_LISTING_PRODUCTS.map((p) => [p.id, p]));
 
 interface LineEconomics {
   /** List / pre-discount price for a single unit. */
@@ -26,21 +22,33 @@ interface LineEconomics {
  *   - `FinalPrice` / `TotalPrice` (mapped to LineTotal) -> NET total for the WHOLE line (e.g. 2612.5)
  *   - `DiscountAmount` -> discount applied to ONE unit (e.g. 27.5)
  *
- * We derive the net unit price from quantity-independent fields whenever possible so the line
- * total stays correct the instant the quantity changes, even if the API's line totals lag a step.
+ * Returned line totals are authoritative. The legacy fallback applies only when no total exists.
  */
 function resolveLineEconomics(
   item: CartItemDto,
-  catalogPrice: number,
   quantity: number,
+  authoritativeLineTotals = false,
 ): LineEconomics {
   const qty = Math.max(0, quantity);
-  const grossUnitPrice =
-    item.UnitPrice != null && item.UnitPrice > 0 ? item.UnitPrice : Math.max(0, catalogPrice);
+  const grossUnitPrice = item.UnitPrice ?? 0;
 
   let netUnitPrice = grossUnitPrice;
 
-  if (item.DiscountAmount != null && item.DiscountAmount > 0 && grossUnitPrice - item.DiscountAmount >= 0) {
+  if (authoritativeLineTotals || item.LineTotal != null) {
+    const returnedLineTotal = item.LineTotal ?? item.FinalPrice;
+    const lineTotal = returnedLineTotal ?? grossUnitPrice * qty;
+    return {
+      grossUnitPrice,
+      netUnitPrice: qty > 0 ? lineTotal / qty : grossUnitPrice,
+      lineTotal,
+    };
+  }
+
+  if (
+    item.DiscountAmount != null &&
+    item.DiscountAmount > 0 &&
+    grossUnitPrice - item.DiscountAmount >= 0
+  ) {
     // Per-unit discount (quantity-independent) -> safest source for live +/- updates.
     netUnitPrice = grossUnitPrice - item.DiscountAmount;
   } else if (item.FinalPrice != null && item.FinalPrice > 0) {
@@ -60,17 +68,9 @@ function resolveLineEconomics(
   };
 }
 
-function resolveListUnitPrice(
-  grossUnitPrice: number,
-  netUnitPrice: number,
-  catalog: CatalogListingProduct | undefined,
-): number | undefined {
+function resolveListUnitPrice(grossUnitPrice: number, netUnitPrice: number): number | undefined {
   if (grossUnitPrice > netUnitPrice) {
     return grossUnitPrice;
-  }
-
-  if (catalog?.compareAtPrice != null && catalog.compareAtPrice > netUnitPrice) {
-    return catalog.compareAtPrice;
   }
 
   return undefined;
@@ -87,22 +87,23 @@ function resolveLineDiscountPercent(
   return Math.round(((compareAtUnitPrice - unitPrice) / compareAtUnitPrice) * 100);
 }
 
-export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
+export function enrichCartLineItem(
+  item: CartItemDto,
+  authoritativeLineTotals = false,
+): CartLineItemView | null {
   const cartDetailId = item.CartDetailId ?? 0;
   if (cartDetailId < 1) {
     return null;
   }
 
-  const catalog =
-    item.ProductId > 0 ? productById.get(item.ProductId) : undefined;
   const quantity = Math.max(0, item.Quantity ?? 0);
   const { grossUnitPrice, netUnitPrice, lineTotal } = resolveLineEconomics(
     item,
-    catalog?.price ?? 0,
     quantity,
+    authoritativeLineTotals,
   );
   const unitPrice = netUnitPrice;
-  const compareAtUnitPrice = resolveListUnitPrice(grossUnitPrice, netUnitPrice, catalog);
+  const compareAtUnitPrice = resolveListUnitPrice(grossUnitPrice, netUnitPrice);
   const discountPercent = resolveLineDiscountPercent(compareAtUnitPrice, unitPrice);
   const nameFromApi = item.ProductName?.trim();
   const nameEnFromApi = item.ProductNameEn?.trim() || item.VariantNameEn?.trim();
@@ -111,25 +112,36 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
   const imageUrl =
     resolveProductPosterUrl(item.ImageUrl) ||
     resolveProductPosterUrl(item.ProductVariantImageUrl) ||
-    resolveProductPosterUrl(item.ProductImageUrl) ||
-    catalog?.imageUrl;
+    resolveProductPosterUrl(item.ProductImageUrl);
   const has3D =
     item.HasModel3D === true ||
-    catalog?.has3D === true ||
     isStorefront3DAssetUrl(item.ImageUrl) ||
     isStorefront3DAssetUrl(item.ProductVariantImageUrl) ||
     isStorefront3DAssetUrl(item.ProductImageUrl);
 
-  const isAvailable = catalog?.isAvailable ?? true;
+  // Availability is enriched separately from GetProductAvailability, never fixture data.
+  const isAvailable = true;
 
   return {
     cartDetailId,
-    productId: item.ProductId > 0 ? item.ProductId : item.ProductVariantId ?? 0,
+    productId: item.ProductId,
     productVariantId: item.ProductVariantId,
-    titleEn: catalog?.nameEn ?? nameEnFromApi ?? nameFromApi ?? `Item #${cartDetailId}`,
-    titleAr: catalog?.nameAr ?? nameArFromApi ?? nameFromApi ?? `عنصر #${cartDetailId}`,
-    brandEn: catalog?.brandNameEn ?? '',
-    brandAr: catalog?.brandNameAr ?? '',
+    titleEn: [
+      nameEnFromApi ?? nameFromApi ?? `Item #${cartDetailId}`,
+      item.VariantNameEn || item.VariantName,
+      item.VariantSku,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+    titleAr: [
+      nameArFromApi ?? nameFromApi ?? `عنصر #${cartDetailId}`,
+      item.VariantNameAr || item.VariantName,
+      item.VariantSku,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+    brandEn: '',
+    brandAr: '',
     unitPrice,
     compareAtUnitPrice,
     discountPercent,
@@ -140,9 +152,20 @@ export function enrichCartLineItem(item: CartItemDto): CartLineItemView | null {
     isAvailable,
     // When catalog data is missing, default to a safe high ceiling.
     maxQuantity: isAvailable ? 99 : quantity,
+    selectedReward: item.SelectedReward === true,
+    productDiscountTotal: item.ProductDiscountTotal ?? 0,
+    offerDiscountTotal: item.BundleDiscountTotal ?? 0,
+    couponDiscountTotal: item.CouponDiscountTotal ?? 0,
+    bundleUsedQuantity: item.BundleUsedQuantity ?? 0,
+    rewardQuantity: item.RewardQuantity ?? 0,
   };
 }
 
-export function enrichCartItems(items: CartItemDto[]): CartLineItemView[] {
-  return items.map(enrichCartLineItem).filter((line): line is CartLineItemView => line != null);
+export function enrichCartItems(
+  items: CartItemDto[],
+  authoritativeLineTotals = false,
+): CartLineItemView[] {
+  return items
+    .map((item) => enrichCartLineItem(item, authoritativeLineTotals))
+    .filter((line): line is CartLineItemView => line != null);
 }

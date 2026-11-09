@@ -1,3 +1,4 @@
+import type { ProductStock } from '../../../shared/models/product-stock.model';
 export type CatalogSortOption =
   | 'featured'
   | 'price-asc'
@@ -61,8 +62,9 @@ export interface CatalogBrandOption {
 }
 
 export interface CatalogListingProduct {
+  stock?: ProductStock;
   id: number;
-  productVariantId?: number;
+  productVariantId?: number | null;
   slug?: string;
   nameEn: string;
   nameAr: string;
@@ -86,6 +88,7 @@ export interface CatalogListingProduct {
   has3D?: boolean;
   createdAt: string;
   currencyCode?: string;
+  offers?: PublicOfferBadge[];
 }
 
 export interface CatalogBreadcrumbItem {
@@ -116,3 +119,4 @@ export const DEFAULT_CATALOG_FILTERS: CatalogListingFilters = {
   offersOnly: false,
   specificationSelections: [],
 };
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';

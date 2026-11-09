@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
-import { GuestCartProductMeta } from '../../features/cart/models/cart.model';
+import { firstValueFrom } from 'rxjs';
 import { ProductCardData } from '../../shared/models/product-card.model';
+import { modelId, requiresModel } from '../../shared/utils/product-stock.util';
 import { resolveProductCardTitle } from '../../shared/utils/product-card.util';
-import { AuthTokenService } from './auth-token.service';
-import { CartService } from './cart.service';
+import { ProductDetailApiService } from '../../features/catalog/services/product-detail-api.service';
+import { apiErrorMessage } from '../utils/api-error-message.util';
 import { LanguageService } from './language.service';
 import { ToastService } from './toast.service';
 import { WishlistService } from './wishlist.service';
@@ -13,68 +14,74 @@ import { WishlistService } from './wishlist.service';
 @Injectable({ providedIn: 'root' })
 export class WishlistActionsService {
   private readonly wishlist = inject(WishlistService);
-  private readonly cart = inject(CartService);
-  private readonly auth = inject(AuthTokenService);
+  private readonly productApi = inject(ProductDetailApiService);
   private readonly toast = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly language = inject(LanguageService);
+  private readonly router = inject(Router);
+  private acting = false;
 
   toggle(product: ProductCardData): void {
-    const name = resolveProductCardTitle(product, this.language.currentLang());
-    const action = this.wishlist.toggle(product);
-
-    if (action === 'added') {
-      this.toast.successWithAction(
-        this.translate.instant('WISHLIST.ADDED_SUCCESS', { name }),
-        this.translate.instant('WISHLIST.VIEW_WISHLIST'),
-        '/wishlist',
-      );
-      return;
-    }
-
-    this.toast.info(this.translate.instant('WISHLIST.REMOVED_SUCCESS', { name }));
+    void this.run(product, false);
   }
-
   moveToCart(product: ProductCardData): void {
-    const name = resolveProductCardTitle(product, this.language.currentLang());
-    const variantId = product.productVariantId ?? 0;
+    void this.run(product, true);
+  }
 
-    if (this.auth.isLoggedIn() && variantId > 0) {
-      this.wishlist.moveToCart(product);
-      this.cart.refresh();
-      this.showMovedToCart(name);
-      return;
-    }
-
-    if (variantId < 1) {
-      return;
-    }
-
-    this.cart.addItem(variantId, 1, null, this.metaFromCard(product)).subscribe((ok) => {
-      if (ok) {
-        this.wishlist.remove(product.id);
-        this.showMovedToCart(name);
+  private async run(product: ProductCardData, move: boolean): Promise<void> {
+    if (this.acting || this.wishlist.busy()) return;
+    this.acting = true;
+    try {
+      const removing = !move && this.wishlist.isInWishlist(product.id, product.productVariantId);
+      let selection = product;
+      if (!removing && (move || !product.stock)) {
+        const availability = await firstValueFrom(
+          this.productApi.getProductAvailability(product.id, modelId(product.productVariantId)),
+        );
+        selection = {
+          ...product,
+          stock: availability.stock,
+          isAvailable: availability.isAvailable,
+        };
+        if (move && !availability.isAvailable) {
+          this.toast.warning(this.translate.instant('CART.ADD_UNAVAILABLE'));
+          return;
+        }
       }
-    });
-  }
-
-  private metaFromCard(product: ProductCardData): GuestCartProductMeta {
-    return {
-      productId: product.id,
-      productNameEn: product.title,
-      productNameAr: product.titleAr ?? product.title,
-      imageUrl: product.image,
-      has3D: product.has3D,
-      unitPrice: product.price,
-      isAvailable: product.isAvailable,
-    };
-  }
-
-  private showMovedToCart(name: string): void {
-    this.toast.successWithAction(
-      this.translate.instant('CART.ADDED_SUCCESS', { name }),
-      this.translate.instant('CART.VIEW_CART'),
-      '/cart',
-    );
+      if (!removing && requiresModel(selection.stock) && !modelId(selection.productVariantId)) {
+        this.toast.warning(this.translate.instant('CART.VARIANT_REQUIRED'));
+        void this.router.navigate(['/shop', String(product.id)]);
+        return;
+      }
+      const name = resolveProductCardTitle(product, this.language.currentLang());
+      if (move) {
+        if (await firstValueFrom(this.wishlist.moveToCart(selection))) {
+          this.toast.successWithAction(
+            this.translate.instant('CART.ADDED_SUCCESS', { name }),
+            this.translate.instant('CART.VIEW_CART'),
+            '/cart',
+          );
+        }
+      } else {
+        const action = await firstValueFrom(this.wishlist.toggle(selection));
+        if (action === 'added')
+          this.toast.successWithAction(
+            this.translate.instant('WISHLIST.ADDED_SUCCESS', { name }),
+            this.translate.instant('WISHLIST.VIEW_WISHLIST'),
+            '/wishlist',
+          );
+        else if (action === 'removed')
+          this.toast.info(this.translate.instant('WISHLIST.REMOVED_SUCCESS', { name }));
+      }
+    } catch (error) {
+      const fallback = this.translate.instant('WISHLIST.REQUEST_FAILED');
+      this.toast.error(
+        error instanceof Error && error.message.startsWith('WISHLIST_')
+          ? fallback
+          : apiErrorMessage(error, fallback),
+      );
+    } finally {
+      this.acting = false;
+    }
   }
 }

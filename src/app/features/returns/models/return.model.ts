@@ -1,10 +1,12 @@
 export interface EcReturnDto {
+  productId?: number;
+  quantity?: number;
   id: number;
   returnNo: string;
   orderId: number;
   orderNumber: string;
   orderDetailId: number;
-  productVariantId?: number;
+  productVariantId?: number | null;
   productNameSnapshot: string;
   variantSkuSnapshot?: string;
   customerId?: number;

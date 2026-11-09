@@ -34,6 +34,18 @@
         <dd>−{{ formatPrice(totals().couponDiscount) }} {{ currencyLabel() }}</dd>
       </div>
     }
+    @if (totals().offerDiscount > 0) {
+      <div class="cart-summary__row cart-summary__row--discount">
+        <dt>{{ 'CART.SUMMARY_OFFER_DISCOUNT' | translate }}</dt>
+        <dd>−{{ formatPrice(totals().offerDiscount) }} {{ currencyLabel() }}</dd>
+      </div>
+    }
+    @if (totals().taxAmount > 0) {
+      <div class="cart-summary__row">
+        <dt>{{ 'CART.SUMMARY_TAX' | translate }}</dt>
+        <dd>{{ formatPrice(totals().taxAmount) }} {{ currencyLabel() }}</dd>
+      </div>
+    }
     @if (showDeliveryLine()) {
     <div class="cart-summary__row">
       <dt>{{ 'CART.SUMMARY_DELIVERY' | translate }}</dt>

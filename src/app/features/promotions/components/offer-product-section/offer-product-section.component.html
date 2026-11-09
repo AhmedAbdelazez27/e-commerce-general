@@ -1,0 +1,104 @@
+<section
+  class="offer-products"
+  [attr.aria-labelledby]="'offer-products-' + roleCode() + '-' + (detailId() ?? 'all')"
+>
+  <header class="offer-products__header">
+    <div>
+      <h2
+        class="offer-products__title"
+        [id]="'offer-products-' + roleCode() + '-' + (detailId() ?? 'all')"
+      >
+        {{ title() }}
+      </h2>
+      @if (description()) {
+        <p class="offer-products__description">{{ description() }}</p>
+      }
+    </div>
+    @if (totalCount() > 0) {
+      <span class="offer-products__count">{{
+        'OFFERS.PRODUCT_COUNT' | translate: { count: totalCount() }
+      }}</span>
+    }
+  </header>
+
+  @if (searchable()) {
+    <form class="offer-products__search" (submit)="$event.preventDefault(); search()">
+      <label
+        class="visually-hidden"
+        [for]="'offer-search-' + roleCode() + '-' + (detailId() ?? 'all')"
+      >
+        {{ 'OFFERS.SEARCH_PRODUCTS' | translate }}
+      </label>
+      <input
+        class="form-control"
+        type="search"
+        [id]="'offer-search-' + roleCode() + '-' + (detailId() ?? 'all')"
+        [value]="searchDraft()"
+        [placeholder]="'OFFERS.SEARCH_PRODUCTS' | translate"
+        (input)="updateSearch($event)"
+      />
+      <button class="btn btn-outline-primary" type="submit">
+        {{ 'COMMON.SEARCH' | translate }}
+      </button>
+    </form>
+  }
+
+  @if (loading()) {
+    <div class="offer-products__status" role="status">{{ 'COMMON.LOADING' | translate }}</div>
+  } @else if (loadFailed()) {
+    <div class="offer-products__status offer-products__status--error" role="alert">
+      {{ 'OFFERS.PRODUCTS_LOAD_FAILED' | translate }}
+    </div>
+  } @else if (cardProducts().length === 0 && unavailablePriceCount() > 0) {
+    <p class="offer-products__status offer-products__status--error" role="alert">
+      {{ 'OFFERS.PRODUCT_PRICES_LOAD_FAILED' | translate }}
+    </p>
+  } @else if (cardProducts().length === 0) {
+    <p class="offer-products__status">{{ 'OFFERS.NO_PRODUCTS' | translate }}</p>
+  } @else {
+    <div class="offer-products__grid">
+      @for (product of cardProducts(); track product.id + ':' + product.productVariantId) {
+        <app-product-card
+          [product]="product"
+          [showOfferBadges]="false"
+          [alwaysShowCartButton]="true"
+          (productClick)="onProductClick($event)"
+          (addToCart)="onAddToCart($event)"
+          (addToWishlist)="onAddToWishlist($event)"
+          (quickView)="onQuickView($event)"
+        />
+      }
+    </div>
+
+    @if (unavailablePriceCount() > 0) {
+      <p class="offer-products__price-note" role="status">
+        {{ 'OFFERS.SOME_PRODUCT_PRICES_LOAD_FAILED' | translate }}
+      </p>
+    }
+
+    @if (hasPrevious() || hasNext()) {
+      <nav
+        class="offer-products__pagination"
+        [attr.aria-label]="'OFFERS.PRODUCT_PAGINATION' | translate"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          [disabled]="!hasPrevious()"
+          (click)="previous()"
+        >
+          {{ 'COMMON.PREVIOUS' | translate }}
+        </button>
+        <span>{{ 'OFFERS.PAGE_NUMBER' | translate: { page: pageNumber() } }}</span>
+        <button
+          type="button"
+          class="btn btn-outline-secondary btn-sm"
+          [disabled]="!hasNext()"
+          (click)="next()"
+        >
+          {{ 'COMMON.NEXT' | translate }}
+        </button>
+      </nav>
+    }
+  }
+</section>

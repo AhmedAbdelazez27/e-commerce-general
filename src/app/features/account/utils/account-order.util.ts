@@ -38,7 +38,9 @@ export function normalizeStatusToken(value: string | null | undefined): string {
 }
 
 export function isActiveOrder(order: EcOrderDto): boolean {
-  const tokens = [order.orderStatus, order.shippingStatus, order.paymentStatus].map(normalizeStatusToken);
+  const tokens = [order.orderStatus, order.shippingStatus, order.paymentStatus].map(
+    normalizeStatusToken,
+  );
 
   if (tokens.some((status) => ['cancelled', 'canceled', 'refunded'].includes(status))) {
     return false;
@@ -61,9 +63,15 @@ export function orderTrackingSteps(order: EcOrderDto, enableShipment = true): Or
   const shippingStatus = normalizeStatusToken(order.shippingStatus);
   const combined = [orderStatus, shippingStatus].filter(Boolean);
 
-  const isCancelled = combined.some((status) => ['cancelled', 'canceled', 'refunded'].includes(status));
-  const isDelivered = combined.some((status) => ['delivered', 'completed', 'closed'].includes(status));
-  const isShipped = combined.some((status) => ['shipped', 'delivering', 'outfordelivery'].includes(status));
+  const isCancelled = combined.some((status) =>
+    ['cancelled', 'canceled', 'refunded'].includes(status),
+  );
+  const isDelivered = combined.some((status) =>
+    ['delivered', 'completed', 'closed'].includes(status),
+  );
+  const isShipped = combined.some((status) =>
+    ['shipped', 'delivering', 'outfordelivery'].includes(status),
+  );
   const isProcessing = combined.some((status) =>
     ['processing', 'confirmed', 'paid', 'preparing'].includes(status),
   );
@@ -83,7 +91,14 @@ export function orderTrackingSteps(order: EcOrderDto, enableShipment = true): Or
     { id: 'placed', labelKey: 'ORDERS.STEP_PLACED', done: false, current: false },
     { id: 'processing', labelKey: 'ORDERS.STEP_PROCESSING', done: false, current: false },
     ...(enableShipment
-      ? [{ id: 'shipped', labelKey: 'ORDERS.STEP_SHIPPED', done: false, current: false } satisfies OrderTrackingStep]
+      ? [
+          {
+            id: 'shipped',
+            labelKey: 'ORDERS.STEP_SHIPPED',
+            done: false,
+            current: false,
+          } satisfies OrderTrackingStep,
+        ]
       : []),
     { id: 'delivered', labelKey: 'ORDERS.STEP_DELIVERED', done: false, current: false },
   ];
@@ -96,16 +111,18 @@ export function orderTrackingSteps(order: EcOrderDto, enableShipment = true): Or
 }
 
 export function lineItemName(item: NonNullable<EcOrderDto['items']>[number]): string {
-  return item.productName ?? item.productNameSnapshot ?? item.variantSku ?? item.variantSkuSnapshot ?? '—';
+  return [item.productNameSnapshot || item.productName || '—', item.variantName]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 export function lineItemTotal(item: NonNullable<EcOrderDto['items']>[number]): number {
-  return item.lineTotal ?? item.total ?? (item.unitPrice ?? 0) * (item.quantity ?? 0);
+  return (
+    item.lineTotal ?? item.totalAmount ?? item.total ?? (item.unitPrice ?? 0) * (item.quantity ?? 0)
+  );
 }
 
-export function canLinkOrderItemToProduct(
-  item: NonNullable<EcOrderDto['items']>[number],
-): boolean {
+export function canLinkOrderItemToProduct(item: NonNullable<EcOrderDto['items']>[number]): boolean {
   return (item.productId ?? 0) > 0;
 }
 
@@ -169,7 +186,10 @@ export function orderStatusDisplayName(
   );
 }
 
-export function statusHistoryPrimaryLabel(entry: EcOrderStatusHistoryDto, isArabic: boolean): string {
+export function statusHistoryPrimaryLabel(
+  entry: EcOrderStatusHistoryDto,
+  isArabic: boolean,
+): string {
   const orderName = localizedBilingualLabel(
     entry.orderStatusNameAr,
     entry.orderStatusNameEn,
@@ -213,7 +233,10 @@ export function statusHistoryPrimaryLabel(entry: EcOrderStatusHistoryDto, isArab
   return parts.length ? parts.join(' · ') : '—';
 }
 
-export function statusHistoryNotes(entry: EcOrderStatusHistoryDto, isArabic: boolean): string | null {
+export function statusHistoryNotes(
+  entry: EcOrderStatusHistoryDto,
+  isArabic: boolean,
+): string | null {
   const notes = localizedBilingualLabel(entry.notesAr, entry.notesEn, undefined, isArabic);
   return notes === '—' ? null : notes;
 }

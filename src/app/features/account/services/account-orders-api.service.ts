@@ -1,23 +1,39 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
-import { resultArrayFromAbpEnvelope, resultFromAbpEnvelope } from '../../../core/utils/api-envelope.util';
+import {
+  abpEnvelopeErrorMessage,
+  resultArrayFromAbpEnvelope,
+  resultFromAbpEnvelope,
+} from '../../../core/utils/api-envelope.util';
 import type { EcOrderDto, EcOrderStatusHistoryDto } from '../../checkout/models/place-order.model';
-import { normalizeOrder, normalizeOrderStatusHistory } from '../../checkout/utils/checkout-api.mapper';
+import {
+  normalizeOrder,
+  normalizeOrderStatusHistory,
+} from '../../checkout/utils/checkout-api.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class AccountOrdersApiService {
   private readonly http = inject(HttpClient);
 
-  getCustomerOrders(customerId: number): Observable<EcOrderDto[]> {
+  getCustomerOrders(
+    customerId: number,
+    requireConfirmedResponse = false,
+  ): Observable<EcOrderDto[]> {
     const params = new HttpParams().set('customerId', String(customerId));
 
     return this.http.get<unknown>(ApiEndpoints.EcOrders.getCustomerOrders, { params }).pipe(
-      map((res) => this.normalizeOrdersResponse(res)),
-      catchError(() => of([])),
+      map((res) => {
+        const error = abpEnvelopeErrorMessage(res);
+        if (error) throw new Error(error);
+        if (requireConfirmedResponse && resultFromAbpEnvelope(res) == null)
+          throw new Error('ORDER_RESULT_UNCONFIRMED');
+        return this.normalizeOrdersResponse(res);
+      }),
+      catchError((error) => (requireConfirmedResponse ? throwError(() => error) : of([]))),
     );
   }
 
@@ -47,7 +63,8 @@ export class AccountOrdersApiService {
 
     const payload = resultFromAbpEnvelope<unknown>(res);
     if (payload && typeof payload === 'object') {
-      const items = (payload as { items?: unknown; Items?: unknown }).items ??
+      const items =
+        (payload as { items?: unknown; Items?: unknown }).items ??
         (payload as { items?: unknown; Items?: unknown }).Items;
       if (Array.isArray(items)) {
         return normalizeOrderStatusHistory(items);
@@ -65,7 +82,8 @@ export class AccountOrdersApiService {
 
     const payload = resultFromAbpEnvelope<unknown>(res);
     if (payload && typeof payload === 'object') {
-      const items = (payload as { items?: unknown; Items?: unknown }).items ??
+      const items =
+        (payload as { items?: unknown; Items?: unknown }).items ??
         (payload as { items?: unknown; Items?: unknown }).Items;
       if (Array.isArray(items)) {
         return items.map(normalizeOrder).filter((order): order is EcOrderDto => order != null);

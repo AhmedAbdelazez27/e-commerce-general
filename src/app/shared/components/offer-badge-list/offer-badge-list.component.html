@@ -1,0 +1,38 @@
+@if (visibleEntries().length > 0) {
+  <div class="offer-badge-list" [attr.aria-label]="'OFFERS.BADGES_REGION' | translate">
+    @for (entry of visibleEntries(); track entry.offer.offerId) {
+      <a
+        class="offer-badge-list__badge"
+        [class.offer-badge-list__badge--qualify]="entry.role.tone === 'qualify'"
+        [class.offer-badge-list__badge--reward]="entry.role.tone === 'reward'"
+        [class.offer-badge-list__badge--component]="entry.role.tone === 'component'"
+        [class.offer-badge-list__badge--mixed]="entry.role.tone === 'mixed'"
+        [routerLink]="['/offers', entry.offer.offerId]"
+        [attr.aria-label]="
+          'OFFERS.BADGE_ACCESSIBLE'
+            | translate: { role: (entry.role.labelKey | translate), offer: name(entry.offer) }
+        "
+        (click)="stopProductNavigation($event)"
+      >
+        <i [class]="entry.role.iconClass" aria-hidden="true"></i>
+        <span class="offer-badge-list__role">{{ entry.role.labelKey | translate }}</span>
+        @if (!entry.offer.appliesToAllVariants && entry.offer.matchingVariantIds.length > 0) {
+          <span class="visually-hidden">{{ 'OFFERS.SELECTED_VARIANTS' | translate }}</span>
+        }
+      </a>
+    }
+    @if (hiddenCount() > 0 || expanded()) {
+      <button
+        type="button"
+        class="offer-badge-list__more"
+        [attr.aria-expanded]="expanded()"
+        (click)="toggleExpanded($event)"
+      >
+        {{
+          (expanded() ? 'OFFERS.SHOW_FEWER' : 'OFFERS.SHOW_MORE')
+            | translate: { count: hiddenCount() }
+        }}
+      </button>
+    }
+  </div>
+}

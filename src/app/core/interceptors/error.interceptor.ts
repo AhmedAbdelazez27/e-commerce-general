@@ -7,12 +7,19 @@ import { AuthSessionService } from '../services/auth-session.service';
 import { ToastService } from '../services/toast.service';
 
 function messageFromError(err: HttpErrorResponse): string {
-  const body = err.error as { message?: string } | string | null;
+  const body = err.error as
+    | { message?: string; error?: { message?: string; details?: string } }
+    | string
+    | null;
   if (typeof body === 'string' && body.length > 0) {
     return body;
   }
   if (body && typeof body === 'object' && typeof body.message === 'string') {
     return body.message;
+  }
+  if (body && typeof body === 'object' && body.error) {
+    const nested = body.error.details?.trim() || body.error.message?.trim();
+    if (nested) return nested;
   }
   if (err.status === 0) {
     return 'Network error';

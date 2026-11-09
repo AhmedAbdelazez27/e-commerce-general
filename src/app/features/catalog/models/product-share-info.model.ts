@@ -1,3 +1,5 @@
+import type { PublicOfferBadge } from '../../../shared/models/promotion.model';
+
 export interface PublicProductShareDto {
   url: string;
   titleAr: string;
@@ -14,4 +16,5 @@ export interface PublicProductShareInfoDto {
   productId: number;
   slug?: string;
   share: PublicProductShareDto;
+  offers?: PublicOfferBadge[];
 }

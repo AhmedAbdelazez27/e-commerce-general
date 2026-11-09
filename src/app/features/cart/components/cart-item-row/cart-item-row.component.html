@@ -23,10 +23,7 @@
       <a [routerLink]="['/shop', item().productId]">{{ displayTitle() }}</a>
     </h2>
     <div class="cart-item__prices">
-      <span
-        class="cart-item__unit-price"
-        [class.cart-item__unit-price--sale]="hasDiscount()"
-      >
+      <span class="cart-item__unit-price" [class.cart-item__unit-price--sale]="hasDiscount()">
         {{ formatPrice(item().unitPrice) }} {{ currencyLabel() }}
       </span>
       @if (hasDiscount() && item().compareAtUnitPrice; as oldPrice) {
@@ -39,8 +36,30 @@
       }
     </div>
 
+    @if (item().availabilityStatus; as status) {
+      <p class="small">{{ 'INVENTORY.' + status | translate }}</p>
+    }
     @if (!item().isAvailable) {
       <p class="cart-item__unavailable-msg">{{ 'CART.ITEM_UNAVAILABLE' | translate }}</p>
+    }
+
+    @if (item().canSelectReward) {
+      <label class="form-check mt-2">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [checked]="item().selectedReward"
+          [disabled]="disabled()"
+          (change)="onRewardSelectionChange($event)"
+        />
+        <span class="form-check-label">{{ 'OFFERS.SELECT_AS_REWARD' | translate }}</span>
+      </label>
+    }
+
+    @if (item().rewardQuantity > 0) {
+      <p class="small text-success mb-1">
+        {{ 'OFFERS.REWARD_QUANTITY' | translate: { count: item().rewardQuantity } }}
+      </p>
     }
 
     <div class="cart-item__footer">
@@ -58,7 +77,8 @@
           type="number"
           class="form-control form-control-sm"
           [value]="item().quantity"
-          [min]="1"
+          [min]="item().serialQuantity ? 1 : 0.01"
+          [step]="item().serialQuantity ? 1 : 0.01"
           [max]="item().maxQuantity"
           [disabled]="disabled() || !item().isAvailable"
           (input)="onQuantityInput($event)"
@@ -89,10 +109,7 @@
 
   <div class="cart-item__subtotal">
     <span class="cart-item__subtotal-label">{{ 'CART.SUBTOTAL' | translate }}</span>
-    <span
-      class="cart-item__subtotal-value"
-      [class.cart-item__subtotal-value--sale]="hasDiscount()"
-    >
+    <span class="cart-item__subtotal-value" [class.cart-item__subtotal-value--sale]="hasDiscount()">
       {{ formatPrice(item().lineTotal) }} {{ currencyLabel() }}
     </span>
     @if (compareAtLineTotal(); as oldTotal) {

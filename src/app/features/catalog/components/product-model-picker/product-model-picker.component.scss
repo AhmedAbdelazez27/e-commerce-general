@@ -1,0 +1,125 @@
+.model-picker {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-lg, 16px);
+  color: var(--ds-color-text, #222);
+  background: var(--ds-color-surface, #fff);
+  box-shadow: 0 24px 64px #0003;
+  &::backdrop {
+    background: #0006;
+  }
+  &__header,
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+  }
+  &__header {
+    border-bottom: 1px solid var(--ds-color-border);
+    h2 {
+      font-size: 1.15rem;
+      margin: 0;
+    }
+  }
+  &__close {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    &:hover {
+      background: #8881;
+    }
+  }
+  &__body {
+    padding: 20px;
+  }
+  &__product {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    img {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    p {
+      font-size: 0.875rem;
+    }
+  }
+  &__options {
+    display: grid;
+    gap: 8px;
+    max-height: 230px;
+    overflow-y: auto;
+    padding: 2px;
+  }
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--ds-color-border);
+    border-radius: var(--ds-radius-sm, 8px);
+    cursor: pointer;
+    input {
+      accent-color: var(--portal-primary);
+      flex-shrink: 0;
+    }
+    strong {
+      font-size: 0.9rem;
+    }
+    small {
+      display: block;
+      font-size: 0.75rem;
+    }
+    &--selected {
+      border-color: var(--portal-primary);
+      background: color-mix(in srgb, var(--portal-primary) 6%, transparent);
+    }
+    &:focus-within {
+      outline: 2px solid var(--portal-primary);
+      outline-offset: 1px;
+    }
+  }
+  &__stock {
+    margin-inline-start: auto;
+    white-space: nowrap;
+  }
+  &__selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding-top: 16px;
+    font-size: 0.875rem;
+    small {
+      display: block;
+    }
+  }
+  &__footer {
+    border-top: 1px solid var(--ds-color-border);
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+    .btn {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+  }
+}

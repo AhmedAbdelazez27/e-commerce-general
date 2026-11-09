@@ -1,0 +1,261 @@
+<main class="offer-detail container py-4">
+  <nav class="offer-detail__breadcrumb" [attr.aria-label]="'OFFERS.BREADCRUMB' | translate">
+    <a routerLink="/offers"
+      ><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> {{ 'OFFERS.BACK' | translate }}</a
+    >
+  </nav>
+
+  @if (loading()) {
+    <div class="offer-detail__loading" role="status">{{ 'COMMON.LOADING' | translate }}</div>
+  } @else if (loadFailed() || !offer()) {
+    <div class="alert alert-warning" role="alert">{{ 'OFFERS.NOT_FOUND' | translate }}</div>
+  } @else {
+    @let current = offer()!;
+    <header class="offer-detail__hero">
+      <div class="offer-detail__hero-icon" aria-hidden="true"><i class="fa-solid fa-tags"></i></div>
+      <div class="offer-detail__hero-copy">
+        <p class="offer-detail__eyebrow">{{ 'OFFERS.LIMITED_OFFER' | translate }}</p>
+        <h1>{{ name() }}</h1>
+        <p class="offer-detail__benefit">{{ benefitText() }}</p>
+        @if (description()) {
+          <p class="offer-detail__description">{{ description() }}</p>
+        }
+        @if (current.startDate || current.endDate) {
+          <p class="offer-detail__dates">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            @if (current.startDate && current.endDate) {
+              {{
+                'OFFERS.VALID_FROM_TO'
+                  | translate
+                    : {
+                        from: formatBusinessDate(current.startDate),
+                        to: formatBusinessDate(current.endDate),
+                      }
+              }}
+            } @else if (current.endDate) {
+              {{ 'OFFERS.VALID_UNTIL' | translate: { date: formatBusinessDate(current.endDate) } }}
+            } @else {
+              {{ 'OFFERS.VALID_FROM' | translate: { date: formatBusinessDate(current.startDate) } }}
+            }
+          </p>
+        }
+        <p class="offer-detail__cart-note">
+          <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+          {{ 'OFFERS.CART_CONFIRMATION_NOTE' | translate }}
+        </p>
+      </div>
+    </header>
+
+    @if (currentGuidance(); as guidance) {
+      <section
+        class="offer-detail__progress"
+        [class.is-applied]="guidance.isApplied"
+        aria-live="polite"
+      >
+        <i
+          [class]="guidance.isApplied ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info'"
+          aria-hidden="true"
+        ></i>
+        <div>
+          <strong>{{
+            guidanceStatusText(guidance.isApplied ? 'Applied' : guidance.statusCode)
+          }}</strong>
+          @if (!guidance.isApplied && guidance.missingQuantity > 0) {
+            <span>{{
+              'OFFERS.MISSING_QUANTITY' | translate: { count: guidance.missingQuantity }
+            }}</span>
+          }
+          @if (guidance.requiresRewardSelection) {
+            <span>{{ 'OFFERS.STATUS.RewardSelectionRequired' | translate }}</span>
+          }
+        </div>
+      </section>
+    }
+
+    <section
+      class="offer-detail__requirements"
+      [attr.aria-label]="'OFFERS.HOW_IT_WORKS' | translate"
+    >
+      <h2>{{ 'OFFERS.HOW_IT_WORKS' | translate }}</h2>
+      <div class="offer-detail__flow">
+        @if (isPackageOffer(current)) {
+          <article class="offer-detail__requirement-card">
+            <div class="offer-detail__step">
+              <span class="offer-detail__step-number">1</span>
+              <div>
+                <h3>{{ 'OFFERS.PACKAGE_PRODUCTS' | translate }}</h3>
+                <p>{{ 'OFFERS.PACKAGE_PRODUCTS_DESCRIPTION' | translate }}</p>
+              </div>
+            </div>
+            <div class="offer-detail__section-stack">
+              @for (detail of componentDetails(); track detail.id) {
+                <app-offer-product-section
+                  [offerId]="current.id"
+                  roleCode="Component"
+                  [detailId]="detail.id"
+                  [title]="detailName(detail)"
+                  [description]="componentDescription(detail)"
+                />
+              }
+            </div>
+          </article>
+        } @else {
+          @if (tiers().length > 0) {
+            <article class="offer-detail__requirement-card">
+              <div class="offer-detail__step offer-detail__step--unnumbered">
+                <div>
+                  <h3>{{ 'OFFERS.QUANTITY_DISCOUNTS' | translate }}</h3>
+                  <p>{{ 'OFFERS.QUANTITY_DISCOUNTS_DESCRIPTION' | translate }}</p>
+                </div>
+              </div>
+              <div class="offer-detail__tier-table-wrap">
+                <table class="offer-detail__tier-table">
+                  <thead>
+                    <tr>
+                      <th>{{ 'OFFERS.QUANTITY' | translate }}</th>
+                      <th>{{ 'OFFERS.DISCOUNT' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (tier of tiers(); track tier.id) {
+                      <tr>
+                        <td>{{ tier.quantity }}</td>
+                        <td>
+                          {{ 'OFFERS.PERCENT_OFF' | translate: { percent: tier.benefitValue } }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          }
+
+          @if (showQualifyingProducts()) {
+            <article class="offer-detail__requirement-card">
+              <div class="offer-detail__step">
+                <span class="offer-detail__step-number">1</span>
+                <div>
+                  <h3>{{ 'OFFERS.BUY_QUALIFYING' | translate }}</h3>
+                  <p>{{ qualifyingDescription() }}</p>
+                </div>
+              </div>
+              <div class="offer-detail__section-stack">
+                @if (allGroups() && qualifyingDetails().length > 0) {
+                  @for (detail of qualifyingDetails(); track detail.id) {
+                    <app-offer-product-section
+                      [offerId]="current.id"
+                      roleCode="Qualify"
+                      [detailId]="detail.id"
+                      [title]="detailName(detail)"
+                      [description]="qualifyingGroupDescription(detail)"
+                    />
+                  }
+                } @else {
+                  <app-offer-product-section
+                    [offerId]="current.id"
+                    roleCode="Qualify"
+                    [title]="'OFFERS.QUALIFYING_PRODUCTS' | translate"
+                    [description]="qualifyingDescription()"
+                  />
+                }
+              </div>
+            </article>
+          }
+
+          @if (showRewardProducts()) {
+            <article class="offer-detail__requirement-card offer-detail__requirement-card--reward">
+              <div class="offer-detail__step">
+                <span class="offer-detail__step-number">{{ rewardStepNumber() }}</span>
+                <div>
+                  <h3>{{ 'OFFERS.ADD_REWARD' | translate }}</h3>
+                  <p>{{ rewardDescription() }}</p>
+                </div>
+              </div>
+              <app-offer-product-section
+                [offerId]="current.id"
+                roleCode="Reward"
+                [title]="'OFFERS.REWARD_PRODUCTS' | translate"
+                [description]="rewardDescription()"
+                [searchable]="true"
+              />
+            </article>
+          }
+        }
+      </div>
+    </section>
+
+    @if (current.rewardSelectionCode === 'CustomerChoice' && showRewardProducts()) {
+      <section class="offer-detail__reward-picker">
+        <header>
+          <h2>{{ 'OFFERS.CHOOSE_REWARD' | translate }}</h2>
+          <p>{{ 'OFFERS.REWARD_PREVIEW_NOTE' | translate }}</p>
+        </header>
+        @if (!isLoggedIn()) {
+          <p>{{ 'OFFERS.LOGIN_FOR_REWARDS' | translate }}</p>
+          <a
+            class="btn btn-primary"
+            routerLink="/auth/login"
+            [queryParams]="{ returnUrl: '/offers/' + current.id }"
+          >
+            {{ 'LAYOUT.HEADER.LOGIN' | translate }}
+          </a>
+        } @else if (rewardsLoading()) {
+          <p role="status">{{ 'COMMON.LOADING' | translate }}</p>
+        } @else if (rewardsLoadFailed()) {
+          <p class="text-danger" role="alert">{{ 'OFFERS.REWARDS_LOAD_FAILED' | translate }}</p>
+        } @else if (rewardCandidates().length === 0) {
+          <p class="text-muted">{{ 'OFFERS.NO_REWARD_CANDIDATES' | translate }}</p>
+        } @else {
+          <div class="offer-detail__candidate-list">
+            @for (
+              candidate of rewardCandidates();
+              track candidate.product.productId + ':' + candidate.product.productVariantId
+            ) {
+              <article class="offer-detail__candidate">
+                <div>
+                  <strong>{{ candidateName(candidate) }}</strong>
+                  <span
+                    >{{ candidate.product.variantName }} {{ candidate.product.variantSku }}</span
+                  >
+                  @if (candidate.product.stock; as stock) {
+                    <span>{{ 'INVENTORY.' + stockStatus(stock) | translate }}</span>
+                  }
+                  <span>{{ candidateStateKey(candidate) | translate }}</span>
+                  <span>{{
+                    'OFFERS.ADDITIONAL_QUANTITY'
+                      | translate: { count: candidate.additionalQuantity }
+                  }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="
+                    !candidate.hasSufficientStock ||
+                    !candidate.product.isAvailable ||
+                    applyingVariantId() != null ||
+                    cartBusy()
+                  "
+                  (click)="applyReward(candidate)"
+                >
+                  {{ 'OFFERS.APPLY_AND_RECALCULATE' | translate }}
+                </button>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    @if (terms().length > 0) {
+      <section class="offer-detail__terms">
+        <h2>{{ 'OFFERS.TERMS.TITLE' | translate }}</h2>
+        <ul>
+          @for (term of terms(); track term.key) {
+            <li>{{ term.key | translate: term.params }}</li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</main>

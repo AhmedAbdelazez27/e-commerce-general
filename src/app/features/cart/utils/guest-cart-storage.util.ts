@@ -1,3 +1,4 @@
+import { modelId } from '../../../shared/utils/product-stock.util';
 import type { CartDto, CartItemDto, GuestCartProductMeta } from '../models/cart.model';
 
 export const GUEST_CART_STORAGE_KEY = 'guest_cart';
@@ -5,7 +6,16 @@ export const GUEST_CART_STORAGE_KEY = 'guest_cart';
 export function readGuestCartFromStorage(): CartDto | null {
   try {
     const raw = localStorage.getItem(GUEST_CART_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as CartDto) : null;
+    if (!raw) return null;
+    const cart = JSON.parse(raw) as CartDto;
+    if (!Array.isArray(cart.Items)) return null;
+    return {
+      ...cart,
+      Items: cart.Items.map((item) => ({
+        ...item,
+        ProductVariantId: modelId(item.ProductVariantId),
+      })),
+    };
   } catch {
     return null;
   }
@@ -30,7 +40,7 @@ export function nextGuestCartDetailId(items: CartItemDto[]): number {
 
 export function buildGuestCartItem(
   meta: GuestCartProductMeta,
-  productVariantId: number,
+  productVariantId: number | null,
   quantity: number,
   cartDetailId: number,
 ): CartItemDto {
@@ -39,6 +49,8 @@ export function buildGuestCartItem(
     CartDetailId: cartDetailId,
     ProductId: meta.productId,
     ProductVariantId: productVariantId,
+    VariantName: meta.variantName,
+    VariantSku: meta.variantSku,
     ProductNameEn: meta.productNameEn,
     ProductNameAr: meta.productNameAr,
     ImageUrl: meta.imageUrl,

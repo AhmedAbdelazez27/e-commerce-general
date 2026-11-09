@@ -44,6 +44,10 @@ export class CartPageComponent implements OnInit {
     this.facade.removeItem(cartDetailId);
   }
 
+  onRewardSelectionChange(event: { cartDetailId: number; selectedReward: boolean }): void {
+    this.facade.setRewardSelection(event.cartDetailId, event.selectedReward);
+  }
+
   onCouponInput(value: string): void {
     this.facade.couponInput.set(value);
   }

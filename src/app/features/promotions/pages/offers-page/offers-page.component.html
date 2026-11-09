@@ -1,0 +1,59 @@
+<div class="container py-4">
+  <header class="mb-4">
+    <h1>{{ 'OFFERS.TITLE' | translate }}</h1>
+    <p class="text-muted">{{ 'OFFERS.SUBTITLE' | translate }}</p>
+  </header>
+
+  @if (loading()) {
+    <p>{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (loadFailed()) {
+    <div class="alert alert-warning" role="alert">{{ 'OFFERS.LOAD_FAILED' | translate }}</div>
+  } @else if (offers().length === 0) {
+    <p class="text-muted">{{ 'OFFERS.EMPTY' | translate }}</p>
+  } @else {
+    <div class="row g-3">
+      @for (offer of offers(); track offer.id) {
+        <div class="col-12 col-md-6 col-xl-4">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h5">{{ name(offer) }}</h2>
+              <p class="fw-semibold text-primary">{{ benefit(offer) }}</p>
+              @if (description(offer)) {
+                <p class="text-muted">{{ description(offer) }}</p>
+              }
+              @if (offer.startDate || offer.endDate) {
+                <p class="small text-muted">{{ dateText(offer) }}</p>
+              }
+              <a class="btn btn-outline-primary mt-auto" [routerLink]="['/offers', offer.id]">
+                {{ 'OFFERS.VIEW_DETAILS' | translate }}
+              </a>
+            </div>
+          </article>
+        </div>
+      }
+    </div>
+
+    <nav
+      class="d-flex justify-content-between align-items-center mt-4"
+      [attr.aria-label]="'OFFERS.PAGINATION' | translate"
+    >
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        [disabled]="!hasPrevious()"
+        (click)="previous()"
+      >
+        {{ 'COMMON.PREVIOUS' | translate }}
+      </button>
+      <span>{{ 'OFFERS.PAGE_NUMBER' | translate: { page: pageNumber() } }}</span>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        [disabled]="!hasNext()"
+        (click)="next()"
+      >
+        {{ 'COMMON.NEXT' | translate }}
+      </button>
+    </nav>
+  }
+</div>

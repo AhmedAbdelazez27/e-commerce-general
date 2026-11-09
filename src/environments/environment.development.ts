@@ -5,7 +5,7 @@ import { AppEnvironment } from './environment.model';
 export const environment: AppEnvironment = {
   production: false,
   name: 'develop',
-  apiBaseUrl: 'http://compassint.ddns.net:2029',
+  apiBaseUrl: 'http://localhost:20120/',
   appName: 'TenxMarket',
   defaultLang: 'ar',
   enableSocialLogin: true,

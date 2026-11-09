@@ -1,7 +1,4 @@
-import {
-  normalizeEcReturnDto,
-  normalizePagedReturnsResult,
-} from './returns-api.mapper';
+import { normalizeEcReturnDto, normalizePagedReturnsResult } from './returns-api.mapper';
 
 describe('returns-api.mapper', () => {
   it('normalizes return DTO from PascalCase', () => {
@@ -25,7 +22,9 @@ describe('returns-api.mapper', () => {
       orderId: 12,
       orderNumber: 'ORD-12',
       orderDetailId: 99,
-      productVariantId: undefined,
+      productId: undefined,
+      quantity: undefined,
+      productVariantId: null,
       productNameSnapshot: 'Mascara',
       variantSkuSnapshot: 'SKU-1',
       customerId: undefined,

@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.offer-products {
+  min-width: 0;
+}
+
+.offer-products__header,
+.offer-products__pagination,
+.offer-products__search {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+}
+
+.offer-products__header {
+  justify-content: space-between;
+  padding-bottom: var(--ds-space-3);
+  border-bottom: 1px solid var(--ds-color-border);
+}
+
+.offer-products__title {
+  margin: 0;
+  color: var(--portal-text);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+}
+
+.offer-products__description {
+  max-width: 52rem;
+  margin: 0.35rem 0 0;
+  color: var(--portal-text-muted);
+  font-size: var(--ds-font-size-sm);
+}
+
+.offer-products__count {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--ds-radius-full);
+  color: var(--portal-primary);
+  background: color-mix(in srgb, var(--portal-primary) 8%, white);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-semibold);
+}
+
+.offer-products__search {
+  max-width: 34rem;
+  margin: var(--ds-space-4) 0;
+}
+
+.offer-products__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ds-space-4);
+  margin-top: var(--ds-space-4);
+
+  app-product-card {
+    min-width: 0;
+  }
+}
+
+.offer-products__status,
+.offer-products__price-note {
+  margin: 0;
+  padding: var(--ds-space-4) 0;
+  color: var(--portal-text-muted);
+}
+
+.offer-products__status--error {
+  color: var(--portal-danger);
+}
+
+.offer-products__price-note {
+  padding-bottom: 0;
+  font-size: var(--ds-font-size-sm);
+}
+
+.offer-products__pagination {
+  justify-content: space-between;
+  margin-top: var(--ds-space-4);
+}
+
+@media (max-width: 1199.98px) {
+  .offer-products__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .offer-products__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 479.98px) {
+  .offer-products__header,
+  .offer-products__search {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .offer-products__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

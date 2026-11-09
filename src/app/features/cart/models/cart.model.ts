@@ -1,7 +1,10 @@
+import type { OfferGuidance } from '../../../shared/models/promotion.model';
+
 export interface CartItemDto {
+  PendingSync?: { customerId: number; targetQuantity: number };
   CartDetailId?: number;
   ProductId: number;
-  ProductVariantId?: number;
+  ProductVariantId?: number | null;
   ProductName?: string;
   ProductNameAr?: string;
   ProductNameEn?: string;
@@ -18,6 +21,12 @@ export interface CartItemDto {
   FinalPrice?: number;
   LineTotal?: number;
   DiscountAmount?: number;
+  SelectedReward?: boolean;
+  ProductDiscountTotal?: number;
+  BundleDiscountTotal?: number;
+  CouponDiscountTotal?: number;
+  BundleUsedQuantity?: number;
+  RewardQuantity?: number;
 }
 
 /** Shared customer/session context for EcCart operations. */
@@ -32,14 +41,17 @@ export interface EcCartContextRequest {
 
 /** Body for `EcCart/AddToCart` (camelCase per API contract). */
 export interface EcAddToCartRequest extends EcCartContextRequest {
-  productVariantId: number;
+  productId: number;
+  productVariantId: number | null;
   quantity: number;
+  selectedReward?: boolean | null;
 }
 
 /** Body for `EcCart/UpdateCart` (PUT). */
 export interface EcUpdateCartRequest extends EcCartContextRequest {
   cartDetailId: number;
   quantity: number;
+  selectedReward?: boolean | null;
 }
 
 export interface CartDto {
@@ -54,6 +66,20 @@ export interface CartDto {
   CurrencyCode?: string;
   CurrencyNameAr?: string;
   CurrencyNameEn?: string;
+  TotalAmount?: number;
+  ProductDiscountAmount?: number;
+  BundleDiscountAmount?: number;
+  AppliedBundleId?: number;
+  AppliedBundleCode?: string;
+  AppliedBundleNameAr?: string;
+  AppliedBundleNameEn?: string;
+  AppliedBundleApplications?: number;
+  PromotionWarnings?: string[];
+  TaxAmount?: number;
+  ItemsCount?: number;
+  OfferGuidance?: OfferGuidance[];
+  /** Internal compatibility marker: the deployed API returned the additive promotion contract. */
+  SupportsPromotionPricing?: boolean;
 }
 
 /** Product snapshot stored with guest cart lines (no API). */
@@ -65,6 +91,8 @@ export interface GuestCartProductMeta {
   has3D?: boolean;
   unitPrice: number;
   isAvailable?: boolean;
+  variantName?: string;
+  variantSku?: string;
 }
 
 export interface AddCartItemRequest {

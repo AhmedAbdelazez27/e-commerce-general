@@ -1,3 +1,8 @@
+import {
+  requiresModel,
+  stockStatus,
+  validQuantity,
+} from '../../../../shared/utils/product-stock.util';
 import { DecimalPipe } from '@angular/common';
 import { Component, DestroyRef, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,13 +18,18 @@ import { WishlistActionsService } from '../../../../core/services/wishlist-actio
 import { CurrencyService } from '../../../../core/services/currency.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ProductCardData } from '../../../../shared/models/product-card.model';
+import { OfferBadgeListComponent } from '../../../../shared/components/offer-badge-list/offer-badge-list.component';
 import { ProductShareMenuComponent } from '../../../../shared/components/product-share-menu/product-share-menu.component';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
 import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { ProductDetailInfoComponent } from '../../components/product-detail-info/product-detail-info.component';
 import { ProductDetailRelatedComponent } from '../../components/product-detail-related/product-detail-related.component';
 import { ProductGalleryComponent } from '../../components/product-gallery/product-gallery.component';
-import { ProductDetail, ProductDetailLoadState, ProductDetailVariant } from '../../models/product-detail.model';
+import {
+  ProductDetail,
+  ProductDetailLoadState,
+  ProductDetailVariant,
+} from '../../models/product-detail.model';
 import { ProductDetailLoadRef } from '../../models/catalog-public-product.model';
 import type { PublicProductShareDto } from '../../models/product-share-info.model';
 import { ProductDetailService } from '../../services/product-detail.service';
@@ -45,6 +55,7 @@ import {
     ProductGalleryComponent,
     ProductDetailInfoComponent,
     ProductDetailRelatedComponent,
+    OfferBadgeListComponent,
     ProductShareMenuComponent,
   ],
   templateUrl: './product-detail-page.component.html',
@@ -69,6 +80,24 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   readonly variants = signal<ProductDetailVariant[]>([]);
   readonly relatedProducts = signal<ProductCardData[]>([]);
   readonly quantity = signal(1);
+  readonly selectionBusy = signal(false);
+  readonly priceBusy = signal(false);
+  private selectionSequence = 0;
+  private loadSequence = 0;
+  private priceSequence = 0;
+  readonly requiresModel = requiresModel;
+  readonly stockStatus = stockStatus;
+  readonly canBuy = computed(() => {
+    const p = this.product();
+    return (
+      !!p &&
+      p.isAvailable &&
+      !this.selectionBusy() &&
+      !this.priceBusy() &&
+      this.quantityValidationKey() !== 'INVENTORY.INVALID_QUANTITY' &&
+      (!requiresModel(p.stock) || !!p.productVariantId)
+    );
+  });
   readonly quantityValidationKey = signal<string | null>(null);
   readonly selectedImageIndex = signal(0);
   readonly shareData = signal<PublicProductShareDto | null>(null);
@@ -90,7 +119,9 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     if (!p?.isAvailable) {
       return 1;
     }
-    return Math.max(1, p.stockQuantity);
+    return p.stock?.allowOnlineBackorder
+      ? Number.MAX_SAFE_INTEGER
+      : Math.max(0.01, p.stockQuantity);
   });
 
   readonly currencyLabel = computed(() => {
@@ -104,8 +135,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     const share = this.shareData();
     const p = this.product();
     if (share) {
-      const title =
-        this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
+      const title = this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
       if (title.trim()) {
         return title.trim();
       }
@@ -121,8 +151,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   readonly shareTitle = computed(() => {
     const share = this.shareData();
     if (share) {
-      const title =
-        this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
+      const title = this.language.currentLang() === 'ar' ? share.titleAr : share.titleEn;
       if (title.trim()) {
         return title.trim();
       }
@@ -131,6 +160,24 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this.cartActions.availabilityRefreshed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const p = this.product();
+        if (
+          !p ||
+          this.selectionBusy() ||
+          p.id !== value.productId ||
+          (p.productVariantId ?? null) !== value.productVariantId
+        )
+          return;
+        this.product.set({
+          ...p,
+          stock: value.stock,
+          stockQuantity: value.stock?.available ?? 0,
+          isAvailable: value.isAvailable,
+        });
+      });
     combineLatest([this.route.paramMap, this.route.queryParamMap])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([params, query]) => {
@@ -199,29 +246,48 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
 
   onQuantityInput(event: Event): void {
     const raw = Number((event.target as HTMLInputElement).value);
-    const requested = Number.isFinite(raw) ? Math.floor(raw) : 1;
+    const requested = Number.isFinite(raw) ? raw : 1;
     this.applyQuantity(requested, requested);
   }
 
   onVariantSelect(variantId: number): void {
     const product = this.product();
     const variant = this.variants().find((entry) => entry.id === variantId);
-    if (!product || !variant || product.selectedVariantId === variantId) {
+    if (
+      !product ||
+      !variant ||
+      (product.selectedVariantId === variantId && !this.selectionBusy())
+    ) {
       return;
     }
 
+    const sequence = ++this.selectionSequence;
+    ++this.priceSequence;
+    this.priceBusy.set(false);
+    this.selectionBusy.set(true);
     this.productDetailService
       .selectVariant(product, variant, this.quantity())
-      .subscribe((updated) => {
-        this.product.set(updated);
-        this.selectedImageIndex.set(0);
-        this.clampQuantityToStock();
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          if (sequence !== this.selectionSequence) return;
+          this.product.set(updated);
+          this.selectedImageIndex.set(0);
+          this.selectionBusy.set(false);
+          this.clampQuantityToStock();
+        },
+        error: () => {
+          if (sequence === this.selectionSequence) {
+            this.selectionBusy.set(false);
+            this.product.update((p) => (p ? { ...p, isAvailable: false } : p));
+          }
+        },
       });
   }
 
   addToCart(): void {
     const p = this.product();
-    if (!p) {
+    if (!p || !this.canBuy()) {
       return;
     }
     if (!this.validateQuantityForAction()) {
@@ -271,6 +337,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   private loadProduct(ref: ProductDetailLoadRef): void {
+    const sequence = ++this.loadSequence;
+    ++this.selectionSequence;
+    ++this.priceSequence;
+    this.selectionBusy.set(false);
+    this.priceBusy.set(false);
     this.loadState.set('loading');
     this.product.set(null);
     this.variants.set([]);
@@ -284,6 +355,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ product, variants, related }) => {
+          if (sequence !== this.loadSequence) return;
           if (!product) {
             this.loadState.set('not-found');
             this.product.set(null);
@@ -299,6 +371,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
           this.loadShareInfo(product.id);
         },
         error: () => {
+          if (sequence !== this.loadSequence) return;
           this.loadState.set('not-found');
         },
       });
@@ -309,6 +382,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
       .getShareInfo(productId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((info) => {
+        if (this.product()?.id !== productId) return;
         this.shareData.set(info?.share ?? null);
         this.applyShareSeo();
       });
@@ -324,18 +398,30 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
 
   private refreshDisplayedPrice(): void {
     const product = this.product();
-    if (!product?.productVariantId) {
+    if (!product || this.selectionBusy()) {
       return;
     }
 
+    const sequence = ++this.priceSequence;
+    this.priceBusy.set(true);
     this.productDetailService
       .refreshPrice(product, this.quantity())
-      .subscribe((updated) => this.product.set(updated));
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((updated) => {
+        if (sequence === this.priceSequence) {
+          this.product.set(updated);
+          this.priceBusy.set(false);
+        }
+      });
   }
 
   private applyQuantity(next: number, requested?: number): void {
     const max = this.maxQuantity();
-    const clamped = Math.min(max, Math.max(1, Math.floor(next)));
+    if (!validQuantity(next, this.product()?.stock)) {
+      this.quantityValidationKey.set('INVENTORY.INVALID_QUANTITY');
+      return;
+    }
+    const clamped = Math.min(max, Math.max(0.01, next));
     this.quantity.set(clamped);
 
     if (requested != null && requested > max) {
@@ -357,12 +443,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   private validateQuantityForAction(): boolean {
+    if (!validQuantity(this.quantity(), this.product()?.stock)) return false;
     const max = this.maxQuantity();
     if (this.quantity() > max) {
       this.quantityValidationKey.set('PRODUCT_DETAIL.STOCK_EXCEEDED');
-      this.toast.warning(
-        this.translate.instant('PRODUCT_DETAIL.STOCK_EXCEEDED', { count: max }),
-      );
+      this.toast.warning(this.translate.instant('PRODUCT_DETAIL.STOCK_EXCEEDED', { count: max }));
       return false;
     }
     return true;

@@ -39,6 +39,7 @@ export function mapStorefrontProductToCardData(
   return {
     id: product.id,
     productVariantId: product.productVariantId,
+    stock: product.stock,
     slug: product.slug,
     title: product.nameEn,
     titleAr: product.nameAr,
@@ -54,6 +55,7 @@ export function mapStorefrontProductToCardData(
     isNew: product.isNew ?? false,
     isBestSeller: product.isBestSeller ?? false,
     currency: product.currencyCode ?? options?.currency,
+    offers: product.offers ?? [],
   };
 }
 

@@ -15,6 +15,8 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 
 import { CartService } from '../../core/services/cart.service';
+import { CartActionsService } from '../../core/services/cart-actions.service';
+import { ProductModelPickerComponent } from '../../features/catalog/components/product-model-picker/product-model-picker.component';
 import { EcNotificationsService } from '../../core/services/ec-notifications.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
@@ -34,12 +36,14 @@ import { StoreNavComponent } from '../store-nav/store-nav.component';
     StoreNavComponent,
     MobileNavDrawerComponent,
     StoreFooterComponent,
+    ProductModelPickerComponent,
   ],
   templateUrl: './app-shell.component.html',
 })
 export class AppShellComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
   private readonly cart = inject(CartService);
+  readonly cartActions = inject(CartActionsService);
   private readonly wishlist = inject(WishlistService);
   private readonly notifications = inject(EcNotificationsService);
   private readonly router = inject(Router);
