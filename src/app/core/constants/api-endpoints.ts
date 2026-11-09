@@ -2,6 +2,8 @@ export class ApiEndpoints {
   static readonly Auth = {
     authenticate: '/api/TokenAuth/Authenticate',
     registerECommerceCustomer: '/api/TokenAuth/RegisterECommerceCustomer',
+    sendECommerceRegistrationOtp: '/api/TokenAuth/SendECommerceRegistrationOtp',
+    verifyECommerceRegistrationOtp: '/api/TokenAuth/VerifyECommerceRegistrationOtp',
     getECommerceCustomerProfile: '/api/TokenAuth/GetECommerceCustomerProfile',
     externalAuthenticateECommerce: '/api/TokenAuth/ExternalAuthenticateECommerce',
     forgetPassword: '/api/services/app/User/ForgetPasswordForPortal',

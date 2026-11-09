@@ -1,0 +1,21 @@
+<div class="otp-code-input" dir="ltr">
+  @for (i of otpIndexes(); track i) {
+    <input
+      #otpInput
+      type="text"
+      class="form-control otp-code-input__box"
+      maxlength="1"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      autocomplete="one-time-code"
+      dir="ltr"
+      [attr.id]="'otp' + i"
+      [formControl]="otpControl(i)"
+      (input)="onOtpInput(i, $event)"
+      (keydown)="onOtpKeydown(i, $event)"
+      (paste)="onOtpPaste($event, i)"
+      (focus)="otpInput.select()"
+      [attr.aria-label]="'AUTH.OTP_DIGIT' | translate: { index: i + 1 }"
+    />
+  }
+</div>

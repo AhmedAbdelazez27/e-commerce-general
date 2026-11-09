@@ -11,7 +11,7 @@
 | المزود | الحقل | القيمة |
 |--------|-------|--------|
 | Google | ClientId (Web) | `811170436036-5vi9egvrnv7hpa01vvpep4lidks8g4cl.apps.googleusercontent.com` |
-| Facebook | AppId | `1256194259769527` |
+| Facebook | AppId | `1634206791008091` |
 
 > **Facebook AppSecret:** يبقى على السيرفر فقط — لا يُرسل للفرونت.
 

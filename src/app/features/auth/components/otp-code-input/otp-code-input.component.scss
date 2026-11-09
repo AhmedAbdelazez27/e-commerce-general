@@ -1,0 +1,57 @@
+.otp-code-input {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.65rem;
+  direction: ltr;
+}
+
+.otp-code-input__box {
+  width: 3.25rem;
+  height: 3.75rem;
+  padding: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--portal-text, #1f2937);
+  border: 1.5px solid var(--ds-color-border, #d1d5db);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.otp-code-input__box:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--portal-primary, #4b6b8a) 45%, #d1d5db);
+}
+
+.otp-code-input__box:focus {
+  border-color: var(--portal-primary, #4b6b8a);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--portal-primary, #4b6b8a) 18%, transparent);
+  outline: none;
+  background: #fff;
+}
+
+.otp-code-input__box:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f3f4f6;
+}
+
+@media (max-width: 575.98px) {
+  .otp-code-input {
+    gap: 0.4rem;
+  }
+
+  .otp-code-input__box {
+    width: 2.65rem;
+    height: 3.15rem;
+    font-size: 1.25rem;
+    border-radius: 0.6rem;
+  }
+}

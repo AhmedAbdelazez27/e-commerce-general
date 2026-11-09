@@ -55,6 +55,10 @@ export function abpEnvelopeErrorMessage(res: unknown): string | null {
   const envelope = res as JsonRecord;
   const error = (envelope['error'] ?? envelope['Error']) as JsonRecord | null | undefined;
   if (error && typeof error === 'object') {
+    const details = error['details'] ?? error['Details'];
+    if (typeof details === 'string' && details.trim()) {
+      return details.trim();
+    }
     const message = error['message'] ?? error['Message'];
     if (typeof message === 'string' && message.trim()) {
       return message.trim();

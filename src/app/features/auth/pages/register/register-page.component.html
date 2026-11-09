@@ -1,128 +1,217 @@
-<div class="container py-5" style="max-width: 55rem">
+<div
+  class="container register-page"
+  [class.register-page--otp]="step() === 'otp'"
+  style="max-width: 55rem"
+>
   <app-auth-page-header />
 
-  <div class="p-3">
-    <h1 class="h2 mb-4 px-2">{{ 'PAGE.REGISTER' | translate }}</h1>
+  <div class="register-page__body">
+    @if (step() === 'form') {
+      <h1 class="h2 mb-4 px-2">{{ 'PAGE.REGISTER' | translate }}</h1>
 
-    <form
-      class="login-box shadow p-4"
-      [formGroup]="form"
-      (ngSubmit)="submit()"
-      style="border-radius: 15px; overflow: hidden;"
-    >
-      <div class="row mb-4">
-        <h3>Personal Information</h3>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-fullName">{{ 'AUTH.FULL_NAME' | translate }}</label>
-            <input id="reg-fullName" type="text" class="form-control" formControlName="fullName" autocomplete="name" />
+      <form
+        class="login-box shadow p-4"
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        style="border-radius: 15px; overflow: hidden;"
+      >
+        <div class="row mb-4">
+          <h3>{{ 'PROFILE.PERSONAL_INFO' | translate }}</h3>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-fullName">{{ 'AUTH.FULL_NAME' | translate }}</label>
+              <input id="reg-fullName" type="text" class="form-control" formControlName="fullName" autocomplete="name" />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-email">{{ 'AUTH.EMAIL' | translate }}</label>
+              <input id="reg-email" type="email" class="form-control" formControlName="email" autocomplete="email" />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-mobile">{{ 'AUTH.MOBILE' | translate }}</label>
+              <input id="reg-mobile" type="tel" class="form-control" formControlName="mobile" autocomplete="tel" />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-birth">{{ 'AUTH.BIRTH_DATE' | translate }}</label>
+              <input id="reg-birth" type="date" class="form-control" formControlName="birthDate" />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-gender">{{ 'AUTH.GENDER' | translate }}</label>
+              <select id="reg-gender" class="form-select" formControlName="gender">
+                <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
+                @for (option of genderOptions; track option.value) {
+                  <option [value]="option.value">{{ option.labelKey | translate }}</option>
+                }
+              </select>
+            </div>
           </div>
         </div>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-email">{{ 'AUTH.EMAIL' | translate }}</label>
-            <input id="reg-email" type="email" class="form-control" formControlName="email" autocomplete="email" />
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-mobile">{{ 'AUTH.MOBILE' | translate }}</label>
-            <input id="reg-mobile" type="tel" class="form-control" formControlName="mobile" autocomplete="tel" />
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-birth">{{ 'AUTH.BIRTH_DATE' | translate }}</label>
-            <input id="reg-birth" type="date" class="form-control" formControlName="birthDate" />
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-gender">{{ 'AUTH.GENDER' | translate }}</label>
-            <select id="reg-gender" class="form-select" formControlName="gender">
-              <option value="">{{ 'AUTH.GENDER_OPTIONAL' | translate }}</option>
-              @for (option of genderOptions; track option.value) {
-                <option [value]="option.value">{{ option.labelKey | translate }}</option>
+
+        <div class="row mb-4">
+          <h3>{{ 'AUTH.PASSWORD' | translate }}</h3>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-password">{{ 'AUTH.PASSWORD' | translate }}</label>
+              <div class="password-field">
+                <input
+                  id="reg-password"
+                  [type]="passwordInputType(showPassword())"
+                  class="form-control"
+                  formControlName="password"
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="password-field__toggle"
+                  (click)="togglePasswordVisibility('password')"
+                  [attr.aria-label]="passwordToggleLabel(showPassword())"
+                >
+                  <i
+                    [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+              @if (form.controls.password.touched && form.controls.password.invalid) {
+                <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
               }
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="row mb-4">
-        <h3>Password</h3>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-password">{{ 'AUTH.PASSWORD' | translate }}</label>
-            <div class="password-field">
-              <input
-                id="reg-password"
-                [type]="passwordInputType(showPassword())"
-                class="form-control"
-                formControlName="password"
-                autocomplete="new-password"
-              />
-              <button
-                type="button"
-                class="password-field__toggle"
-                (click)="togglePasswordVisibility('password')"
-                [attr.aria-label]="passwordToggleLabel(showPassword())"
-              >
-                <i
-                  [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
-                  aria-hidden="true"
-                ></i>
-              </button>
             </div>
-            @if (form.controls.password.touched && form.controls.password.invalid) {
-              <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MIN' | translate }}</div>
-            }
           </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="mb-3">
-            <label class="form-label" for="reg-confirm">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
-            <div class="password-field">
-              <input
-                id="reg-confirm"
-                [type]="passwordInputType(showConfirmPassword())"
-                class="form-control"
-                formControlName="confirmPassword"
-                autocomplete="new-password"
-              />
-              <button
-                type="button"
-                class="password-field__toggle"
-                (click)="togglePasswordVisibility('confirm')"
-                [attr.aria-label]="passwordToggleLabel(showConfirmPassword())"
-              >
-                <i
-                  [class]="showConfirmPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
-                  aria-hidden="true"
-                ></i>
-              </button>
+          <div class="col-lg-6">
+            <div class="mb-3">
+              <label class="form-label" for="reg-confirm">{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
+              <div class="password-field">
+                <input
+                  id="reg-confirm"
+                  [type]="passwordInputType(showConfirmPassword())"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="password-field__toggle"
+                  (click)="togglePasswordVisibility('confirm')"
+                  [attr.aria-label]="passwordToggleLabel(showConfirmPassword())"
+                >
+                  <i
+                    [class]="showConfirmPassword() ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye'"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </div>
+              @if (form.touched && form.errors?.['mismatch']) {
+                <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MISMATCH' | translate }}</div>
+              }
             </div>
-            @if (form.touched && form.errors?.['mismatch']) {
-              <div class="form-text text-danger">{{ 'AUTH.PASSWORD_MISMATCH' | translate }}</div>
-            }
           </div>
         </div>
-      </div>
 
-      <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading()">
-        @if (loading()) {
-          {{ 'COMMON.LOADING' | translate }}
-        } @else {
-          {{ 'PAGE.REGISTER' | translate }}
+        @if (emailAlreadyRegistered()) {
+          <div class="alert alert-warning" role="alert">
+            <p class="mb-2">{{ 'AUTH.EMAIL_ALREADY_REGISTERED' | translate }}</p>
+            <p class="mb-2 small">{{ 'AUTH.EMAIL_ALREADY_REGISTERED_HINT' | translate }}</p>
+            <div class="d-flex flex-wrap gap-3">
+              <a routerLink="/auth/login">{{ 'AUTH.HAVE_ACCOUNT' | translate }}</a>
+              <a routerLink="/auth/forgot-password">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</a>
+            </div>
+          </div>
         }
-      </button>
 
-      <p class="text-center mb-2">
-        <a routerLink="/auth/login">{{ 'AUTH.HAVE_ACCOUNT' | translate }}</a>
-      </p>
-      <p class="text-center mb-0">
-        <a [routerLink]="continueUrl()">{{ 'AUTH.CONTINUE_WITHOUT_LOGIN' | translate }}</a>
-      </p>
-    </form>
+        <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="loading()">
+          @if (loading()) {
+            {{ 'COMMON.LOADING' | translate }}
+          } @else {
+            {{ 'PAGE.REGISTER' | translate }}
+          }
+        </button>
+
+        <p class="text-center mb-2">
+          <a routerLink="/auth/login">{{ 'AUTH.HAVE_ACCOUNT' | translate }}</a>
+        </p>
+        <p class="text-center mb-0">
+          <a [routerLink]="continueUrl()">{{ 'AUTH.CONTINUE_WITHOUT_LOGIN' | translate }}</a>
+        </p>
+      </form>
+    } @else {
+      <div class="register-otp">
+        <h1 class="h2 register-otp__title">{{ 'AUTH.OTP_TITLE' | translate }}</h1>
+
+        <div class="register-otp__card">
+          <p class="register-otp__hint">
+            {{ 'AUTH.OTP_HINT_PREFIX' | translate }}
+            <span class="register-otp__email">{{ maskedEmail() }}</span>
+          </p>
+
+          <div class="register-otp__inputs">
+            <app-otp-code-input
+              [disabled]="loading() || isOtpExpired()"
+              (codeChange)="onOtpCodeChange($event)"
+              (enterPressed)="verifyOtp()"
+            />
+          </div>
+
+          @if (otpError()) {
+            <div class="register-otp__error" role="alert">{{ otpError() }}</div>
+          }
+
+          @if (!isOtpExpired()) {
+            <p class="register-otp__timer">
+              <span>{{ 'AUTH.OTP_EXPIRES_IN' | translate }}</span>
+              <span class="register-otp__timer-value">{{ otpExpiryLabel() }}</span>
+            </p>
+          } @else {
+            <p class="register-otp__timer register-otp__timer--expired">
+              {{ 'AUTH.OTP_EXPIRED' | translate }}
+            </p>
+          }
+
+          <button
+            type="button"
+            class="btn btn-primary w-100 register-otp__submit"
+            [disabled]="loading() || !otpValid() || isOtpExpired()"
+            (click)="verifyOtp()"
+          >
+            @if (loading()) {
+              {{ 'AUTH.OTP_VERIFYING' | translate }}
+            } @else {
+              {{ 'AUTH.OTP_VERIFY' | translate }}
+            }
+          </button>
+
+          <div class="register-otp__footer">
+            <p class="register-otp__resend">
+              {{ 'AUTH.OTP_DIDNT_RECEIVE' | translate }}
+              @if (resendSecondsLeft() > 0) {
+                <span class="register-otp__wait">
+                  {{ 'AUTH.OTP_RESEND_WAIT' | translate: { seconds: resendSecondsLeft() } }}
+                </span>
+              } @else {
+                <a
+                  href="#resend"
+                  (click)="$event.preventDefault(); resendOtp()"
+                  [attr.aria-disabled]="loading()"
+                >
+                  {{ 'AUTH.OTP_RESEND' | translate }}
+                </a>
+              }
+            </p>
+
+            <p class="register-otp__back">
+              <a href="#back" (click)="$event.preventDefault(); backToForm()">
+                {{ 'AUTH.OTP_BACK_TO_FORM' | translate }}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 </div>

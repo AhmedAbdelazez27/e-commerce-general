@@ -6,7 +6,12 @@ import { ApiEndpoints } from '../../../core/constants/api-endpoints';
 import { SKIP_AUTH, SKIP_UNAUTHORIZED_HANDLING } from '../../../core/http/http-context.tokens';
 import { TokenAuthRequest } from '../models/login.models';
 import { ForgetPasswordQuery, PostForgetPasswordRequest } from '../models/forget-password.models';
-import { RegisterECommerceCustomerRequest, RegisterFormValue } from '../models/register.models';
+import {
+  RegisterECommerceCustomerRequest,
+  RegisterFormValue,
+  SendRegistrationOtpRequest,
+  VerifyRegistrationOtpRequest,
+} from '../models/register.models';
 import { ExternalAuthenticateRequest } from '../models/external-auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -21,13 +26,33 @@ export class AuthApiService {
     return this.postAnonymous(ApiEndpoints.Auth.externalAuthenticateECommerce, body);
   }
 
-  register(form: RegisterFormValue, sessionId: string | null): Observable<unknown> {
+  sendRegistrationOtp(email: string): Observable<unknown> {
+    const body: SendRegistrationOtpRequest = {
+      email: email.trim().toLowerCase(),
+    };
+    return this.postAnonymous(ApiEndpoints.Auth.sendECommerceRegistrationOtp, body);
+  }
+
+  verifyRegistrationOtp(email: string, otp: string): Observable<unknown> {
+    const body: VerifyRegistrationOtpRequest = {
+      email: email.trim().toLowerCase(),
+      otp,
+    };
+    return this.postAnonymous(ApiEndpoints.Auth.verifyECommerceRegistrationOtp, body);
+  }
+
+  register(
+    form: RegisterFormValue,
+    sessionId: string | null,
+    verificationToken: string,
+  ): Observable<unknown> {
     const email = form.email.trim().toLowerCase();
     const body: RegisterECommerceCustomerRequest = {
       fullName: form.fullName.trim(),
       email,
       mobile: form.mobile.trim(),
       password: form.password,
+      verificationToken,
       sessionId: sessionId?.trim() ? sessionId.trim() : null,
       birthDate: form.birthDate?.trim() ? form.birthDate.trim() : null,
       gender: form.gender?.trim() ? form.gender.trim() : null,

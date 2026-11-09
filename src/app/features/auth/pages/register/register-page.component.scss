@@ -1,0 +1,146 @@
+.register-page {
+  padding-top: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+.register-page--otp {
+  padding-top: 0.75rem;
+  padding-bottom: 1.5rem;
+}
+
+.register-page__body {
+  padding: 0.75rem 0.5rem 0;
+}
+
+.register-page--otp .register-page__body {
+  padding-top: 0.35rem;
+}
+
+.register-otp {
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+.register-otp__title {
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.register-otp__card {
+  padding: 2rem 1.75rem 1.75rem;
+  border-radius: 1rem;
+  background: var(--portal-background, #fff);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+.register-otp__hint {
+  margin: 0 0 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.register-otp__email {
+  display: inline-block;
+  margin-top: 0.2rem;
+  color: var(--portal-text, #111827);
+  font-weight: 700;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.register-otp__inputs {
+  margin-bottom: 1.25rem;
+}
+
+.register-otp__timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0 0 1.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.register-otp__timer-value {
+  min-width: 3.25rem;
+  color: var(--portal-text, #111827);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.register-otp__timer--expired {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.register-otp__error {
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.65rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b42318;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.register-otp__submit {
+  min-height: 2.85rem;
+  margin-bottom: 1.25rem;
+  border-radius: 0.7rem;
+  font-weight: 600;
+}
+
+.register-otp__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.register-otp__resend {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.register-otp__resend a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-otp__resend a:hover {
+  text-decoration: underline;
+}
+
+.register-otp__wait {
+  color: #9ca3af;
+}
+
+.register-otp__back {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.register-otp__back a {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.register-otp__back a:hover {
+  color: var(--portal-primary, #4b6b8a);
+  text-decoration: underline;
+}
+
+@media (max-width: 575.98px) {
+  .register-otp__card {
+    padding: 1.5rem 1.1rem 1.35rem;
+  }
+}

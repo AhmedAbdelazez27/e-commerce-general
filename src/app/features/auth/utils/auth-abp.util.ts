@@ -58,11 +58,18 @@ export function abpErrorMessage(err: unknown, fallback: string): string {
     return fallback;
   }
   const error = body['error'] as JsonRecord | undefined;
-  if (error && typeof error['message'] === 'string') {
-    return error['message'];
+  if (error && typeof error === 'object') {
+    const details = error['details'] ?? error['Details'];
+    if (typeof details === 'string' && details.trim()) {
+      return details.trim();
+    }
+    const message = error['message'] ?? error['Message'];
+    if (typeof message === 'string' && message.trim()) {
+      return message.trim();
+    }
   }
-  if (typeof body['message'] === 'string') {
-    return body['message'];
+  if (typeof body['message'] === 'string' && body['message'].trim()) {
+    return body['message'].trim();
   }
   return fallback;
 }
