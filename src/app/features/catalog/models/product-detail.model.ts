@@ -61,6 +61,8 @@ export interface ProductDetail {
   stockQuantity: number;
   sku: string;
   images: ProductDetailImage[];
+  shortDescriptionEn?: string;
+  shortDescriptionAr?: string;
   descriptionEn: string;
   descriptionAr: string;
   metaTitle?: string;

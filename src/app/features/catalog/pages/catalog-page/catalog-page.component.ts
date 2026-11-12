@@ -12,7 +12,7 @@ import { CatalogEmptyStateComponent } from '../../components/catalog-empty-state
 import { CatalogFilterPanelComponent } from '../../components/catalog-filter-panel/catalog-filter-panel.component';
 import { CatalogListingToolbarComponent } from '../../components/catalog-listing-toolbar/catalog-listing-toolbar.component';
 import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
-import { PortalSeoService } from '../../../../core/portal-seo/portal-seo.service';
+import { PortalSeoService, toPlainSeoText } from '../../../../core/portal-seo/portal-seo.service';
 import { CartActionsService } from '../../../../core/services/cart-actions.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { WishlistActionsService } from '../../../../core/services/wishlist-actions.service';
@@ -118,10 +118,29 @@ export class CatalogPageComponent implements OnInit, OnDestroy {
     }
 
     const name = (lang === 'ar' ? category.nameAr : category.nameEn).trim();
-    const title = category.seoTitle?.trim() || name;
-    const description =
+    const title = category.seoTitle?.trim() || this.portalSeo.fallbackTitle(name);
+    const description = toPlainSeoText(
       category.seoDescription?.trim() ||
-      (lang === 'ar' ? category.descriptionAr : category.descriptionEn)?.trim();
-    this.portalSeo.applyPageMeta(title, description);
+        (lang === 'ar' ? category.descriptionAr : category.descriptionEn),
+    );
+    this.portalSeo.applyResolvedMeta({
+      title,
+      description,
+      canonicalPath: categoryCanonicalPath(category),
+      ogType: 'website',
+    });
   }
+}
+
+function categoryCanonicalPath(category: CatalogCategoryOption): string | null {
+  if (!category.id) {
+    return null;
+  }
+  const params = new URLSearchParams();
+  const slug = category.slug?.trim();
+  if (slug) {
+    params.set('category', slug);
+  }
+  params.set('categoryId', category.id);
+  return `/shop?${params.toString()}`;
 }

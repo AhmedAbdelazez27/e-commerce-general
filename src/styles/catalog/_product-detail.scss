@@ -212,6 +212,19 @@
   color: var(--portal-text-muted);
 }
 
+.product-detail-main__short-description {
+  margin: 0 0 var(--ds-space-2);
+  font-size: var(--ds-font-size-sm);
+  line-height: 1.6;
+  color: var(--portal-text);
+}
+
+.product-detail-main__backorder {
+  margin: 0 0 var(--ds-space-3);
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-warning);
+}
+
 .product-detail-main__quantity {
   margin-bottom: var(--ds-space-5);
 }

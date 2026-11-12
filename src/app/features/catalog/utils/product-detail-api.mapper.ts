@@ -392,6 +392,8 @@ export function mapPublicProductDetailsToProductDetail(
     stockQuantity: stock.stockQuantity,
     sku: dto.sku ?? `SKU-${productId}`,
     images,
+    shortDescriptionEn: dto.shortDescriptionEn?.trim() || undefined,
+    shortDescriptionAr: dto.shortDescriptionAr?.trim() || undefined,
     descriptionEn,
     descriptionAr,
     metaTitle: dto.metaTitle?.trim() || undefined,

@@ -144,8 +144,11 @@
           @if (requiresModel(p.stock) && !p.productVariantId) {
             <p>{{ 'CART.VARIANT_REQUIRED' | translate }}</p>
           }
+          @if (shortDescription(); as summary) {
+            <p class="product-detail-main__short-description">{{ summary }}</p>
+          }
           @if (p.stock?.allowOnlineBackorder && quantity() > p.stockQuantity) {
-            <p>{{ 'INVENTORY.EXCESS_BACKORDER' | translate }}</p>
+            <p class="product-detail-main__backorder">{{ 'INVENTORY.EXCESS_BACKORDER' | translate }}</p>
           }
           @if ((p.priceQuantity ?? 1) > 1) {
             <p>{{ 'INVENTORY.PRICE_QUANTITY' | translate: { count: p.priceQuantity } }}</p>

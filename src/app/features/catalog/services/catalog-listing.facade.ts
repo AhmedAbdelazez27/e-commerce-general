@@ -1,4 +1,5 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
@@ -50,9 +51,17 @@ export class CatalogListingFacade {
   private readonly currency = inject(CurrencyService);
   private readonly translate = inject(TranslateService);
 
+  private treeRequest = 0;
+  private catalogRequest = 0;
+
   constructor() {
-    this.currency.currencyChanged$.subscribe(() => this.reloadCatalog());
-    this.translate.onLangChange.subscribe(() => this.reloadCatalog());
+    const destroyRef = inject(DestroyRef);
+    this.currency.currencyChanged$
+      .pipe(takeUntilDestroyed(destroyRef))
+      .subscribe(() => this.reloadCatalog());
+    this.translate.onLangChange
+      .pipe(takeUntilDestroyed(destroyRef))
+      .subscribe(() => this.loadCategoryTree(false));
   }
 
   private readonly categoryLookup = signal<Map<string, PublicCategoryDto>>(new Map());
@@ -87,11 +96,18 @@ export class CatalogListingFacade {
     if (!id) {
       return null;
     }
+    const node = categoryNodeForId(id, this.categoryLookup());
     const fromFilters = this.categories().find((c) => c.id === id);
     if (fromFilters) {
-      return fromFilters;
+      return {
+        ...fromFilters,
+        slug: fromFilters.slug || node?.slug,
+        descriptionEn: fromFilters.descriptionEn || node?.description || undefined,
+        descriptionAr: fromFilters.descriptionAr || node?.description || undefined,
+        seoTitle: fromFilters.seoTitle || node?.seoTitle?.trim() || undefined,
+        seoDescription: fromFilters.seoDescription || node?.seoDescription?.trim() || undefined,
+      } satisfies CatalogCategoryOption;
     }
-    const node = categoryNodeForId(id, this.categoryLookup());
     if (!node) {
       return null;
     }
@@ -203,16 +219,25 @@ export class CatalogListingFacade {
   }
 
   bootstrap(): void {
-    const lang = this.language.apiCulture();
-    this.loading.set(true);
+    this.loadCategoryTree(true);
+  }
 
-    this.catalogApi
-      .getCategoriesTree(lang)
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe((tree) => {
+  private loadCategoryTree(showLoading: boolean): void {
+    const request = ++this.treeRequest;
+    const lang = this.language.apiCulture();
+    if (showLoading) {
+      this.loading.set(true);
+    }
+
+    this.catalogApi.getCategoriesTree(lang).subscribe((tree) => {
+        if (request !== this.treeRequest || this.language.apiCulture() !== lang) {
+          return;
+        }
         this.categoryLookup.set(buildCategoryLookup(tree));
-        this.initFromRoute();
-        this.initialized.set(true);
+        if (!this.initialized()) {
+          this.initFromRoute();
+          this.initialized.set(true);
+        }
         this.reloadCatalog();
       });
   }
@@ -222,6 +247,7 @@ export class CatalogListingFacade {
       return;
     }
 
+    const request = ++this.catalogRequest;
     const lang = this.language.apiCulture();
     const currency = this.currency.selection();
     const filters = this.filters();
@@ -241,8 +267,17 @@ export class CatalogListingFacade {
       facets: this.listingApi.getProductFilters(filterParams),
       listing: this.listingApi.searchProducts(searchBody),
     })
-      .pipe(finalize(() => this.loading.set(false)))
+      .pipe(
+        finalize(() => {
+          if (request === this.catalogRequest) {
+            this.loading.set(false);
+          }
+        }),
+      )
       .subscribe(({ facets, listing }) => {
+        if (request !== this.catalogRequest || this.language.apiCulture() !== lang) {
+          return;
+        }
         this.categories.set(mapFilterCategoriesToOptions(facets.categories));
         this.brands.set(mapFilterBrandsToOptions(facets.brands));
         this.specifications.set(mapFilterSpecificationsToGroups(facets.specifications));

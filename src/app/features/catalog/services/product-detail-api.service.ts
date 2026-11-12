@@ -69,8 +69,14 @@ export class ProductDetailApiService {
       );
   }
 
-  getProductShareInfo(productId: number): Observable<PublicProductShareInfoDto | null> {
-    const params = new HttpParams().set('ProductId', String(productId));
+  getProductShareInfo(
+    productId: number,
+    lang?: string,
+  ): Observable<PublicProductShareInfoDto | null> {
+    let params = new HttpParams().set('ProductId', String(productId));
+    if (lang?.trim()) {
+      params = params.set('Lang', lang.trim());
+    }
     return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.productShareInfo, { params }).pipe(
       map((res) => {
         const raw = resultFromAbpEnvelope<unknown>(res);

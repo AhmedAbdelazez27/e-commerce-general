@@ -40,6 +40,7 @@ import {
   buildProductDetailBreadcrumbs,
   localizedBrandName,
   localizedProductName,
+  localizedShortDescription,
   mapProductDetailToCardData,
   mapRelatedToCardData,
   productDetailDiscountPercent,
@@ -222,6 +223,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     return p ? localizedBrandName(p, this.language.currentLang()) : '';
   }
 
+  shortDescription(): string {
+    const p = this.product();
+    return p ? localizedShortDescription(p, this.language.currentLang()) : '';
+  }
+
   brandQueryParams(): Record<string, string> | undefined {
     const p = this.product();
     return p?.brandId ? { brand: p.brandId } : undefined;
@@ -368,7 +374,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
           this.relatedProducts.set(mapRelatedToCardData(related));
           this.loadState.set('loaded');
           this.applyShareSeo();
-          this.loadShareInfo(product.id);
+          this.loadShareInfo(product.id, sequence);
         },
         error: () => {
           if (sequence !== this.loadSequence) return;
@@ -377,11 +383,13 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadShareInfo(productId: number): void {
+  private loadShareInfo(productId: number, sequence: number): void {
+    const lang = this.language.apiCulture();
     this.productShareInfo
-      .getShareInfo(productId)
+      .getShareInfo(productId, lang)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((info) => {
+        if (sequence !== this.loadSequence || this.language.apiCulture() !== lang) return;
         if (this.product()?.id !== productId) return;
         this.shareData.set(info?.share ?? null);
         this.applyShareSeo();

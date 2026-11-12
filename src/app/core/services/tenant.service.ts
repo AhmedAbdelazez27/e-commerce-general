@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApiEndpoints } from '../constants/api-endpoints';
 import { SKIP_AUTH, SKIP_TENANT_HEADER } from '../http/http-context.tokens';
+import { APP_ENVIRONMENT } from '../tokens/app-environment.token';
 import { resultFromAbpEnvelope } from '../utils/api-envelope.util';
 
 type TenantAvailabilityResult = {
@@ -13,7 +14,7 @@ type TenantAvailabilityResult = {
 
 const STORAGE_TENANCY = 'tenancy_name';
 const STORAGE_TENANT_ID = 'tenant_id';
-const LOCALHOST_DEFAULT_TENANCY = 'compassint';//compassint
+const LOCALHOST_DEFAULT_TENANCY = 'Muhtaseb'; //compassint
 
 /** ABP TenantAvailabilityState.Available */
 const TENANT_STATE_AVAILABLE = 1;
@@ -21,6 +22,7 @@ const TENANT_STATE_AVAILABLE = 1;
 @Injectable({ providedIn: 'root' })
 export class TenantService {
   private readonly http = inject(HttpClient);
+  private readonly env = inject(APP_ENVIRONMENT);
 
   readonly tenancyName = signal<string | null>(null);
   readonly tenantId = signal<number | null>(null);
@@ -70,7 +72,8 @@ export class TenantService {
   private detectTenancyName(hostname: string): string | null {
     const host = hostname.toLowerCase();
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
-      return LOCALHOST_DEFAULT_TENANCY;
+      const fromEnv = typeof this.env.tenancyName === 'string' ? this.env.tenancyName.trim() : '';
+      return fromEnv || LOCALHOST_DEFAULT_TENANCY;
     }
     if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
       return null;

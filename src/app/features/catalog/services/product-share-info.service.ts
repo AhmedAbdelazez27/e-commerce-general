@@ -8,23 +8,24 @@ import { ProductDetailApiService } from './product-detail-api.service';
 @Injectable({ providedIn: 'root' })
 export class ProductShareInfoService {
   private readonly api = inject(ProductDetailApiService);
-  private readonly cache = new Map<number, Observable<PublicProductShareInfoDto | null>>();
+  private readonly cache = new Map<string, Observable<PublicProductShareInfoDto | null>>();
 
-  getShareInfo(productId: number): Observable<PublicProductShareInfoDto | null> {
+  getShareInfo(productId: number, lang?: string): Observable<PublicProductShareInfoDto | null> {
     if (productId < 1) {
       return of(null);
     }
 
-    const cached = this.cache.get(productId);
+    const cacheKey = lang?.trim() ? `${productId}:${lang.trim()}` : String(productId);
+    const cached = this.cache.get(cacheKey);
     if (cached) {
       return cached;
     }
 
-    const request$ = this.api.getProductShareInfo(productId).pipe(
+    const request$ = this.api.getProductShareInfo(productId, lang).pipe(
       catchError(() => of(null)),
       shareReplay({ bufferSize: 1, refCount: false }),
     );
-    this.cache.set(productId, request$);
+    this.cache.set(cacheKey, request$);
     return request$;
   }
 }

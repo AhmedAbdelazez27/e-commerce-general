@@ -11,6 +11,11 @@ export function localizedProductName(product: ProductDetail, lang: AppLang): str
   return lang === 'ar' ? product.nameAr : product.nameEn;
 }
 
+export function localizedShortDescription(product: ProductDetail, lang: AppLang): string {
+  const text = lang === 'ar' ? product.shortDescriptionAr : product.shortDescriptionEn;
+  return text?.trim() ?? '';
+}
+
 export function localizedBrandName(product: ProductDetail, lang: AppLang): string {
   return lang === 'ar' ? product.brandNameAr : product.brandNameEn;
 }

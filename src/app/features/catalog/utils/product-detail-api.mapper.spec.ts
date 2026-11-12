@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PublicProductVariantDto } from '../models/catalog-public-product.model';
-import { mapProductVariants } from './product-detail-api.mapper';
+import type {
+  PublicProductDetailsDto,
+  PublicProductVariantDto,
+} from '../models/catalog-public-product.model';
+import { localizedShortDescription } from './product-detail.util';
+import {
+  mapProductVariants,
+  mapPublicProductDetailsToProductDetail,
+} from './product-detail-api.mapper';
 
 describe('product-detail-api.mapper stock', () => {
   it('uses calculated stock rather than the legacy model quantity', () => {
@@ -31,5 +38,20 @@ describe('product-detail-api.mapper stock', () => {
     expect(variants[0]?.stockQuantity).toBe(7);
     expect(variants[1]?.stockQuantity).toBe(-2);
     expect(variants[1]?.isAvailable).toBe(true);
+  });
+
+  it('keeps the language-specific short descriptions for the buy box', () => {
+    const detail = mapPublicProductDetailsToProductDetail({
+      id: 9,
+      name: 'Serum',
+      categoryId: 1,
+      shortDescriptionEn: ' Light daily serum ',
+      shortDescriptionAr: ' سيروم يومي خفيف ',
+    } as PublicProductDetailsDto);
+
+    expect(detail.shortDescriptionEn).toBe('Light daily serum');
+    expect(detail.shortDescriptionAr).toBe('سيروم يومي خفيف');
+    expect(localizedShortDescription(detail, 'en')).toBe('Light daily serum');
+    expect(localizedShortDescription(detail, 'ar')).toBe('سيروم يومي خفيف');
   });
 });
