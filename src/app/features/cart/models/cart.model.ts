@@ -12,6 +12,11 @@ export interface CartItemDto {
   VariantNameAr?: string;
   VariantNameEn?: string;
   VariantSku?: string;
+  ProductTypeId?: number | null;
+  ProductTypeNameAr?: string;
+  ProductTypeNameEn?: string;
+  HowToUseAr?: string;
+  HowToUseEn?: string;
   ProductImageUrl?: string;
   ProductVariantImageUrl?: string;
   ImageUrl?: string;

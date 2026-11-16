@@ -17,6 +17,7 @@ export interface CatalogSpecificationSelection {
 export interface CatalogListingFilters {
   categoryIds: string[];
   brandIds: string[];
+  productTypeIds: string[];
   minPrice: number | null;
   maxPrice: number | null;
   minRating: number | null;
@@ -76,6 +77,9 @@ export interface CatalogListingProduct {
   brandId: string;
   brandNameEn: string;
   brandNameAr: string;
+  productTypeId?: string;
+  productTypeNameEn?: string;
+  productTypeNameAr?: string;
   rating?: number;
   reviewCount?: number;
   isAvailable: boolean;
@@ -112,6 +116,7 @@ export interface CatalogSubcategoryItem {
 export const DEFAULT_CATALOG_FILTERS: CatalogListingFilters = {
   categoryIds: [],
   brandIds: [],
+  productTypeIds: [],
   minPrice: null,
   maxPrice: null,
   minRating: null,

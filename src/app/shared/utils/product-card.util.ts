@@ -44,6 +44,9 @@ export function mapStorefrontProductToCardData(
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: product.brandName,
+    productTypeEn: product.productTypeNameEn?.trim() || undefined,
+    productTypeAr:
+      product.productTypeNameAr?.trim() || product.productTypeNameEn?.trim() || undefined,
     image: product.imageUrl,
     has3D: product.has3D,
     price: product.price,

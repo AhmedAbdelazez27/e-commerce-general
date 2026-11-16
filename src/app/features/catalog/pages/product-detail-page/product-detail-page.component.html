@@ -56,6 +56,16 @@
           <p class="product-detail-main__brand">
             <a [routerLink]="['/shop']" [queryParams]="brandQueryParams()">{{ displayBrand() }}</a>
           </p>
+          @if (displayProductType()) {
+            <p class="product-detail-main__type">
+              <span class="product-detail-main__type-label">{{ 'CATALOG.FILTER.PRODUCT_TYPE' | translate }}</span>
+              @if (productTypeQueryParams(); as typeParams) {
+                <a [routerLink]="['/shop']" [queryParams]="typeParams">{{ displayProductType() }}</a>
+              } @else {
+                <span>{{ displayProductType() }}</span>
+              }
+            </p>
+          }
 
           <h1 class="product-detail-main__title">{{ displayName() }}</h1>
 

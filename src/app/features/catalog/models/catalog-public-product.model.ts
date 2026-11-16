@@ -84,6 +84,13 @@ export interface PublicProductDetailsDto {
   categoryName?: string;
   brandId?: number | null;
   brandName?: string | null;
+  productTypeId?: number | null;
+  productTypeName?: string | null;
+  productTypeNameAr?: string | null;
+  productTypeNameEn?: string | null;
+  howToUse?: string | null;
+  howToUseAr?: string | null;
+  howToUseEn?: string | null;
   mainImageUrl?: string | null;
   isFeatured?: boolean;
   isNewArrival?: boolean;
@@ -109,6 +116,14 @@ export interface PublicProductDetailsDto {
     nameAr?: string;
     nameEn?: string;
   };
+  productType?: {
+    id: number;
+    name?: string | null;
+    nameAr?: string | null;
+    nameEn?: string | null;
+    count?: number | null;
+    productsCount?: number | null;
+  } | null;
   images?: PublicProductImageDto[];
   variants?: PublicProductVariantDto[];
   specifications?: PublicProductSpecificationDto[];
@@ -128,6 +143,13 @@ export interface PublicRelatedProductDto {
   categoryName?: string;
   brandId?: number | null;
   brandName?: string | null;
+  productTypeId?: number | null;
+  productTypeName?: string | null;
+  productTypeNameAr?: string | null;
+  productTypeNameEn?: string | null;
+  howToUse?: string | null;
+  howToUseAr?: string | null;
+  howToUseEn?: string | null;
   mainImageUrl?: string | null;
   mainMediaType?: string | null;
   hasModel3D?: boolean;

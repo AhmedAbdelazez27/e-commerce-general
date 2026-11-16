@@ -21,7 +21,7 @@ export interface ProductDetailSpec {
   valueAr: string;
 }
 
-export type ProductDetailInfoTab = 'description' | 'specifications' | 'shipping';
+export type ProductDetailInfoTab = 'description' | 'howToUse' | 'specifications' | 'shipping';
 
 export interface ProductDetailVariant {
   stock?: ProductStock;
@@ -48,6 +48,12 @@ export interface ProductDetail {
   brandId: string;
   brandNameEn: string;
   brandNameAr: string;
+  productTypeId?: string;
+  productTypeNameEn?: string;
+  productTypeNameAr?: string;
+  howToUse?: string;
+  howToUseEn?: string;
+  howToUseAr?: string;
   categoryId: string;
   categorySlug?: string;
   categoryNameEn: string;

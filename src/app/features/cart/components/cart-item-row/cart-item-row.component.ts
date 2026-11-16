@@ -32,6 +32,12 @@ export class CartItemRowComponent {
     return this.language.currentLang() === 'ar' ? i.brandAr : i.brandEn;
   }
 
+  displayProductType(): string {
+    const i = this.item();
+    const name = this.language.currentLang() === 'ar' ? i.productTypeAr : i.productTypeEn;
+    return name?.trim() ?? '';
+  }
+
   formatPrice(value: number): string {
     return formatProductPrice(value);
   }

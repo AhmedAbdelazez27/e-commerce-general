@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, HostListener, OnDestroy, OnInit, computed, effect, inject, untracked } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnDestroy, OnInit, computed, effect, inject, untracked, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +20,7 @@ import { CatalogCategoryOption } from '../../models/catalog-listing.model';
 import { CatalogListingFacade } from '../../services/catalog-listing.facade';
 import { navigateToProductDetail } from '../../utils/catalog-navigation.util';
 import { mapCatalogProductToCardData } from '../../utils/catalog-product.mapper';
+import { buildCatalogPageTokens } from '../../utils/catalog-pagination.util';
 
 @Component({
   selector: 'app-catalog-page',
@@ -46,11 +47,16 @@ export class CatalogPageComponent implements OnInit, OnDestroy {
   private readonly portalSeo = inject(PortalSeoService);
   private readonly portalConfig = inject(PortalConfigService);
   readonly facade = inject(CatalogListingFacade);
+  private readonly catalogTop = viewChild<ElementRef<HTMLElement>>('catalogTop');
 
   readonly cardProducts = computed(() =>
     this.facade
       .filteredProducts()
       .map((p) => mapCatalogProductToCardData(p, this.language.currentLang())),
+  );
+
+  readonly pageTokens = computed(() =>
+    buildCatalogPageTokens(this.facade.pageNumber(), this.facade.totalPages()),
   );
 
   constructor() {
@@ -109,6 +115,16 @@ export class CatalogPageComponent implements OnInit, OnDestroy {
 
   onQuickView(product: ProductCardData): void {
     navigateToProductDetail(this.router, product);
+  }
+
+  onPageSelect(page: number): void {
+    if (page === this.facade.pageNumber()) {
+      return;
+    }
+    this.facade.goToPage(page);
+    queueMicrotask(() => {
+      this.catalogTop()?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   private applyCategorySeo(category: CatalogCategoryOption | null, lang: 'ar' | 'en'): void {

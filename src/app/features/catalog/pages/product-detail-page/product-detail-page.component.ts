@@ -40,6 +40,7 @@ import {
   buildProductDetailBreadcrumbs,
   localizedBrandName,
   localizedProductName,
+  localizedProductTypeName,
   localizedShortDescription,
   mapProductDetailToCardData,
   mapRelatedToCardData,
@@ -223,6 +224,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     return p ? localizedBrandName(p, this.language.currentLang()) : '';
   }
 
+  displayProductType(): string {
+    const p = this.product();
+    return p ? localizedProductTypeName(p, this.language.currentLang()) : '';
+  }
+
   shortDescription(): string {
     const p = this.product();
     return p ? localizedShortDescription(p, this.language.currentLang()) : '';
@@ -231,6 +237,11 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   brandQueryParams(): Record<string, string> | undefined {
     const p = this.product();
     return p?.brandId ? { brand: p.brandId } : undefined;
+  }
+
+  productTypeQueryParams(): Record<string, string> | undefined {
+    const p = this.product();
+    return p?.productTypeId ? { productType: p.productTypeId } : undefined;
   }
 
   formatPrice(value: number): string {
@@ -366,12 +377,12 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
             this.loadState.set('not-found');
             this.product.set(null);
             this.variants.set([]);
-            this.relatedProducts.set(mapRelatedToCardData(related));
+            this.relatedProducts.set(mapRelatedToCardData(related, this.language.currentLang()));
             return;
           }
           this.product.set(product);
           this.variants.set(variants);
-          this.relatedProducts.set(mapRelatedToCardData(related));
+          this.relatedProducts.set(mapRelatedToCardData(related, this.language.currentLang()));
           this.loadState.set('loaded');
           this.applyShareSeo();
           this.loadShareInfo(product.id, sequence);

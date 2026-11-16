@@ -1,6 +1,6 @@
 <section class="product-detail-info" [attr.aria-label]="'PRODUCT_DETAIL.INFO_REGION' | translate">
   <div class="product-detail-info__tabs" role="tablist">
-    @for (tab of tabs; track tab) {
+    @for (tab of tabs(); track tab) {
       <button
         type="button"
         class="product-detail-info__tab"
@@ -18,12 +18,23 @@
     @if (isActive('description')) {
       <div class="product-detail-info__panel" role="tabpanel">
         @if (hasDescription()) {
-          <p class="product-detail-info__text">{{ description() }}</p>
+          <p class="product-detail-info__text">{{ descriptionPreview() }}</p>
+          @if (canExpandDescription()) {
+            <button type="button" class="product-detail-info__more" (click)="toggleDescription()">
+              {{ (descriptionExpanded() ? 'PRODUCT_DETAIL.READ_LESS' : 'PRODUCT_DETAIL.READ_MORE') | translate }}
+            </button>
+          }
         } @else {
           <p class="product-detail-info__text product-detail-info__text--muted">
             {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
           </p>
         }
+      </div>
+    }
+
+    @if (isActive('howToUse')) {
+      <div class="product-detail-info__panel" role="tabpanel">
+        <p class="product-detail-info__text">{{ howToUseText() }}</p>
       </div>
     }
 
@@ -58,13 +69,24 @@
     <details class="product-detail-info__details" open>
       <summary>{{ 'PRODUCT_DETAIL.TAB.description' | translate }}</summary>
       @if (hasDescription()) {
-        <p class="product-detail-info__text">{{ description() }}</p>
+        <p class="product-detail-info__text">{{ descriptionPreview() }}</p>
+        @if (canExpandDescription()) {
+          <button type="button" class="product-detail-info__more" (click)="toggleDescription()">
+            {{ (descriptionExpanded() ? 'PRODUCT_DETAIL.READ_LESS' : 'PRODUCT_DETAIL.READ_MORE') | translate }}
+          </button>
+        }
       } @else {
         <p class="product-detail-info__text product-detail-info__text--muted">
           {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
         </p>
       }
     </details>
+    @if (howToUseText()) {
+      <details class="product-detail-info__details">
+        <summary>{{ 'PRODUCT_DETAIL.TAB.howToUse' | translate }}</summary>
+        <p class="product-detail-info__text">{{ howToUseText() }}</p>
+      </details>
+    }
     <details class="product-detail-info__details">
       <summary>{{ 'PRODUCT_DETAIL.TAB.specifications' | translate }}</summary>
       <table class="product-detail-info__table">

@@ -1,0 +1,21 @@
+Hi,
+
+Any image added to a product or a brand from the ERP is the image shown on the store. The store uses the same file, with no crop or format change.
+
+1200 x 1200 is bigger than we need. These are the sizes that match how the images are shown.
+
+Product image
+Used on the home page, the search page, and the product details page. It is the same file in all three places.
+- Formats: JPG, WEBP, or PNG
+- Dimensions: 800 x 800 px (square, 1:1)
+- File size: please keep it under 300 KB
+- On screen it shows at about 300 px on the home page, about 230 px on the search page, and about 650 px on the product details page. 800 px covers the largest one.
+- Put the product in the center on a light background. A non-square image gets cropped on the product page and in the cart.
+
+Brand logo
+- Formats: PNG with a transparent background, or WEBP
+- Dimensions: 256 x 256 px (square, 1:1)
+- File size: please keep it under 100 KB
+- On screen it shows at about 48 px on the home page and about 64 px on the brands page.
+
+Thanks

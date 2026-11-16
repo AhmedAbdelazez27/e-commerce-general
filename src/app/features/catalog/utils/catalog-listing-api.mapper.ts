@@ -61,6 +61,7 @@ export function toApiSpecificationFilters(
 interface SharedListingParams {
   categoryId?: number;
   brandIds?: number[];
+  productTypeIds?: number[];
   searchText?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -75,6 +76,7 @@ function buildSharedListingParams(
   lang: string,
 ): SharedListingParams {
   const brandIds = parseNumericIds(filters.brandIds);
+  const productTypeIds = parseNumericIds(filters.productTypeIds);
   const categoryId = primaryCategoryId(filters);
   const searchText = searchQuery.trim();
   const specificationFilters = toApiSpecificationFilters(filters);
@@ -89,6 +91,9 @@ function buildSharedListingParams(
   }
   if (brandIds.length > 0) {
     params.brandIds = brandIds;
+  }
+  if (productTypeIds.length > 0) {
+    params.productTypeIds = productTypeIds;
   }
   if (filters.minPrice != null) {
     params.minPrice = filters.minPrice;
@@ -145,6 +150,12 @@ export function buildSearchProductsRequest(
     request.brandIds = shared.brandIds;
     if (shared.brandIds.length === 1) {
       request.brandId = shared.brandIds[0];
+    }
+  }
+  if (shared.productTypeIds?.length) {
+    request.productTypeIds = shared.productTypeIds;
+    if (shared.productTypeIds.length === 1) {
+      request.productTypeId = shared.productTypeIds[0];
     }
   }
   if (shared.minPrice != null) {
@@ -209,6 +220,20 @@ export function mapFilterBrandsToOptions(
   }));
 }
 
+export function mapFilterProductTypesToOptions(
+  productTypes: GetProductFiltersResult['productTypes'] | undefined,
+): CatalogBrandOption[] {
+  return (productTypes ?? [])
+    .filter((type) => type?.id != null)
+    .map((type) => ({
+      id: String(type.id),
+      nameEn: type.nameEn?.trim() || type.name?.trim() || '',
+      nameAr: type.nameAr?.trim() || type.name?.trim() || '',
+      count: type.count,
+    }))
+    .filter((type) => type.nameEn || type.nameAr);
+}
+
 export function mapSearchProductToListingProduct(
   item: PublicSearchProductDto,
   lang: AppLang,
@@ -241,6 +266,9 @@ export function mapSearchProductToListingProduct(
     brandId: item.brandId != null ? String(item.brandId) : '',
     brandNameEn: item.brandNameEn?.trim() || item.brandName?.trim() || '',
     brandNameAr: item.brandNameAr?.trim() || item.brandName?.trim() || '',
+    productTypeId: item.productTypeId != null ? String(item.productTypeId) : '',
+    productTypeNameEn: item.productTypeNameEn?.trim() || item.productTypeName?.trim() || '',
+    productTypeNameAr: item.productTypeNameAr?.trim() || item.productTypeName?.trim() || '',
     isAvailable: inStock,
     isNew: item.isNewArrival,
     isBestSeller: item.isBestSeller,
@@ -285,6 +313,40 @@ function readNumberField(o: JsonRecord, ...keys: string[]): number | undefined {
     }
   }
   return undefined;
+}
+
+/** Reads GetProductFilters productTypes in camelCase or PascalCase. */
+export function readFilterProductTypes(raw: unknown): GetProductFiltersResult['productTypes'] {
+  if (raw == null || typeof raw !== 'object') {
+    return [];
+  }
+  const record = raw as JsonRecord;
+  const list = record['productTypes'] ?? record['ProductTypes'];
+  if (!Array.isArray(list)) {
+    return [];
+  }
+  return list.flatMap((item) => {
+    if (item == null || typeof item !== 'object') {
+      return [];
+    }
+    const row = item as JsonRecord;
+    const id = readNumberField(row, 'id', 'Id');
+    if (id == null) {
+      return [];
+    }
+    const name = readStringField(row, 'name', 'Name') ?? '';
+    const nameEn = readStringField(row, 'nameEn', 'NameEn') ?? '';
+    const nameAr = readStringField(row, 'nameAr', 'NameAr') ?? '';
+    return [
+      {
+        id,
+        name: name || nameEn || nameAr,
+        nameEn: nameEn || name,
+        nameAr: nameAr || name,
+        count: readNumberField(row, 'count', 'Count') ?? 0,
+      },
+    ];
+  });
 }
 
 function readBoolField(o: JsonRecord, ...keys: string[]): boolean {
@@ -362,6 +424,13 @@ export function normalizePublicSearchProductDto(raw: unknown): PublicSearchProdu
     brandName: readStringField(o, 'brandName', 'BrandName') ?? null,
     brandNameAr: readStringField(o, 'brandNameAr', 'BrandNameAr') ?? null,
     brandNameEn: readStringField(o, 'brandNameEn', 'BrandNameEn') ?? null,
+    productTypeId: readNumberField(o, 'productTypeId', 'ProductTypeId') ?? null,
+    productTypeName: readStringField(o, 'productTypeName', 'ProductTypeName') ?? null,
+    productTypeNameAr: readStringField(o, 'productTypeNameAr', 'ProductTypeNameAr') ?? null,
+    productTypeNameEn: readStringField(o, 'productTypeNameEn', 'ProductTypeNameEn') ?? null,
+    howToUse: readStringField(o, 'howToUse', 'HowToUse') ?? null,
+    howToUseAr: readStringField(o, 'howToUseAr', 'HowToUseAr') ?? null,
+    howToUseEn: readStringField(o, 'howToUseEn', 'HowToUseEn') ?? null,
     mainImageUrl:
       resolveAttachmentUrlOptional(
         readStringField(o, 'mainImageUrl', 'MainImageUrl', 'imageUrl', 'ImageUrl'),

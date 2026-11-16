@@ -47,6 +47,17 @@ export class ProductCardComponent {
   readonly displayTitle = computed(() =>
     resolveProductCardTitle(this.product(), this.language.currentLang()),
   );
+  private readonly uiLang = toSignal(
+    this.translate.onLangChange.pipe(map((event) => event.lang)),
+    { initialValue: this.translate.getCurrentLang() || this.language.currentLang() },
+  );
+
+  readonly displayProductType = computed(() => {
+    const product = this.product();
+    const name =
+      this.uiLang() === 'ar' ? product.productTypeAr || product.productTypeEn : product.productTypeEn;
+    return name?.trim() ?? '';
+  });
   readonly displayVariantName = computed(() =>
     this.language.currentLang() === 'ar'
       ? this.product().variantNameAr || this.product().variantName

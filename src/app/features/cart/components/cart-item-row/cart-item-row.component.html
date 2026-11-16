@@ -19,6 +19,9 @@
     @if (displayBrand()) {
       <p class="cart-item__brand">{{ displayBrand() }}</p>
     }
+    @if (displayProductType()) {
+      <p class="cart-item__brand">{{ displayProductType() }}</p>
+    }
     <h2 class="cart-item__title">
       <a [routerLink]="['/shop', item().productId]">{{ displayTitle() }}</a>
     </h2>

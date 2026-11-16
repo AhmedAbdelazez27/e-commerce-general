@@ -35,10 +35,12 @@ import {
   buildSearchProductsRequest,
   mapFilterBrandsToOptions,
   mapFilterCategoriesToOptions,
+  mapFilterProductTypesToOptions,
   mapFilterSpecificationsToGroups,
   mapSearchProductsToListingProducts,
 } from '../utils/catalog-listing-api.mapper';
 import { sortCatalogProducts } from '../utils/catalog-listing-filter.util';
+import { skipCountFromPageParam } from '../utils/catalog-pagination.util';
 import { visibleCategoryTree } from '../../../shared/utils/category-visibility.util';
 
 @Injectable()
@@ -72,6 +74,7 @@ export class CatalogListingFacade {
 
   readonly categories = signal<CatalogCategoryOption[]>([]);
   readonly brands = signal<ReturnType<typeof mapFilterBrandsToOptions>>([]);
+  readonly productTypes = signal<ReturnType<typeof mapFilterProductTypesToOptions>>([]);
   readonly specifications = signal<CatalogSpecificationGroup[]>([]);
   readonly priceBounds = signal({ min: 0, max: 0 });
   readonly loading = signal(false);
@@ -90,6 +93,18 @@ export class CatalogListingFacade {
     sortCatalogProducts(this.products(), this.sort()),
   );
   readonly productCount = computed(() => this.totalCount());
+  readonly pageNumber = computed(() => Math.floor(this.skipCount() / CATALOG_PAGE_SIZE) + 1);
+  readonly totalPages = computed(() => {
+    const total = this.totalCount();
+    if (total <= 0) {
+      return 1;
+    }
+    return Math.ceil(total / CATALOG_PAGE_SIZE);
+  });
+  readonly rangeFrom = computed(() => (this.totalCount() === 0 ? 0 : this.skipCount() + 1));
+  readonly rangeTo = computed(() =>
+    Math.min(this.skipCount() + this.products().length, this.totalCount()),
+  );
 
   readonly activeCategory = computed(() => {
     const id = this.activeCategoryId();
@@ -197,6 +212,7 @@ export class CatalogListingFacade {
   initFromRoute(): void {
     const params = this.readRouteQueryParams();
     const brands = params.getAll('brand');
+    const productTypes = params.getAll('productType');
     const q = params.get('q') ?? '';
     const sort = params.get('sort') as CatalogSortOption | null;
 
@@ -206,13 +222,14 @@ export class CatalogListingFacade {
       ...DEFAULT_CATALOG_FILTERS,
       categoryIds: resolvedCategoryId ? [resolvedCategoryId] : [],
       brandIds: brands,
+      productTypeIds: productTypes,
     };
 
     this.activeCategoryId.set(resolvedCategoryId);
     this.searchQuery.set(q);
     this.filters.set(filters);
     this.draftFilters.set({ ...filters });
-    this.skipCount.set(0);
+    this.skipCount.set(skipCountFromPageParam(params.get('page')));
     if (sort && this.isValidSort(sort)) {
       this.sort.set(sort);
     }
@@ -280,15 +297,27 @@ export class CatalogListingFacade {
         }
         this.categories.set(mapFilterCategoriesToOptions(facets.categories));
         this.brands.set(mapFilterBrandsToOptions(facets.brands));
+        this.productTypes.set(mapFilterProductTypesToOptions(facets.productTypes));
         this.specifications.set(mapFilterSpecificationsToGroups(facets.specifications));
         this.priceBounds.set({
           min: facets.priceRange.minPrice,
           max: facets.priceRange.maxPrice,
         });
+        this.totalCount.set(listing.totalCount);
+        if (listing.totalCount > 0 && this.skipCount() >= listing.totalCount) {
+          const lastPage = Math.ceil(listing.totalCount / CATALOG_PAGE_SIZE);
+          this.skipCount.set((lastPage - 1) * CATALOG_PAGE_SIZE);
+          this.syncQueryParams();
+          this.reloadCatalog();
+          return;
+        }
+        if (listing.totalCount === 0 && this.skipCount() !== 0) {
+          this.skipCount.set(0);
+          this.syncQueryParams();
+        }
         this.products.set(
           mapSearchProductsToListingProducts(listing.items, this.language.currentLang()),
         );
-        this.totalCount.set(listing.totalCount);
       });
   }
 
@@ -310,8 +339,10 @@ export class CatalogListingFacade {
           category,
           categoryId: filters.categoryIds.length === 1 ? filters.categoryIds[0] : null,
           brand: filters.brandIds.length > 0 ? filters.brandIds : null,
+          productType: filters.productTypeIds.length > 0 ? filters.productTypeIds : null,
           q: q || null,
           sort: this.sort() !== 'featured' ? this.sort() : null,
+          page: this.pageNumber() > 1 ? this.pageNumber() : null,
         },
         queryParamsHandling: 'merge',
         replaceUrl: true,
@@ -340,6 +371,20 @@ export class CatalogListingFacade {
 
   setViewMode(mode: CatalogViewMode): void {
     this.viewMode.set(mode);
+  }
+
+  goToPage(page: number): void {
+    if (!Number.isFinite(page)) {
+      return;
+    }
+    const next = Math.min(Math.max(1, Math.floor(page)), Math.max(1, this.totalPages()));
+    const skip = (next - 1) * CATALOG_PAGE_SIZE;
+    if (skip === this.skipCount()) {
+      return;
+    }
+    this.skipCount.set(skip);
+    this.syncQueryParams();
+    this.reloadCatalog();
   }
 
   clearFilters(): void {
@@ -401,6 +446,15 @@ export class CatalogListingFacade {
     }));
   }
 
+  toggleDraftProductType(id: string): void {
+    this.draftFilters.update((f) => ({
+      ...f,
+      productTypeIds: f.productTypeIds.includes(id)
+        ? f.productTypeIds.filter((typeId) => typeId !== id)
+        : [...f.productTypeIds, id],
+    }));
+  }
+
   toggleFilterCategory(id: string): void {
     const current = this.filters();
     const categoryIds = current.categoryIds.includes(id)
@@ -415,6 +469,14 @@ export class CatalogListingFacade {
       ? current.brandIds.filter((b) => b !== id)
       : [...current.brandIds, id];
     this.patchFilters({ brandIds });
+  }
+
+  toggleFilterProductType(id: string): void {
+    const current = this.filters();
+    const productTypeIds = current.productTypeIds.includes(id)
+      ? current.productTypeIds.filter((typeId) => typeId !== id)
+      : [...current.productTypeIds, id];
+    this.patchFilters({ productTypeIds });
   }
 
   toggleDraftSpecification(specificationId: number, value: string): void {

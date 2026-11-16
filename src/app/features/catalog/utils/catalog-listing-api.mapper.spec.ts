@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+import { DEFAULT_CATALOG_FILTERS } from '../models/catalog-listing.model';
 import type { PublicSearchProductDto } from '../models/catalog-public-listing.model';
 import {
+  buildSearchProductsRequest,
+  mapFilterProductTypesToOptions,
   mapSearchProductToListingProduct,
+  normalizePublicSearchProductDto,
+  readFilterProductTypes,
   resolveSearchProductCompareAtPrice,
 } from './catalog-listing-api.mapper';
 
@@ -62,5 +67,91 @@ describe('catalog listing compare-at price', () => {
     });
 
     expect(resolveSearchProductCompareAtPrice(item)).toBeUndefined();
+  });
+});
+
+describe('product type on catalog listing', () => {
+  it('keeps a null type and how to use off the card name', () => {
+    const dto = normalizePublicSearchProductDto({
+      id: 1,
+      name: 'Serum',
+      productTypeId: null,
+      productTypeName: null,
+      productTypeNameAr: null,
+      productTypeNameEn: null,
+      howToUse: null,
+      howToUseAr: null,
+      howToUseEn: null,
+    });
+
+    expect(dto?.productTypeId).toBeNull();
+    expect(dto?.productTypeName).toBeNull();
+    expect(dto?.howToUse).toBeNull();
+    expect(dto?.howToUseAr).toBeNull();
+    expect(dto?.howToUseEn).toBeNull();
+
+    const listing = mapSearchProductToListingProduct(dto!, 'en');
+    expect(listing.productTypeId).toBe('');
+    expect(listing.productTypeNameEn).toBe('');
+    expect(listing.productTypeNameAr).toBe('');
+  });
+
+  it('reads PascalCase type names and falls back to ProductTypeName', () => {
+    const dto = normalizePublicSearchProductDto({
+      Id: 2,
+      Name: 'Cream',
+      ProductTypeId: 4,
+      ProductTypeName: 'Serum',
+      ProductTypeNameAr: ' سيروم ',
+      HowToUseEn: ' Apply daily ',
+    });
+
+    expect(dto?.productTypeId).toBe(4);
+    expect(dto?.productTypeNameAr).toBe('سيروم');
+    expect(dto?.productTypeNameEn).toBeNull();
+    expect(dto?.howToUseEn).toBe('Apply daily');
+
+    const listing = mapSearchProductToListingProduct(dto!, 'ar');
+    expect(listing.productTypeNameAr).toBe('سيروم');
+    expect(listing.productTypeNameEn).toBe('Serum');
+  });
+
+  it('sends productTypeId only when one type is selected', () => {
+    const currency = { id: 1, code: 'EGP' };
+    const one = buildSearchProductsRequest(
+      { ...DEFAULT_CATALOG_FILTERS, productTypeIds: ['4'] },
+      '',
+      'en',
+      'newest',
+      0,
+      currency,
+    );
+    expect(one.productTypeIds).toEqual([4]);
+    expect(one.productTypeId).toBe(4);
+
+    const many = buildSearchProductsRequest(
+      { ...DEFAULT_CATALOG_FILTERS, productTypeIds: ['4', '5'] },
+      '',
+      'en',
+      'newest',
+      0,
+      currency,
+    );
+    expect(many.productTypeIds).toEqual([4, 5]);
+    expect(many.productTypeId).toBeUndefined();
+  });
+
+  it('maps bilingual filter types and drops a nameless option', () => {
+    const types = readFilterProductTypes({
+      ProductTypes: [
+        { Id: 4, Name: 'Serum', NameAr: 'سيروم', NameEn: 'Serum', Count: 3 },
+        { Id: 5, Name: '   ', Count: 0 },
+      ],
+    });
+    const options = mapFilterProductTypesToOptions(types);
+
+    expect(options).toEqual([
+      { id: '4', nameEn: 'Serum', nameAr: 'سيروم', count: 3 },
+    ]);
   });
 });

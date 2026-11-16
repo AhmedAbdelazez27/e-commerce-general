@@ -4,10 +4,11 @@ import type {
   PublicProductDetailsDto,
   PublicProductVariantDto,
 } from '../models/catalog-public-product.model';
-import { localizedShortDescription } from './product-detail.util';
+import { localizedHowToUse, localizedProductTypeName, localizedShortDescription } from './product-detail.util';
 import {
   mapProductVariants,
   mapPublicProductDetailsToProductDetail,
+  normalizePublicProductDetailsDto,
 } from './product-detail-api.mapper';
 
 describe('product-detail-api.mapper stock', () => {
@@ -53,5 +54,75 @@ describe('product-detail-api.mapper stock', () => {
     expect(detail.shortDescriptionAr).toBe('سيروم يومي خفيف');
     expect(localizedShortDescription(detail, 'en')).toBe('Light daily serum');
     expect(localizedShortDescription(detail, 'ar')).toBe('سيروم يومي خفيف');
+  });
+
+  it('leaves type and how to use empty when the payload is null', () => {
+    const detail = mapPublicProductDetailsToProductDetail({
+      id: 1,
+      name: 'Serum',
+      categoryId: 1,
+      productTypeId: null,
+      productType: null,
+      productTypeName: null,
+      productTypeNameAr: null,
+      productTypeNameEn: null,
+      howToUse: null,
+      howToUseAr: null,
+      howToUseEn: null,
+    } as PublicProductDetailsDto);
+
+    expect(detail.productTypeId).toBe('');
+    expect(localizedProductTypeName(detail, 'en')).toBe('');
+    expect(localizedProductTypeName(detail, 'ar')).toBe('');
+    expect(localizedHowToUse(detail, 'en')).toBe('');
+    expect(localizedHowToUse(detail, 'ar')).toBe('');
+  });
+
+  it('prefers the nested product type and falls back how-to-use text by language', () => {
+    const detail = mapPublicProductDetailsToProductDetail({
+      id: 2,
+      name: 'Cream',
+      categoryId: 1,
+      productTypeId: 4,
+      productTypeName: 'Treatment',
+      productType: {
+        id: 4,
+        name: 'Treatment',
+        nameAr: 'علاج',
+        nameEn: 'Treatment',
+        count: 2,
+        productsCount: 2,
+      },
+      howToUse: 'Apply daily',
+      howToUseAr: ' يوضع يومياً ',
+      howToUseEn: '   ',
+    } as PublicProductDetailsDto);
+
+    expect(detail.productTypeId).toBe('4');
+    expect(localizedProductTypeName(detail, 'ar')).toBe('علاج');
+    expect(localizedProductTypeName(detail, 'en')).toBe('Treatment');
+    expect(localizedHowToUse(detail, 'ar')).toBe('يوضع يومياً');
+    expect(localizedHowToUse(detail, 'en')).toBe('Apply daily');
+  });
+
+  it('reads PascalCase product type and how to use', () => {
+    const dto = normalizePublicProductDetailsDto({
+      Id: 3,
+      Name: 'Oil',
+      CategoryId: 1,
+      ProductTypeId: 8,
+      ProductTypeNameEn: 'Oil',
+      ProductTypeNameAr: 'زيت',
+      HowToUseEn: 'Warm first',
+      HowToUseAr: 'يسخن أولاً',
+      ProductType: { Id: 8, NameEn: 'Oil', NameAr: 'زيت', Count: 1, ProductsCount: 4 },
+    });
+    const detail = mapPublicProductDetailsToProductDetail(dto!);
+
+    expect(detail.productTypeNameEn).toBe('Oil');
+    expect(detail.productTypeNameAr).toBe('زيت');
+    expect(dto?.productType?.productsCount).toBe(4);
+    expect(localizedHowToUse(detail, 'en')).toBe('Warm first');
+    expect(localizedHowToUse(detail, 'ar')).toBe('يسخن أولاً');
   });
 });

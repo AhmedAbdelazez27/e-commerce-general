@@ -1,4 +1,4 @@
-<div class="catalog-page">
+<div class="catalog-page" #catalogTop>
   <app-catalog-breadcrumb [items]="facade.breadcrumbs()" />
 
   @if (facade.subcategoryRail().length) {
@@ -39,6 +39,7 @@
         <div
           class="catalog-grid"
           [class.catalog-grid--list]="facade.viewMode() === 'list'"
+          [class.is-loading]="facade.loading()"
           role="list"
         >
           @for (product of cardProducts(); track product.id) {
@@ -54,6 +55,62 @@
             </div>
           }
         </div>
+
+        @if (facade.totalPages() > 1) {
+          <nav class="catalog-pagination" [attr.aria-label]="'CATALOG.PAGINATION' | translate">
+            <p class="catalog-pagination__summary">
+              {{ 'CATALOG.SHOWING_LEAD' | translate }}
+              <bdi>{{ facade.rangeFrom() }}–{{ facade.rangeTo() }}</bdi>
+              {{ 'CATALOG.SHOWING_OF' | translate }}
+              <bdi>{{ facade.productCount() }}</bdi>
+            </p>
+            <div class="catalog-pagination__controls">
+              <button
+                type="button"
+                class="catalog-pagination__nav"
+                [disabled]="facade.pageNumber() <= 1 || facade.loading()"
+                [attr.aria-label]="'COMMON.PREVIOUS' | translate"
+                (click)="onPageSelect(facade.pageNumber() - 1)"
+              >
+                <i class="fa-solid fa-chevron-left catalog-pagination__chevron" aria-hidden="true"></i>
+                <span class="catalog-pagination__nav-text">{{ 'COMMON.PREVIOUS' | translate }}</span>
+              </button>
+
+              <ol class="catalog-pagination__pages">
+                @for (token of pageTokens(); track $index) {
+                  @if (token === 'ellipsis') {
+                    <li class="catalog-pagination__ellipsis" aria-hidden="true">…</li>
+                  } @else {
+                    <li>
+                      <button
+                        type="button"
+                        class="catalog-pagination__page"
+                        [class.is-current]="token === facade.pageNumber()"
+                        [disabled]="token === facade.pageNumber() || facade.loading()"
+                        [attr.aria-current]="token === facade.pageNumber() ? 'page' : null"
+                        [attr.aria-label]="'CATALOG.PAGE' | translate: { page: token }"
+                        (click)="onPageSelect(token)"
+                      >
+                        {{ token }}
+                      </button>
+                    </li>
+                  }
+                }
+              </ol>
+
+              <button
+                type="button"
+                class="catalog-pagination__nav"
+                [disabled]="facade.pageNumber() >= facade.totalPages() || facade.loading()"
+                [attr.aria-label]="'COMMON.NEXT' | translate"
+                (click)="onPageSelect(facade.pageNumber() + 1)"
+              >
+                <span class="catalog-pagination__nav-text">{{ 'COMMON.NEXT' | translate }}</span>
+                <i class="fa-solid fa-chevron-right catalog-pagination__chevron" aria-hidden="true"></i>
+              </button>
+            </div>
+          </nav>
+        }
       }
     </div>
   </div>

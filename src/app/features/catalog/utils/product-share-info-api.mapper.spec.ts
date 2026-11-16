@@ -72,6 +72,45 @@ describe('product-share-info-api.mapper', () => {
     expect(result?.share.url).toBe('http://example.com/shop/test-product?p=10');
   });
 
+  it('keeps null type and how to use off the share payload', () => {
+    const result = normalizeProductShareInfoDto({
+      productId: 1,
+      share: { url: '/shop/1' },
+      productTypeId: null,
+      productTypeNameAr: null,
+      productTypeNameEn: null,
+      howToUseAr: null,
+      howToUseEn: null,
+    });
+
+    expect(result?.productTypeId).toBeUndefined();
+    expect(result?.productTypeNameAr).toBeUndefined();
+    expect(result?.productTypeNameEn).toBeUndefined();
+    expect(result?.howToUseAr).toBeUndefined();
+    expect(result?.howToUseEn).toBeUndefined();
+  });
+
+  it('reads PascalCase product type and how to use', () => {
+    const result = normalizeProductShareInfoDto({
+      ProductId: 2,
+      Share: { Url: '/shop/2' },
+      ProductTypeId: 4,
+      ProductTypeNameAr: 'سيروم',
+      ProductTypeNameEn: 'Serum',
+      HowToUseAr: 'طريقة',
+      HowToUseEn: 'How',
+    });
+
+    expect(result).toMatchObject({
+      productId: 2,
+      productTypeId: 4,
+      productTypeNameAr: 'سيروم',
+      productTypeNameEn: 'Serum',
+      howToUseAr: 'طريقة',
+      howToUseEn: 'How',
+    });
+  });
+
   it('returns null for invalid payload', () => {
     expect(normalizeProductShareInfoDto(null)).toBeNull();
     expect(normalizeProductShareInfoDto({ productId: 0, share: { url: '' } })).toBeNull();

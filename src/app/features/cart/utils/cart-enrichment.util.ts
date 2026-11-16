@@ -142,6 +142,8 @@ export function enrichCartLineItem(
       .join(' · '),
     brandEn: '',
     brandAr: '',
+    productTypeEn: item.ProductTypeNameEn?.trim() || '',
+    productTypeAr: item.ProductTypeNameAr?.trim() || '',
     unitPrice,
     compareAtUnitPrice,
     discountPercent,

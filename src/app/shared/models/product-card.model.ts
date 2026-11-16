@@ -17,6 +17,8 @@ export interface ProductCardData {
   variantName?: string;
   variantSku?: string;
   brand?: string;
+  productTypeEn?: string;
+  productTypeAr?: string;
   image?: string;
   has3D?: boolean;
   price: number;

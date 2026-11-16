@@ -85,6 +85,9 @@
     @if (product().brand) {
       <p class="product-card__brand">{{ product().brand }}</p>
     }
+    @if (displayProductType()) {
+      <p class="product-card__brand">{{ displayProductType() }}</p>
+    }
 
     <h3 class="product-card__title">
       <button type="button" class="product-card__title-btn" (click)="onProductClick()">

@@ -1,4 +1,4 @@
-<div class="container py-4 brands-page">
+<div class="container py-4 brands-page" #brandsTop>
   <app-catalog-breadcrumb [items]="breadcrumbs" />
 
   <header class="brands-page__head mb-4">
@@ -12,7 +12,7 @@
     <div class="alert alert-warning mb-0">{{ 'BRANDS.LOAD_FAILED' | translate }}</div>
   } @else {
     <div class="brands-page__grid">
-      @for (brand of brands(); track brand.id) {
+      @for (brand of visibleBrands(); track brand.id) {
         <app-brand-tile
           [name]="name(brand)"
           [initials]="initials(brand)"
@@ -25,5 +25,61 @@
         />
       }
     </div>
+
+    @if (totalPages() > 1) {
+      <nav class="catalog-pagination" [attr.aria-label]="'CATALOG.PAGINATION' | translate">
+        <p class="catalog-pagination__summary">
+          {{ 'CATALOG.SHOWING_LEAD' | translate }}
+          <bdi>{{ rangeFrom() }}–{{ rangeTo() }}</bdi>
+          {{ 'CATALOG.SHOWING_OF' | translate }}
+          <bdi>{{ brands().length }}</bdi>
+        </p>
+        <div class="catalog-pagination__controls">
+          <button
+            type="button"
+            class="catalog-pagination__nav"
+            [disabled]="pageNumber() <= 1"
+            [attr.aria-label]="'COMMON.PREVIOUS' | translate"
+            (click)="onPageSelect(pageNumber() - 1)"
+          >
+            <i class="fa-solid fa-chevron-left catalog-pagination__chevron" aria-hidden="true"></i>
+            <span class="catalog-pagination__nav-text">{{ 'COMMON.PREVIOUS' | translate }}</span>
+          </button>
+
+          <ol class="catalog-pagination__pages">
+            @for (token of pageTokens(); track $index) {
+              @if (token === 'ellipsis') {
+                <li class="catalog-pagination__ellipsis" aria-hidden="true">…</li>
+              } @else {
+                <li>
+                  <button
+                    type="button"
+                    class="catalog-pagination__page"
+                    [class.is-current]="token === pageNumber()"
+                    [disabled]="token === pageNumber()"
+                    [attr.aria-current]="token === pageNumber() ? 'page' : null"
+                    [attr.aria-label]="'CATALOG.PAGE' | translate: { page: token }"
+                    (click)="onPageSelect(token)"
+                  >
+                    {{ token }}
+                  </button>
+                </li>
+              }
+            }
+          </ol>
+
+          <button
+            type="button"
+            class="catalog-pagination__nav"
+            [disabled]="pageNumber() >= totalPages()"
+            [attr.aria-label]="'COMMON.NEXT' | translate"
+            (click)="onPageSelect(pageNumber() + 1)"
+          >
+            <span class="catalog-pagination__nav-text">{{ 'COMMON.NEXT' | translate }}</span>
+            <i class="fa-solid fa-chevron-right catalog-pagination__chevron" aria-hidden="true"></i>
+          </button>
+        </div>
+      </nav>
+    }
   }
 </div>

@@ -17,4 +17,9 @@ export interface PublicProductShareInfoDto {
   slug?: string;
   share: PublicProductShareDto;
   offers?: PublicOfferBadge[];
+  productTypeId?: number | null;
+  productTypeNameAr?: string | null;
+  productTypeNameEn?: string | null;
+  howToUseAr?: string | null;
+  howToUseEn?: string | null;
 }

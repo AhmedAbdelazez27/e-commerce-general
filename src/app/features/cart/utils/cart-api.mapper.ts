@@ -107,6 +107,11 @@ function normalizeCartItem(raw: unknown): CartItemDto | null {
     VariantNameAr: readString(o, 'VariantNameAr', 'variantNameAr'),
     VariantNameEn: readString(o, 'VariantNameEn', 'variantNameEn'),
     VariantSku: readString(o, 'VariantSku', 'variantSku', 'variantSKU', 'VariantSKU'),
+    ProductTypeId: readNumber(o, 'productTypeId', 'ProductTypeId') ?? null,
+    ProductTypeNameAr: readString(o, 'productTypeNameAr', 'ProductTypeNameAr'),
+    ProductTypeNameEn: readString(o, 'productTypeNameEn', 'ProductTypeNameEn'),
+    HowToUseAr: readString(o, 'howToUseAr', 'HowToUseAr'),
+    HowToUseEn: readString(o, 'howToUseEn', 'HowToUseEn'),
     ProductImageUrl: resolveProductPosterUrl(readString(o, 'ProductImageUrl', 'productImageUrl')),
     ProductVariantImageUrl: resolveProductPosterUrl(
       readString(o, 'ProductVariantImageUrl', 'productVariantImageUrl'),

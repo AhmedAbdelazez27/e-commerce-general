@@ -19,6 +19,7 @@ export class CatalogFilterPanelComponent {
 
   readonly categories = this.facade.categories;
   readonly brands = this.facade.brands;
+  readonly productTypes = this.facade.productTypes;
   readonly specifications = this.facade.specifications;
   readonly priceBounds = this.facade.priceBounds;
 
@@ -40,6 +41,10 @@ export class CatalogFilterPanelComponent {
     return this.filters().brandIds.includes(id);
   }
 
+  isProductTypeChecked(id: string): boolean {
+    return this.filters().productTypeIds.includes(id);
+  }
+
   onCategoryChange(id: string): void {
     if (this.live()) {
       this.facade.toggleFilterCategory(id);
@@ -53,6 +58,14 @@ export class CatalogFilterPanelComponent {
       this.facade.toggleFilterBrand(id);
     } else {
       this.facade.toggleDraftBrand(id);
+    }
+  }
+
+  onProductTypeChange(id: string): void {
+    if (this.live()) {
+      this.facade.toggleFilterProductType(id);
+    } else {
+      this.facade.toggleDraftProductType(id);
     }
   }
 

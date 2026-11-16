@@ -18,6 +18,11 @@ export interface StorefrontProduct {
   rating?: number;
   discountPercent?: number;
   brandName?: string;
+  productTypeId?: number | null;
+  productTypeNameEn?: string;
+  productTypeNameAr?: string;
+  howToUseEn?: string;
+  howToUseAr?: string;
   isAvailable?: boolean;
   isNew?: boolean;
   isBestSeller?: boolean;

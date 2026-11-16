@@ -65,6 +65,25 @@ function pickDescription(...values: (string | null | undefined)[]): string {
   return '';
 }
 
+function normalizeProductType(raw: unknown): PublicProductDetailsDto['productType'] {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  if (id == null) {
+    return null;
+  }
+  return {
+    id,
+    name: readStringField(o, 'name', 'Name') ?? null,
+    nameAr: readStringField(o, 'nameAr', 'NameAr') ?? null,
+    nameEn: readStringField(o, 'nameEn', 'NameEn') ?? null,
+    count: readNumberField(o, 'count', 'Count') ?? null,
+    productsCount: readNumberField(o, 'productsCount', 'ProductsCount') ?? null,
+  };
+}
+
 /** Normalizes ABP GetProductDetails payload (camelCase or PascalCase). */
 export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDetailsDto | null {
   if (raw == null || typeof raw !== 'object') {
@@ -110,6 +129,19 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
     metaKeywords: readStringField(o, 'metaKeywords', 'MetaKeywords') ?? base.metaKeywords ?? null,
     metaDescription:
       readStringField(o, 'metaDescription', 'MetaDescription') ?? base.metaDescription ?? null,
+    brandId: readNumberField(o, 'brandId', 'BrandId') ?? base.brandId ?? null,
+    brandName: readStringField(o, 'brandName', 'BrandName') ?? base.brandName ?? null,
+    productTypeId: readNumberField(o, 'productTypeId', 'ProductTypeId') ?? base.productTypeId ?? null,
+    productTypeName:
+      readStringField(o, 'productTypeName', 'ProductTypeName') ?? base.productTypeName ?? null,
+    productTypeNameAr:
+      readStringField(o, 'productTypeNameAr', 'ProductTypeNameAr') ?? base.productTypeNameAr ?? null,
+    productTypeNameEn:
+      readStringField(o, 'productTypeNameEn', 'ProductTypeNameEn') ?? base.productTypeNameEn ?? null,
+    howToUse: readStringField(o, 'howToUse', 'HowToUse') ?? base.howToUse ?? null,
+    howToUseAr: readStringField(o, 'howToUseAr', 'HowToUseAr') ?? base.howToUseAr ?? null,
+    howToUseEn: readStringField(o, 'howToUseEn', 'HowToUseEn') ?? base.howToUseEn ?? null,
+    productType: normalizeProductType(o['productType'] ?? o['ProductType']),
     mainImageUrl:
       resolveAttachmentUrlOptional(
         readStringField(o, 'mainImageUrl', 'MainImageUrl') ?? base.mainImageUrl,
@@ -182,6 +214,15 @@ export function normalizePublicRelatedProductDto(raw: unknown): PublicRelatedPro
     name: readStringField(o, 'name', 'Name') ?? base.name,
     nameAr: readStringField(o, 'nameAr', 'NameAr'),
     nameEn: readStringField(o, 'nameEn', 'NameEn'),
+    brandId: readNumberField(o, 'brandId', 'BrandId') ?? base.brandId ?? null,
+    brandName: readStringField(o, 'brandName', 'BrandName') ?? base.brandName ?? null,
+    productTypeId: readNumberField(o, 'productTypeId', 'ProductTypeId') ?? null,
+    productTypeName: readStringField(o, 'productTypeName', 'ProductTypeName') ?? null,
+    productTypeNameAr: readStringField(o, 'productTypeNameAr', 'ProductTypeNameAr') ?? null,
+    productTypeNameEn: readStringField(o, 'productTypeNameEn', 'ProductTypeNameEn') ?? null,
+    howToUse: readStringField(o, 'howToUse', 'HowToUse') ?? null,
+    howToUseAr: readStringField(o, 'howToUseAr', 'HowToUseAr') ?? null,
+    howToUseEn: readStringField(o, 'howToUseEn', 'HowToUseEn') ?? null,
     finalPrice: readNumberField(o, 'finalPrice', 'FinalPrice') ?? 0,
     offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
   };
@@ -342,6 +383,18 @@ export function mapPublicProductDetailsToProductDetail(
   const nameAr = dto.nameAr?.trim() || dto.name;
   const brandNameEn = dto.brand?.nameEn || dto.brandName || '';
   const brandNameAr = dto.brand?.nameAr || dto.brandName || brandNameEn;
+  const productTypeNameEn =
+    dto.productType?.nameEn ||
+    dto.productTypeNameEn ||
+    dto.productType?.name ||
+    dto.productTypeName ||
+    '';
+  const productTypeNameAr =
+    dto.productType?.nameAr ||
+    dto.productTypeNameAr ||
+    dto.productType?.name ||
+    dto.productTypeName ||
+    productTypeNameEn;
   const categoryNameEn = dto.category?.nameEn || dto.categoryName || '';
   const categoryNameAr = dto.category?.nameAr || dto.categoryName || categoryNameEn;
   const price = resolveDetailsPrice(dto);
@@ -381,6 +434,12 @@ export function mapPublicProductDetailsToProductDetail(
     brandId: String(dto.brandId ?? dto.brand?.id ?? ''),
     brandNameEn,
     brandNameAr,
+    productTypeId: String(dto.productTypeId ?? dto.productType?.id ?? ''),
+    productTypeNameEn,
+    productTypeNameAr,
+    howToUse: dto.howToUse?.trim() || undefined,
+    howToUseEn: dto.howToUseEn?.trim() || undefined,
+    howToUseAr: dto.howToUseAr?.trim() || undefined,
     categoryId: String(dto.categoryId ?? dto.category?.id ?? ''),
     categorySlug: dto.category?.slug,
     categoryNameEn,
@@ -485,6 +544,9 @@ export function mapRelatedProductToListingProduct(
     brandId: item.brandId != null ? String(item.brandId) : '',
     brandNameEn: brandName,
     brandNameAr: brandName,
+    productTypeId: item.productTypeId != null ? String(item.productTypeId) : '',
+    productTypeNameEn: item.productTypeNameEn?.trim() || item.productTypeName?.trim() || '',
+    productTypeNameAr: item.productTypeNameAr?.trim() || item.productTypeName?.trim() || '',
     isAvailable: inStock,
     isNew: item.isNewArrival,
     isBestSeller: item.isBestSeller,

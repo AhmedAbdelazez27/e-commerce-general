@@ -26,6 +26,7 @@ export class ApiEndpoints {
     categoriesTree: '/api/services/app/EcPublicCatalog/GetCategoriesTree',
     homeSliders: '/api/services/app/EcPublicCatalog/GetHomeSliders',
     brands: '/api/services/app/EcPublicCatalog/GetBrands',
+    productTypes: '/api/services/app/EcPublicCatalog/GetProductTypes',
     productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
     searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
     productDetails: '/api/services/app/EcPublicCatalog/GetProductDetails',

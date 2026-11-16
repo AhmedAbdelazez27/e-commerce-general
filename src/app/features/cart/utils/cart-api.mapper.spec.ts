@@ -74,4 +74,44 @@ describe('promotion cart mapping', () => {
     expect(cart.SupportsPromotionPricing).toBe(false);
     expect(enrichCartItems(cart.Items)[0].lineTotal).toBe(80);
   });
+
+  it('maps product type onto the cart line and leaves it blank when null', () => {
+    const cart = normalizeCartDto({
+      id: 1,
+      items: [
+        {
+          id: 1,
+          productId: 9,
+          quantity: 1,
+          unitPrice: 10,
+          finalPrice: 10,
+          productTypeId: null,
+          productTypeNameAr: null,
+          productTypeNameEn: null,
+          howToUseAr: null,
+          howToUseEn: null,
+        },
+        {
+          id: 2,
+          productId: 10,
+          quantity: 1,
+          unitPrice: 10,
+          finalPrice: 10,
+          ProductTypeId: 4,
+          ProductTypeNameAr: 'سيروم',
+          ProductTypeNameEn: 'Serum',
+          HowToUseAr: 'طريقة',
+          HowToUseEn: 'How',
+        },
+      ],
+    });
+
+    const lines = enrichCartItems(cart.Items);
+    expect(lines[0].productTypeEn).toBe('');
+    expect(lines[0].productTypeAr).toBe('');
+    expect(cart.Items[1].HowToUseEn).toBe('How');
+    expect(cart.Items[1].HowToUseAr).toBe('طريقة');
+    expect(lines[1].productTypeEn).toBe('Serum');
+    expect(lines[1].productTypeAr).toBe('سيروم');
+  });
 });

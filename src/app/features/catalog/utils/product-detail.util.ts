@@ -20,6 +20,17 @@ export function localizedBrandName(product: ProductDetail, lang: AppLang): strin
   return lang === 'ar' ? product.brandNameAr : product.brandNameEn;
 }
 
+export function localizedProductTypeName(product: ProductDetail, lang: AppLang): string {
+  const name = lang === 'ar' ? product.productTypeNameAr : product.productTypeNameEn;
+  return name?.trim() ?? '';
+}
+
+export function localizedHowToUse(product: ProductDetail, lang: AppLang): string {
+  const text =
+    lang === 'ar' ? product.howToUseAr || product.howToUse : product.howToUseEn || product.howToUse;
+  return text?.trim() ?? '';
+}
+
 export function localizedCategoryName(product: ProductDetail, lang: AppLang): string {
   return lang === 'ar' ? product.categoryNameAr : product.categoryNameEn;
 }
@@ -57,8 +68,11 @@ export function buildProductDetailBreadcrumbs(product: ProductDetail): CatalogBr
   ];
 }
 
-export function mapRelatedToCardData(related: CatalogListingProduct[]): ProductCardData[] {
-  return related.map((p) => mapCatalogProductToCardData(p));
+export function mapRelatedToCardData(
+  related: CatalogListingProduct[],
+  lang: AppLang = 'en',
+): ProductCardData[] {
+  return related.map((p) => mapCatalogProductToCardData(p, lang));
 }
 
 export function mapProductDetailToCardData(product: ProductDetail): ProductCardData {
@@ -74,6 +88,8 @@ export function mapProductDetailToCardData(product: ProductDetail): ProductCardD
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: product.brandNameEn,
+    productTypeEn: product.productTypeNameEn?.trim() || undefined,
+    productTypeAr: product.productTypeNameAr?.trim() || product.productTypeNameEn?.trim() || undefined,
     image: pickProductDetailPosterUrl(product.images),
     has3D: productDetailHas3D(product.images),
     price: product.price,

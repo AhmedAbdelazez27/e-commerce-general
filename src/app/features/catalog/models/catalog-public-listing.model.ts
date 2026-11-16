@@ -16,6 +16,8 @@ export interface GetProductFiltersParams {
   searchText?: string;
   categoryId?: number;
   brandIds?: number[];
+  productTypeId?: number;
+  productTypeIds?: number[];
   minPrice?: number;
   maxPrice?: number;
   includeChildrenCategories?: boolean;
@@ -30,6 +32,8 @@ export interface SearchProductsRequest {
   categoryId?: number;
   brandId?: number;
   brandIds?: number[];
+  productTypeId?: number;
+  productTypeIds?: number[];
   searchText?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -63,6 +67,14 @@ export interface PublicFilterBrandDto {
   count: number;
 }
 
+export interface PublicFilterProductTypeDto {
+  id: number;
+  name: string;
+  nameAr?: string | null;
+  nameEn?: string | null;
+  count: number;
+}
+
 export interface PublicFilterPriceRangeDto {
   minPrice: number;
   maxPrice: number;
@@ -93,6 +105,7 @@ export interface PublicFilterFlagsDto {
 export interface GetProductFiltersResult {
   categories: PublicFilterCategoryDto[];
   brands: PublicFilterBrandDto[];
+  productTypes: PublicFilterProductTypeDto[];
   priceRange: PublicFilterPriceRangeDto;
   specifications: PublicFilterSpecificationDto[];
   flags: PublicFilterFlagsDto;
@@ -137,6 +150,13 @@ export interface PublicSearchProductDto {
   brandName?: string | null;
   brandNameAr?: string | null;
   brandNameEn?: string | null;
+  productTypeId?: number | null;
+  productTypeName?: string | null;
+  productTypeNameAr?: string | null;
+  productTypeNameEn?: string | null;
+  howToUse?: string | null;
+  howToUseAr?: string | null;
+  howToUseEn?: string | null;
   mainImageUrl?: string | null;
   mainMediaType?: string | null;
   hasModel3D?: boolean;

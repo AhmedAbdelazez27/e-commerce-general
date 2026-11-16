@@ -1,3 +1,7 @@
+.brands-page {
+  scroll-margin-top: calc(var(--ds-header-height) + var(--ds-space-4));
+}
+
 .brands-page__head {
   max-width: 40rem;
 }

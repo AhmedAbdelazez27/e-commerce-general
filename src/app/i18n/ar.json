@@ -723,6 +723,7 @@
     "FILTER": {
       "CATEGORY": "الفئة",
       "BRAND": "العلامة",
+      "PRODUCT_TYPE": "نوع المنتج",
       "PRICE": "السعر",
       "MIN": "الحد الأدنى",
       "MAX": "الحد الأعلى",
@@ -741,7 +742,11 @@
       "TITLE": "لا توجد منتجات",
       "TEXT": "جرّب تعديل التصفية أو كلمات البحث.",
       "CLEAR": "مسح التصفية"
-    }
+    },
+    "PAGINATION": "تصفح الصفحات",
+    "PAGE": "الصفحة {{page}}",
+    "SHOWING_LEAD": "عرض",
+    "SHOWING_OF": "من"
   },
   "WISHLIST": {
     "TITLE": "المفضلة",
@@ -899,10 +904,13 @@
     "SHIPPING_TITLE": "الشحن",
     "RETURNS_TITLE": "الإرجاع",
     "NO_DESCRIPTION": "وصف المنتج غير متوفر.",
+    "READ_MORE": "اقرأ المزيد",
+    "READ_LESS": "اقرأ أقل",
     "MEDIA_VIDEO": "فيديو المنتج",
     "MEDIA_3D": "عرض ثلاثي الأبعاد",
     "TAB": {
       "description": "الوصف",
+      "howToUse": "طريقة الاستخدام",
       "specifications": "المواصفات",
       "shipping": "الشحن والإرجاع"
     }

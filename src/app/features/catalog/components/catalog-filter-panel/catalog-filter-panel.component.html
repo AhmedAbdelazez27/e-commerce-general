@@ -35,6 +35,26 @@
     </ul>
   </fieldset>
 
+  @if (productTypes().length > 0) {
+    <fieldset class="catalog-filters__group">
+      <legend class="catalog-filters__legend">{{ 'CATALOG.FILTER.PRODUCT_TYPE' | translate }}</legend>
+      <ul class="catalog-filters__list catalog-filters__list--scroll">
+        @for (productType of productTypes(); track productType.id) {
+          <li>
+            <label class="catalog-filters__check">
+              <input
+                type="checkbox"
+                [checked]="isProductTypeChecked(productType.id)"
+                (change)="onProductTypeChange(productType.id)"
+              />
+              <span>{{ localizedName(productType) }}@if (productType.count != null) { ({{ productType.count }}) }</span>
+            </label>
+          </li>
+        }
+      </ul>
+    </fieldset>
+  }
+
   @for (spec of specifications(); track spec.id) {
     <fieldset class="catalog-filters__group">
       <legend class="catalog-filters__legend">{{ localizedName(spec) }}</legend>

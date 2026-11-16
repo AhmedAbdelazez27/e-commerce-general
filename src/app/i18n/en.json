@@ -723,6 +723,7 @@
     "FILTER": {
       "CATEGORY": "Category",
       "BRAND": "Brand",
+      "PRODUCT_TYPE": "Product type",
       "PRICE": "Price",
       "MIN": "Min",
       "MAX": "Max",
@@ -741,7 +742,11 @@
       "TITLE": "No products found",
       "TEXT": "Try adjusting your filters or search terms.",
       "CLEAR": "Clear filters"
-    }
+    },
+    "PAGINATION": "Pagination",
+    "PAGE": "Page {{page}}",
+    "SHOWING_LEAD": "Showing",
+    "SHOWING_OF": "of"
   },
   "WISHLIST": {
     "TITLE": "Wishlist",
@@ -899,10 +904,13 @@
     "SHIPPING_TITLE": "Shipping",
     "RETURNS_TITLE": "Returns",
     "NO_DESCRIPTION": "Product description is not available.",
+    "READ_MORE": "Read more",
+    "READ_LESS": "Read less",
     "MEDIA_VIDEO": "Product video",
     "MEDIA_3D": "3D product view",
     "TAB": {
       "description": "Description",
+      "howToUse": "How to use",
       "specifications": "Specifications",
       "shipping": "Shipping & returns"
     }

@@ -138,6 +138,15 @@ function normalizeWishlistItem(raw: unknown): EcWishlistItem | null {
     imageUrl,
     has3D,
     brandName,
+    productTypeId: readNumber(o, 'productTypeId', 'ProductTypeId') ?? null,
+    productTypeNameEn:
+      readString(o, 'productTypeNameEn', 'ProductTypeNameEn', 'productTypeName', 'ProductTypeName') ??
+      undefined,
+    productTypeNameAr:
+      readString(o, 'productTypeNameAr', 'ProductTypeNameAr', 'productTypeName', 'ProductTypeName') ??
+      undefined,
+    howToUseEn: readString(o, 'howToUseEn', 'HowToUseEn') ?? undefined,
+    howToUseAr: readString(o, 'howToUseAr', 'HowToUseAr') ?? undefined,
     rating,
     reviewCount,
     discountPercent: discountPercent ?? undefined,

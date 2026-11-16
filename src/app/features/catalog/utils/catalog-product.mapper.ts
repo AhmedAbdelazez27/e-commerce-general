@@ -17,6 +17,9 @@ export function mapCatalogProductToCardData(
     title: product.nameEn,
     titleAr: product.nameAr,
     brand: lang === 'ar' ? product.brandNameAr || product.brandNameEn : product.brandNameEn,
+    productTypeEn: product.productTypeNameEn?.trim() || undefined,
+    productTypeAr:
+      product.productTypeNameAr?.trim() || product.productTypeNameEn?.trim() || undefined,
     image: product.imageUrl,
     price: product.price,
     oldPrice: product.compareAtPrice,

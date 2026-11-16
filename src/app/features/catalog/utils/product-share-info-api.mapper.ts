@@ -75,10 +75,21 @@ export function normalizeProductShareInfoDto(raw: unknown): PublicProductShareIn
     return null;
   }
 
+  const productTypeId = readNumber(o, 'productTypeId', 'ProductTypeId');
+  const productTypeNameAr = readString(o, 'productTypeNameAr', 'ProductTypeNameAr');
+  const productTypeNameEn = readString(o, 'productTypeNameEn', 'ProductTypeNameEn');
+  const howToUseAr = readString(o, 'howToUseAr', 'HowToUseAr');
+  const howToUseEn = readString(o, 'howToUseEn', 'HowToUseEn');
+
   return {
     productId,
     slug: readString(o, 'slug', 'Slug'),
     share,
     ...(Array.isArray(offersRaw) ? { offers: normalizeOfferBadges(offersRaw) } : {}),
+    ...(productTypeId != null ? { productTypeId } : {}),
+    ...(productTypeNameAr ? { productTypeNameAr } : {}),
+    ...(productTypeNameEn ? { productTypeNameEn } : {}),
+    ...(howToUseAr ? { howToUseAr } : {}),
+    ...(howToUseEn ? { howToUseEn } : {}),
   };
 }

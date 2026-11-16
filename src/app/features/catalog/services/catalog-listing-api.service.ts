@@ -11,11 +11,15 @@ import {
   SearchProductsRequest,
   SearchProductsResult,
 } from '../models/catalog-public-listing.model';
-import { normalizeSearchProductsResultItems } from '../utils/catalog-listing-api.mapper';
+import {
+  normalizeSearchProductsResultItems,
+  readFilterProductTypes,
+} from '../utils/catalog-listing-api.mapper';
 
 const EMPTY_FILTERS: GetProductFiltersResult = {
   categories: [],
   brands: [],
+  productTypes: [],
   priceRange: { minPrice: 0, maxPrice: 0 },
   specifications: [],
   flags: { featured: 0, newArrival: 0, bestSeller: 0 },
@@ -58,7 +62,16 @@ export class CatalogListingApiService {
         params: this.buildFilterParams(params),
       })
       .pipe(
-        map((res) => resultFromAbpEnvelope<GetProductFiltersResult>(res) ?? EMPTY_FILTERS),
+        map((res) => {
+          const result = resultFromAbpEnvelope<GetProductFiltersResult>(res);
+          if (!result) {
+            return EMPTY_FILTERS;
+          }
+          return {
+            ...result,
+            productTypes: readFilterProductTypes(result),
+          };
+        }),
         catchError(() => of(EMPTY_FILTERS)),
       );
   }
@@ -89,6 +102,9 @@ export class CatalogListingApiService {
     }
     for (const brandId of input.brandIds ?? []) {
       params = params.append('BrandIds', String(brandId));
+    }
+    for (const productTypeId of input.productTypeIds ?? []) {
+      params = params.append('ProductTypeIds', String(productTypeId));
     }
     if (input.minPrice != null) {
       params = params.set('MinPrice', String(input.minPrice));
