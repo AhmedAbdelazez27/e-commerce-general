@@ -176,6 +176,57 @@ export function normalizePublicProductVariantDto(raw: unknown): PublicProductVar
     availabilityStatus: readStringField(o, 'availabilityStatus', 'AvailabilityStatus'),
     price: normalizeSearchProductPrice(o['price'] ?? o['Price']) ?? base.price,
     offers: normalizeOfferBadges(o['offers'] ?? o['Offers']),
+    specifications: Array.isArray(o['specifications'] ?? o['Specifications'])
+      ? ((o['specifications'] ?? o['Specifications']) as unknown[])
+          .map(normalizePublicProductSpecificationDto)
+          .filter((item): item is PublicProductSpecificationDto => item != null)
+      : base.specifications,
+  };
+}
+
+export function normalizePublicProductSpecificationDto(
+  raw: unknown,
+): PublicProductSpecificationDto | null {
+  if (raw == null || typeof raw !== 'object') {
+    return null;
+  }
+  const o = raw as JsonRecord;
+  const id = readNumberField(o, 'id', 'Id');
+  const specificationTypeId = readNumberField(o, 'specificationTypeId', 'SpecificationTypeId');
+  if (id == null || specificationTypeId == null) {
+    return null;
+  }
+  const base = raw as PublicProductSpecificationDto;
+  const isColorRaw = o['isColor'] ?? o['IsColor'];
+  return {
+    ...base,
+    id,
+    specificationTypeId,
+    productId: readNumberField(o, 'productId', 'ProductId'),
+    productVariantId: readNumberField(o, 'productVariantId', 'ProductVariantId') ?? null,
+    productVariantName:
+      readStringField(o, 'productVariantName', 'ProductVariantName') ??
+      base.productVariantName ??
+      null,
+    specificationName: readStringField(o, 'specificationName', 'SpecificationName'),
+    specificationNameAr: readStringField(o, 'specificationNameAr', 'SpecificationNameAr'),
+    specificationNameEn: readStringField(o, 'specificationNameEn', 'SpecificationNameEn'),
+    code: readStringField(o, 'code', 'Code'),
+    dataType: readStringField(o, 'dataType', 'DataType'),
+    numericValue: readNumberField(o, 'numericValue', 'NumericValue') ?? null,
+    textValue: readStringField(o, 'textValue', 'TextValue') ?? null,
+    boolValue: typeof o['boolValue'] === 'boolean' ? o['boolValue'] : typeof o['BoolValue'] === 'boolean' ? (o['BoolValue'] as boolean) : null,
+    displayValue: readStringField(o, 'displayValue', 'DisplayValue') ?? null,
+    unitName: readStringField(o, 'unitName', 'UnitName') ?? null,
+    unitSymbol: readStringField(o, 'unitSymbol', 'UnitSymbol') ?? null,
+    isFilterable: o['isFilterable'] === true || o['IsFilterable'] === true,
+    isColor: isColorRaw === true,
+    isItemSpecification:
+      o['isItemSpecification'] === true || o['IsItemSpecification'] === true
+        ? true
+        : o['isItemSpecification'] === false || o['IsItemSpecification'] === false
+          ? false
+          : base.isItemSpecification,
   };
 }
 
@@ -278,23 +329,47 @@ function formatSpecificationValue(spec: PublicProductSpecificationDto): { en: st
   return { en: '—', ar: '—' };
 }
 
+/** Accepts `#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA` from TextValue when IsColor is true. */
+export function resolveSpecificationColor(
+  isColor: boolean | undefined,
+  textValue: string | null | undefined,
+): string | undefined {
+  if (isColor !== true) {
+    return undefined;
+  }
+  const raw = textValue?.trim();
+  if (!raw || !/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(raw)) {
+    return undefined;
+  }
+  return raw;
+}
+
 export function mapProductSpecifications(
   specs: PublicProductSpecificationDto[],
 ): ProductDetailSpec[] {
-  const seen = new Set<number>();
+  const seen = new Set<string>();
   const result: ProductDetailSpec[] = [];
 
   for (const spec of specs) {
-    if (seen.has(spec.specificationTypeId)) {
+    const isColor = spec.isColor === true;
+    const color = resolveSpecificationColor(isColor, spec.textValue);
+    // Color rows share one type id but carry distinct hex values — keep each swatch.
+    const dedupeKey = isColor
+      ? `color:${spec.specificationTypeId}:${(color ?? spec.textValue ?? String(spec.id)).toLowerCase()}`
+      : `type:${spec.specificationTypeId}`;
+    if (seen.has(dedupeKey)) {
       continue;
     }
-    seen.add(spec.specificationTypeId);
+    seen.add(dedupeKey);
     const value = formatSpecificationValue(spec);
     result.push({
       labelEn: spec.specificationNameEn || spec.specificationName || spec.code || '',
       labelAr: spec.specificationNameAr || spec.specificationName || spec.code || '',
       valueEn: value.en,
       valueAr: value.ar,
+      isFilterable: spec.isFilterable === true,
+      isColor,
+      color,
     });
   }
 
@@ -365,8 +440,20 @@ export function mapProductVariants(variants: PublicProductVariantDto[]): Product
       isAvailable: stock.isAvailable,
       stockQuantity: stock.stockQuantity,
       offers: variant.offers ?? variant.price?.offers ?? [],
+      specifications: mapProductSpecifications(variant.specifications ?? []),
     };
   });
+}
+
+/** Variant gallery images, or the product images when the variant has none that can render. */
+export function resolveVariantGalleryImages(
+  variantImages: PublicProductImageDto[],
+  fallback: ProductDetailImage[],
+  altEn: string,
+  altAr: string,
+): ProductDetailImage[] {
+  const mapped = mapProductImages(variantImages, altEn, altAr);
+  return mapped.length ? mapped : fallback;
 }
 
 export interface ProductDetailMapOverrides {

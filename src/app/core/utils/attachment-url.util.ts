@@ -55,7 +55,7 @@ function resolveAttachmentBaseUrl(baseUrl?: string | null): string {
 
 function hostedAttachmentPath(pathname: string, search = '', base = ''): string {
   const needsErpPrefix =
-    /^\/appattachments\//i.test(pathname) && !/\/erpattachments\/?$/i.test(base);
+    /^\/appattachments\//i.test(pathname) && !/\/(?:erpattachments|attachment)\/?$/i.test(base);
   const path = needsErpPrefix ? `/ERPAttachments${pathname}${search}` : `${pathname}${search}`;
   return normalizeAttachmentPath(path);
 }

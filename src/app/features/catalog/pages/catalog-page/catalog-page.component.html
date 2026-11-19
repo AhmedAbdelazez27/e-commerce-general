@@ -5,14 +5,6 @@
     <app-catalog-subcategory-rail [items]="facade.subcategoryRail()" />
   }
 
-  <!-- <app-catalog-listing-header
-    [titleEn]="facade.activeCategory()?.nameEn"
-    [titleAr]="facade.activeCategory()?.nameAr"
-    [productCount]="facade.productCount()"
-    [category]="facade.activeCategory()"
-    [searchQuery]="facade.searchQuery()"
-  /> -->
-
   <app-catalog-listing-toolbar
     [sort]="facade.sort()"
     [viewMode]="facade.viewMode()"
@@ -24,7 +16,9 @@
 
   <div class="catalog-page__layout">
     <aside class="catalog-page__sidebar" [attr.aria-label]="'CATALOG.FILTERS' | translate">
-      <app-catalog-filter-panel [live]="true" />
+      <div class="catalog-page__filters">
+        <app-catalog-filter-panel [live]="true" />
+      </div>
       <button type="button" class="btn btn-link btn-sm catalog-page__clear" (click)="facade.clearFilters()">
         {{ 'CATALOG.FILTER.CLEAR' | translate }}
       </button>

@@ -44,6 +44,8 @@ export interface PublicProductSpecificationDto {
   displayValue?: string | null;
   unitName?: string | null;
   unitSymbol?: string | null;
+  isFilterable?: boolean;
+  isColor?: boolean;
 }
 
 export interface PublicProductVariantDto {

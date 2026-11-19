@@ -58,7 +58,7 @@ export class CartActionsService {
     onSuccess: () => void,
     onSettled?: (ok: boolean) => void,
   ): void {
-    const variantId = requiresModel(product.stock) ? modelId(product.productVariantId) : null;
+    const variantId = modelId(product.productVariantId);
     this.addSelection(
       product.id,
       variantId,

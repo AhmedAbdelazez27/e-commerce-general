@@ -23,23 +23,7 @@
     </div>
 
     <div class="store-drawer__body">
-      <!-- Mobile drawer search — disabled for now
-      <form class="store-drawer__search" (submit)="submitSearch($event)" role="search">
-        <div class="store-header__search-wrap">
-          <input
-            type="search"
-            class="store-header__search-input"
-            name="q"
-            [(ngModel)]="searchQuery"
-            [placeholder]="header.searchPlaceholderKey | translate"
-            autocomplete="off"
-          />
-          <button type="submit" class="store-header__search-btn" [attr.aria-label]="'LAYOUT.HEADER.SEARCH' | translate">
-            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-          </button>
-        </div>
-      </form>
-      -->
+      <app-store-search variant="drawer" (searched)="close()" />
 
       <div class="store-header__lang mb-3 d-flex" role="group">
         <button type="button" [class.is-active]="currentLang() === 'ar'" (click)="setLang('ar')">ع</button>

@@ -4,11 +4,22 @@ import type {
   PublicProductDetailsDto,
   PublicProductVariantDto,
 } from '../models/catalog-public-product.model';
-import { localizedHowToUse, localizedProductTypeName, localizedShortDescription } from './product-detail.util';
+import {
+  localizedHowToUse,
+  localizedProductTypeName,
+  localizedShortDescription,
+  variantGroupLabel,
+  variantOptionLabel,
+  variantOptionParts,
+  variantPickerOptions,
+} from './product-detail.util';
 import {
   mapProductVariants,
   mapPublicProductDetailsToProductDetail,
   normalizePublicProductDetailsDto,
+  normalizePublicProductSpecificationDto,
+  resolveSpecificationColor,
+  resolveVariantGalleryImages,
 } from './product-detail-api.mapper';
 
 describe('product-detail-api.mapper stock', () => {
@@ -39,6 +50,197 @@ describe('product-detail-api.mapper stock', () => {
     expect(variants[0]?.stockQuantity).toBe(7);
     expect(variants[1]?.stockQuantity).toBe(-2);
     expect(variants[1]?.isAvailable).toBe(true);
+  });
+
+  it('shows color and shade when the shade is stored as a number or as text', () => {
+    const variants = mapProductVariants([
+      {
+        id: 41593,
+        productId: 21602,
+        variantSKU: 'RED',
+        variantName: 'Red',
+        specifications: [
+          {
+            id: 4,
+            specificationTypeId: 2,
+            specificationNameAr: 'اللون',
+            specificationNameEn: 'Color',
+            code: 'COLOR',
+            dataType: 'Text',
+            textValue: 'RED',
+            isFilterable: true,
+          },
+          {
+            id: 5,
+            specificationTypeId: 3,
+            specificationNameAr: 'الدرجة',
+            specificationNameEn: 'Shade',
+            code: 'SAHDE',
+            dataType: 'Number',
+            numericValue: 210,
+            isFilterable: false,
+          },
+        ],
+      },
+      {
+        id: 41594,
+        productId: 21602,
+        variantSKU: 'Black',
+        variantName: 'Black',
+        specifications: [
+          {
+            id: 1,
+            specificationTypeId: 2,
+            specificationNameAr: 'اللون',
+            specificationNameEn: 'Color',
+            textValue: 'Black',
+            isFilterable: true,
+          },
+          {
+            id: 2,
+            specificationTypeId: 3,
+            specificationNameAr: 'الدرجة',
+            specificationNameEn: 'Shade',
+            dataType: 'Number',
+            numericValue: null,
+            textValue: '209',
+            isFilterable: false,
+          },
+        ],
+      },
+    ] as PublicProductVariantDto[]);
+
+    expect(variantOptionLabel(variants[0]!, 'ar')).toBe('RED · 210');
+    expect(variantOptionLabel(variants[1]!, 'en')).toBe('Black · 209');
+    expect(variantGroupLabel(variants, 'ar')).toBe('اللون');
+    expect(variants[0]?.specifications[0]?.isFilterable).toBe(true);
+    expect(variants[0]?.specifications[0]?.color).toBeUndefined();
+  });
+
+  it('maps IsColor hex TextValue to a swatch and keeps plain text when IsColor is false', () => {
+    expect(resolveSpecificationColor(true, '#C45C26')).toBe('#C45C26');
+    expect(resolveSpecificationColor(true, '#0001')).toBe('#0001');
+    expect(resolveSpecificationColor(true, 'RED')).toBeUndefined();
+    expect(resolveSpecificationColor(false, '#C45C26')).toBeUndefined();
+
+    const colorSpec = normalizePublicProductSpecificationDto({
+      Id: 10,
+      SpecificationTypeId: 2,
+      SpecificationNameEn: 'Color',
+      SpecificationNameAr: 'اللون',
+      IsColor: true,
+      TextValue: '#C45C26',
+      IsFilterable: true,
+    });
+    expect(colorSpec?.isColor).toBe(true);
+    expect(colorSpec?.textValue).toBe('#C45C26');
+
+    const variants = mapProductVariants([
+      {
+        id: 1,
+        productId: 9,
+        variantName: 'Copper',
+        specifications: [
+          {
+            id: 10,
+            specificationTypeId: 2,
+            specificationNameEn: 'Color',
+            textValue: '#C45C26',
+            isColor: true,
+            isFilterable: true,
+          },
+          {
+            id: 11,
+            specificationTypeId: 3,
+            specificationNameEn: 'Shade',
+            numericValue: 210,
+            isColor: false,
+          },
+        ],
+      },
+      {
+        id: 2,
+        productId: 9,
+        variantName: 'Named red',
+        specifications: [
+          {
+            id: 12,
+            specificationTypeId: 2,
+            specificationNameEn: 'Color',
+            textValue: 'RED',
+            isColor: false,
+            isFilterable: true,
+          },
+        ],
+      },
+    ] as PublicProductVariantDto[]);
+
+    expect(variants[0]?.specifications[0]?.color).toBe('#C45C26');
+    expect(variantOptionParts(variants[0]!, 'en')).toEqual([
+      { kind: 'swatch', value: '#C45C26' },
+      { kind: 'text', value: '210' },
+    ]);
+    expect(variantOptionLabel(variants[0]!, 'en')).toBe('210');
+    expect(variants[1]?.specifications[0]?.color).toBeUndefined();
+    expect(variantOptionLabel(variants[1]!, 'en')).toBe('RED');
+  });
+
+  it('keeps every distinct color swatch when they share one specification type', () => {
+    const variants = mapProductVariants([
+      {
+        id: 41640,
+        productId: 4787,
+        variantName: 'test',
+        specifications: [
+          {
+            id: 88,
+            specificationTypeId: 9,
+            specificationNameEn: 'Color',
+            specificationNameAr: 'اللون',
+            textValue: '#198F21',
+            isColor: true,
+          },
+          {
+            id: 89,
+            specificationTypeId: 9,
+            specificationNameEn: 'Color',
+            textValue: '#821C1C',
+            isColor: true,
+          },
+          {
+            id: 90,
+            specificationTypeId: 9,
+            specificationNameEn: 'Color',
+            textValue: '#E81717',
+            isColor: true,
+          },
+        ],
+      },
+    ] as PublicProductVariantDto[]);
+
+    expect(variants[0]?.specifications.map((spec) => spec.color)).toEqual([
+      '#198F21',
+      '#821C1C',
+      '#E81717',
+    ]);
+    expect(variantOptionParts(variants[0]!, 'ar')).toEqual([
+      { kind: 'swatch', value: '#198F21' },
+      { kind: 'swatch', value: '#821C1C' },
+      { kind: 'swatch', value: '#E81717' },
+    ]);
+    expect(variantPickerOptions(variants, 'ar').map((option) => option.color)).toEqual([
+      '#198F21',
+      '#821C1C',
+      '#E81717',
+    ]);
+    expect(variantPickerOptions(variants, 'ar').every((option) => option.swatchOnly)).toBe(true);
+  });
+
+  it('keeps the product images when a variant image has no renderable url', () => {
+    const fallback = [{ id: 'base', url: '/products/default.jpg', altEn: 'Serum', altAr: 'سيروم' }];
+
+    expect(resolveVariantGalleryImages([{ id: 9 }], fallback, 'Serum', 'سيروم')).toEqual(fallback);
+    expect(resolveVariantGalleryImages([{ id: 9, imageUrl: '/variants/red.jpg' }], fallback, 'Serum', 'سيروم')[0]?.id).toBe('9');
   });
 
   it('keeps the language-specific short descriptions for the buy box', () => {

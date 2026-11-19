@@ -43,6 +43,9 @@ import {
   localizedProductTypeName,
   localizedShortDescription,
   mapProductDetailToCardData,
+  variantGroupLabel as formatVariantGroupLabel,
+  variantPickerOptions as formatVariantPickerOptions,
+  type VariantPickerOption,
   mapRelatedToCardData,
   productDetailDiscountPercent,
 } from '../../utils/product-detail.util';
@@ -80,6 +83,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
   readonly variants = signal<ProductDetailVariant[]>([]);
+  readonly selectedColor = signal<string | null>(null);
   readonly relatedProducts = signal<ProductCardData[]>([]);
   readonly quantity = signal(1);
   readonly selectionBusy = signal(false);
@@ -244,6 +248,26 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     return p?.productTypeId ? { productType: p.productTypeId } : undefined;
   }
 
+  variantGroupLabel(): string {
+    return formatVariantGroupLabel(this.variants(), this.language.currentLang());
+  }
+
+  variantOptions(): VariantPickerOption[] {
+    return formatVariantPickerOptions(this.variants(), this.language.currentLang());
+  }
+
+  isVariantOptionSelected(option: VariantPickerOption): boolean {
+    const product = this.product();
+    if (!product || product.selectedVariantId !== option.variantId) {
+      return false;
+    }
+    if (!option.color) {
+      return true;
+    }
+    const selected = this.selectedColor()?.toLowerCase();
+    return selected != null && selected === option.color.toLowerCase();
+  }
+
   formatPrice(value: number): string {
     return formatProductPrice(value);
   }
@@ -267,14 +291,26 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     this.applyQuantity(requested, requested);
   }
 
-  onVariantSelect(variantId: number): void {
+  onVariantOptionSelect(option: VariantPickerOption): void {
+    this.onVariantSelect(option.variantId, option.color ?? null);
+  }
+
+  onVariantSelect(variantId: number, color: string | null = null): void {
     const product = this.product();
     const variant = this.variants().find((entry) => entry.id === variantId);
-    if (
-      !product ||
-      !variant ||
-      (product.selectedVariantId === variantId && !this.selectionBusy())
-    ) {
+    if (!product || !variant) {
+      return;
+    }
+
+    const sameVariant = product.selectedVariantId === variantId;
+    const sameColor =
+      (color?.toLowerCase() ?? null) === (this.selectedColor()?.toLowerCase() ?? null);
+    if (sameVariant && sameColor && !this.selectionBusy()) {
+      return;
+    }
+
+    this.selectedColor.set(color);
+    if (sameVariant && !this.selectionBusy()) {
       return;
     }
 
@@ -362,6 +398,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     this.loadState.set('loading');
     this.product.set(null);
     this.variants.set([]);
+    this.selectedColor.set(null);
     this.quantity.set(1);
     this.quantityValidationKey.set(null);
     this.selectedImageIndex.set(0);
@@ -382,10 +419,15 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
           }
           this.product.set(product);
           this.variants.set(variants);
+          this.selectedColor.set(null);
           this.relatedProducts.set(mapRelatedToCardData(related, this.language.currentLang()));
           this.loadState.set('loaded');
           this.applyShareSeo();
           this.loadShareInfo(product.id, sequence);
+          const firstOption = formatVariantPickerOptions(variants, this.language.currentLang())[0];
+          if (firstOption) {
+            this.onVariantSelect(firstOption.variantId, firstOption.color ?? null);
+          }
         },
         error: () => {
           if (sequence !== this.loadSequence) return;

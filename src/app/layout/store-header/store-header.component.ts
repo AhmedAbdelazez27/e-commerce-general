@@ -14,11 +14,12 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { AppLang, LanguageService } from '../../core/services/language.service';
 import { LAYOUT_CONFIG } from '../config/layout.config';
 import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
+import { StoreSearchComponent } from '../store-search/store-search.component';
 import { currencyFromSelectValue, currencyOptionLabel } from '../utils/currency-selector.util';
 
 @Component({
   selector: 'app-store-header',
-  imports: [RouterLink, TranslateModule, FormsModule, NotificationBellComponent],
+  imports: [RouterLink, TranslateModule, FormsModule, NotificationBellComponent, StoreSearchComponent],
   templateUrl: './store-header.component.html',
 })
 export class StoreHeaderComponent implements OnInit {
@@ -58,8 +59,6 @@ export class StoreHeaderComponent implements OnInit {
   logoAlt(): string {
     return this.portal.portalName(this.language.currentLang());
   }
-
-  // searchQuery = '';
 
   isLoggedIn(): boolean {
     return this.auth.isLoggedIn();
@@ -110,12 +109,6 @@ export class StoreHeaderComponent implements OnInit {
   showCurrencySelector(): boolean {
     return this.currencies().length > 1;
   }
-
-  // submitSearch(event: Event): void {
-  //   event.preventDefault();
-  //   const q = this.searchQuery.trim();
-  //   void this.router.navigate([this.header.shopRoute], q ? { queryParams: { q } } : undefined);
-  // }
 
   openMenu(): void {
     this.openMobileMenu.emit();

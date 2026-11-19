@@ -38,6 +38,7 @@
             <label
               class="model-picker__option"
               [class.model-picker__option--selected]="selectedId() === variant.id"
+              [attr.aria-label]="variant.name"
             >
               <input
                 type="radio"
@@ -46,8 +47,20 @@
                 [checked]="selectedId() === variant.id"
                 (change)="select(variant)"
               />
-              <span
-                ><strong>{{ variant.name }}</strong>
+              <span class="model-picker__option-label">
+                <strong class="model-picker__option-parts">
+                  @for (part of optionParts(variant); track $index) {
+                    @if (part.kind === 'swatch') {
+                      <span
+                        class="model-picker__swatch"
+                        [style.background-color]="part.value"
+                        aria-hidden="true"
+                      ></span>
+                    } @else {
+                      <span>{{ part.value }}</span>
+                    }
+                  }
+                </strong>
                 @if (variant.sku) {
                   <small dir="ltr">{{ variant.sku }}</small>
                 }

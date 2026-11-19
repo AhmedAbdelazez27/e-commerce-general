@@ -7,7 +7,7 @@ import {
 } from '../../../shared/utils/product-stock.util';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timeout } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ApiEndpoints } from '../../../core/constants/api-endpoints';
@@ -30,6 +30,7 @@ import type { PublicProductShareInfoDto } from '../models/product-share-info.mod
 import {
   normalizePublicFinalPriceDto,
   normalizePublicProductDetailsDto,
+  normalizePublicProductSpecificationDto,
   normalizePublicProductVariantDto,
   normalizePublicRelatedProductDto,
 } from '../utils/product-detail-api.mapper';
@@ -131,7 +132,11 @@ export class ProductDetailApiService {
     return this.http
       .get<unknown>(ApiEndpoints.EcPublicCatalog.productSpecifications, { params })
       .pipe(
-        map((res) => resultArrayFromAbpEnvelope<PublicProductSpecificationDto>(res)),
+        map((res) =>
+          resultArrayFromAbpEnvelope<unknown>(res)
+            .map(normalizePublicProductSpecificationDto)
+            .filter((item): item is PublicProductSpecificationDto => item != null),
+        ),
         catchError(() => of([])),
       );
   }
@@ -149,6 +154,7 @@ export class ProductDetailApiService {
     params = appendCurrencyToHttpParams(params, currency);
 
     return this.http.get<unknown>(ApiEndpoints.EcPublicCatalog.relatedProducts, { params }).pipe(
+      timeout(12_000),
       map((res) =>
         resultArrayFromAbpEnvelope<unknown>(res)
           .map(normalizePublicRelatedProductDto)

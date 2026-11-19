@@ -19,6 +19,11 @@ export interface ProductDetailSpec {
   labelAr: string;
   valueEn: string;
   valueAr: string;
+  isFilterable?: boolean;
+  /** True when TextValue holds a hex color for a swatch. */
+  isColor?: boolean;
+  /** Safe `#RGB` / `#RRGGBB` (+ optional alpha) from TextValue when `isColor` is set. */
+  color?: string;
 }
 
 export type ProductDetailInfoTab = 'description' | 'howToUse' | 'specifications' | 'shipping';
@@ -34,6 +39,7 @@ export interface ProductDetailVariant {
   isAvailable: boolean;
   stockQuantity: number;
   offers?: PublicOfferBadge[];
+  specifications: ProductDetailSpec[];
 }
 
 export interface ProductDetail {

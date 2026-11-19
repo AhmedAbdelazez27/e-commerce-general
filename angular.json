@@ -81,6 +81,7 @@
             "stage": {
               "outputPath": "dist/stage",
               "optimization": true,
+              "outputHashing": "all",
               "extractLicenses": true,
               "sourceMap": true,
               "fileReplacements": [

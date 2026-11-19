@@ -128,24 +128,52 @@
             {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
           </div>
 
-          @if (requiresModel(p.stock)) {
+          @if (variants().length) {
             <div class="product-detail-main__variants">
               <span class="product-detail-main__quantity-label">{{
-                'PRODUCT_DETAIL.VARIANT' | translate
+                variantGroupLabel() || ('PRODUCT_DETAIL.VARIANT' | translate)
               }}</span>
               <div class="product-detail-main__variant-list" role="listbox">
-                @for (variant of variants(); track variant.id) {
-                  <button
-                    type="button"
-                    class="btn btn-sm"
-                    role="option"
-                    [class.btn-primary]="p.selectedVariantId === variant.id"
-                    [class.btn-outline-secondary]="p.selectedVariantId !== variant.id"
-                    [attr.aria-selected]="p.selectedVariantId === variant.id"
-                    (click)="onVariantSelect(variant.id)"
-                  >
-                    {{ variant.name }}
-                  </button>
+                @for (option of variantOptions(); track option.key) {
+                  @if (option.swatchOnly && option.color) {
+                    <button
+                      type="button"
+                      class="product-detail-main__swatch-btn"
+                      role="option"
+                      [class.is-selected]="isVariantOptionSelected(option)"
+                      [attr.aria-selected]="isVariantOptionSelected(option)"
+                      [attr.aria-label]="option.label"
+                      (click)="onVariantOptionSelect(option)"
+                    >
+                      <span
+                        class="product-detail-main__swatch"
+                        [style.background-color]="option.color"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="btn btn-sm product-detail-main__variant-btn"
+                      role="option"
+                      [class.btn-primary]="isVariantOptionSelected(option)"
+                      [class.btn-outline-secondary]="!isVariantOptionSelected(option)"
+                      [attr.aria-selected]="isVariantOptionSelected(option)"
+                      [attr.aria-label]="option.label"
+                      (click)="onVariantOptionSelect(option)"
+                    >
+                      @if (option.color) {
+                        <span
+                          class="product-detail-main__swatch"
+                          [style.background-color]="option.color"
+                          aria-hidden="true"
+                        ></span>
+                      }
+                      @if (option.text) {
+                        <span class="product-detail-main__variant-text">{{ option.text }}</span>
+                      }
+                    </button>
+                  }
                 }
               </div>
             </div>

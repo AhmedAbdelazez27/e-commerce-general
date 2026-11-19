@@ -20,23 +20,7 @@
         }
       </a>
 
-    <!-- Navbar search — disabled for now; re-enable when product search is ready
-    <form class="store-header__search store-header__search--inline" (submit)="submitSearch($event)" role="search">
-      <div class="store-header__search-wrap">
-        <input
-          type="search"
-          class="store-header__search-input"
-          name="q"
-          [(ngModel)]="searchQuery"
-          [placeholder]="header.searchPlaceholderKey | translate"
-          autocomplete="off"
-        />
-        <button type="submit" class="store-header__search-btn" [attr.aria-label]="'LAYOUT.HEADER.SEARCH' | translate">
-          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        </button>
-      </div>
-    </form>
-    -->
+    <app-store-search variant="inline" />
 
       <div class="store-header__actions">
         <div class="store-header__lang-group">
@@ -148,23 +132,7 @@
     </div>
   </div>
 
-  <!-- Tablet search — disabled for now
   <div class="ds-container store-header__tablet-search">
-    <form class="store-header__search" (submit)="submitSearch($event)" role="search">
-      <div class="store-header__search-wrap">
-        <input
-          type="search"
-          class="store-header__search-input"
-          name="q-tablet"
-          [(ngModel)]="searchQuery"
-          [placeholder]="header.searchPlaceholderKey | translate"
-          autocomplete="off"
-        />
-        <button type="submit" class="store-header__search-btn" [attr.aria-label]="'LAYOUT.HEADER.SEARCH' | translate">
-          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        </button>
-      </div>
-    </form>
+    <app-store-search variant="bar" />
   </div>
-  -->
 </header>

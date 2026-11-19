@@ -14,7 +14,7 @@ type TenantAvailabilityResult = {
 
 const STORAGE_TENANCY = 'tenancy_name';
 const STORAGE_TENANT_ID = 'tenant_id';
-const LOCALHOST_DEFAULT_TENANCY = 'Muhtaseb'; //compassint
+const LOCALHOST_DEFAULT_TENANCY = 'compassint'; //compassint  Muhtaseb
 
 /** ABP TenantAvailabilityState.Available */
 const TENANT_STATE_AVAILABLE = 1;
@@ -28,7 +28,7 @@ export class TenantService {
   readonly tenantId = signal<number | null>(null);
 
   async initFromHost(): Promise<void> {
-    const tenancy = this.detectTenancyName(window.location.hostname);
+    const tenancy = this.env.tenancyName?.trim() || this.detectTenancyName(window.location.hostname);
     const fromStorage = this.readFromStorage();
 
     if (fromStorage && fromStorage.tenancyName === tenancy) {
@@ -72,8 +72,7 @@ export class TenantService {
   private detectTenancyName(hostname: string): string | null {
     const host = hostname.toLowerCase();
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
-      const fromEnv = typeof this.env.tenancyName === 'string' ? this.env.tenancyName.trim() : '';
-      return fromEnv || LOCALHOST_DEFAULT_TENANCY;
+      return LOCALHOST_DEFAULT_TENANCY;
     }
     if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
       return null;

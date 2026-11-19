@@ -31,5 +31,6 @@ export interface AppEnvironment {
   /** Enable Firebase Cloud Messaging push notifications. */
   enablePushNotifications?: boolean;
   firebase?: FirebaseEnvironmentConfig;
-  tenancyName?:any
+  /** Override hostname-based tenant selection for a dedicated storefront. */
+  tenancyName?: string;
 }

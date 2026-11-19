@@ -261,6 +261,9 @@ html[dir='rtl'] {
 
 .store-header__search--inline {
   display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-inline: 0;
 }
 
 .store-header__tablet-search {
@@ -311,10 +314,53 @@ html[dir='rtl'] {
   white-space: nowrap;
 }
 
+.store-header__search,
+.store-drawer__search {
+  position: relative;
+}
+
 .store-header__search {
   max-width: 36rem;
   width: 100%;
   margin-inline: auto;
+}
+
+app-store-search form {
+  width: 100%;
+}
+
+.store-search__list {
+  position: absolute;
+  z-index: 30;
+  inset-inline: 0;
+  top: calc(100% + 0.35rem);
+  margin: 0;
+  padding: var(--ds-space-1) 0;
+  list-style: none;
+  background: var(--ds-color-background-elevated);
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-md);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  max-height: 18rem;
+  overflow: auto;
+}
+
+.store-search__status {
+  display: flex;
+  justify-content: center;
+  padding: var(--ds-space-3);
+  color: var(--portal-primary);
+}
+
+.store-search__option {
+  padding: var(--ds-space-2) var(--ds-space-4);
+  color: var(--portal-text);
+  cursor: pointer;
+
+  &.is-active,
+  &:hover {
+    background: var(--ds-color-background-subtle);
+  }
 }
 
 .store-header__search-wrap {

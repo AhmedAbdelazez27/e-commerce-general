@@ -29,6 +29,7 @@ export class ApiEndpoints {
     productTypes: '/api/services/app/EcPublicCatalog/GetProductTypes',
     productFilters: '/api/services/app/EcPublicCatalog/GetProductFilters',
     searchProducts: '/api/services/app/EcPublicCatalog/SearchProducts',
+    searchSuggestions: '/api/services/app/EcPublicCatalog/GetSearchSuggestions',
     productDetails: '/api/services/app/EcPublicCatalog/GetProductDetails',
     productShareInfo: '/api/services/app/EcPublicCatalog/GetProductShareInfo',
     productVariants: '/api/services/app/EcPublicCatalog/GetProductVariants',

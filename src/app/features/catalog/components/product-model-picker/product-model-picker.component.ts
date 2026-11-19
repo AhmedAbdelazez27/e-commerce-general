@@ -26,6 +26,7 @@ import { stockStatus, validQuantity } from '../../../../shared/utils/product-sto
 import { ProductDetail, ProductDetailVariant } from '../../models/product-detail.model';
 import { ProductDetailService } from '../../services/product-detail.service';
 import { pickProductDetailPosterUrl } from '../../utils/catalog-media.util';
+import { variantOptionParts, type VariantOptionPart } from '../../utils/product-detail.util';
 
 @Component({
   selector: 'app-product-model-picker',
@@ -54,6 +55,10 @@ export class ProductModelPickerComponent implements OnInit {
   readonly name = computed(() =>
     this.language.currentLang() === 'ar' ? this.product()?.nameAr : this.product()?.nameEn,
   );
+
+  optionParts(variant: ProductDetailVariant): VariantOptionPart[] {
+    return variantOptionParts(variant, this.language.currentLang());
+  }
   readonly image = computed(() => pickProductDetailPosterUrl(this.product()?.images ?? []));
   readonly canAdd = computed(() => {
     const p = this.product();

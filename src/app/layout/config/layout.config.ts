@@ -39,7 +39,7 @@ export const LAYOUT_CONFIG: StoreLayoutConfig = {
     ],
   },
   header: {
-    searchPlaceholderKey: 'LAYOUT.SEARCH_PLACEHOLDER',
+    searchPlaceholderKey: 'LAYOUT.HEADER.SEARCH_PLACEHOLDER',
     shopRoute: '/shop',
     wishlistRoute: '/wishlist',
     cartRoute: '/cart',

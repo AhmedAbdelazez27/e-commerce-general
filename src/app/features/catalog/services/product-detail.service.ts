@@ -5,7 +5,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { requiresModel } from '../../../shared/utils/product-stock.util';
 import { CatalogListingProduct } from '../models/catalog-listing.model';
-import { ProductDetailLoadRef } from '../models/catalog-public-product.model';
+import { ProductDetailLoadRef, PublicProductVariantDto } from '../models/catalog-public-product.model';
 import { ProductDetail, ProductDetailVariant } from '../models/product-detail.model';
 import { ProductDetailApiService } from './product-detail-api.service';
 import {
@@ -15,6 +15,7 @@ import {
   mapProductVariants,
   mapPublicProductDetailsToProductDetail,
   mapRelatedProductsToListingProducts,
+  resolveVariantGalleryImages,
 } from '../utils/product-detail-api.mapper';
 
 export interface ProductDetailResult {
@@ -23,6 +24,27 @@ export interface ProductDetailResult {
   related: CatalogListingProduct[];
 }
 const EMPTY_RESULT: ProductDetailResult = { product: null, variants: [], related: [] };
+
+function withEmbeddedSpecifications(
+  remote: PublicProductVariantDto[],
+  embedded: PublicProductVariantDto[],
+): PublicProductVariantDto[] {
+  if (!remote.length) return embedded;
+  const embeddedById = new Map(embedded.map((variant) => [variant.id, variant]));
+  return remote.map((variant) => {
+    const fallback = embeddedById.get(variant.id);
+    if (!fallback?.specifications?.length) return variant;
+    const remoteSpecs = variant.specifications ?? [];
+    // Prefer the richer payload — GetProductDetails often carries every color swatch.
+    if (fallback.specifications.length > remoteSpecs.length) {
+      return { ...variant, specifications: fallback.specifications };
+    }
+    if (!remoteSpecs.length) {
+      return { ...variant, specifications: fallback.specifications };
+    }
+    return variant;
+  });
+}
 
 @Injectable({ providedIn: 'root' })
 export class ProductDetailService {
@@ -40,9 +62,14 @@ export class ProductDetailService {
           if (!details) return of(EMPTY_RESULT);
           const productId = details.productId || details.id;
           const modelControlled = requiresModel(details.stock);
+          const embeddedVariants = details.variants ?? [];
+          const shouldLoadVariants =
+            modelControlled || details.hasVariants === true || embeddedVariants.length > 0;
           return forkJoin({
-            variants: modelControlled
-              ? this.api.getProductVariants(productId, lang, currency)
+            variants: shouldLoadVariants
+              ? this.api
+                  .getProductVariants(productId, lang, currency)
+                  .pipe(map((remote) => withEmbeddedSpecifications(remote, embeddedVariants)))
               : of([]),
             images: this.api.getProductImages(productId),
             specifications: this.api.getProductSpecifications(productId, lang),
@@ -71,7 +98,8 @@ export class ProductDetailService {
               product.priceQuantity = 1;
               product.productVariantId = null;
               product.selectedVariantId = null;
-              product.hasVariants = modelControlled;
+              const variants = mapProductVariants(result.variants);
+              product.hasVariants = modelControlled || variants.length > 0;
               if (result.availability) {
                 product.stock = result.availability.stock;
                 product.stockQuantity = result.availability.stock?.available ?? 0;
@@ -80,7 +108,7 @@ export class ProductDetailService {
               if (!modelControlled && !result.price) product.isAvailable = false;
               return {
                 product,
-                variants: mapProductVariants(result.variants),
+                variants,
                 related: mapRelatedProductsToListingProducts(
                   result.related,
                   this.language.currentLang(),
@@ -119,9 +147,12 @@ export class ProductDetailService {
           productVariantId: variant.id,
           variantName: variant.name,
           sku: variant.sku,
-          images: result.images.length
-            ? mapProductImages(result.images, product.nameEn, product.nameAr)
-            : (product.baseImages ?? []),
+          images: resolveVariantGalleryImages(
+            result.images,
+            product.baseImages ?? [],
+            product.nameEn,
+            product.nameAr,
+          ),
           specifications: mapProductSpecifications(result.specifications),
           stock: result.availability.stock,
           stockQuantity: result.availability.stock?.available ?? 0,
