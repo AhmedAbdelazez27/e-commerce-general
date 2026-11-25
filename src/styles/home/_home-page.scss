@@ -34,6 +34,16 @@
   letter-spacing: var(--ds-letter-spacing-tight);
 }
 
+.home-section-head__eyebrow {
+  display: block;
+  margin-bottom: var(--ds-space-2);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--portal-primary);
+}
+
 .home-section-head__subtitle {
   margin: var(--ds-space-2) 0 0;
   font-size: var(--ds-font-size-sm);
@@ -440,7 +450,8 @@ html[dir='rtl'] {
   .home-curated__eyebrow,
   .home-curated__card-eyebrow,
   .home-curated__card-cta,
-  .home-hero__secondary-cta {
+  .home-hero__secondary-cta,
+  .home-section-head__eyebrow {
     letter-spacing: 0;
     text-transform: none;
   }

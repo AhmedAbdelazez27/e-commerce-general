@@ -64,7 +64,20 @@ export interface PublicProductVariantDto {
   offers?: PublicOfferBadge[];
 }
 
+export interface ProductShadeOption {
+  productId: number;
+  sku?: string;
+  nameAr?: string;
+  nameEn?: string;
+  colorHex?: string;
+  shade?: string;
+}
+
 export interface PublicProductDetailsDto {
+  productFamily?: string;
+  colorHex?: string;
+  shade?: string;
+  shadeOptions?: ProductShadeOption[];
   stock?: ProductStock;
   id: number;
   productId?: number;

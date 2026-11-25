@@ -1,5 +1,8 @@
 <div class="home-section-head">
   <div class="home-section-head__text">
+    @if (eyebrowKey()) {
+      <span class="home-section-head__eyebrow">{{ eyebrowKey()! | translate }}</span>
+    }
     <h2 class="home-section-head__title">{{ titleKey() | translate }}</h2>
     @if (subtitleKey()) {
       <p class="home-section-head__subtitle">{{ subtitleKey()! | translate }}</p>

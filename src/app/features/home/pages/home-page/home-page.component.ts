@@ -10,8 +10,11 @@ import { HomeCategoryShortcutsComponent } from '../../components/home-category-s
 import { HomeHeroComponent } from '../../components/home-hero/home-hero.component';
 // Special offers section hidden per request
 // import { HomeOffersComponent } from '../../components/home-offers/home-offers.component';
+import { HomeBestSellersComponent } from '../../components/home-best-sellers/home-best-sellers.component';
+import { HomeNewArrivalsComponent } from '../../components/home-new-arrivals/home-new-arrivals.component';
 import { HomeProductSectionComponent } from '../../components/home-product-section/home-product-section.component';
 import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/home-trust-badges.component';
+import { HomeOffersComponent } from '../../components/home-offers/home-offers.component';
 
 @Component({
   selector: 'app-home-page',
@@ -19,8 +22,10 @@ import { HomeTrustBadgesComponent } from '../../components/home-trust-badges/hom
     HomeHeroComponent,
     HomeCuratedCollectionsComponent,
     HomeCategoryShortcutsComponent,
+    HomeNewArrivalsComponent,
+    HomeBestSellersComponent,
     HomeProductSectionComponent,
-    // HomeOffersComponent,
+    HomeOffersComponent,
     HomeBrandsComponent,
     HomeTrustBadgesComponent,
   ],
@@ -34,6 +39,17 @@ export class HomePageComponent {
   readonly trustBadges = computed(() =>
     this.config().trustBadges.filter(
       (badge) => badge.id !== 'returns' || this.portal.enableReturns(),
+    ),
+  );
+  readonly bestSellersSection = computed(() =>
+    this.config().productSections.find((section) => section.id === 'best-sellers'),
+  );
+  readonly newArrivalsSection = computed(() =>
+    this.config().productSections.find((section) => section.id === 'new-arrivals'),
+  );
+  readonly otherProductSections = computed(() =>
+    this.config().productSections.filter(
+      (section) => section.id !== 'best-sellers' && section.id !== 'new-arrivals',
     ),
   );
 

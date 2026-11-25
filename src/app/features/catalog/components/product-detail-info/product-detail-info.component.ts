@@ -1,4 +1,6 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
+import { Component, SecurityContext, computed, effect, inject, input, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/services/language.service';
@@ -10,11 +12,10 @@ import { localizedHowToUse } from '../../utils/product-detail.util';
 const DESCRIPTION_PREVIEW_CHARS = 200;
 
 function previewDescription(text: string, limit: number): string {
-  const plain = text.replace(/\s+/g, ' ').trim();
-  if (plain.length <= limit) {
-    return plain;
+  if (text.length <= limit) {
+    return text;
   }
-  const window = plain.slice(0, limit);
+  const window = text.slice(0, limit);
   const breakAt = window.lastIndexOf(' ');
   const cut = (breakAt >= Math.floor(limit * 0.7) ? window.slice(0, breakAt) : window).replace(
     /[\s,،.;:!?-]+$/u,
@@ -25,12 +26,14 @@ function previewDescription(text: string, limit: number): string {
 
 @Component({
   selector: 'app-product-detail-info',
-  imports: [TranslateModule],
+  imports: [NgTemplateOutlet, TranslateModule],
   templateUrl: './product-detail-info.component.html',
 })
 export class ProductDetailInfoComponent {
   private readonly language = inject(LanguageService);
   private readonly portal = inject(PortalConfigService);
+  private readonly document = inject(DOCUMENT);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly enableReturns = this.portal.enableReturns;
 
@@ -65,23 +68,36 @@ export class ProductDetailInfoComponent {
     return current === tab;
   }
 
-  description(): string {
-    const p = this.product();
-    return this.language.currentLang() === 'ar' ? p.descriptionAr : p.descriptionEn;
-  }
+  private readonly descriptionContent = computed(() => {
+    const product = this.product();
+    const value = this.language.currentLang() === 'ar' ? product.descriptionAr : product.descriptionEn;
+    if (!/<\/?[a-z][^<>]*>|<!--/i.test(value)) {
+      const text = value.replace(/\s+/g, ' ').trim();
+      return { html: null, text, hasContent: text.length > 0 };
+    }
 
-  hasDescription(): boolean {
-    return this.description().trim().length > 0;
-  }
+    const html = this.sanitizer.sanitize(SecurityContext.HTML, value) ?? '';
+    const preview = this.document.createElement('template');
+    preview.innerHTML = html;
+    preview.content.querySelectorAll('br, p, div, li, blockquote, h1, h2, h3, h4, h5, h6, td, th, pre')
+      .forEach((block) => block.after(' '));
 
-  descriptionPreview(): string {
-    const full = this.description();
-    return this.descriptionExpanded() ? full.replace(/\s+/g, ' ').trim() : previewDescription(full, DESCRIPTION_PREVIEW_CHARS);
-  }
+    const text = (preview.content.textContent ?? '').replace(/\s+/g, ' ').trim();
+    return { html, text, hasContent: text.length > 0 || preview.content.querySelector('img[src]') !== null };
+  });
 
-  canExpandDescription(): boolean {
-    return this.description().replace(/\s+/g, ' ').trim().length > DESCRIPTION_PREVIEW_CHARS;
-  }
+  readonly hasDescription = computed(() => this.descriptionContent().hasContent);
+
+  readonly canExpandDescription = computed(() => this.descriptionContent().text.length > DESCRIPTION_PREVIEW_CHARS);
+
+  readonly descriptionHtml = computed(() =>
+    this.descriptionExpanded() || !this.canExpandDescription() ? this.descriptionContent().html : null,
+  );
+
+  readonly descriptionPreview = computed(() => {
+    const text = this.descriptionContent().text;
+    return this.descriptionExpanded() ? text : previewDescription(text, DESCRIPTION_PREVIEW_CHARS);
+  });
 
   toggleDescription(): void {
     this.descriptionExpanded.update((open) => !open);

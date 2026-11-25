@@ -1,4 +1,5 @@
 import type { ProductStock } from '../../../shared/models/product-stock.model';
+import type { ProductShadeOption } from './catalog-public-product.model';
 import { StorefrontMediaType } from '../../../shared/utils/storefront-media.util';
 import type { PublicOfferBadge } from '../../../shared/models/promotion.model';
 
@@ -43,6 +44,8 @@ export interface ProductDetailVariant {
 }
 
 export interface ProductDetail {
+  productFamily?: string;
+  shadeOptions?: ProductShadeOption[];
   variantName?: string;
   baseImages?: ProductDetailImage[];
   priceQuantity?: number;

@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class SectionHeaderComponent {
   readonly titleKey = input.required<string>();
+  readonly eyebrowKey = input<string>();
   readonly subtitleKey = input<string>();
   readonly viewAllRoute = input<string | string[]>();
   readonly viewAllQuery = input<Record<string, string>>();

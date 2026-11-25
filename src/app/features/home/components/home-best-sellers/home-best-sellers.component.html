@@ -1,0 +1,52 @@
+<section class="home-section home-best-sellers" aria-labelledby="home-best-sellers-title">
+  <app-section-header
+    [eyebrowKey]="section().eyebrowKey"
+    [titleKey]="section().titleKey"
+    [subtitleKey]="section().subtitleKey"
+    [viewAllRoute]="section().viewAllRoute"
+    [viewAllQuery]="section().viewAllQuery"
+    [viewAllLabelKey]="section().viewAllLabelKey ?? 'HOME.VIEW_ALL'"
+  />
+
+  @if (loading()) {
+    <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (!hasProducts()) {
+    <p class="text-muted mb-0">{{ 'HOME.PRODUCTS.EMPTY' | translate }}</p>
+  } @else {
+    <div class="home-best-sellers__slider">
+      @if (sliderOverflow()) {
+        <button
+          type="button"
+          class="home-best-sellers__nav home-best-sellers__nav--prev"
+          (click)="slide(-1)"
+          [disabled]="!canPrev()"
+          [attr.aria-label]="'HOME.HERO.PREV' | translate"
+        >
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="home-best-sellers__nav home-best-sellers__nav--next"
+          (click)="slide(1)"
+          [disabled]="!canNext()"
+          [attr.aria-label]="'HOME.HERO.NEXT' | translate"
+        >
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      }
+      <div class="home-best-sellers__rail" role="list" #rail (scroll)="syncRail()">
+        @for (product of cardProducts(); track product.id) {
+          <div class="home-best-sellers__item" role="listitem">
+            <app-product-card
+              [product]="product"
+              (productClick)="onProductClick($event)"
+              (addToCart)="onAddToCart($event)"
+              (addToWishlist)="onAddToWishlist($event)"
+              (quickView)="onQuickView($event)"
+            />
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

@@ -23,6 +23,31 @@ import {
 } from './product-detail-api.mapper';
 
 describe('product-detail-api.mapper stock', () => {
+  it('keeps shade codes and item IDs when reading a product family', () => {
+    const dto = normalizePublicProductDetailsDto({
+      Id: 509,
+      ProductFamily: 'Velvet Foundation',
+      ShadeOptions: [
+        { ProductId: 509, Shade: '03', ColorHex: '#E0C188' },
+        { productId: 510, shade: '07', colorHex: 'red' },
+        { ProductId: 0, Shade: 'invalid' },
+      ],
+    });
+    const product = mapPublicProductDetailsToProductDetail(dto!);
+
+    expect(product.productFamily).toBe('Velvet Foundation');
+    expect(product.shadeOptions?.map(({ productId, shade, colorHex }) => (
+      { productId, shade, colorHex }
+    ))).toEqual([
+      { productId: 509, shade: '03', colorHex: '#E0C188' },
+      { productId: 510, shade: '07', colorHex: undefined },
+    ]);
+    expect(product.productVariantId).toBeNull();
+
+    const standalone = normalizePublicProductDetailsDto({ id: 501, shade: '04' });
+    expect(standalone?.shadeOptions).toMatchObject([{ productId: 501, shade: '04' }]);
+  });
+
   it('uses calculated stock rather than the legacy model quantity', () => {
     const variants = mapProductVariants([
       {

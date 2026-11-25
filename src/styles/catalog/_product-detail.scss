@@ -480,6 +480,19 @@
   color: var(--portal-text-secondary);
 }
 
+.product-detail-info__rich-text {
+  overflow-wrap: anywhere;
+
+  > :last-child {
+    margin-block-end: 0;
+  }
+
+  img {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+}
+
 .product-detail-info__more {
   display: inline-flex;
   margin-top: var(--ds-space-2);

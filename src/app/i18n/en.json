@@ -631,12 +631,15 @@
       "SUBTITLE": "Trending picks customers love right now"
     },
     "BEST_SELLERS": {
+      "EYEBROW": "Customer favorites",
       "TITLE": "Best sellers",
-      "SUBTITLE": "Top-rated products flying off the shelves"
+      "SUBTITLE": "Our most loved beauty essentials.",
+      "VIEW_ALL": "See all best sellers"
     },
     "NEW_ARRIVALS": {
       "TITLE": "New arrivals",
-      "SUBTITLE": "Fresh additions to explore today"
+      "SUBTITLE": "Be the first to discover our latest beauty finds.",
+      "VIEW_ALL": "See all new arrivals"
     },
     "PRODUCTS": {
       "EMPTY": "No products to show right now."
@@ -895,6 +898,7 @@
     "SOLD_OUT": "Sold out",
     "SKU": "SKU",
     "VARIANT": "Model",
+    "SHADE": "Shade",
     "QUANTITY": "Quantity",
     "QTY_INCREASE": "Increase quantity",
     "QTY_DECREASE": "Decrease quantity",

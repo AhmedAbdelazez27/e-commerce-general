@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .home-section-head {
+  align-items: flex-end;
+  margin-bottom: var(--ds-space-5);
+}
+
+:host ::ng-deep .home-section-head__title {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:host-context(html[dir='rtl']) ::ng-deep .home-section-head__title {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.home-new-arrivals__slider {
+  position: relative;
+  isolation: isolate;
+  padding-inline: 3.5rem;
+}
+
+.home-new-arrivals__rail {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--ds-space-4);
+  overflow-x: auto;
+  padding-bottom: var(--ds-space-2);
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.home-new-arrivals__item {
+  flex: 0 0 calc((100% - var(--ds-space-4)) / 2.2);
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+.home-new-arrivals__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--ds-color-border);
+  border-radius: var(--ds-radius-full, 50%);
+  background: var(--ds-color-background-elevated, #fff);
+  color: var(--portal-text);
+  box-shadow: var(--ds-shadow-sm, 0 2px 8px rgb(0 0 0 / 12%));
+  transform: translateY(-50%);
+  cursor: pointer;
+  pointer-events: auto;
+
+  &:hover:not(:disabled) {
+    color: var(--portal-primary);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--portal-primary);
+    outline-offset: 2px;
+  }
+}
+
+.home-new-arrivals__nav--prev {
+  inset-inline-start: 0;
+}
+
+.home-new-arrivals__nav--next {
+  inset-inline-end: 0;
+}
+
+:host-context(html[dir='rtl']) .home-new-arrivals__nav i {
+  transform: scaleX(-1);
+}
+
+@media (min-width: 768px) {
+  .home-new-arrivals__item {
+    flex-basis: calc((100% - 2 * var(--ds-space-4)) / 3.2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-new-arrivals__item {
+    flex-basis: calc((100% - 3 * var(--ds-space-4)) / 4.25);
+  }
+}
+
+@media (min-width: 1440px) {
+  .home-new-arrivals__item {
+    flex-basis: calc((100% - 4 * var(--ds-space-4)) / 5.25);
+  }
+}

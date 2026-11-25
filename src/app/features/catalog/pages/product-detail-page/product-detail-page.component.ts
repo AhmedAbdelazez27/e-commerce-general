@@ -1,3 +1,4 @@
+import type { ProductShadeOption } from '../../models/catalog-public-product.model';
 import {
   requiresModel,
   stockStatus,
@@ -246,6 +247,13 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   productTypeQueryParams(): Record<string, string> | undefined {
     const p = this.product();
     return p?.productTypeId ? { productType: p.productTypeId } : undefined;
+  }
+
+  shadeLabel(option: ProductShadeOption): string {
+    const name = this.language.currentLang() === 'ar'
+      ? option.nameAr || option.nameEn
+      : option.nameEn || option.nameAr;
+    return option.shade || name || option.sku || String(option.productId);
   }
 
   variantGroupLabel(): string {

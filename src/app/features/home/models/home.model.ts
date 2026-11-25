@@ -69,8 +69,11 @@ export interface HomeProductSectionConfig {
   id: string;
   titleKey: string;
   subtitleKey?: string;
+  /** Optional kicker above the title. Each section styles it on its own. */
+  eyebrowKey?: string;
   viewAllRoute: string | string[];
   viewAllQuery?: Record<string, string>;
+  viewAllLabelKey?: string;
   layout: 'grid' | 'scroll';
   /** When set, products are loaded via EcPublicCatalog SearchProducts. */
   searchFilter?: HomeProductSectionSearchFilter;

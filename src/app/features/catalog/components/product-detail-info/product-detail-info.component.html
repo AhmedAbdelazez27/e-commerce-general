@@ -17,18 +17,7 @@
   <div class="product-detail-info__panels">
     @if (isActive('description')) {
       <div class="product-detail-info__panel" role="tabpanel">
-        @if (hasDescription()) {
-          <p class="product-detail-info__text">{{ descriptionPreview() }}</p>
-          @if (canExpandDescription()) {
-            <button type="button" class="product-detail-info__more" (click)="toggleDescription()">
-              {{ (descriptionExpanded() ? 'PRODUCT_DETAIL.READ_LESS' : 'PRODUCT_DETAIL.READ_MORE') | translate }}
-            </button>
-          }
-        } @else {
-          <p class="product-detail-info__text product-detail-info__text--muted">
-            {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
-          </p>
-        }
+        <ng-container [ngTemplateOutlet]="descriptionContent" />
       </div>
     }
 
@@ -68,18 +57,7 @@
   <div class="product-detail-info__accordion">
     <details class="product-detail-info__details" open>
       <summary>{{ 'PRODUCT_DETAIL.TAB.description' | translate }}</summary>
-      @if (hasDescription()) {
-        <p class="product-detail-info__text">{{ descriptionPreview() }}</p>
-        @if (canExpandDescription()) {
-          <button type="button" class="product-detail-info__more" (click)="toggleDescription()">
-            {{ (descriptionExpanded() ? 'PRODUCT_DETAIL.READ_LESS' : 'PRODUCT_DETAIL.READ_MORE') | translate }}
-          </button>
-        }
-      } @else {
-        <p class="product-detail-info__text product-detail-info__text--muted">
-          {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
-        </p>
-      }
+      <ng-container [ngTemplateOutlet]="descriptionContent" />
     </details>
     @if (howToUseText()) {
       <details class="product-detail-info__details">
@@ -111,3 +89,22 @@
     </details>
   </div>
 </section>
+
+<ng-template #descriptionContent>
+  @if (hasDescription()) {
+    @if (descriptionHtml(); as html) {
+      <div class="product-detail-info__text product-detail-info__rich-text" [innerHTML]="html"></div>
+    } @else {
+      <p class="product-detail-info__text">{{ descriptionPreview() }}</p>
+    }
+    @if (canExpandDescription()) {
+      <button type="button" class="product-detail-info__more" (click)="toggleDescription()">
+        {{ (descriptionExpanded() ? 'PRODUCT_DETAIL.READ_LESS' : 'PRODUCT_DETAIL.READ_MORE') | translate }}
+      </button>
+    }
+  } @else {
+    <p class="product-detail-info__text product-detail-info__text--muted">
+      {{ 'PRODUCT_DETAIL.NO_DESCRIPTION' | translate }}
+    </p>
+  }
+</ng-template>

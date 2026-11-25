@@ -48,14 +48,15 @@ export class HomeProductSectionComponent implements OnInit {
     this.usesApi() ? this.apiProducts() : this.products(),
   );
   readonly hasProducts = computed(() => this.displayProducts().length > 0);
-
   readonly cardProducts = computed(() =>
-    this.displayProducts().map((p) => mapStorefrontProductToCardData(p)),
+    this.displayProducts().map((product) => mapStorefrontProductToCardData(product)),
   );
 
   ngOnInit(): void {
     this.loadFromApi();
-    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadFromApi());
+    this.translate.onLangChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadFromApi());
     this.currency.currencyChanged$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadFromApi());
@@ -84,10 +85,9 @@ export class HomeProductSectionComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const lang = this.language.apiCulture();
     const body = buildHomeProductSearchRequest(
       filter,
-      lang,
+      this.language.apiCulture(),
       this.currency.selection(),
       this.section().maxItems,
     );

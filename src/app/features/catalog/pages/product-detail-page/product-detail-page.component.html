@@ -67,9 +67,11 @@
             </p>
           }
 
-          <h1 class="product-detail-main__title">{{ displayName() }}</h1>
+          <h1 class="product-detail-main__title">{{ p.productFamily || displayName() }}</h1>
 
-          <p class="product-detail-main__sku">{{ p.variantName }}</p>
+          @if (p.productFamily || p.variantName) {
+            <p class="product-detail-main__sku">{{ p.productFamily ? displayName() : p.variantName }}</p>
+          }
           <app-offer-badge-list [offers]="p.offers ?? []" [maxVisible]="4" />
 
           @if (p.rating != null || p.reviewCount != null) {
@@ -128,7 +130,27 @@
             {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
           </div>
 
-          @if (variants().length) {
+          @if (p.shadeOptions?.length) {
+            <div class="product-detail-main__variants">
+              <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.SHADE' | translate }}</span>
+              <nav class="product-detail-main__variant-list" [attr.aria-label]="'PRODUCT_DETAIL.SHADE' | translate">
+                @for (option of p.shadeOptions; track option.productId) {
+                  <a
+                    class="btn btn-sm product-detail-main__variant-btn"
+                    [routerLink]="['/shop', option.productId]"
+                    [class.btn-primary]="option.productId === p.id"
+                    [class.btn-outline-secondary]="option.productId !== p.id"
+                    [attr.aria-current]="option.productId === p.id ? 'page' : null"
+                  >
+                    @if (option.colorHex) {
+                      <span class="product-detail-main__swatch" [style.background-color]="option.colorHex" aria-hidden="true"></span>
+                    }
+                    <span class="product-detail-main__variant-text">{{ shadeLabel(option) }}</span>
+                  </a>
+                }
+              </nav>
+            </div>
+          } @else if (variants().length) {
             <div class="product-detail-main__variants">
               <span class="product-detail-main__quantity-label">{{
                 variantGroupLabel() || ('PRODUCT_DETAIL.VARIANT' | translate)

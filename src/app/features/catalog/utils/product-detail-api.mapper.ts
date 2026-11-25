@@ -13,6 +13,7 @@ import {
   PublicProductImageDto,
   PublicProductSpecificationDto,
   PublicProductVariantDto,
+  ProductShadeOption,
   PublicRelatedProductDto,
 } from '../models/catalog-public-product.model';
 import {
@@ -84,6 +85,28 @@ function normalizeProductType(raw: unknown): PublicProductDetailsDto['productTyp
   };
 }
 
+function normalizeShadeOptions(raw: unknown): ProductShadeOption[] {
+  if (!Array.isArray(raw)) return [];
+
+  return raw.flatMap((entry: unknown) => {
+    if (!entry || typeof entry !== 'object') return [];
+
+    const row = entry as JsonRecord;
+    const productId = readNumberField(row, 'productId', 'ProductId');
+    if (productId == null || !Number.isSafeInteger(productId) || productId <= 0) return [];
+
+    const hex = readStringField(row, 'colorHex', 'ColorHex');
+    return [{
+      productId,
+      sku: readStringField(row, 'sku', 'Sku', 'SKU'),
+      nameAr: readStringField(row, 'nameAr', 'NameAr'),
+      nameEn: readStringField(row, 'nameEn', 'NameEn'),
+      colorHex: hex && /^#[\da-f]{6}$/i.test(hex) ? hex : undefined,
+      shade: readStringField(row, 'shade', 'Shade'),
+    }];
+  });
+}
+
 /** Normalizes ABP GetProductDetails payload (camelCase or PascalCase). */
 export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDetailsDto | null {
   if (raw == null || typeof raw !== 'object') {
@@ -98,6 +121,19 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
 
   const base = raw as PublicProductDetailsDto;
   const variantsRaw = o['variants'] ?? o['Variants'];
+  const shade = readStringField(o, 'shade', 'Shade');
+  const rawColor = readStringField(o, 'colorHex', 'ColorHex');
+  const colorHex = rawColor && /^#[\da-f]{6}$/i.test(rawColor) ? rawColor : undefined;
+  const shadeOptions = normalizeShadeOptions(o['shadeOptions'] ?? o['ShadeOptions']);
+  if (!shadeOptions.length && (colorHex || shade)) {
+    shadeOptions.push({
+      productId: readNumberField(o, 'productId', 'ProductId') ?? id,
+      colorHex,
+      shade,
+      nameAr: readStringField(o, 'nameAr', 'NameAr'),
+      nameEn: readStringField(o, 'nameEn', 'NameEn'),
+    });
+  }
   const price = normalizeSearchProductPrice(o['price'] ?? o['Price']) ?? base.price;
 
   return {
@@ -105,6 +141,10 @@ export function normalizePublicProductDetailsDto(raw: unknown): PublicProductDet
     stock: normalizeStock(o['stock'] ?? o['Stock']),
     id,
     productId: readNumberField(o, 'productId', 'ProductId') ?? base.productId ?? id,
+    productFamily: readStringField(o, 'productFamily', 'ProductFamily'),
+    colorHex,
+    shade,
+    shadeOptions,
     slug: readStringField(o, 'slug', 'Slug') ?? base.slug ?? null,
     sku: readStringField(o, 'sku', 'Sku', 'SKU') ?? base.sku,
     name: readStringField(o, 'name', 'Name') ?? base.name,
@@ -514,6 +554,8 @@ export function mapPublicProductDetailsToProductDetail(
 
   return {
     id: productId,
+    productFamily: dto.productFamily,
+    shadeOptions: dto.shadeOptions,
     stock: dto.stock,
     slug: dto.slug ?? undefined,
     nameEn,
