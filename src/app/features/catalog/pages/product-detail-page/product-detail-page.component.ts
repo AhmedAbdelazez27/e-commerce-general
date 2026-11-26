@@ -4,8 +4,9 @@ import {
   stockStatus,
   validQuantity,
 } from '../../../../shared/utils/product-stock.util';
-import { DecimalPipe } from '@angular/common';
+import { DOCUMENT, DecimalPipe } from '@angular/common';
 import { Component, DestroyRef, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -22,6 +23,7 @@ import { ProductCardData } from '../../../../shared/models/product-card.model';
 import { OfferBadgeListComponent } from '../../../../shared/components/offer-badge-list/offer-badge-list.component';
 import { ProductShareMenuComponent } from '../../../../shared/components/product-share-menu/product-share-menu.component';
 import { formatProductPrice } from '../../../../shared/utils/product-card.util';
+import { resolveRichTextContent, type RichTextContent } from '../../../../shared/utils/product-rich-text.util';
 import { CatalogBreadcrumbComponent } from '../../components/catalog-breadcrumb/catalog-breadcrumb.component';
 import { ProductDetailInfoComponent } from '../../components/product-detail-info/product-detail-info.component';
 import { ProductDetailRelatedComponent } from '../../components/product-detail-related/product-detail-related.component';
@@ -42,7 +44,6 @@ import {
   localizedBrandName,
   localizedProductName,
   localizedProductTypeName,
-  localizedShortDescription,
   mapProductDetailToCardData,
   variantGroupLabel as formatVariantGroupLabel,
   variantPickerOptions as formatVariantPickerOptions,
@@ -80,6 +81,8 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthTokenService);
   private readonly wishlistActions = inject(WishlistActionsService);
   private readonly toast = inject(ToastService);
+  private readonly document = inject(DOCUMENT);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly loadState = signal<ProductDetailLoadState>('idle');
   readonly product = signal<ProductDetail | null>(null);
@@ -234,9 +237,14 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     return p ? localizedProductTypeName(p, this.language.currentLang()) : '';
   }
 
-  shortDescription(): string {
+  shortDescription(): RichTextContent {
     const p = this.product();
-    return p ? localizedShortDescription(p, this.language.currentLang()) : '';
+    const value = !p
+      ? ''
+      : this.language.currentLang() === 'ar'
+        ? p.shortDescriptionAr
+        : p.shortDescriptionEn;
+    return resolveRichTextContent(value, this.sanitizer, this.document);
   }
 
   brandQueryParams(): Record<string, string> | undefined {

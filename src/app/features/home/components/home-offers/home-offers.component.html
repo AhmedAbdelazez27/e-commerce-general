@@ -1,33 +1,59 @@
-<section class="home-section" aria-labelledby="home-offers-title">
-  <app-section-header
-    titleKey="HOME.OFFERS.TITLE"
-    subtitleKey="HOME.OFFERS.SUBTITLE"
-    viewAllRoute="/shop"
-    [viewAllQuery]="{ sort: 'offers' }"
-  />
+<section class="home-section home-offers-slider" aria-labelledby="home-offers-title">
+  <header class="home-offers-slider__head">
+    <h2 id="home-offers-title" class="home-offers-slider__title">{{ 'HOME.OFFERS.TITLE' | translate }}</h2>
+    <p class="home-offers-slider__subtitle">{{ 'HOME.OFFERS.SUBTITLE' | translate }}</p>
+  </header>
 
-  <div class="home-offers">
-    @for (offer of offers(); track offer.id) {
-      <article class="home-offers__card home-offers__card--{{ offer.theme }}">
-        @if (offer.discountPercent) {
-          <span class="home-offers__discount">
-            @if (offer.discountLabelKey) {
-              {{ offer.discountLabelKey | translate: { percent: offer.discountPercent } }}
-            } @else {
-              -{{ offer.discountPercent }}%
-            }
-          </span>
-        }
-        <h3 class="home-offers__title">{{ offer.titleKey | translate }}</h3>
-        <p class="home-offers__text">{{ offer.subtitleKey | translate }}</p>
-        <a
-          class="home-offers__cta"
-          [routerLink]="offer.route"
-          [queryParams]="offer.queryParams"
-        >
-          {{ offer.ctaLabelKey | translate }}
-        </a>
-      </article>
+  <div class="home-offers-slider__slider" [class.home-offers-slider__slider--overflow]="sliderOverflow()">
+    @if (sliderOverflow()) {
+      <button
+        type="button"
+        class="home-offers-slider__nav home-offers-slider__nav--prev"
+        (click)="slide(-1)"
+        [disabled]="!canPrev()"
+        [attr.aria-label]="'HOME.HERO.PREV' | translate"
+      >
+        <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="home-offers-slider__nav home-offers-slider__nav--next"
+        (click)="slide(1)"
+        [disabled]="!canNext()"
+        [attr.aria-label]="'HOME.HERO.NEXT' | translate"
+      >
+        <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
     }
+    <div class="home-offers-slider__rail" role="list" #rail (scroll)="syncRail()">
+      @for (offer of offers(); track offer.id) {
+        <article class="home-offers-slider__item" role="listitem">
+          <a
+            class="home-offers-slider__card" style="position: relative; overflow: hidden;"
+            [class.home-offers-slider__card--primary]="offer.theme === 'primary'"
+            [class.home-offers-slider__card--dark]="offer.theme === 'dark'"
+            [routerLink]="offer.route"
+            [queryParams]="offer.queryParams"
+          >
+            @if (offer.discountPercent) {
+              <span class="home-offers-slider__discount" style="z-index: 1;">
+                @if (offer.discountLabelKey) {
+                  {{ offer.discountLabelKey | translate: { percent: offer.discountPercent } }}
+                } @else {
+                  -{{ offer.discountPercent }}%
+                }
+              </span>
+            }
+            <img class="offer-img" src="https://nissanerp.com/attachment/AppAttachments/ECommerce/HomeSliders/ECommerce-HomeSliders-8c1add68-855e-4664-b5e5-b6d8fb586a5a.png" alt="aaaaa" loading="lazy">
+            <h3 class="home-offers-slider__card-title" style="z-index: 1;">{{ offer.titleKey | translate }}</h3>
+            <p class="home-offers-slider__card-text" style="z-index: 1;">{{ offer.subtitleKey | translate }}</p>
+            <span class="home-offers-slider__cta" style="z-index: 1;">
+              {{ offer.ctaLabelKey | translate }}
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </span>
+          </a>
+        </article>
+      }
+    </div>
   </div>
 </section>

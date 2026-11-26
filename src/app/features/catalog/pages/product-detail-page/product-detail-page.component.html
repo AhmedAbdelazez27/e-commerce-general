@@ -1,271 +1,285 @@
 <div class="container">
   <div class="product-detail-page">
     @if (loadState() === 'loading') {
-      <div
-        class="product-detail-skeleton"
-        aria-busy="true"
-        [attr.aria-label]="'PRODUCT_DETAIL.LOADING' | translate"
-      >
-        <div class="product-detail-skeleton__breadcrumb"></div>
-        <div class="product-detail-skeleton__main">
-          <div class="product-detail-skeleton__gallery"></div>
-          <div class="product-detail-skeleton__info">
-            <div class="product-detail-skeleton__line product-detail-skeleton__line--lg"></div>
-            <div class="product-detail-skeleton__line"></div>
-            <div class="product-detail-skeleton__line product-detail-skeleton__line--sm"></div>
-            <div class="product-detail-skeleton__line product-detail-skeleton__line--price"></div>
-            <div class="product-detail-skeleton__btn"></div>
-          </div>
+    <div class="product-detail-skeleton" aria-busy="true" [attr.aria-label]="'PRODUCT_DETAIL.LOADING' | translate">
+      <div class="product-detail-skeleton__breadcrumb"></div>
+      <div class="product-detail-skeleton__main">
+        <div class="product-detail-skeleton__gallery"></div>
+        <div class="product-detail-skeleton__info">
+          <div class="product-detail-skeleton__line product-detail-skeleton__line--lg"></div>
+          <div class="product-detail-skeleton__line"></div>
+          <div class="product-detail-skeleton__line product-detail-skeleton__line--sm"></div>
+          <div class="product-detail-skeleton__line product-detail-skeleton__line--price"></div>
+          <div class="product-detail-skeleton__btn"></div>
         </div>
       </div>
+    </div>
     } @else if (loadState() === 'not-found') {
-      <div class="product-detail-not-found">
-        <div class="product-detail-not-found__icon" aria-hidden="true">
-          <i class="fa-solid fa-box-open"></i>
-        </div>
-        <h1 class="product-detail-not-found__title">
-          {{ 'PRODUCT_DETAIL.NOT_FOUND_TITLE' | translate }}
-        </h1>
-        <p class="product-detail-not-found__text">
-          {{ 'PRODUCT_DETAIL.NOT_FOUND_TEXT' | translate }}
-        </p>
-        <a routerLink="/shop" class="btn btn-primary">{{
-          'PRODUCT_DETAIL.BACK_TO_SHOP' | translate
+    <div class="product-detail-not-found">
+      <div class="product-detail-not-found__icon" aria-hidden="true">
+        <i class="fa-solid fa-box-open"></i>
+      </div>
+      <h1 class="product-detail-not-found__title">
+        {{ 'PRODUCT_DETAIL.NOT_FOUND_TITLE' | translate }}
+      </h1>
+      <p class="product-detail-not-found__text">
+        {{ 'PRODUCT_DETAIL.NOT_FOUND_TEXT' | translate }}
+      </p>
+      <a routerLink="/shop" class="btn btn-primary">{{
+        'PRODUCT_DETAIL.BACK_TO_SHOP' | translate
         }}</a>
-      </div>
+    </div>
     } @else if (product(); as p) {
-      <div class="px-4">
-        <app-catalog-breadcrumb [items]="breadcrumbs()" />
-      </div>
+    <div class="px-4">
+      <app-catalog-breadcrumb [items]="breadcrumbs()" />
+    </div>
 
-      <section
-        class="product-detail-main"
-        [class.product-detail-main--sold-out]="!p.isAvailable"
-        style="width: 100% !important"
-      >
-        <div class="product-detail-main__gallery">
-          <app-product-gallery
-            [images]="p.images"
-            [selectedIndex]="selectedImageIndex()"
-            (selectedIndexChange)="selectedImageIndex.set($event)"
-            [mainAlt]="displayName()"
-          />
-        </div>
+    <section class="product-detail-main" [class.product-detail-main--sold-out]="!p.isAvailable"
+      style="width: 100% !important">
+      <div class="product-detail-main__gallery">
+        <app-product-gallery [images]="p.images" [selectedIndex]="selectedImageIndex()"
+          (selectedIndexChange)="selectedImageIndex.set($event)" [mainAlt]="displayName()" />
+<!-- Original Products -->
 
-        <div class="product-detail-main__buy">
-          <p class="product-detail-main__brand">
-            <a [routerLink]="['/shop']" [queryParams]="brandQueryParams()">{{ displayBrand() }}</a>
-          </p>
-          @if (displayProductType()) {
-            <p class="product-detail-main__type">
-              <span class="product-detail-main__type-label">{{ 'CATALOG.FILTER.PRODUCT_TYPE' | translate }}</span>
-              @if (productTypeQueryParams(); as typeParams) {
-                <a [routerLink]="['/shop']" [queryParams]="typeParams">{{ displayProductType() }}</a>
-              } @else {
-                <span>{{ displayProductType() }}</span>
-              }
-            </p>
-          }
+        <!-- <div class="row align-items-center">
 
-          <h1 class="product-detail-main__title">{{ p.productFamily || displayName() }}</h1>
-
-          @if (p.productFamily || p.variantName) {
-            <p class="product-detail-main__sku">{{ p.productFamily ? displayName() : p.variantName }}</p>
-          }
-          <app-offer-badge-list [offers]="p.offers ?? []" [maxVisible]="4" />
-
-          @if (p.rating != null || p.reviewCount != null) {
-            <div class="product-detail-main__rating">
-              <span class="product-detail-main__stars" aria-hidden="true">
-                @for (i of [0, 1, 2, 3, 4]; track i) {
-                  <i class="fa-solid fa-star" [class.is-filled]="(p.rating ?? 0) >= i + 0.75"></i>
-                }
-              </span>
-              @if (p.rating != null) {
-                <span class="product-detail-main__rating-value">{{
-                  p.rating | number: '1.1-1'
-                }}</span>
-              }
-              @if (p.reviewCount != null) {
-                <span class="product-detail-main__reviews">
-                  ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
-                </span>
-              }
-            </div>
-          }
-
-          <div class="product-detail-main__prices">
-            <span
-              class="product-detail-main__price"
-              [class.product-detail-main__price--sale]="discountPercent()"
-            >
-              {{ formatPrice(p.price) }} {{ currencyLabel() }}
-            </span>
-            @if (p.compareAtPrice; as oldPrice) {
-              @if (oldPrice > p.price) {
-                <span class="product-detail-main__compare">
-                  {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
-                </span>
-              }
-            }
-            @if (discountPercent(); as pct) {
-              <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
-            }
-          </div>
-
-          <p
-            class="product-detail-main__availability"
-            [class.product-detail-main__availability--out]="!p.isAvailable"
-          >
-            {{
-              'INVENTORY.' + stockStatus(p.stock, p.isAvailable ? 'InStock' : 'OutOfStock')
-                | translate
-            }}
-            @if (p.stock?.backorderMessage) {
-              <span>{{ p.stock?.backorderMessage }}</span>
-            }
-          </p>
-
-          <div class="product-detail-main__sku">
-            {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
-          </div>
-
-          @if (p.shadeOptions?.length) {
-            <div class="product-detail-main__variants">
-              <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.SHADE' | translate }}</span>
-              <nav class="product-detail-main__variant-list" [attr.aria-label]="'PRODUCT_DETAIL.SHADE' | translate">
-                @for (option of p.shadeOptions; track option.productId) {
-                  <a
-                    class="btn btn-sm product-detail-main__variant-btn"
-                    [routerLink]="['/shop', option.productId]"
-                    [class.btn-primary]="option.productId === p.id"
-                    [class.btn-outline-secondary]="option.productId !== p.id"
-                    [attr.aria-current]="option.productId === p.id ? 'page' : null"
-                  >
-                    @if (option.colorHex) {
-                      <span class="product-detail-main__swatch" [style.background-color]="option.colorHex" aria-hidden="true"></span>
-                    }
-                    <span class="product-detail-main__variant-text">{{ shadeLabel(option) }}</span>
-                  </a>
-                }
-              </nav>
-            </div>
-          } @else if (variants().length) {
-            <div class="product-detail-main__variants">
-              <span class="product-detail-main__quantity-label">{{
-                variantGroupLabel() || ('PRODUCT_DETAIL.VARIANT' | translate)
-              }}</span>
-              <div class="product-detail-main__variant-list" role="listbox">
-                @for (option of variantOptions(); track option.key) {
-                  @if (option.swatchOnly && option.color) {
-                    <button
-                      type="button"
-                      class="product-detail-main__swatch-btn"
-                      role="option"
-                      [class.is-selected]="isVariantOptionSelected(option)"
-                      [attr.aria-selected]="isVariantOptionSelected(option)"
-                      [attr.aria-label]="option.label"
-                      (click)="onVariantOptionSelect(option)"
-                    >
-                      <span
-                        class="product-detail-main__swatch"
-                        [style.background-color]="option.color"
-                        aria-hidden="true"
-                      ></span>
-                    </button>
-                  } @else {
-                    <button
-                      type="button"
-                      class="btn btn-sm product-detail-main__variant-btn"
-                      role="option"
-                      [class.btn-primary]="isVariantOptionSelected(option)"
-                      [class.btn-outline-secondary]="!isVariantOptionSelected(option)"
-                      [attr.aria-selected]="isVariantOptionSelected(option)"
-                      [attr.aria-label]="option.label"
-                      (click)="onVariantOptionSelect(option)"
-                    >
-                      @if (option.color) {
-                        <span
-                          class="product-detail-main__swatch"
-                          [style.background-color]="option.color"
-                          aria-hidden="true"
-                        ></span>
-                      }
-                      @if (option.text) {
-                        <span class="product-detail-main__variant-text">{{ option.text }}</span>
-                      }
-                    </button>
-                  }
-                }
+          <div class="col-lg-6 ">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div class="benefit-content">
+                <h6>Original Products</h6>
+                <p>100% Authentic</p>
               </div>
             </div>
-          }
-
-          @if (requiresModel(p.stock) && !p.productVariantId) {
-            <p>{{ 'CART.VARIANT_REQUIRED' | translate }}</p>
-          }
-          @if (shortDescription(); as summary) {
-            <p class="product-detail-main__short-description">{{ summary }}</p>
-          }
-          @if (p.stock?.allowOnlineBackorder && quantity() > p.stockQuantity) {
-            <p class="product-detail-main__backorder">{{ 'INVENTORY.EXCESS_BACKORDER' | translate }}</p>
-          }
-          @if ((p.priceQuantity ?? 1) > 1) {
-            <p>{{ 'INVENTORY.PRICE_QUANTITY' | translate: { count: p.priceQuantity } }}</p>
-          }
-          <div class="product-detail-main__quantity">
-            <span class="product-detail-main__quantity-label">{{
-              'PRODUCT_DETAIL.QUANTITY' | translate
-            }}</span>
-            <div class="product-detail-main__quantity-control">
-              <button
-                type="button"
-                class="btn btn-outline-secondary btn-sm"
-                (click)="decrementQuantity()"
-                [disabled]="!p.isAvailable || selectionBusy() || quantity() <= 1"
-                [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                class="form-control form-control-sm"
-                [value]="quantity()"
-                [min]="p.stock?.controlType === 1 ? 1 : 0.01"
-                [step]="p.stock?.controlType === 1 ? 1 : 0.01"
-                [max]="maxQuantity()"
-                [disabled]="!p.isAvailable || selectionBusy()"
-                (input)="onQuantityInput($event)"
-                [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate"
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary btn-sm"
-                (click)="incrementQuantity()"
-                [disabled]="!p.isAvailable || selectionBusy() || quantity() >= maxQuantity()"
-                [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate"
-              >
-                +
-              </button>
-            </div>
-            @if (quantityValidationKey(); as validationKey) {
-              <p class="product-detail-main__quantity-error" role="alert">
-                {{ validationKey | translate: { count: maxQuantity() } }}
-              </p>
-            }
           </div>
 
-          <div class="product-detail-main__actions">
-            <button
-              type="button"
-              class="btn btn-primary btn-lg btn-black"
-              [disabled]="!canBuy()"
-              (click)="addToCart()"
-            >
-              <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-              {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
+       
+          <div class="col-lg-6 ">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fa-solid fa-truck"></i>
+              </div>
+              <div class="benefit-content">
+                <h6>Fast Delivery</h6>
+                <p>Across Jordan</p>
+              </div>
+            </div>
+          </div>
+
+         
+          <div class="col-lg-6 ">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+              <div class="benefit-content">
+                <h6>Easy Exchange</h6>
+                <p>Hassle Free</p>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class="col-lg-6 ">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fa-solid fa-gift"></i>
+              </div>
+              <div class="benefit-content">
+                <h6>Earn Points</h6>
+                <p>With Every Order</p>
+              </div>
+            </div>
+          </div>
+
+        </div> -->
+
+        <div class="row mt-3">
+          <div class="col-xl-3 col-ld-6">
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="product-detail-main__buy">
+        <p class="product-detail-main__brand">
+          <a [routerLink]="['/shop']" [queryParams]="brandQueryParams()">{{ displayBrand() }}</a>
+        </p>
+        @if (displayProductType()) {
+        <p class="product-detail-main__type">
+          <span class="product-detail-main__type-label">{{ 'CATALOG.FILTER.PRODUCT_TYPE' | translate }}</span>
+          @if (productTypeQueryParams(); as typeParams) {
+          <a [routerLink]="['/shop']" [queryParams]="typeParams">{{ displayProductType() }}</a>
+          } @else {
+          <span>{{ displayProductType() }}</span>
+          }
+        </p>
+        }
+
+        <h1 class="product-detail-main__title">{{ p.productFamily || displayName() }}</h1>
+
+        @if (p.productFamily || p.variantName) {
+        <p class="product-detail-main__sku">{{ p.productFamily ? displayName() : p.variantName }}</p>
+        }
+        <app-offer-badge-list [offers]="p.offers ?? []" [maxVisible]="4" />
+
+        @if (p.rating != null || p.reviewCount != null) {
+        <div class="product-detail-main__rating">
+          <span class="product-detail-main__stars" aria-hidden="true">
+            @for (i of [0, 1, 2, 3, 4]; track i) {
+            <i class="fa-solid fa-star" [class.is-filled]="(p.rating ?? 0) >= i + 0.75"></i>
+            }
+          </span>
+          @if (p.rating != null) {
+          <span class="product-detail-main__rating-value">{{
+            p.rating | number: '1.1-1'
+            }}</span>
+          }
+          @if (p.reviewCount != null) {
+          <span class="product-detail-main__reviews">
+            ({{ p.reviewCount }} {{ 'PRODUCT_CARD.REVIEWS' | translate }})
+          </span>
+          }
+        </div>
+        }
+
+        <div class="product-detail-main__prices">
+          <span class="product-detail-main__price" [class.product-detail-main__price--sale]="discountPercent()">
+            {{ formatPrice(p.price) }} {{ currencyLabel() }}
+          </span>
+          @if (p.compareAtPrice; as oldPrice) {
+          @if (oldPrice > p.price) {
+          <span class="product-detail-main__compare">
+            {{ formatPrice(oldPrice) }} {{ currencyLabel() }}
+          </span>
+          }
+          }
+          @if (discountPercent(); as pct) {
+          <span class="product-detail-main__badge-sale">-{{ pct }}%</span>
+          }
+        </div>
+
+        <p class="product-detail-main__availability" [class.product-detail-main__availability--out]="!p.isAvailable">
+          {{
+          'INVENTORY.' + stockStatus(p.stock, p.isAvailable ? 'InStock' : 'OutOfStock')
+          | translate
+          }}
+          @if (p.stock?.backorderMessage) {
+          <span>{{ p.stock?.backorderMessage }}</span>
+          }
+        </p>
+
+        <div class="product-detail-main__sku">
+          {{ 'PRODUCT_DETAIL.SKU' | translate }}: <span>{{ p.sku }}</span>
+        </div>
+
+        @if (p.shadeOptions?.length) {
+        <div class="product-detail-main__variants">
+          <span class="product-detail-main__quantity-label">{{ 'PRODUCT_DETAIL.SHADE' | translate }}</span>
+          <nav class="product-detail-main__variant-list" [attr.aria-label]="'PRODUCT_DETAIL.SHADE' | translate">
+            @for (option of p.shadeOptions; track option.productId) {
+            <a class="btn btn-sm product-detail-main__variant-btn" [routerLink]="['/shop', option.productId]"
+              [class.btn-primary]="option.productId === p.id" [class.btn-outline-secondary]="option.productId !== p.id"
+              [attr.aria-current]="option.productId === p.id ? 'page' : null">
+              @if (option.colorHex) {
+              <span class="product-detail-main__swatch" [style.background-color]="option.colorHex"
+                aria-hidden="true"></span>
+              }
+              <span class="product-detail-main__variant-text">{{ shadeLabel(option) }}</span>
+            </a>
+            }
+          </nav>
+        </div>
+        } @else if (variants().length) {
+        <div class="product-detail-main__variants">
+          <span class="product-detail-main__quantity-label">{{
+            variantGroupLabel() || ('PRODUCT_DETAIL.VARIANT' | translate)
+            }}</span>
+          <div class="product-detail-main__variant-list" role="listbox">
+            @for (option of variantOptions(); track option.key) {
+            @if (option.swatchOnly && option.color) {
+            <button type="button" class="product-detail-main__swatch-btn" role="option"
+              [class.is-selected]="isVariantOptionSelected(option)"
+              [attr.aria-selected]="isVariantOptionSelected(option)" [attr.aria-label]="option.label"
+              (click)="onVariantOptionSelect(option)">
+              <span class="product-detail-main__swatch" [style.background-color]="option.color"
+                aria-hidden="true"></span>
             </button>
-            <!-- <button
+            } @else {
+            <button type="button" class="btn btn-sm product-detail-main__variant-btn" role="option"
+              [class.btn-primary]="isVariantOptionSelected(option)"
+              [class.btn-outline-secondary]="!isVariantOptionSelected(option)"
+              [attr.aria-selected]="isVariantOptionSelected(option)" [attr.aria-label]="option.label"
+              (click)="onVariantOptionSelect(option)">
+              @if (option.color) {
+              <span class="product-detail-main__swatch" [style.background-color]="option.color"
+                aria-hidden="true"></span>
+              }
+              @if (option.text) {
+              <span class="product-detail-main__variant-text">{{ option.text }}</span>
+              }
+            </button>
+            }
+            }
+          </div>
+        </div>
+        }
+
+        @if (requiresModel(p.stock) && !p.productVariantId) {
+        <p>{{ 'CART.VARIANT_REQUIRED' | translate }}</p>
+        }
+        @if (shortDescription().hasContent) {
+          @if (shortDescription().html; as html) {
+          <div
+            class="product-detail-main__short-description product-detail-main__rich-text"
+            [innerHTML]="html"
+          ></div>
+          } @else {
+          <p class="product-detail-main__short-description">{{ shortDescription().text }}</p>
+          }
+        }
+        @if (p.stock?.allowOnlineBackorder && quantity() > p.stockQuantity) {
+        <p class="product-detail-main__backorder">{{ 'INVENTORY.EXCESS_BACKORDER' | translate }}</p>
+        }
+        @if ((p.priceQuantity ?? 1) > 1) {
+        <p>{{ 'INVENTORY.PRICE_QUANTITY' | translate: { count: p.priceQuantity } }}</p>
+        }
+        <div class="product-detail-main__quantity">
+          <span class="product-detail-main__quantity-label">{{
+            'PRODUCT_DETAIL.QUANTITY' | translate
+            }}</span>
+          <div class="product-detail-main__quantity-control">
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="decrementQuantity()"
+              [disabled]="!p.isAvailable || selectionBusy() || quantity() <= 1"
+              [attr.aria-label]="'PRODUCT_DETAIL.QTY_DECREASE' | translate">
+              −
+            </button>
+            <input type="number" class="form-control form-control-sm" [value]="quantity()"
+              [min]="p.stock?.controlType === 1 ? 1 : 0.01" [step]="p.stock?.controlType === 1 ? 1 : 0.01"
+              [max]="maxQuantity()" [disabled]="!p.isAvailable || selectionBusy()" (input)="onQuantityInput($event)"
+              [attr.aria-label]="'PRODUCT_DETAIL.QUANTITY' | translate" />
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="incrementQuantity()"
+              [disabled]="!p.isAvailable || selectionBusy() || quantity() >= maxQuantity()"
+              [attr.aria-label]="'PRODUCT_DETAIL.QTY_INCREASE' | translate">
+              +
+            </button>
+          </div>
+          @if (quantityValidationKey(); as validationKey) {
+          <p class="product-detail-main__quantity-error" role="alert">
+            {{ validationKey | translate: { count: maxQuantity() } }}
+          </p>
+          }
+        </div>
+
+        <div class="product-detail-main__actions">
+          <button type="button" class="btn btn-primary btn-lg btn-rose" [disabled]="!canBuy()" (click)="addToCart()">
+            <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+            {{ 'PRODUCT_DETAIL.ADD_TO_CART' | translate }}
+          </button>
+          <!-- <button
             type="button"
             class="btn btn-outline-primary btn-lg"
             [disabled]="!p.isAvailable"
@@ -273,35 +287,144 @@
           >
             {{ 'PRODUCT_DETAIL.BUY_NOW' | translate }}
           </button> -->
-            <button
-              type="button"
-              class="btn btn-outline-secondary btn-outline-black"
-              [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate"
-              (click)="onWishlist()"
-            >
-              <i class="fa-regular fa-heart" aria-hidden="true"></i>
+          <div class="d-flex w-100 justify-content-between">
+            <button type="button" class="btn btn-link btn-sm"
+              [attr.aria-label]="'PRODUCT_CARD.ADD_WISHLIST' | translate" (click)="onWishlist()">
+              <!-- <i class="fa-regular fa-heart" aria-hidden="true"></i> -->
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M16.44 3.09961C14.63 3.09961 13.01 3.97961 12 5.32961C10.99 3.97961 9.37 3.09961 7.56 3.09961C4.49 3.09961 2 5.59961 2 8.68961C2 9.87961 2.19 10.9796 2.52 11.9996C4.1 16.9996 8.97 19.9896 11.38 20.8096C11.72 20.9296 12.28 20.9296 12.62 20.8096C15.03 19.9896 19.9 16.9996 21.48 11.9996C21.81 10.9796 22 9.87961 22 8.68961C22 5.59961 19.51 3.09961 16.44 3.09961Z"
+                  fill="#D3758C" />
+              </svg>
               Add to Wishlist
             </button>
             @if (shareUrl()) {
-              <app-product-share-menu
-                [title]="shareTitle()"
-                [url]="shareUrl()"
-                [shareText]="shareMessage()"
-              />
+            <app-product-share-menu [title]="shareTitle()" [url]="shareUrl()" [shareText]="shareMessage()" />
             }
           </div>
         </div>
-      </section>
 
-      <app-product-detail-info [product]="p" />
 
-      <app-product-detail-related
-        [products]="relatedProducts()"
-        (productClick)="onRelatedClick($event)"
-        (addToCart)="onRelatedAddToCart($event)"
-        (addToWishlist)="onRelatedWishlist($event)"
-        (quickView)="onRelatedClick($event)"
-      />
+        <!-- <div class="accordion mt-4" id="accordionExample">
+          <div class="accordion-item mb-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M2.93652 8.78297C2.98277 8.78248 2.98277 8.78248 3.02994 8.78198C3.13343 8.78117 3.23684 8.78203 3.34033 8.78288C3.41519 8.78265 3.49005 8.78231 3.56491 8.78188C3.77077 8.78099 3.9766 8.78156 4.18246 8.78238C4.40441 8.78301 4.62635 8.78228 4.8483 8.78173C5.28316 8.78087 5.718 8.78127 6.15285 8.78211C6.5062 8.78277 6.85954 8.78295 7.21288 8.78279C7.28825 8.78276 7.28825 8.78276 7.36515 8.78273C7.46721 8.78268 7.56928 8.78263 7.67135 8.78258C8.57435 8.78218 9.47735 8.78296 10.3803 8.78435C11.257 8.7857 12.1337 8.78603 13.0103 8.78531C13.9645 8.78453 14.9186 8.78434 15.8727 8.78516C15.9744 8.78524 16.0761 8.78533 16.1778 8.78542C16.2529 8.78548 16.2529 8.78548 16.3294 8.78554C16.6825 8.78581 17.0355 8.78565 17.3885 8.78534C17.8185 8.78498 18.2486 8.7853 18.6787 8.78648C18.8982 8.78706 19.1177 8.78735 19.3372 8.78683C19.5381 8.78636 19.7389 8.78675 19.9397 8.78784C20.0125 8.78808 20.0853 8.788 20.158 8.78758C20.2568 8.78706 20.3554 8.78769 20.4542 8.7886C20.5091 8.78866 20.5639 8.78872 20.6205 8.78877C20.7961 8.81727 20.8739 8.87685 21 8.99983C21.3757 9.75114 20.8443 11.3737 20.6016 12.1258C20.1746 13.3932 19.516 14.5239 18.6103 15.5058C18.5279 15.5958 18.4496 15.6878 18.3721 15.7821C18.2176 15.9631 18.0414 16.1127 17.8594 16.2655C17.8184 16.3012 17.7773 16.337 17.7351 16.3739C16.1697 17.7186 16.1697 17.7186 15.5157 17.7186C15.5164 17.7474 15.5171 17.7762 15.5179 17.8058C15.5208 17.9388 15.5227 18.0719 15.5244 18.2049C15.5262 18.2728 15.5262 18.2728 15.528 18.3421C15.533 18.8416 15.4098 19.2926 15.0938 19.6873C14.2409 20.4878 12.931 20.3594 11.8444 20.3558C11.666 20.3553 11.4876 20.3558 11.3092 20.3564C9.08055 20.3577 9.08055 20.3577 8.42984 19.7857C7.97905 19.3188 7.8651 18.7721 7.8721 18.1434C7.87231 18.1069 7.87252 18.0703 7.87274 18.0327C7.87329 17.9436 7.87413 17.8545 7.87503 17.7655C7.83472 17.745 7.83472 17.745 7.79359 17.7241C6.78481 17.2094 6.78481 17.2094 6.32816 16.8748C6.27939 16.8394 6.23063 16.8039 6.18039 16.7673C5.82471 16.5036 5.49679 16.2144 5.17711 15.9083C5.117 15.8508 5.0563 15.794 4.99551 15.7372C3.38584 14.1934 2.43597 11.8637 2.36994 9.65371C2.36904 9.60809 2.36814 9.56246 2.36722 9.51546C2.36578 9.47204 2.36433 9.42862 2.36285 9.38388C2.36284 9.32284 2.36284 9.32284 2.36282 9.26057C2.36249 9.22486 2.36216 9.18915 2.36182 9.15236C2.44164 8.85992 2.6593 8.78303 2.93652 8.78297ZM7.59378 11.6248C7.4355 12.4624 7.81503 13.4137 8.26367 14.0989C8.92456 15.0675 9.87565 15.6495 11.0157 15.8905C12.1437 16.0808 13.2281 15.7996 14.1563 15.1405C14.3224 15.0087 14.4749 14.8682 14.625 14.7186C14.6641 14.6806 14.7031 14.6427 14.7433 14.6036C15.4522 13.8751 15.8238 12.8921 15.8555 11.8797C15.8447 11.7314 15.8368 11.6499 15.75 11.5311C15.44 11.3244 14.9719 11.424 14.6221 11.493C13.8678 11.6736 13.2344 12.001 12.6563 12.5155C12.6195 12.5477 12.5828 12.58 12.545 12.6132C12.2401 12.898 11.8333 13.3531 11.7657 13.7811C11.62 13.6533 11.5291 13.4931 11.4287 13.3299C10.8127 12.3583 9.88628 11.7353 8.76566 11.4842C8.56054 11.4441 8.36233 11.427 8.15335 11.4227C8.0977 11.4209 8.04205 11.4192 7.98471 11.4174C7.79352 11.4417 7.71969 11.479 7.59378 11.6248Z"
+                    fill="#9C2C4C" />
+                  <path
+                    d="M20.9533 4.1327C21.3264 4.47657 21.5872 4.90737 21.6205 5.42305C21.6371 6.06112 21.5374 6.54785 21.0938 7.03144C21.0652 7.06262 21.0367 7.0938 21.0073 7.12593C20.796 7.34595 20.5646 7.53713 20.3256 7.72633C20.1994 7.82292 20.1994 7.82292 20.1144 7.95022C19.8882 8.12487 19.6694 8.09354 19.3914 8.0893C19.3328 8.08934 19.2743 8.08937 19.2139 8.08941C19.0537 8.08927 18.8936 8.0881 18.7334 8.08646C18.5659 8.08499 18.3983 8.08486 18.2308 8.08458C17.9137 8.08385 17.5967 8.08193 17.2796 8.07957C16.9185 8.07695 16.5575 8.07567 16.1964 8.07449C15.4538 8.07204 14.7113 8.06792 13.9688 8.06269C14.013 8.01044 14.0574 7.95826 14.1017 7.90612C14.1264 7.87705 14.1511 7.84799 14.1765 7.81804C14.4233 7.53762 14.721 7.29969 15.0117 7.0666C15.2609 6.86584 15.4919 6.64907 15.7242 6.42936C15.9313 6.2345 16.1456 6.05332 16.3678 5.87587C16.5886 5.69211 16.7958 5.49389 17.0052 5.29744C17.148 5.1636 17.2937 5.03379 17.4421 4.90614C17.5077 4.84885 17.5724 4.79045 17.6365 4.73146C18.5793 3.86413 19.7776 3.14143 20.9533 4.1327Z"
+                    fill="#9C2C4C" />
+                </svg>
+                Ingredient
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the first item’s accordion body.</strong> It is shown by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item mb-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M19.3596 3.79603C19.3997 3.82576 19.4397 3.85549 19.481 3.88612C21.0585 5.10149 21.6613 7.08229 21.9101 8.98744C22.2276 11.6778 22.1103 14.9925 20.3996 17.2389C19.9353 17.8203 19.3493 18.2458 18.7033 18.6085C18.6767 18.6235 18.6501 18.6386 18.6226 18.654C16.8434 19.6413 14.662 19.9764 12.6495 20.0223C12.5801 20.0242 12.5801 20.0242 12.5094 20.0262C12.4237 20.0283 12.338 20.0294 12.2522 20.0292C11.758 20.0402 11.3728 20.3277 10.9774 20.5998C10.9139 20.6429 10.9139 20.6429 10.8492 20.6869C10.7151 20.778 10.5813 20.8695 10.4475 20.9611C9.43684 21.651 9.43684 21.651 8.99875 21.9255C8.96904 21.9441 8.93932 21.9628 8.90871 21.982C8.35887 22.3223 7.79342 22.4134 7.15872 22.2791C6.60687 22.0943 6.15857 21.7312 5.88193 21.2182C5.7626 20.948 5.72415 20.6798 5.68564 20.3896C5.67916 20.3423 5.67269 20.295 5.66601 20.2462C5.63926 20.0478 5.61295 19.8496 5.59123 19.6506C5.54445 19.0355 5.54445 19.0355 5.22895 18.5356C5.08391 18.4308 4.93161 18.3493 4.76953 18.2742C4.09924 17.9413 3.54618 17.2311 3.18771 16.5929C3.1643 16.5525 3.1643 16.5525 3.1404 16.5113C2.29917 15.0419 2.01352 13.2039 1.96896 11.5304C1.96794 11.4932 1.96691 11.4559 1.96585 11.4175C1.9091 8.95572 2.27942 6.14553 4.03732 4.28236C5.68834 2.68915 8.2512 2.18104 10.4533 2.01478C10.5433 2.00699 10.5433 2.00699 10.635 1.99904C13.461 1.78823 17.0131 2.03351 19.3596 3.79603ZM11.0158 6.23353C10.8084 6.56684 10.7438 6.87391 10.7815 7.26478C10.8591 7.53973 10.985 7.73464 11.2033 7.92103C11.242 7.95487 11.2807 7.98871 11.3205 8.02357C11.6299 8.24789 11.9587 8.23657 12.3283 8.20228C12.4706 8.15942 12.5834 8.10172 12.7033 8.01478C12.7421 7.98705 12.7809 7.95931 12.8209 7.93074C13.0526 7.72555 13.1893 7.43135 13.2433 7.12819C13.2576 6.75249 13.1351 6.48118 12.9289 6.17494C12.6687 5.92053 12.3789 5.78126 12.0178 5.75013C11.6344 5.75656 11.264 5.94377 11.0158 6.23353ZM10.2453 9.86342C10.0345 10.1402 9.9899 10.3889 10.0315 10.7335C10.1171 11.0244 10.2965 11.2246 10.5471 11.3898C10.7222 11.4653 10.8236 11.4835 11.0158 11.4835C11.0158 12.489 11.0158 13.4945 11.0158 14.5304C10.8921 14.5459 10.7683 14.5613 10.6408 14.5773C10.3807 14.715 10.2114 14.8983 10.0637 15.1515C9.9863 15.4611 9.99261 15.7585 10.1538 16.0388C10.3676 16.3187 10.6279 16.4371 10.969 16.4992C11.1262 16.5122 11.2826 16.5134 11.4403 16.5133C11.5065 16.5136 11.5065 16.5136 11.574 16.5139C11.6669 16.5141 11.7598 16.5142 11.8527 16.514C11.9936 16.5138 12.1345 16.5149 12.2754 16.5161C12.3662 16.5162 12.4569 16.5162 12.5477 16.5162C12.5892 16.5166 12.6307 16.517 12.6735 16.5175C13.0201 16.515 13.3812 16.467 13.6613 16.2472C13.8811 16.0221 13.973 15.8147 13.9836 15.5031C13.9791 15.2283 13.892 15.0235 13.7042 14.8228C13.4765 14.6175 13.2941 14.5253 12.9846 14.5304C12.9849 14.479 12.9852 14.4275 12.9855 14.3745C12.9884 13.889 12.9905 13.4035 12.9919 12.918C12.9926 12.6684 12.9936 12.4188 12.9952 12.1692C12.9967 11.9282 12.9976 11.6872 12.9979 11.4462C12.9982 11.3544 12.9987 11.2626 12.9995 11.1708C13.0005 11.0419 13.0006 10.913 13.0006 10.7841C13.0011 10.7464 13.0016 10.7087 13.0021 10.6699C13.0002 10.3184 12.912 10.0047 12.6565 9.74916C12.281 9.4895 11.9424 9.50353 11.4992 9.50013C11.441 9.49877 11.3828 9.49741 11.3228 9.49601C10.89 9.49303 10.5487 9.53508 10.2453 9.86342Z"
+                    fill="#9C2C4C" />
+                </svg>
+                How to Use
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the second item’s accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item mb-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <g clip-path="url(#clip0_491_6206)">
+                    <path
+                      d="M3.57392 12.9194C3.62826 12.9191 3.68261 12.9188 3.73861 12.9184C3.91654 12.9176 4.09446 12.9178 4.27239 12.918C4.36559 12.9179 4.45878 12.9177 4.55197 12.9175C4.84447 12.9168 5.13698 12.9169 5.42948 12.9174C5.72941 12.918 6.02932 12.9173 6.32925 12.9161C6.58847 12.915 6.84768 12.9147 7.1069 12.915C7.26097 12.9151 7.41502 12.915 7.56909 12.9142C8.59582 12.91 9.43071 12.9845 10.2087 13.7257C10.26 13.7768 10.26 13.7768 10.3123 13.829C10.352 13.867 10.352 13.867 10.3925 13.9059C10.8988 14.4363 11.0845 15.189 11.0805 15.8992C11.0809 15.981 11.0809 15.981 11.0813 16.0644C11.0819 16.243 11.0815 16.4216 11.081 16.6003C11.0811 16.7254 11.0812 16.8504 11.0814 16.9755C11.0816 17.2371 11.0813 17.4987 11.0806 17.7603C11.0799 18.0613 11.0801 18.3623 11.0809 18.6633C11.0815 18.9232 11.0816 19.1831 11.0813 19.443C11.081 19.5976 11.0811 19.7521 11.0815 19.9067C11.0818 20.0793 11.0813 20.2519 11.0805 20.4245C11.0808 20.4747 11.0811 20.5249 11.0814 20.5766C11.0747 21.3767 10.7779 22.0693 10.2186 22.6415C9.32517 23.4262 8.38282 23.4602 7.25024 23.4554C7.13594 23.4553 7.02163 23.4554 6.90733 23.4554C6.66893 23.4554 6.43055 23.455 6.19215 23.4541C5.88782 23.453 5.5835 23.453 5.27916 23.4533C5.04355 23.4535 4.80793 23.4532 4.57231 23.4527C4.46013 23.4525 4.34795 23.4525 4.23577 23.4526C4.07868 23.4526 3.9216 23.452 3.76452 23.4512C3.69623 23.4514 3.69623 23.4514 3.62656 23.4516C2.76689 23.445 1.9955 23.1794 1.36798 22.577C0.745568 21.918 0.547168 21.1256 0.549437 20.2361C0.549197 20.1864 0.548958 20.1367 0.548711 20.0855C0.548065 19.923 0.548104 19.7606 0.548212 19.5981C0.54803 19.4839 0.547827 19.3697 0.547604 19.2556C0.547255 19.0169 0.547267 18.7783 0.547514 18.5396C0.547786 18.2355 0.546992 17.9313 0.545904 17.6272C0.54521 17.3915 0.545173 17.1559 0.545319 16.9203C0.545295 16.8082 0.545053 16.6962 0.544578 16.5841C0.540556 15.5026 0.61564 14.5586 1.40606 13.7352C2.02045 13.1551 2.73939 12.9159 3.57392 12.9194Z"
+                      fill="#9C2C4C" />
+                    <path
+                      d="M15.8983 12.9191C15.98 12.9187 15.98 12.9187 16.0634 12.9183C16.242 12.9177 16.4207 12.9181 16.5993 12.9186C16.7244 12.9185 16.8495 12.9183 16.9745 12.9182C17.2361 12.9179 17.4977 12.9182 17.7593 12.9189C18.0603 12.9197 18.3613 12.9194 18.6623 12.9187C18.9222 12.918 19.1821 12.9179 19.442 12.9183C19.5966 12.9185 19.7512 12.9185 19.9057 12.9181C20.0784 12.9177 20.2509 12.9183 20.4235 12.9191C20.4988 12.9186 20.4988 12.9186 20.5757 12.9182C21.3766 12.9248 22.0671 13.2222 22.6405 13.781C23.2454 14.4537 23.4532 15.208 23.4495 16.0948C23.4497 16.1697 23.4497 16.1697 23.45 16.2461C23.4504 16.4093 23.4501 16.5724 23.4498 16.7356C23.4499 16.8501 23.45 16.9646 23.4501 17.0791C23.4502 17.3183 23.45 17.5576 23.4496 17.7968C23.4491 18.1022 23.4494 18.4077 23.4499 18.7131C23.4503 18.9493 23.4502 19.1856 23.4499 19.4218C23.4499 19.5343 23.4499 19.6469 23.4501 19.7595C23.4504 19.9173 23.45 20.075 23.4495 20.2328C23.4497 20.2786 23.4499 20.3243 23.4501 20.3714C23.4449 21.2316 23.1787 22.0038 22.576 22.6316C21.917 23.254 21.1247 23.4524 20.2352 23.4501C20.1606 23.4505 20.1606 23.4505 20.0846 23.4508C19.9221 23.4515 19.7596 23.4515 19.5971 23.4513C19.4829 23.4515 19.3688 23.4517 19.2546 23.452C19.016 23.4523 18.7773 23.4523 18.5387 23.452C18.2345 23.4518 17.9303 23.4526 17.6262 23.4537C17.3906 23.4544 17.1549 23.4544 16.9193 23.4542C16.8072 23.4543 16.6952 23.4545 16.5831 23.455C15.4722 23.4591 14.5209 23.3735 13.6874 22.5466C13.1501 21.9183 12.915 21.2481 12.9184 20.4256C12.9181 20.3713 12.9178 20.3169 12.9175 20.261C12.9166 20.083 12.9168 19.9051 12.917 19.7272C12.9169 19.634 12.9167 19.5408 12.9165 19.4476C12.9159 19.1551 12.9159 18.8626 12.9165 18.5701C12.917 18.2701 12.9163 17.9702 12.9151 17.6703C12.914 17.4111 12.9137 17.1519 12.914 16.8927C12.9142 16.7386 12.914 16.5845 12.9132 16.4305C12.9091 15.4123 12.9804 14.5712 13.7148 13.7975C14.3371 13.1913 15.0314 12.9141 15.8983 12.9191Z"
+                      fill="#9C2C4C" />
+                    <path
+                      d="M3.76486 0.549917C3.83942 0.549557 3.83942 0.549557 3.91547 0.549191C4.07796 0.548545 4.24044 0.548584 4.40293 0.548692C4.5171 0.54851 4.63126 0.548306 4.74543 0.548083C4.98407 0.547735 5.22271 0.547746 5.46136 0.547994C5.76553 0.548265 6.06968 0.547472 6.37384 0.546384C6.60947 0.54569 6.84509 0.545653 7.08072 0.545799C7.19278 0.545775 7.30485 0.545532 7.41691 0.545057C8.52787 0.540926 9.47914 0.626497 10.3127 1.45342C10.8499 2.08176 11.0851 2.75192 11.0816 3.5744C11.0819 3.62874 11.0822 3.68309 11.0826 3.73909C11.0834 3.91702 11.0833 4.09494 11.083 4.27287C11.0831 4.36607 11.0833 4.45926 11.0835 4.55245C11.0842 4.84495 11.0841 5.13746 11.0836 5.42996C11.083 5.72989 11.0837 6.0298 11.0849 6.32973C11.086 6.58895 11.0863 6.84816 11.086 7.10738C11.0859 7.26144 11.086 7.4155 11.0868 7.56957C11.0912 8.63926 10.9924 9.4816 10.2121 10.2786C9.62222 10.8426 8.92166 11.0775 8.11773 11.0757C8.06325 11.0759 8.00878 11.0761 7.95266 11.0764C7.77326 11.077 7.59387 11.077 7.41446 11.0769C7.32088 11.077 7.22729 11.0772 7.13371 11.0773C6.83959 11.0778 6.54547 11.0779 6.25136 11.0776C5.9493 11.0773 5.64726 11.0779 5.3452 11.0789C5.08472 11.0797 4.82424 11.08 4.56375 11.0798C4.40869 11.0798 4.25364 11.0799 4.09858 11.0805C3.92528 11.0811 3.75202 11.0808 3.57872 11.0802C3.5283 11.0806 3.47788 11.081 3.42592 11.0813C2.94751 11.078 2.49647 10.985 2.07731 10.7493C2.0476 10.7329 2.01789 10.7164 1.98729 10.6995C1.34412 10.3319 0.8645 9.71483 0.656407 9.00029C0.581151 8.63338 0.548975 8.2792 0.550527 7.90523C0.550362 7.8553 0.550198 7.80537 0.550029 7.75393C0.54962 7.59077 0.549888 7.42762 0.550206 7.26445C0.550143 7.14995 0.550052 7.03544 0.549935 6.92094C0.549797 6.68171 0.549996 6.44247 0.550435 6.20324C0.550969 5.8978 0.550661 5.59237 0.5501 5.28693C0.54976 5.05071 0.54987 4.81449 0.550112 4.57827C0.550174 4.46569 0.550099 4.35312 0.54988 4.24054C0.54964 4.08277 0.550008 3.925 0.550527 3.76723C0.550337 3.72148 0.550147 3.67573 0.549952 3.6286C0.555392 2.7284 0.827594 2.00003 1.45035 1.34502C2.09504 0.732819 2.89631 0.547701 3.76486 0.549917Z"
+                      fill="#9C2C4C" />
+                    <path
+                      d="M21.375 1.63979C21.4207 1.67495 21.4665 1.71012 21.5136 1.74635C21.8422 2.00841 22.1082 2.28784 22.3594 2.62416C22.3876 2.6606 22.4159 2.69703 22.445 2.73457C23.1618 3.69826 23.5194 4.94245 23.4375 6.13979C23.4318 6.22426 23.4318 6.22426 23.4259 6.31044C23.3146 7.46327 22.8459 8.51003 22.0781 9.37416C22.0218 9.43752 22.0218 9.43752 21.9644 9.50215C21.3588 10.1414 20.5967 10.5626 19.7695 10.8449C19.7206 10.8617 19.7206 10.8617 19.6707 10.8788C19.1884 11.0342 18.7038 11.0789 18.1992 11.0763C18.1193 11.076 18.1193 11.076 18.0377 11.0756C17.618 11.0698 17.2339 11.0304 16.8281 10.921C16.7422 10.8979 16.7422 10.8979 16.6545 10.8743C15.2827 10.4596 14.1635 9.50188 13.4901 8.2466C12.8906 7.07658 12.7159 5.605 13.1124 4.34302C13.5721 2.94703 14.4686 1.81432 15.7796 1.12672C17.5677 0.229592 19.7872 0.39717 21.375 1.63979Z"
+                      fill="#9C2C4C" />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_491_6206">
+                      <rect width="24" height="24" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+                Type
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the third item’s accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item mb-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M7.71061 1.20037C7.81479 1.20018 7.91898 1.19993 8.02317 1.19963C8.30403 1.19899 8.58489 1.19923 8.86575 1.19968C9.16093 1.20004 9.45611 1.19971 9.75129 1.19949C10.2785 1.19921 10.8057 1.19965 11.3328 1.20037C11.8093 1.20099 12.2858 1.20088 12.7622 1.20024C13.3176 1.19948 13.873 1.1992 14.4284 1.19962C14.7217 1.19984 15.0149 1.19987 15.3081 1.1994C15.5839 1.19899 15.8597 1.19928 16.1355 1.20009C16.2362 1.20028 16.3369 1.20023 16.4375 1.19991C17.6551 1.19648 18.7189 1.40157 19.6473 2.25513C20.2975 2.91493 20.7702 3.82498 20.772 4.76646C20.7722 4.81878 20.7724 4.8711 20.7726 4.92501C20.7726 5.01051 20.7726 5.01051 20.7726 5.09774C20.7727 5.15867 20.7729 5.2196 20.7731 5.28238C20.7736 5.45123 20.7737 5.62008 20.7738 5.78893C20.774 5.97117 20.7745 6.15341 20.7749 6.33565C20.7758 6.77568 20.7763 7.21571 20.7767 7.65574C20.7769 7.86323 20.7772 8.07072 20.7774 8.2782C20.7782 8.96844 20.7789 9.65867 20.7792 10.3489C20.7793 10.5279 20.7794 10.7069 20.7795 10.886C20.7795 10.9304 20.7795 10.9749 20.7796 11.0208C20.78 11.7407 20.7811 12.4607 20.7827 13.1806C20.7842 13.9207 20.7851 14.6607 20.7852 15.4008C20.7853 15.8159 20.7857 16.2311 20.7869 16.6462C20.7879 17 20.7883 17.3537 20.7879 17.7074C20.7876 17.8876 20.7877 18.0678 20.7886 18.248C20.7969 19.97 20.7969 19.97 20.3995 20.6951C20.3834 20.7258 20.3673 20.7566 20.3508 20.7882C20.2175 21.0363 20.0594 21.2557 19.875 21.4686C19.8471 21.5057 19.8192 21.5429 19.7904 21.5812C19.1832 22.2997 18.2578 22.6716 17.3438 22.7811C17.197 22.7876 17.0505 22.7878 16.9036 22.7877C16.8602 22.7878 16.8168 22.7879 16.7721 22.7881C16.6272 22.7885 16.4823 22.7886 16.3374 22.7886C16.2332 22.7888 16.1291 22.7891 16.025 22.7893C15.7424 22.7899 15.4597 22.7902 15.1771 22.7905C15.0003 22.7906 14.8235 22.7908 14.6467 22.791C14.1562 22.7916 13.6657 22.792 13.1753 22.7922C13.1439 22.7922 13.1126 22.7922 13.0803 22.7922C13.0488 22.7922 13.0174 22.7923 12.985 22.7923C12.9214 22.7923 12.8577 22.7923 12.794 22.7923C12.7467 22.7923 12.7467 22.7923 12.6983 22.7924C12.1875 22.7925 11.6767 22.7934 11.1658 22.7945C10.6402 22.7956 10.1145 22.7961 9.5888 22.7962C9.29414 22.7963 8.99949 22.7965 8.70483 22.7974C8.42731 22.7981 8.1498 22.7982 7.87228 22.7978C7.77093 22.7978 7.66957 22.798 7.56822 22.7985C6.34822 22.8037 5.2832 22.5999 4.35282 21.7445C3.70258 21.0847 3.22987 20.1747 3.22812 19.2332C3.22791 19.1809 3.2277 19.1285 3.22749 19.0746C3.22749 19.0176 3.2275 18.9606 3.22751 18.9019C3.22734 18.841 3.22717 18.78 3.22699 18.7173C3.22652 18.5484 3.22635 18.3796 3.22622 18.2107C3.22604 18.0285 3.22559 17.8462 3.22518 17.664C3.22425 17.224 3.22378 16.7839 3.22336 16.3439C3.22316 16.1364 3.22291 15.9289 3.22266 15.7214C3.22186 15.0312 3.22119 14.341 3.22085 13.6507C3.22076 13.4717 3.22067 13.2927 3.22057 13.1137C3.22055 13.0692 3.22053 13.0247 3.22051 12.9789C3.22012 12.2589 3.21893 11.539 3.21741 10.819C3.21585 10.0789 3.21501 9.3389 3.21486 8.59885C3.21476 8.1837 3.21435 7.76856 3.21315 7.35342C3.21213 6.99969 3.21176 6.64596 3.21221 6.29223C3.21243 6.11203 3.21235 5.93185 3.21143 5.75166C3.20315 4.02956 3.20315 4.02956 3.60062 3.30451C3.61671 3.27376 3.63281 3.24301 3.64938 3.21133C3.78286 2.96317 3.9403 2.74384 4.12504 2.53107C4.16081 2.4837 4.19658 2.43632 4.23343 2.38751C5.16464 1.36968 6.40702 1.19633 7.71061 1.20037ZM7.43265 5.53693C7.28754 5.72447 7.24762 5.90553 7.26566 6.14044C7.3451 6.38345 7.47917 6.51182 7.68754 6.65607C7.96029 6.75617 8.21319 6.7655 8.50199 6.76447C8.54392 6.76522 8.58586 6.76598 8.62906 6.76676C8.92734 6.76697 9.2651 6.7492 9.49815 6.54113C9.68805 6.31849 9.71985 6.16878 9.71616 5.88446C9.69689 5.70804 9.63365 5.61461 9.51566 5.48419C9.19217 5.22954 8.88832 5.2402 8.4932 5.2381C8.44821 5.23713 8.40323 5.23617 8.35688 5.23517C8.01737 5.23332 7.66895 5.2598 7.43265 5.53693ZM12.4219 5.53107C12.2835 5.74112 12.2386 5.93928 12.2813 6.18732C12.3713 6.43795 12.5136 6.57749 12.75 6.70294C12.928 6.74876 13.0964 6.75623 13.2797 6.75737C13.3384 6.75782 13.3971 6.75827 13.4575 6.75874C13.5213 6.75896 13.585 6.75917 13.6487 6.75934C13.6973 6.75954 13.6973 6.75954 13.7468 6.75974C13.9181 6.76044 14.0894 6.76088 14.2607 6.76108C14.4366 6.76134 14.6125 6.76246 14.7885 6.7638C14.9246 6.76468 15.0608 6.76492 15.197 6.76499C15.2618 6.76513 15.3266 6.7655 15.3914 6.76612C15.9785 6.78015 15.9785 6.78015 16.4953 6.53646C16.668 6.36669 16.7313 6.19961 16.7423 5.95935C16.7253 5.7432 16.6218 5.61213 16.4883 5.44904C16.2599 5.26217 16.0075 5.2381 15.7195 5.23769C15.6596 5.23739 15.5997 5.2371 15.538 5.23679C15.4734 5.23696 15.4088 5.23715 15.3443 5.23737C15.2772 5.23731 15.2102 5.23721 15.1431 5.2371C15.003 5.23696 14.8629 5.23716 14.7228 5.2376C14.5439 5.23813 14.365 5.23782 14.1861 5.23726C14.0478 5.23692 13.9095 5.23703 13.7711 5.23727C13.7052 5.23734 13.6393 5.23726 13.5733 5.23704C13.4809 5.2368 13.3885 5.23723 13.2961 5.23769C13.2175 5.2378 13.2175 5.2378 13.1373 5.23792C12.8512 5.26019 12.6268 5.32618 12.4219 5.53107ZM7.39164 9.57111C7.28176 9.75424 7.25112 9.91198 7.26566 10.1248C7.32782 10.3441 7.41843 10.4722 7.59671 10.6141C7.81043 10.7278 7.96269 10.7403 8.20262 10.7411C8.25294 10.7414 8.25294 10.7414 8.30428 10.7416C8.41698 10.7421 8.52967 10.7423 8.64237 10.7425C8.72307 10.7428 8.80376 10.7431 8.88445 10.7434C9.14972 10.7444 9.415 10.7449 9.68027 10.7454C9.77161 10.7456 9.86294 10.7457 9.95428 10.7459C10.3834 10.7468 10.8125 10.7475 11.2417 10.7479C11.7369 10.7484 12.2322 10.7496 12.7274 10.7515C13.1103 10.7529 13.4931 10.7536 13.8759 10.7537C14.1046 10.7539 14.3332 10.7543 14.5618 10.7555C14.777 10.7565 14.9922 10.7567 15.2074 10.7563C15.2862 10.7562 15.365 10.7565 15.4439 10.7572C16.0002 10.7682 16.0002 10.7682 16.5 10.5467C16.6762 10.3479 16.7466 10.1534 16.7344 9.89044C16.655 9.61481 16.5394 9.48864 16.3125 9.32794C16.1463 9.27252 16.0139 9.27474 15.8384 9.27417C15.8042 9.274 15.77 9.27383 15.7348 9.27365C15.6199 9.27313 15.505 9.27295 15.3902 9.27277C15.3079 9.27248 15.2257 9.27217 15.1435 9.27184C14.9199 9.27102 14.6962 9.27053 14.4726 9.27014C14.3329 9.2699 14.1932 9.26962 14.0536 9.26932C13.6166 9.26843 13.1797 9.26776 12.7427 9.26737C12.2382 9.26691 11.7336 9.26568 11.2291 9.26379C10.8392 9.26237 10.4493 9.26168 10.0594 9.26152C9.82646 9.26141 9.59355 9.26099 9.36063 9.25981C9.14152 9.25872 8.92242 9.25852 8.7033 9.259C8.62291 9.25903 8.54253 9.25873 8.46215 9.25809C8.35231 9.25726 8.24254 9.25759 8.1327 9.25821C8.04055 9.25804 8.04055 9.25804 7.94654 9.25787C7.70539 9.29173 7.56505 9.40707 7.39164 9.57111ZM7.38578 13.5789C7.28273 13.7974 7.21778 14.0124 7.29679 14.2495C7.41945 14.4818 7.5799 14.6358 7.82816 14.7186C8.01917 14.7303 8.21019 14.7313 8.40153 14.7324C8.49515 14.7332 8.58875 14.7353 8.68235 14.7373C9.0159 14.7395 9.24878 14.7407 9.51566 14.5311C9.66958 14.3653 9.7163 14.2366 9.7266 14.0154C9.717 13.795 9.66399 13.6682 9.51566 13.4998C9.20701 13.2213 8.92039 13.2539 8.5225 13.2508C8.43761 13.2488 8.43761 13.2488 8.35102 13.2467C7.95358 13.2439 7.66552 13.2705 7.38578 13.5789ZM12.4043 13.5731C12.2718 13.7718 12.2493 13.9692 12.2813 14.2029C12.4019 14.4352 12.5617 14.601 12.7969 14.7186C12.9022 14.7236 13.0075 14.7255 13.1129 14.7261C13.1454 14.7264 13.1779 14.7266 13.2113 14.7268C13.319 14.7275 13.4267 14.7278 13.5345 14.7281C13.6093 14.7284 13.6842 14.7286 13.759 14.7289C13.9162 14.7294 14.0733 14.7297 14.2305 14.7298C14.4315 14.7301 14.6325 14.7312 14.8335 14.7325C14.9883 14.7334 15.143 14.7337 15.2978 14.7337C15.3718 14.7339 15.4459 14.7343 15.52 14.7349C15.6239 14.7357 15.7278 14.7356 15.8317 14.7353C15.8907 14.7354 15.9498 14.7356 16.0106 14.7358C16.2564 14.7095 16.406 14.6219 16.585 14.4549C16.7206 14.2771 16.7531 14.0955 16.7344 13.8748C16.6717 13.6555 16.5819 13.5277 16.4034 13.3856C16.1952 13.2749 16.0465 13.259 15.8131 13.2571C15.7816 13.2568 15.7501 13.2565 15.7176 13.2562C15.6134 13.2553 15.5093 13.2547 15.4051 13.2543C15.3694 13.2541 15.3337 13.2539 15.297 13.2537C15.1082 13.2527 14.9194 13.252 14.7305 13.2516C14.536 13.2511 14.3415 13.2495 14.1469 13.2476C13.9969 13.2464 13.8469 13.246 13.6969 13.2458C13.6252 13.2456 13.5535 13.2451 13.4819 13.2442C12.8804 13.235 12.8804 13.235 12.4043 13.5731ZM7.43265 17.5369C7.28754 17.7245 7.24762 17.9055 7.26566 18.1404C7.3451 18.3834 7.47917 18.5118 7.68754 18.6561C7.91542 18.7349 8.1144 18.7616 8.3548 18.762C8.38733 18.7622 8.41985 18.7624 8.45336 18.7626C8.56148 18.7631 8.6696 18.7629 8.77772 18.7627C8.8556 18.7629 8.93347 18.7631 9.01134 18.7634C9.22228 18.764 9.43322 18.7641 9.64416 18.764C9.82052 18.7639 9.99687 18.7641 10.1732 18.7644C10.5894 18.7649 11.0056 18.7649 11.4219 18.7646C11.8506 18.7643 12.2794 18.7649 12.7082 18.7659C13.0768 18.7667 13.4455 18.767 13.8142 18.7669C14.0342 18.7668 14.2541 18.7669 14.4741 18.7676C14.681 18.7681 14.8879 18.7681 15.0948 18.7674C15.1705 18.7673 15.2462 18.7675 15.322 18.7678C16.0007 18.7842 16.0007 18.7842 16.5703 18.4627C16.7125 18.2754 16.7527 18.0922 16.7344 17.8592C16.6579 17.6382 16.5399 17.4913 16.3594 17.3436C16.1306 17.2635 15.9299 17.238 15.6883 17.2376C15.6553 17.2374 15.6224 17.2372 15.5885 17.2371C15.4789 17.2366 15.3694 17.2368 15.2599 17.2369C15.181 17.2367 15.1021 17.2365 15.0233 17.2362C14.8096 17.2356 14.596 17.2356 14.3823 17.2357C14.2037 17.2357 14.0252 17.2355 13.8466 17.2353C13.4252 17.2348 13.0038 17.2347 12.5825 17.235C12.1482 17.2353 11.714 17.2347 11.2797 17.2337C10.9064 17.2329 10.5331 17.2326 10.1598 17.2328C9.93705 17.2329 9.7143 17.2327 9.49155 17.2321C9.28205 17.2315 9.07256 17.2316 8.86306 17.2322C8.78634 17.2323 8.70963 17.2322 8.63291 17.2318C7.97322 17.2079 7.97322 17.2079 7.43265 17.5369Z"
+                    fill="#9C2C4C" />
+                </svg>
+                Description
+              </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                <strong>This is the third item’s accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+              </div>
+            </div>
+          </div>
+
+        </div> -->
+
+      </div>
+    </section>
+
+    <app-product-detail-info [product]="p" />
+
+    <app-product-detail-related [products]="relatedProducts()" (productClick)="onRelatedClick($event)"
+      (addToCart)="onRelatedAddToCart($event)" (addToWishlist)="onRelatedWishlist($event)"
+      (quickView)="onRelatedClick($event)" />
     }
   </div>
 </div>

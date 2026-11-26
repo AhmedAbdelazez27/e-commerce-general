@@ -9,8 +9,8 @@
       }
     </div>
 
-    <div class="store-footer__grid">
-      <div>
+    <div class="row">
+      <div class="col-xl-3 mb-3">
         <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.COMPANY' | translate }}</h2>
         <ul class="store-footer__links">
           @for (link of companyLinks(); track link.id) {
@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="col-xl-3 mb-3">
         <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CUSTOMER_SERVICE' | translate }}</h2>
         <ul class="store-footer__links">
           @for (link of customerServiceLinks(); track link.id) {
@@ -58,7 +58,7 @@
       </div>
 
       @if (hasContactInfo()) {
-        <div>
+      <div class="col-xl-3 mb-3">
           <h2 class="store-footer__heading">{{ 'LAYOUT.FOOTER.CONTACT' | translate }}</h2>
           <ul class="store-footer__links store-footer__contact">
             @if (contactAddress()) {
@@ -111,7 +111,7 @@
       }
 
       @if (config.newsletter.enabled) {
-        <div>
+      <div class="col-xl-3 mb-3">
           <h2 class="store-footer__heading">{{ config.newsletter.titleKey | translate }}</h2>
           <p class="store-footer__newsletter-text">{{ config.newsletter.subtitleKey | translate }}</p>
           <form class="store-footer__newsletter-form" (submit)="onNewsletterSubmit($event)" novalidate>

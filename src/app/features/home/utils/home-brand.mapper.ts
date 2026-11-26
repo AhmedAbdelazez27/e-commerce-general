@@ -8,7 +8,7 @@ import {
 } from '../../../shared/utils/brand-display.util';
 import { HomeBrandCard } from '../models/home.model';
 
-export const HOME_BRANDS_MAX_ITEMS = 8;
+export const HOME_BRANDS_MAX_ITEMS = 16;
 
 export function resolveHomeBrandsLimit(maxItems?: number): number {
   const requested = maxItems != null && maxItems > 0 ? maxItems : HOME_BRANDS_MAX_ITEMS;

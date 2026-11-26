@@ -35,6 +35,28 @@ describe('ProductDetailInfoComponent descriptions', () => {
     return { fixture, host: fixture.nativeElement as HTMLElement };
   }
 
+  function renderHowToUse(howToUseEn: string, howToUseAr = '') {
+    const fixture = TestBed.createComponent(ProductDetailInfoComponent);
+    fixture.componentRef.setInput(
+      'product',
+      mapPublicProductDetailsToProductDetail({
+        id: 509,
+        name: 'Daily serum',
+        categoryId: 5,
+        descriptionEn: 'Details',
+        descriptionAr: 'تفاصيل',
+        howToUseEn,
+        howToUseAr,
+      }),
+    );
+    fixture.detectChanges();
+    return { fixture, host: fixture.nativeElement as HTMLElement };
+  }
+
+  function howToUseTab(host: HTMLElement): HTMLButtonElement | undefined {
+    return [...host.querySelectorAll('button')].find((button) => button.textContent?.includes('howToUse'));
+  }
+
   it('renders stored rich text in desktop and mobile descriptions and follows the language', () => {
     const { fixture, host } = render(
       '<p><strong>Daily serum</strong></p><ul><li>Apply gently.</li></ul>',
@@ -82,5 +104,41 @@ describe('ProductDetailInfoComponent descriptions', () => {
     const empty = render('<p><br></p>');
     expect(empty.host.querySelector('.product-detail-info__text--muted')).toBeTruthy();
     expect(empty.host.querySelector('.product-detail-info__rich-text')).toBeNull();
+  });
+
+  it('renders how to use as rich text, strips scripts, and hides empty editor markup', () => {
+    const shown = renderHowToUse(
+      '<p>Apply <strong>daily</strong>.</p><script>unsafe marker</script>',
+      '<p><em>يوضع يومياً</em></p>',
+    );
+    howToUseTab(shown.host)?.click();
+    shown.fixture.detectChanges();
+
+    const panel = shown.host.querySelector('.product-detail-info__panels .product-detail-info__rich-text');
+    expect(panel?.querySelector('strong')?.textContent).toBe('daily');
+    expect(panel?.querySelector('script')).toBeNull();
+    expect(panel?.textContent).not.toContain('unsafe marker');
+    expect(shown.host.querySelector('.product-detail-info__accordion strong')?.textContent).toBe('daily');
+
+    lang.set('ar');
+    shown.fixture.detectChanges();
+    expect(shown.host.querySelector('.product-detail-info__rich-text em')?.textContent).toBe('يوضع يومياً');
+
+    const hidden = renderHowToUse('<p><br></p>');
+    expect(howToUseTab(hidden.host)).toBeUndefined();
+    const summaries = [...hidden.host.querySelectorAll('.product-detail-info__accordion summary')].map(
+      (summary) => summary.textContent ?? '',
+    );
+    expect(summaries.some((text) => text.includes('howToUse'))).toBe(false);
+  });
+
+  it('keeps a plain how to use instruction as text', () => {
+    const { fixture, host } = renderHowToUse('Apply < 2 ml.');
+    howToUseTab(host)?.click();
+    fixture.detectChanges();
+
+    const panel = host.querySelector('.product-detail-info__panels .product-detail-info__text');
+    expect(panel?.textContent).toBe('Apply < 2 ml.');
+    expect(host.querySelector('.product-detail-info__panels .product-detail-info__rich-text')).toBeNull();
   });
 });

@@ -23,7 +23,7 @@
 
     @if (isActive('howToUse')) {
       <div class="product-detail-info__panel" role="tabpanel">
-        <p class="product-detail-info__text">{{ howToUseText() }}</p>
+        <ng-container [ngTemplateOutlet]="howToUseBody" />
       </div>
     }
 
@@ -59,10 +59,10 @@
       <summary>{{ 'PRODUCT_DETAIL.TAB.description' | translate }}</summary>
       <ng-container [ngTemplateOutlet]="descriptionContent" />
     </details>
-    @if (howToUseText()) {
+    @if (hasHowToUse()) {
       <details class="product-detail-info__details">
         <summary>{{ 'PRODUCT_DETAIL.TAB.howToUse' | translate }}</summary>
-        <p class="product-detail-info__text">{{ howToUseText() }}</p>
+        <ng-container [ngTemplateOutlet]="howToUseBody" />
       </details>
     }
     <details class="product-detail-info__details">
@@ -89,6 +89,14 @@
     </details>
   </div>
 </section>
+
+<ng-template #howToUseBody>
+  @if (howToUseHtml(); as html) {
+    <div class="product-detail-info__text product-detail-info__rich-text" [innerHTML]="html"></div>
+  } @else if (howToUseText()) {
+    <p class="product-detail-info__text">{{ howToUseText() }}</p>
+  }
+</ng-template>
 
 <ng-template #descriptionContent>
   @if (hasDescription()) {

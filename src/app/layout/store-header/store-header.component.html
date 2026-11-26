@@ -12,6 +12,9 @@
     </button>
 
     <div class="store-header__main">
+
+      <app-store-search variant="inline" />
+
       <a class="store-header__logo" [routerLink]="branding.homeRoute">
         @if (logoSrc()) {
           <img [src]="logoSrc()" [alt]="logoAlt()" width="160" height="40" />
@@ -19,8 +22,6 @@
           <span class="store-header__logo-text">{{ logoAlt() }}</span>
         }
       </a>
-
-    <app-store-search variant="inline" />
 
       <div class="store-header__actions">
         <div class="store-header__lang-group">

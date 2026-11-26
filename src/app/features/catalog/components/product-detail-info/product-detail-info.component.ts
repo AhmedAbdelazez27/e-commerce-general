@@ -1,12 +1,12 @@
 import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
-import { Component, SecurityContext, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { PortalConfigService } from '../../../../core/portal-config/portal-config.service';
+import { resolveRichTextContent } from '../../../../shared/utils/product-rich-text.util';
 import { ProductDetail, ProductDetailInfoTab, ProductDetailSpec } from '../../models/product-detail.model';
-import { localizedHowToUse } from '../../utils/product-detail.util';
 
 /** Collapsed product description length, in characters. */
 const DESCRIPTION_PREVIEW_CHARS = 200;
@@ -41,7 +41,18 @@ export class ProductDetailInfoComponent {
   readonly activeTab = signal<ProductDetailInfoTab>('description');
   readonly descriptionExpanded = signal(false);
 
-  readonly howToUseText = computed(() => localizedHowToUse(this.product(), this.language.currentLang()));
+  private readonly howToUseContent = computed(() => {
+    const product = this.product();
+    const value =
+      this.language.currentLang() === 'ar'
+        ? product.howToUseAr || product.howToUse
+        : product.howToUseEn || product.howToUse;
+    return resolveRichTextContent(value, this.sanitizer, this.document);
+  });
+
+  readonly hasHowToUse = computed(() => this.howToUseContent().hasContent);
+  readonly howToUseHtml = computed(() => this.howToUseContent().html);
+  readonly howToUseText = computed(() => this.howToUseContent().text);
 
   constructor() {
     effect(() => {
@@ -52,7 +63,7 @@ export class ProductDetailInfoComponent {
 
   readonly tabs = computed<ProductDetailInfoTab[]>(() => {
     const tabs: ProductDetailInfoTab[] = ['description', 'specifications', 'shipping'];
-    if (this.howToUseText()) {
+    if (this.hasHowToUse()) {
       tabs.splice(1, 0, 'howToUse');
     }
     return tabs;
@@ -71,19 +82,7 @@ export class ProductDetailInfoComponent {
   private readonly descriptionContent = computed(() => {
     const product = this.product();
     const value = this.language.currentLang() === 'ar' ? product.descriptionAr : product.descriptionEn;
-    if (!/<\/?[a-z][^<>]*>|<!--/i.test(value)) {
-      const text = value.replace(/\s+/g, ' ').trim();
-      return { html: null, text, hasContent: text.length > 0 };
-    }
-
-    const html = this.sanitizer.sanitize(SecurityContext.HTML, value) ?? '';
-    const preview = this.document.createElement('template');
-    preview.innerHTML = html;
-    preview.content.querySelectorAll('br, p, div, li, blockquote, h1, h2, h3, h4, h5, h6, td, th, pre')
-      .forEach((block) => block.after(' '));
-
-    const text = (preview.content.textContent ?? '').replace(/\s+/g, ' ').trim();
-    return { html, text, hasContent: text.length > 0 || preview.content.querySelector('img[src]') !== null };
+    return resolveRichTextContent(value, this.sanitizer, this.document);
   });
 
   readonly hasDescription = computed(() => this.descriptionContent().hasContent);

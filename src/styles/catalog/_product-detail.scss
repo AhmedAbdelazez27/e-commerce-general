@@ -298,6 +298,29 @@
   color: var(--portal-text);
 }
 
+.product-detail-main__rich-text {
+  overflow-wrap: anywhere;
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  p,
+  ul,
+  ol {
+    margin: 0 0 0.5em;
+  }
+
+  ul,
+  ol {
+    padding-inline-start: 1.25em;
+  }
+}
+
 .product-detail-main__backorder {
   margin: 0 0 var(--ds-space-3);
   font-size: var(--ds-font-size-sm);

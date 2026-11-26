@@ -1,33 +1,54 @@
 @if (loading() || hasBrands() || !usesApi()) {
-  <section class="home-section" aria-labelledby="home-brands-title">
-    <app-section-header
-      [titleKey]="config().titleKey"
-      [subtitleKey]="config().subtitleKey"
-      [viewAllRoute]="config().viewAllRoute"
-    />
+  <section class="home-brand-strip" aria-labelledby="home-brands-title">
+    <h2 id="home-brands-title" class="home-brand-strip__label">{{ config().titleKey | translate }}</h2>
 
     @if (usesApi() && loading()) {
-      <p class="text-muted mb-0">{{ 'COMMON.LOADING' | translate }}</p>
+      <p class="home-brand-strip__status">{{ 'COMMON.LOADING' | translate }}</p>
     } @else if (usesApi() && !hasBrands()) {
-      <p class="text-muted mb-0">{{ 'HOME.BRANDS.EMPTY' | translate }}</p>
+      <p class="home-brand-strip__status">{{ 'HOME.BRANDS.EMPTY' | translate }}</p>
     } @else {
-      <div class="home-brands" role="list">
-        @for (brand of displayBrands(); track brand.id) {
-          <a
-            class="home-brands__card"
-            role="listitem"
-            [routerLink]="brand.route"
-            [queryParams]="brand.queryParams"
-            [attr.aria-label]="brandName(brand)"
-          >
-            @if (brand.logoUrl) {
-              <img class="home-brands__logo" [src]="brand.logoUrl" alt="" />
-            } @else {
-              <span class="home-brands__initials" aria-hidden="true">{{ brand.initials }}</span>
-            }
-            <span class="home-brands__name">{{ brandName(brand) }}</span>
-          </a>
-        }
+      <div class="home-brand-strip__slider">
+        <button
+          type="button"
+          class="home-brand-strip__nav home-brand-strip__nav--prev"
+          (click)="slide(-1)"
+          [disabled]="!canPrev()"
+          [attr.aria-label]="'HOME.HERO.PREV' | translate"
+        >
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="home-brand-strip__nav home-brand-strip__nav--next"
+          (click)="slide(1)"
+          [disabled]="!canNext()"
+          [attr.aria-label]="'HOME.HERO.NEXT' | translate"
+        >
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <div
+          class="home-brand-strip__rail"
+          [class.home-brand-strip__rail--fit]="!canPrev() && !canNext()"
+          role="list"
+          #rail
+          (scroll)="syncRail()"
+        >
+          @for (brand of displayBrands(); track brand.id) {
+            <a
+              class="home-brand-strip__item"
+              role="listitem"
+              [routerLink]="brand.route"
+              [queryParams]="brand.queryParams"
+              [attr.aria-label]="brandName(brand)"
+            >
+              @if (brand.logoUrl) {
+                <img class="home-brand-strip__logo" [src]="brand.logoUrl" alt="" />
+              } @else {
+                <span class="home-brand-strip__word">{{ brandName(brand) }}</span>
+              }
+            </a>
+          }
+        </div>
       </div>
     }
   </section>

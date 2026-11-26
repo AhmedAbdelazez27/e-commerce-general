@@ -1,7 +1,8 @@
 <div class="home-page home-page--viewport">
   <app-home-hero [config]="config().hero" class="row" />
 
-  <app-home-brands [config]="config().brands" />
+   <!-- Hidden per request — "عروض خاصة / وفّر أكثر على الباقات والعروض الموسمية"   -->
+  <app-home-offers [offers]="config().offers" />
 
   @if (config().curatedCollections; as curated) {
     <app-home-curated-collections [config]="curated" />
@@ -21,8 +22,8 @@
 
   <app-home-category-shortcuts />
 
-  <!-- Hidden per request — "عروض خاصة / وفّر أكثر على الباقات والعروض الموسمية"   -->
-  <app-home-offers [offers]="config().offers" />
+
+   <app-home-brands [config]="config().brands" />
 
   <app-home-trust-badges [badges]="trustBadges()" />
 </div>

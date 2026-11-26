@@ -27,8 +27,8 @@
 
   .home-hero {
     margin-bottom: 0;
-    --home-hero-height: var(--store-home-hero-height, calc(100svh - 8rem));
-    --home-hero-height-md: var(--store-home-hero-height, calc(100svh - 8rem));
+    --home-hero-height: 400px;
+    --home-hero-height-md: 400px;
   }
 
   .home-hero__slider {
@@ -170,7 +170,7 @@ html[dir='rtl'] {
 // — Header —
 .store-header {
   background: var(--portal-header-bg);
-  border-bottom: 1px solid var(--ds-color-divider);
+  // border-bottom: 1px solid var(--ds-color-divider);
   padding-block: var(--ds-space-4);
 }
 
@@ -296,9 +296,9 @@ html[dir='rtl'] {
   text-decoration: none;
 
   img {
-    height: 2.5rem;
+    height: 3.5rem;
     width: auto;
-    max-width: 10rem;
+    max-width: 16rem;
     object-fit: contain;
   }
 }
@@ -320,9 +320,9 @@ html[dir='rtl'] {
 }
 
 .store-header__search {
-  max-width: 36rem;
+  max-width: 24rem;
   width: 100%;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 app-store-search form {
@@ -383,7 +383,7 @@ app-store-search form {
   flex: 1;
   border: 0;
   background: transparent;
-  padding: var(--ds-space-3) var(--ds-space-5);
+  padding: 8px 16px;
   font-size: var(--ds-font-size-base);
   color: var(--portal-text);
   min-width: 0;
@@ -403,7 +403,7 @@ app-store-search form {
   justify-content: center;
   padding-inline: var(--ds-space-5);
   border: 0;
-  background: var(--portal-primary);
+  background: #fff;
   color: var(--portal-text-on-primary);
   cursor: pointer;
   transition: background-color var(--ds-transition-fast);
@@ -443,11 +443,13 @@ app-store-search form {
 
   i {
     font-size: 1.25rem;
+    color: var(--portal-primary) ;
   }
 
   &:hover {
-    color: var(--portal-primary);
+    color: var(--portal-primary) !important;
     background: var(--ds-color-background-subtle);
+    
   }
 }
 
@@ -847,11 +849,11 @@ body.store-drawer-open {
 
 .store-footer__heading {
   margin: 0 0 var(--ds-space-4);
-  font-size: var(--ds-font-size-sm);
-  font-weight: var(--ds-font-weight-semibold);
+  font-size: 16px;
+  font-weight: bold;
   text-transform: uppercase;
   letter-spacing: var(--ds-letter-spacing-wide);
-  opacity: 0.85;
+  color: #251C16;
 }
 
 .store-footer__links {
@@ -880,7 +882,7 @@ body.store-drawer-open {
 
 .store-footer__social {
   display: flex;
-  gap: var(--ds-space-3);
+  gap: 8px;
   margin-top: var(--ds-space-4);
 }
 
